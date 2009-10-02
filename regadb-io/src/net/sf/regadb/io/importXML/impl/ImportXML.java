@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -28,6 +29,7 @@ import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
+import net.sf.regadb.io.importXML.ImportFromXMLBase.Keep;
 import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 
 import org.xml.sax.InputSource;
@@ -47,6 +49,13 @@ public class ImportXML {
     }
     public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException, DisabledUserException {
     	this(Login.authenticate(user, password));
+    }
+    
+    public void setKeepMap(Map<String,Keep> keepMap){
+    	instance.setKeepMap(keepMap);
+    }
+    public void setDefaultKeep(Keep keep){
+    	instance.setDefaultKeep(keep);
     }
     
     /**
@@ -173,7 +182,7 @@ public class ImportXML {
                 out.println("sync error:");
                 out.println(instance.getLog());
                 e.printStackTrace();
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
             }
 
             ++isolatesRead;

@@ -571,7 +571,8 @@ public class XMLReadCodeGen {
                         }
                     } else {
                         write(2, "if (dbo != null) {\n");
-                        write(3, "if (!equals(dbo." + comp + f.getterName() + "(), o." + comp + f.getterName() + "())) {\n");
+                        write(3, "if (!equals(dbo." + comp + f.getterName() + "(), o." + comp + f.getterName() + "())");
+                        write(5, "&& getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {\n");
                         write(4, "if (!simulate)\n");
                         write(5, "dbo." + comp + f.setterName() + "(o." + comp + f.getterName() + "());\n");
                         write(4, "log.append(Describe.describe(o) + \": changed " + f.name + "\\n\");\n");
@@ -626,7 +627,7 @@ public class XMLReadCodeGen {
                     write(5, "}\n");
                     write(4, "}\n");
 
-                    write(4, "if (e == null) {\n");
+                    write(4, "if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {\n");
                     write(5, "log.append(Describe.describe(dbo) + \": Removed \" + Describe.describe(dbe) + \"\\n\");\n");
                     write(5, "changed = true;\n");
                     write(5, "if (!simulate) {\n");

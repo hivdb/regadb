@@ -2164,7 +2164,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getPatientId(), o.getPatientId())) {
+            if (!equals(dbo.getPatientId(), o.getPatientId())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setPatientId(o.getPatientId());
                 log.append(Describe.describe(o) + ": changed patientId\n");
@@ -2202,7 +2202,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2243,7 +2243,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2284,7 +2284,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2325,7 +2325,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2366,7 +2366,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2407,7 +2407,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2425,7 +2425,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!equals(dbo.getDescription(), o.getDescription())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
                 log.append(Describe.describe(o) + ": changed description\n");
@@ -2433,7 +2433,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getCreationDate(), o.getCreationDate())) {
+            if (!equals(dbo.getCreationDate(), o.getCreationDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setCreationDate(o.getCreationDate());
                 log.append(Describe.describe(o) + ": changed creationDate\n");
@@ -2441,7 +2441,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getClosedDate(), o.getClosedDate())) {
+            if (!equals(dbo.getClosedDate(), o.getClosedDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setClosedDate(o.getClosedDate());
                 log.append(Describe.describe(o) + ": changed closedDate\n");
@@ -2449,7 +2449,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getRevision(), o.getRevision())) {
+            if (!equals(dbo.getRevision(), o.getRevision())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setRevision(o.getRevision());
                 log.append(Describe.describe(o) + ": changed revision\n");
@@ -2504,7 +2504,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getDrugGeneric(), o.getDrugGeneric())) {
+            if (!equals(dbo.getDrugGeneric(), o.getDrugGeneric())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDrugGeneric(o.getDrugGeneric());
                 log.append(Describe.describe(o) + ": changed drugGeneric\n");
@@ -2552,7 +2552,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getValue(), o.getValue())) {
+            if (!equals(dbo.getValue(), o.getValue())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
                 log.append(Describe.describe(o) + ": changed value\n");
@@ -2560,7 +2560,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getTestDate(), o.getTestDate())) {
+            if (!equals(dbo.getTestDate(), o.getTestDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setTestDate(o.getTestDate());
                 log.append(Describe.describe(o) + ": changed testDate\n");
@@ -2568,7 +2568,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getSampleId(), o.getSampleId())) {
+            if (!equals(dbo.getSampleId(), o.getSampleId())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setSampleId(o.getSampleId());
                 log.append(Describe.describe(o) + ": changed sampleId\n");
@@ -2576,7 +2576,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getData(), o.getData())) {
+            if (!equals(dbo.getData(), o.getData())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setData(o.getData());
                 log.append(Describe.describe(o) + ": changed data\n");
@@ -2675,7 +2675,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!equals(dbo.getDescription(), o.getDescription())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
                 log.append(Describe.describe(o) + ": changed description\n");
@@ -2694,7 +2694,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getAnalysisType(), o.getAnalysisType())) {
+            if (!equals(dbo.getAnalysisType(), o.getAnalysisType())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setAnalysisType(o.getAnalysisType());
                 log.append(Describe.describe(o) + ": changed analysisType\n");
@@ -2702,7 +2702,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getUrl(), o.getUrl())) {
+            if (!equals(dbo.getUrl(), o.getUrl())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setUrl(o.getUrl());
                 log.append(Describe.describe(o) + ": changed url\n");
@@ -2710,7 +2710,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getAccount(), o.getAccount())) {
+            if (!equals(dbo.getAccount(), o.getAccount())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setAccount(o.getAccount());
                 log.append(Describe.describe(o) + ": changed account\n");
@@ -2718,7 +2718,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getPassword(), o.getPassword())) {
+            if (!equals(dbo.getPassword(), o.getPassword())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setPassword(o.getPassword());
                 log.append(Describe.describe(o) + ": changed password\n");
@@ -2726,7 +2726,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getBaseinputfile(), o.getBaseinputfile())) {
+            if (!equals(dbo.getBaseinputfile(), o.getBaseinputfile())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setBaseinputfile(o.getBaseinputfile());
                 log.append(Describe.describe(o) + ": changed baseinputfile\n");
@@ -2734,7 +2734,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getBaseoutputfile(), o.getBaseoutputfile())) {
+            if (!equals(dbo.getBaseoutputfile(), o.getBaseoutputfile())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setBaseoutputfile(o.getBaseoutputfile());
                 log.append(Describe.describe(o) + ": changed baseoutputfile\n");
@@ -2742,7 +2742,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getServiceName(), o.getServiceName())) {
+            if (!equals(dbo.getServiceName(), o.getServiceName())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setServiceName(o.getServiceName());
                 log.append(Describe.describe(o) + ": changed serviceName\n");
@@ -2750,7 +2750,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getDataoutputfile(), o.getDataoutputfile())) {
+            if (!equals(dbo.getDataoutputfile(), o.getDataoutputfile())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDataoutputfile(o.getDataoutputfile());
                 log.append(Describe.describe(o) + ": changed dataoutputfile\n");
@@ -2789,7 +2789,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -2811,7 +2811,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getName(), o.getName())) {
+            if (!equals(dbo.getName(), o.getName())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setName(o.getName());
                 log.append(Describe.describe(o) + ": changed name\n");
@@ -2819,7 +2819,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getData(), o.getData())) {
+            if (!equals(dbo.getData(), o.getData())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setData(o.getData());
                 log.append(Describe.describe(o) + ": changed data\n");
@@ -2827,7 +2827,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMimetype(), o.getMimetype())) {
+            if (!equals(dbo.getMimetype(), o.getMimetype())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setMimetype(o.getMimetype());
                 log.append(Describe.describe(o) + ": changed mimetype\n");
@@ -2922,7 +2922,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getValue(), o.getValue())) {
+            if (!equals(dbo.getValue(), o.getValue())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
                 log.append(Describe.describe(o) + ": changed value\n");
@@ -2930,7 +2930,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getStartDate(), o.getStartDate())) {
+            if (!equals(dbo.getStartDate(), o.getStartDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setStartDate(o.getStartDate());
                 log.append(Describe.describe(o) + ": changed startDate\n");
@@ -2938,7 +2938,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getEndDate(), o.getEndDate())) {
+            if (!equals(dbo.getEndDate(), o.getEndDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setEndDate(o.getEndDate());
                 log.append(Describe.describe(o) + ": changed endDate\n");
@@ -2997,7 +2997,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getGenome(), o.getGenome())) {
+            if (!equals(dbo.getGenome(), o.getGenome())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setGenome(o.getGenome());
                 log.append(Describe.describe(o) + ": changed genome\n");
@@ -3045,7 +3045,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!equals(dbo.getDescription(), o.getDescription())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
                 log.append(Describe.describe(o) + ": changed description\n");
@@ -3084,7 +3084,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3106,7 +3106,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!equals(dbo.getDescription(), o.getDescription())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
                 log.append(Describe.describe(o) + ": changed description\n");
@@ -3114,7 +3114,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getTestObjectId(), o.getTestObjectId())) {
+            if (!equals(dbo.getTestObjectId(), o.getTestObjectId())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setTestObjectId(o.getTestObjectId());
                 log.append(Describe.describe(o) + ": changed testObjectId\n");
@@ -3133,7 +3133,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getValue(), o.getValue())) {
+            if (!equals(dbo.getValue(), o.getValue())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
                 log.append(Describe.describe(o) + ": changed value\n");
@@ -3228,7 +3228,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getValue(), o.getValue())) {
+            if (!equals(dbo.getValue(), o.getValue())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
                 log.append(Describe.describe(o) + ": changed value\n");
@@ -3327,7 +3327,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getName(), o.getName())) {
+            if (!equals(dbo.getName(), o.getName())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setName(o.getName());
                 log.append(Describe.describe(o) + ": changed name\n");
@@ -3366,7 +3366,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3390,7 +3390,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getGroupName(), o.getGroupName())) {
+            if (!equals(dbo.getGroupName(), o.getGroupName())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setGroupName(o.getGroupName());
                 log.append(Describe.describe(o) + ": changed groupName\n");
@@ -3409,7 +3409,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getValue(), o.getValue())) {
+            if (!equals(dbo.getValue(), o.getValue())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
                 log.append(Describe.describe(o) + ": changed value\n");
@@ -3424,7 +3424,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getSampleId(), o.getSampleId())) {
+            if (!equals(dbo.getSampleId(), o.getSampleId())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setSampleId(o.getSampleId());
                 log.append(Describe.describe(o) + ": changed sampleId\n");
@@ -3432,7 +3432,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getSampleDate(), o.getSampleDate())) {
+            if (!equals(dbo.getSampleDate(), o.getSampleDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setSampleDate(o.getSampleDate());
                 log.append(Describe.describe(o) + ": changed sampleDate\n");
@@ -3471,7 +3471,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3513,7 +3513,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3531,7 +3531,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getLabel(), o.getLabel())) {
+            if (!equals(dbo.getLabel(), o.getLabel())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setLabel(o.getLabel());
                 log.append(Describe.describe(o) + ": changed label\n");
@@ -3539,7 +3539,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getSequenceDate(), o.getSequenceDate())) {
+            if (!equals(dbo.getSequenceDate(), o.getSequenceDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setSequenceDate(o.getSequenceDate());
                 log.append(Describe.describe(o) + ": changed sequenceDate\n");
@@ -3547,7 +3547,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getNucleotides(), o.getNucleotides())) {
+            if (!equals(dbo.getNucleotides(), o.getNucleotides())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setNucleotides(o.getNucleotides());
                 log.append(Describe.describe(o) + ": changed nucleotides\n");
@@ -3586,7 +3586,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3628,7 +3628,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3686,7 +3686,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getFirstAaPos(), o.getFirstAaPos())) {
+            if (!equals(dbo.getFirstAaPos(), o.getFirstAaPos())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setFirstAaPos(o.getFirstAaPos());
                 log.append(Describe.describe(o) + ": changed firstAaPos\n");
@@ -3694,7 +3694,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getLastAaPos(), o.getLastAaPos())) {
+            if (!equals(dbo.getLastAaPos(), o.getLastAaPos())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setLastAaPos(o.getLastAaPos());
                 log.append(Describe.describe(o) + ": changed lastAaPos\n");
@@ -3733,7 +3733,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3775,7 +3775,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3837,7 +3837,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getName(), o.getName())) {
+            if (!equals(dbo.getName(), o.getName())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setName(o.getName());
                 log.append(Describe.describe(o) + ": changed name\n");
@@ -3876,7 +3876,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -3938,7 +3938,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getAbbreviation(), o.getAbbreviation())) {
+            if (!equals(dbo.getAbbreviation(), o.getAbbreviation())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setAbbreviation(o.getAbbreviation());
                 log.append(Describe.describe(o) + ": changed abbreviation\n");
@@ -3957,7 +3957,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getGenome(), o.getGenome())) {
+            if (!equals(dbo.getGenome(), o.getGenome())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setGenome(o.getGenome());
                 log.append(Describe.describe(o) + ": changed genome\n");
@@ -3965,7 +3965,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getName(), o.getName())) {
+            if (!equals(dbo.getName(), o.getName())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setName(o.getName());
                 log.append(Describe.describe(o) + ": changed name\n");
@@ -3980,7 +3980,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getId().getMutationPosition(), o.getId().getMutationPosition())) {
+            if (!equals(dbo.getId().getMutationPosition(), o.getId().getMutationPosition())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.getId().setMutationPosition(o.getId().getMutationPosition());
                 log.append(Describe.describe(o) + ": changed mutationPosition\n");
@@ -3988,7 +3988,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getAaReference(), o.getAaReference())) {
+            if (!equals(dbo.getAaReference(), o.getAaReference())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setAaReference(o.getAaReference());
                 log.append(Describe.describe(o) + ": changed aaReference\n");
@@ -3996,7 +3996,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getAaMutation(), o.getAaMutation())) {
+            if (!equals(dbo.getAaMutation(), o.getAaMutation())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setAaMutation(o.getAaMutation());
                 log.append(Describe.describe(o) + ": changed aaMutation\n");
@@ -4004,7 +4004,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getNtReferenceCodon(), o.getNtReferenceCodon())) {
+            if (!equals(dbo.getNtReferenceCodon(), o.getNtReferenceCodon())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setNtReferenceCodon(o.getNtReferenceCodon());
                 log.append(Describe.describe(o) + ": changed ntReferenceCodon\n");
@@ -4012,7 +4012,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getNtMutationCodon(), o.getNtMutationCodon())) {
+            if (!equals(dbo.getNtMutationCodon(), o.getNtMutationCodon())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setNtMutationCodon(o.getNtMutationCodon());
                 log.append(Describe.describe(o) + ": changed ntMutationCodon\n");
@@ -4027,7 +4027,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getId().getInsertionPosition(), o.getId().getInsertionPosition())) {
+            if (!equals(dbo.getId().getInsertionPosition(), o.getId().getInsertionPosition())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.getId().setInsertionPosition(o.getId().getInsertionPosition());
                 log.append(Describe.describe(o) + ": changed insertionPosition\n");
@@ -4035,7 +4035,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getId().getInsertionOrder(), o.getId().getInsertionOrder())) {
+            if (!equals(dbo.getId().getInsertionOrder(), o.getId().getInsertionOrder())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.getId().setInsertionOrder(o.getId().getInsertionOrder());
                 log.append(Describe.describe(o) + ": changed insertionOrder\n");
@@ -4043,7 +4043,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getAaInsertion(), o.getAaInsertion())) {
+            if (!equals(dbo.getAaInsertion(), o.getAaInsertion())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setAaInsertion(o.getAaInsertion());
                 log.append(Describe.describe(o) + ": changed aaInsertion\n");
@@ -4051,7 +4051,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getNtInsertionCodon(), o.getNtInsertionCodon())) {
+            if (!equals(dbo.getNtInsertionCodon(), o.getNtInsertionCodon())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setNtInsertionCodon(o.getNtInsertionCodon());
                 log.append(Describe.describe(o) + ": changed ntInsertionCodon\n");
@@ -4066,7 +4066,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getTherapyMotivation(), o.getTherapyMotivation())) {
+            if (!equals(dbo.getTherapyMotivation(), o.getTherapyMotivation())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setTherapyMotivation(o.getTherapyMotivation());
                 log.append(Describe.describe(o) + ": changed therapyMotivation\n");
@@ -4074,7 +4074,8 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getStartDate(), o.getStartDate())) {
+            if (!equals(dbo.getStartDate(), o.getStartDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
+            	System.err.println(dbo.getClass().getName() +" "+ getKeep(dbo.getClass().getSimpleName()));
                 if (!simulate)
                     dbo.setStartDate(o.getStartDate());
                 log.append(Describe.describe(o) + ": changed startDate\n");
@@ -4082,7 +4083,8 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getStopDate(), o.getStopDate())) {
+            if (!equals(dbo.getStopDate(), o.getStopDate())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
+            	System.err.println(dbo.getClass().getSimpleName() +" "+ getKeep(dbo.getClass().getSimpleName()));
                 if (!simulate)
                     dbo.setStopDate(o.getStopDate());
                 log.append(Describe.describe(o) + ": changed stopDate\n");
@@ -4090,7 +4092,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getComment(), o.getComment())) {
+            if (!equals(dbo.getComment(), o.getComment())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setComment(o.getComment());
                 log.append(Describe.describe(o) + ": changed comment\n");
@@ -4129,7 +4131,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -4171,7 +4173,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                         e = f; break;
                     }
                 }
-                if (e == null) {
+                if (e == null && getKeep(dbo.getClass().getSimpleName()) == Keep.NEW) {
                     log.append(Describe.describe(dbo) + ": Removed " + Describe.describe(dbe) + "\n");
                     changed = true;
                     if (!simulate) {
@@ -4189,7 +4191,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())) {
+            if (!equals(dbo.getId().getDrugCommercial(), o.getId().getDrugCommercial())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.getId().setDrugCommercial(o.getId().getDrugCommercial());
                 log.append(Describe.describe(o) + ": changed drugCommercial\n");
@@ -4197,7 +4199,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getDayDosageUnits(), o.getDayDosageUnits())) {
+            if (!equals(dbo.getDayDosageUnits(), o.getDayDosageUnits())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDayDosageUnits(o.getDayDosageUnits());
                 log.append(Describe.describe(o) + ": changed dayDosageUnits\n");
@@ -4205,7 +4207,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.isPlacebo(), o.isPlacebo())) {
+            if (!equals(dbo.isPlacebo(), o.isPlacebo())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setPlacebo(o.isPlacebo());
                 log.append(Describe.describe(o) + ": changed placebo\n");
@@ -4213,7 +4215,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.isBlind(), o.isBlind())) {
+            if (!equals(dbo.isBlind(), o.isBlind())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setBlind(o.isBlind());
                 log.append(Describe.describe(o) + ": changed blind\n");
@@ -4221,7 +4223,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getFrequency(), o.getFrequency())) {
+            if (!equals(dbo.getFrequency(), o.getFrequency())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setFrequency(o.getFrequency());
                 log.append(Describe.describe(o) + ": changed frequency\n");
@@ -4236,7 +4238,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())) {
+            if (!equals(dbo.getId().getDrugGeneric(), o.getId().getDrugGeneric())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.getId().setDrugGeneric(o.getId().getDrugGeneric());
                 log.append(Describe.describe(o) + ": changed drugGeneric\n");
@@ -4244,7 +4246,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getDayDosageMg(), o.getDayDosageMg())) {
+            if (!equals(dbo.getDayDosageMg(), o.getDayDosageMg())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDayDosageMg(o.getDayDosageMg());
                 log.append(Describe.describe(o) + ": changed dayDosageMg\n");
@@ -4252,7 +4254,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.isPlacebo(), o.isPlacebo())) {
+            if (!equals(dbo.isPlacebo(), o.isPlacebo())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setPlacebo(o.isPlacebo());
                 log.append(Describe.describe(o) + ": changed placebo\n");
@@ -4260,7 +4262,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.isBlind(), o.isBlind())) {
+            if (!equals(dbo.isBlind(), o.isBlind())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setBlind(o.isBlind());
                 log.append(Describe.describe(o) + ": changed blind\n");
@@ -4268,7 +4270,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getFrequency(), o.getFrequency())) {
+            if (!equals(dbo.getFrequency(), o.getFrequency())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setFrequency(o.getFrequency());
                 log.append(Describe.describe(o) + ": changed frequency\n");
@@ -4287,7 +4289,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getDescription(), o.getDescription())) {
+            if (!equals(dbo.getDescription(), o.getDescription())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setDescription(o.getDescription());
                 log.append(Describe.describe(o) + ": changed description\n");
@@ -4295,7 +4297,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMinimum(), o.getMinimum())) {
+            if (!equals(dbo.getMinimum(), o.getMinimum())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setMinimum(o.getMinimum());
                 log.append(Describe.describe(o) + ": changed minimum\n");
@@ -4303,7 +4305,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMaximum(), o.getMaximum())) {
+            if (!equals(dbo.getMaximum(), o.getMaximum())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setMaximum(o.getMaximum());
                 log.append(Describe.describe(o) + ": changed maximum\n");
@@ -4311,7 +4313,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         if (dbo != null) {
-            if (!equals(dbo.getMultiple(), o.getMultiple())) {
+            if (!equals(dbo.getMultiple(), o.getMultiple())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setMultiple(o.getMultiple());
                 log.append(Describe.describe(o) + ": changed multiple\n");
@@ -4330,7 +4332,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (o == null)
             return changed;
         if (dbo != null) {
-            if (!equals(dbo.getValue(), o.getValue())) {
+            if (!equals(dbo.getValue(), o.getValue())                    && getKeep(dbo.getClass().getSimpleName()) != Keep.OLD) {
                 if (!simulate)
                     dbo.setValue(o.getValue());
                 log.append(Describe.describe(o) + ": changed value\n");

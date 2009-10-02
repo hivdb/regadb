@@ -35,6 +35,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class ImportFromXMLBase extends DefaultHandler{
+	public enum Keep{OLD, NEW, BOTH};
+	
     protected Patient patient = null;
     protected StringBuffer value = null;
     private DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -48,6 +50,9 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, TherapyMotivation> therapyMotivations;
     private Map<String, Genome> genomes = null;
     private Map<String, Dataset> datasets = new HashMap<String, Dataset>();
+    
+    private Map<String, Keep> keep = new HashMap<String, Keep>();
+    private Keep defaultKeep = Keep.NEW;
     
     protected StringBuffer log = new StringBuffer();
     public enum SyncMode { Clean, CleanBase, Update, UpdateBase };
@@ -332,5 +337,20 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     public Map<String, Genome> getGenomes() {
         return genomes;
+    }
+    
+    public void setDefaultKeep(Keep keep){
+    	defaultKeep = keep;
+    }
+    public Keep getDefaultKeep(){
+    	return defaultKeep;
+    }
+    
+    public void setKeepMap(Map<String, Keep> keep){
+    	this.keep = keep;
+    }
+    public Keep getKeep(String className){
+    	Keep r = keep.get(className);
+    	return r == null ? getDefaultKeep() : r;
     }
 }
