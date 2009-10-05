@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 
-public abstract class RSession {
+public class RSession {
 	
 	private final static String R_PATH = "R";
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	private StringBuilder script = new StringBuilder();
 		
@@ -30,10 +30,6 @@ public abstract class RSession {
 		} catch (InterruptedException e) {			
 			e.printStackTrace();
 		}
-//		FileOutputStream fos = new FileOutputStream(new File("/home/gbehey0/pi/program.R"));
-//		fos.write(script.toString().getBytes());
-//		fos.flush();
-//		fos.close();
 	}
 	
 	private void writeBufferToBatchFile(File batchFile) throws FileNotFoundException{
