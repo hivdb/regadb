@@ -111,7 +111,6 @@ public class AlgoLine implements Comparable<AlgoLine> {
 				+ "; totalWeight=" + weight + " - "+conditionalWeights;
 	}
 
-	@Override
 	public int compareTo(AlgoLine o) {
 		if(getMuts().size() != o.getMuts().size()){
 			int result = new Integer(getMuts().size()).compareTo(o.getMuts().size());

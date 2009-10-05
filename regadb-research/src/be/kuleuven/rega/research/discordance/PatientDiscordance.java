@@ -50,7 +50,6 @@ public class PatientDiscordance {
 
 		QueryInput in = new FromDatabase("admin", "admin", new IQuery<Patient>() {
 
-			@Override
 			public void process(Patient input) {
 				for (ViralIsolate vi : input.getViralIsolates()) {
 					for (TestResult tr : vi.getTestResults()) {
@@ -64,7 +63,6 @@ public class PatientDiscordance {
 				}
 			}
 
-			@Override
 			public void close() {
 				for (DrugGeneric drug : drugs) {
 					if (drug.getDrugClass().getClassId().equals("Unknown"))

@@ -2,20 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-browser"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-build"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-install"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-io-db"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-querytool"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-sql"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-swing"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-ui"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-workflow"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jhivgensim"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-persist"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/regadb-analyses"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
