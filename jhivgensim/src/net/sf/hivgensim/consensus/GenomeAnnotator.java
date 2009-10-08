@@ -10,7 +10,7 @@ public class GenomeAnnotator {
 	};
 
 	public char referenceWildtype(String genome, String orf, String protein, int pos) {
-		return SelectionWindow.getWindow(genome, orf, protein).getReferenceAaSequence().charAt(pos);
+		return SelectionWindow.getWindow(genome, orf, protein).getReferenceAaSequence().charAt(pos-1);
 	}
 	
 	public Annotation annotate(String genome, String orf, String protein, int pos, String AA) {
@@ -30,7 +30,7 @@ public class GenomeAnnotator {
 		String orf = args[1];
 		String protein = args[2];
 		int pos = Integer.parseInt(args[3]);
-		String aa = args.length == 4 ? args[4] : null;
+		String aa = args.length == 5 ? args[4] : null;
 
 		RegaDBSettings.createInstance();
 		GenomeAnnotator ga = new GenomeAnnotator();
