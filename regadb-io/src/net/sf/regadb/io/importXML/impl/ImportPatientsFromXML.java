@@ -31,7 +31,9 @@ public class ImportPatientsFromXML
     		return;
     	
         if(conf.isSet())
-        	RegaDBSettings.getInstance(conf.getValue());
+        	RegaDBSettings.createInstance(conf.getValue());
+        else
+        	RegaDBSettings.createInstance();
         
         ImportXML instance = new ImportXML(user.getValue(), pass.getValue());
         instance.importPatients(new InputSource(new FileReader(new File(xml.getValue()))), ds.getValue());

@@ -1,6 +1,9 @@
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN
-" "http://java.sun.com/dtd/web-app_2_3.dtd" >
-<web-app>
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+        version="2.4">
+        
 <!--  <context-param>-->
 <!--    <param-name>conf-dir</param-name>-->
 <!--    <param-value>/home/simbre1</param-value>-->
@@ -13,8 +16,6 @@
 <!--  </context-param>-->
   <servlet>
     <servlet-name>RegaDB</servlet-name>
-    <display-name>This is the display name of my J2EE component</display-name>
-    <description>This is the description of my J2EE component</description>
     <servlet-class>net.sf.regadb.ui.framework.RegaDBMain</servlet-class>
   </servlet>
 
@@ -22,5 +23,10 @@
     <servlet-name>RegaDB</servlet-name>
     <url-pattern>/RegaDB/*</url-pattern>
   </servlet-mapping>
+  
+  <listener>
+    <listener-class>net.sf.regadb.system.Launcher</listener-class>
+  </listener>
+  
 </web-app>
 

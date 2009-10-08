@@ -346,8 +346,11 @@ public class ObjectReplicator {
 		}
 		newViralIsolate.setTestResults(temptrs);
 		Set<NtSequence> tempseqs = new HashSet<NtSequence>();
+		NtSequence nseq;
 		for(NtSequence seq : vi.getNtSequences()){
-			tempseqs.add(copy(seq));
+			nseq = copy(seq);
+			nseq.setViralIsolate(newViralIsolate);
+			tempseqs.add(nseq);
 		}
 		newViralIsolate.setNtSequences(tempseqs);
 		return newViralIsolate;
@@ -374,6 +377,7 @@ public class ObjectReplicator {
 		for(AaSequence aaseq : seq.getAaSequences()){
 			tempaaseqs.add(copy(aaseq));
 		}
+		nseq.setAaSequences(tempaaseqs);
 		return nseq;
 	}
 	

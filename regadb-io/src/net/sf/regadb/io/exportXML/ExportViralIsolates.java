@@ -8,6 +8,8 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.export.PatientExporter;
 import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.ViralIsolateXMLOutputStream;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
 
 public class ExportViralIsolates {
     private Login login;
@@ -15,12 +17,17 @@ public class ExportViralIsolates {
     private File file;
     
     public static void main(String args[]){
-        if(args.length < 4){
-            System.err.println("Usage: ExportViralIsolates <output file> <user> <pass> <dataset>");
-            System.exit(1);
-        }
-        
-        ExportViralIsolates evi = new ExportViralIsolates(new File(args[0]), args[1], args[2], args[3]);
+    	Arguments as = new Arguments();
+    	PositionalArgument outputFile = as.addPositionalArgument("output-file", true);
+    	PositionalArgument user = as.addPositionalArgument("user", true);
+    	PositionalArgument pass = as.addPositionalArgument("pass", true);
+    	PositionalArgument dataset = as.addPositionalArgument("dataset", true);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
+        ExportViralIsolates evi = new ExportViralIsolates(
+        		new File(outputFile.getValue()),user.getValue(), pass.getValue(), dataset.getValue());
         try {
             evi.run();
         } catch (FileNotFoundException e) {

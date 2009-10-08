@@ -10,8 +10,8 @@ import java.util.List;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
@@ -45,10 +45,10 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     	
     	return null;
     }
-    protected List<TestResult> getTestResults(Patient p, Test test){
+    protected List<TestResult> getTestResults(Patient p, TestType testType){
     	List<TestResult> ret = new ArrayList<TestResult>();
     	for(TestResult tr : p.getTestResults())
-    		if(Equals.isSameTest(tr.getTest(),test))
+    		if(Equals.isSameTestType(tr.getTest().getTestType(),testType))
     			ret.add(tr);
     	
     	return ret;
@@ -84,7 +84,7 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         		continue;
         	String patcode = pav.getValue();
         	
-        	List<TestResult> trs = getTestResults(p, StandardObjects.getContactTest());
+        	List<TestResult> trs = getTestResults(p, StandardObjects.getContactTestType());
         	
         	Date maxDate = sdate;
         	for(TestResult tr : trs){

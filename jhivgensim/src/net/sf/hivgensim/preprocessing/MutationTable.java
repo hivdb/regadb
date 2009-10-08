@@ -107,6 +107,95 @@ public class MutationTable extends Table {
 	public MutationTable(String filename) throws FileNotFoundException{
 		super(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename))), false,',');
 	}
+	
+	private Set<String> mutationNames;
+	
+	private void createHeader(Set<String> mutationNames){
+		this.mutationNames = mutationNames;
+		ArrayList<String> temp = new ArrayList<String>();
+		for(String s : mutationNames){
+			temp.clear();
+			temp.add(s);
+			addColumn(temp);
+		}
+		
+	}
+	
+	public void addSequence(NtSequence seq, SelectionWindow[] windows){
+		createNewRow(seq.getViralIsolate().getSampleId());
+		Set<AaSequence> aaSequences = seq.getAaSequences();
+		for(AaSequence aaSequence : aaSequences){
+			for(SelectionWindow win : windows){
+				String sprotein = win.getProtein().getAbbreviation();
+				String sorganism = win.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
+				if(!AaSequenceUtils.coversRegion(aaSequence, sorganism, sprotein)){
+					continue;
+				}
+				Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();
+				//FIXME change it so this works even if pos doesn't start with one
+				AaMutInsertion mut = muts.hasNext()? muts.next() : null;
+				String ref = win.getReferenceAaSequence();
+				for(int pos = win.getStart(); pos <= win.getStop(); pos++){
+					if(mut == null){
+						break;
+					}
+
+					if(mut.getPosition() == pos){
+						char[] chars = mut.getAaMutationString().toCharArray();
+						for(String s : mutationNames){
+							if(s.matches(win.getProtein().getAbbreviation() + pos + ".*")){
+								boolean found = false;
+								if(chars.length == 0 && s.endsWith("del")){
+									//deletion
+									setValue(findInRow(0,s),numRows()-1,"y");
+									found = true;
+								}
+								if(!found && !mut.isInsertion()){
+									for(char c : chars){
+										if(c == s.charAt(s.length()-1)){
+											setValue(findInRow(0, s), numRows()-1, "y");
+											found = true;
+											break;
+										}
+									}
+								}
+								if(!found && mut.isInsertion()){
+									for(char c : chars){
+										if(c == s.charAt(s.length()-4)){
+											setValue(findInRow(0, s), numRows()-1, "y");
+											found = true;
+											break;
+										}
+									}
+								}
+								if(!found){
+									setValue(findInRow(0, s), numRows()-1, "n");
+								}
+							}
+						}							
+						mut = muts.hasNext()? muts.next() : null;
+					}else{
+						//reference
+						for(String s : mutationNames){
+							if(s.matches(win.getProtein().getAbbreviation() + pos + ".*")){
+								if(ref.charAt(pos-win.getStart()) == s.charAt(s.length()-1)){
+									setValue(findInRow(0, s), numRows()-1, "y");
+								}
+								else{
+									setValue(findInRow(0, s), numRows()-1, "n");
+								}
+							}
+						}							
+					}
+				}
+			}
+		}
+	}
+	
+	public MutationTable(Set<String> mutationNames){
+		createIdColumn();
+		createHeader(mutationNames);
+	}
 
 	public MutationTable(List<NtSequence> seqlist, SelectionWindow[] windows){
 		//assumes already removed sequences from query that have deletions in the windows
@@ -114,129 +203,17 @@ public class MutationTable extends Table {
 		System.err.println("Making mutation table containing "+n+" sequences.");
 
 		createIdColumn();
-		Set<String> mutationNames = getAllMutations(seqlist, windows);
-		ArrayList<String> temp = new ArrayList<String>();
-		for(String s : mutationNames){
-			temp = new ArrayList<String>();
-			temp.add(s);
-			addColumn(temp);
-		}
-		int i = 0;
+		createHeader(getAllMutations(seqlist, windows));
+		
 		for(NtSequence seq : seqlist){
-			if(i % 100 == 0){
-				System.err.println(i);
-			}
-			i++;
-			createNewRow(seq.getViralIsolate().getSampleId());
-			Set<AaSequence> aaSequences = seq.getAaSequences();
-			for(AaSequence aaSequence : aaSequences){
-				for(SelectionWindow win : windows){
-					String sprotein = win.getProtein().getAbbreviation();
-					String sorganism = win.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-					if(!AaSequenceUtils.coversRegion(aaSequence, sorganism, sprotein)){
-						continue;
-					}
-					Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();
-					//FIXME change it so this works even if pos doesn't start with one
-					AaMutInsertion mut = muts.hasNext()? muts.next() : null;
-					String ref = win.getReferenceAaSequence();
-					for(int pos = win.getStart(); pos <= win.getStop(); pos++){
-						if(mut == null){
-							break;
-						}
-
-						if(mut.getPosition() == pos){
-							char[] chars = mut.getAaMutationString().toCharArray();
-							for(String s : mutationNames){
-								if(s.matches(win.getProtein().getAbbreviation() + pos + ".*")){
-									boolean found = false;
-									if(chars.length == 0 && s.endsWith("del")){
-										//deletion
-										setValue(findInRow(0,s),numRows()-1,"y");
-										found = true;
-									}
-									if(!found && !mut.isInsertion()){
-										for(char c : chars){
-											if(c == s.charAt(s.length()-1)){
-												setValue(findInRow(0, s), numRows()-1, "y");
-												found = true;
-												break;
-											}
-										}
-									}
-									if(!found && mut.isInsertion()){
-										for(char c : chars){
-											if(c == s.charAt(s.length()-4)){
-												setValue(findInRow(0, s), numRows()-1, "y");
-												found = true;
-												break;
-											}
-										}
-									}
-									if(!found){
-										setValue(findInRow(0, s), numRows()-1, "n");
-									}
-								}
-							}							
-							mut = muts.hasNext()? muts.next() : null;
-						}else{
-							//reference
-							for(String s : mutationNames){
-								if(s.matches(win.getProtein().getAbbreviation() + pos + ".*")){
-									if(ref.charAt(pos-win.getStart()) == s.charAt(s.length()-1)){
-										setValue(findInRow(0, s), numRows()-1, "y");
-									}
-									else{
-										setValue(findInRow(0, s), numRows()-1, "n");
-									}
-								}
-							}							
-						}
-					}
-				}
-			}
+			addSequence(seq, windows);			
 		}
 	}
 
 	private Set<String> getAllMutations(List<NtSequence> seqlist, SelectionWindow[] windows){
 		Set<String> allMutations = new TreeSet<String>();
 		for(NtSequence seq : seqlist){	
-			for(AaSequence aaSequence : seq.getAaSequences()){
-				for(SelectionWindow win : windows){
-					String ref = win.getReferenceAaSequence();
-					String sprotein = win.getProtein().getAbbreviation();
-					String sorganism = win.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-					if(!AaSequenceUtils.coversRegion(aaSequence, sorganism, sprotein)){
-						continue;
-					}
-					Iterator<AaMutInsertion> muts = AaMutInsertion.getSortedMutInsertionList(aaSequence).iterator();
-					AaMutInsertion mut = muts.hasNext()? muts.next() : null;
-
-					for(int pos = win.getStart(); pos <= win.getStop(); pos++){
-						if(mut == null){
-							break;
-						}
-						if(mut.getPosition() == pos){
-							if(!mut.isInsertion() ){
-								for(char m : mut.getAaMutationString().toCharArray()){
-									allMutations.add(win.getProtein().getAbbreviation() + pos + m);
-								}
-								if(mut.getAaMutationString().toCharArray().length == 0){
-									allMutations.add(win.getProtein().getAbbreviation() + pos + "del");
-								}
-							}else{
-								for(char m : mut.getInsertion().getAaInsertion().toCharArray()){
-									allMutations.add(win.getProtein().getAbbreviation() + pos + m + "ins");
-								}
-							}
-							mut = muts.hasNext()? muts.next() : null;
-						}else{
-							//reference
-							allMutations.add(win.getProtein().getAbbreviation() + pos + ref.charAt(pos-win.getStart()));
-						}
-					}
-				}
-			}
+			allMutations.addAll(Utils.getAllMutations(seq, windows));
 		}
 		return allMutations;
 	}
