@@ -201,7 +201,7 @@ public class MutationTable extends Table {
 	}
 
 	public void addSequence(NtSequence seq, SelectionWindow[] windows, ArrayList<String> infoCols){
-		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ","));
+		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ""));
 		for(String info : infoCols){
 			setValue(findInRow(0, info), numRows()-1,"y");
 		}
@@ -209,7 +209,7 @@ public class MutationTable extends Table {
 	}
 
 	public void addSequence(NtSequence seq, SelectionWindow[] windows){
-		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ","));
+		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ""));
 		completeNewRow(seq, windows);
 	}
 
@@ -251,6 +251,10 @@ public class MutationTable extends Table {
 	public void removeInsertions(){
 		deleteColumns(".*ins.*");
 	}
+	
+	public void removeDeletions(){
+		deleteColumns(".*del.*");
+	}
 
 	/**
 	 * remove all columns with unknown AA-mutation
@@ -261,7 +265,7 @@ public class MutationTable extends Table {
 	}
 
 	public void removeMutationsOutsideRange(int start,int stop){
-		Pattern p = Pattern.compile("[A-Za-z]+([0-9]+).");//TODO del and ins
+		Pattern p = Pattern.compile("[A-Za-z]+([0-9]+)([A-Z]*|del|ins)");
 		Matcher m = null;
 		ArrayList<Integer> toBeDeleted = new ArrayList<Integer>();
 		ArrayList<String> header = getRow(0);
