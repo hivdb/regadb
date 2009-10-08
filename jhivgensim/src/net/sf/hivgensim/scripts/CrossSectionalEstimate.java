@@ -2,9 +2,15 @@ package net.sf.hivgensim.scripts;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 
+import net.sf.hivgensim.fastatool.FastaConcat;
+import net.sf.hivgensim.fastatool.FastaToNexus;
+import net.sf.hivgensim.preprocessing.MutationTable;
+import net.sf.hivgensim.preprocessing.RemoveMixtures;
 import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.CleanSequences;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
@@ -12,186 +18,221 @@ import net.sf.hivgensim.queries.GetLongitudinalSequencePairs;
 import net.sf.hivgensim.queries.GetTreatedSequences;
 import net.sf.hivgensim.queries.RemoveSequencesFromLongitudinalPair;
 import net.sf.hivgensim.queries.framework.QueryInput;
+import net.sf.hivgensim.queries.framework.TableQueryOutput.TableOutputType;
 import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
-import net.sf.hivgensim.queries.output.SequencePairsToFasta;
-import net.sf.hivgensim.queries.output.SequencesToCsv;
-import net.sf.hivgensim.queries.output.SequencesToFasta;
-import net.sf.hivgensim.queries.output.ToObjectList;
+import net.sf.hivgensim.queries.output.SequenceOutput;
+import net.sf.hivgensim.queries.output.SequencePairsTableOutput;
+import net.sf.hivgensim.selection.FisherTest;
+import net.sf.hivgensim.selection.RelativeFrequency;
+import net.sf.hivgensim.services.BnLearner;
+import net.sf.hivgensim.services.Estimate;
+import net.sf.hivgensim.services.Paup;
+import net.sf.hivgensim.treecluster.TreeNode;
+import net.sf.hivgensim.treecluster.TreeParser;
+import net.sf.hivgensim.treecluster.TreeWeights;
 import net.sf.regadb.csv.Table;
-import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.tools.MutPos;
 
 public class CrossSectionalEstimate {
 
-	//initialized variables
-	private String workDir = "/home/gbehey0/3tcd4t";
-	private String snapshotFile = "/home/gbehey0/snapshot";
-	private String[] naiveDrugClasses = {"NRTI","NNRTI"};
-	private String[] drugs = {"3TC","D4T"};
-	
-	private SelectionWindow[] smallWindows = new SelectionWindow[]{SelectionWindow.RT_WINDOW_CLEAN};
-	private SelectionWindow[] fullWindows = new SelectionWindow[]{SelectionWindow.RT_WINDOW_REGION};
-	private double threshold = 0.03;
-	private boolean lumpValues = false;
+	private File workDir;
 
-	//bayesian parameters
-//	private int ESS = 1;
-//	private String ARC_OPTS ="";
-//	private int sa_T0=10;
-//	private double sa_mu_T=1.002;
-//	private int sa_iterations=40000;
-//	private double arc_cost=1.2;
-	//TODO make these editable in the service
-//	double ess,
-//	int iterations,
-//	int coolings,
-//	double paramCost,
-	
-	public void run() throws FileNotFoundException{
-		//queries
-		
-		//longitudinal
-		Table t = new Table();
-		QueryInput query = new FromSnapshot(new File(snapshotFile),
-							new GetLongitudinalSequencePairs(drugs,naiveDrugClasses,"HIV-1","RT",
-//							new CheckForRegion("HIV-1","RT",
-//							new SequencePairsTableOutput(t,
-//									new File(workDir + File.separator + "longitudinal.csv"),
-//									TableOutputType.CSV))));
-							new SequencePairsToFasta(new File(workDir + File.separator + "longitudinal.fasta"),fullWindows[0])));
-		query.run();
-		
-		ArrayList<String> pairs = new ArrayList<String>();
-		pairs.addAll(t.getColumn(2));
-		pairs.addAll(t.getColumn(3));
-		t = new Table();
-//		
-//		//naive
-		ToObjectList<NtSequence> tol = new ToObjectList<NtSequence>();
-		query =  new FromSnapshot(new File(snapshotFile),
-								  new GetDrugClassNaiveSequences(naiveDrugClasses,
-								  new RemoveSequencesFromLongitudinalPair(pairs,
-								  new CleanSequences(smallWindows,
-								  tol))));
-		query.run();
-//		new SequencesToFasta(new File(workDir + File.separator + "naive.fasta"),true).output(tol);
-		new SequencesToCsv(new File(workDir + File.separator + "naive.csv")).output(tol);
-//
-//		//treated
-		tol = new ToObjectList<NtSequence>();
-		query =	new FromSnapshot(new File(snapshotFile),
-				new GetTreatedSequences(drugs,
-				new RemoveSequencesFromLongitudinalPair(pairs,
-				new CleanSequences(smallWindows,
-				tol))));
-		query.run();
-		List<NtSequence> treated = tol.getList();
-		new SequencesToFasta(new File(workDir + File.separator + "treated.fasta"),fullWindows[0]).output(tol);
-		new SequencesToCsv(new File(workDir + File.separator + "treated.csv")).output(tol);
-		System.err.println("Queries Finished");
-//		
-//		//both
-//		FastaConcat fc = new FastaConcat(
-//				workDir + File.separator + "naive.fasta",
-//				workDir + File.separator + "treated.fasta",
-//				workDir + File.separator + "phylo.fasta");
-//		fc.processFastaFile();
-//		System.err.println("Creating Mutation Table");
-//		
-//		//longitudinal
-//		
-//		//mutation table
-//		MutationTable mt = new MutationTable(treated,fullWindows);
-//		mt.exportAsCsv(new FileOutputStream(new File(workDir + File.separator + "all_mutations.csv")));
-//
-//		mt.removeInsertions();
-//		mt.removeUnknownMutations();
-//		mt.removeMutationsOutsideRange(1, 220);
-//		mt.removeLowPrevalenceMutations(threshold,lumpValues);
-//
-//		//TODO remove certain mutations: known/transmission/... ?
+	private String naive = "naive.fasta";
+	private String treated = "treated.fasta";
+	private String longitudinal = "long.csv";
+	private String phylo = "phylo.fasta";
+	private String nex = "phylo.nex";
+	private String tree = "tree.phy";
+	private String weights = "weights50.csv";
 
-//		MutationTable mt = new MutationTable(new File(workDir + File.separator + "all_mutations_selection.csv"));
-//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "all_mutations_selection.csv"),',', false);
-		
-//		System.err.println("Running Mutpos");
-//		ArrayList<String> mutations = MutPos.execute(new String[]{
-//				workDir + File.separator + "all_mutations_selection.csv",
-//				workDir + File.separator + "mutations.wrong",
-//				workDir + File.separator + "positions.wrong",
-//				workDir + File.separator + "wildtypes.wrong"});
-//		
-//		mutations.remove("RT184M");
-//		mutations.add("RT184V");
-//		mt.selectColumns(mutations);
-//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated_mix.csv"),',', false);
-//		System.err.println("Removing Mixtures");
-//		RemoveMixtures rm = new RemoveMixtures(mt);
-//		rm.removeMixtures();
-//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated_nomix.csv"),',', false);
-//
-//		mt.deleteColumn(0);
-//		mt.exportAsCsv(new FileOutputStream(workDir + File.separator + "mut_treated.csv"),',', false);
-//		
-//		mt.exportAsVdFiles(
-//				new FileOutputStream(workDir + File.separator + "mut_treated.vd"),
-//				new FileOutputStream(workDir + File.separator + "mut_treated.idt"));
-		
-//		System.err.println("Building Phylogenetic Tree");
-//		FastaToNexus ftn = new FastaToNexus(
-//				workDir + File.separator + "phylo.fasta",
-//				workDir + File.separator + "phylo.nex");
-//		ftn.convert();
-//		
-//		Paup p = new Paup();
-//		p.run(
-//				workDir + File.separator + "phylo.nex",
-//				workDir + File.separator + "tree.phy");
-//
-//		try{
-//			TreeParser tp = new TreeParser(workDir + File.separator + "tree.phy");
-//			TreeNode root = tp.parseTree();
-//			TreeWeights tw = new TreeWeights(TreeWeights.WEIGHT_FOR_RT);
-//			tw.calculateWeights(root);
-//			PrintStream out = new PrintStream(new FileOutputStream(workDir + File.separator + "weights50.csv"));
-//			out.println(root.printWeights());
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			throw new Error("treeparsing or -weighting failed");
-//		}
-//		
-//		System.err.println("Learning the network");
-//		
-//		BnLearner bnl = new BnLearner();
-//		bnl.run(
-//				workDir + File.separator + "mut_treated.vd",
-//				workDir + File.separator + "mut_treated.idt",
-//				workDir + File.separator + "mut_treated.str");
-//		
-//		//TODO better way
-//		PrintStream out = new PrintStream(new File(workDir + File.separator + "doublepositions"));
-//		out.println("215 215\n151 151\n");
-//		out.flush();
-//		out.close();
-//		//TODO better way		
-//		out = new PrintStream(new File(workDir + File.separator + "mutagenesis"));
-//		out.println("");
-//		out.flush();
-//		out.close();
-//		
-//		System.err.println("Estimation...");
-//		Estimate estimate = new Estimate();
-//		estimate.run(
-//				workDir + File.separator + "mut_treated.csv",
-//				workDir + File.separator + "naive.fasta",
-//				workDir + File.separator + "mut_treated.idt",
-//				workDir + File.separator + "mut_treated.str",
-//				workDir + File.separator + "mut_treated.vd",
-//				workDir + File.separator + "wildtypes",
-//				workDir + File.separator + "doublepositions",
-//				workDir + File.separator + "mutagenesis",
-//				workDir + File.separator + "weights50.csv",
-//				workDir + File.separator + "best.cft",
-//				workDir + File.separator + "estimate.diag");
+	private String mt_full = "treated.mt";
+	private String mt_rf = "treated.rf";
+	private String mt_clean = "treated.clean";
+	private String mt_fisher = "treated.fisher";
+	private String mt_treated = "treated.mut";
+	private String mt_mix = "treated.mix";
+	private String mt_nomix = "treated.nomix";
+	private String mt_final = "mut_treated.csv";
+
+	private String idt = "mut_treated.idt";
+	private String vd = "mut_treated.vd";
+	private String str = "mut_treated.str";
+
+	private String mutations = "mutations";
+	private String positions = "positions";
+	private String wildtypes = "wildtypes";
+	
+	private String doublepositions = "doublepositions";
+	private String mutagenesis = "mutagenesis";
+	
+	private String landscape = "best.cft";
+	private String diag = "estimate.diag";
+	
+	private String[] drugs;
+	private String[] drugClasses;
+	private String protein;
+	private String organism = "HIV-1";
+
+	private QueryInput query;
+	private SelectionWindow clean;
+	private SelectionWindow region;
+
+	public CrossSectionalEstimate(File workingDirectory, String[] drugClasses, String[] drugs, String protein){
+		this.drugClasses = drugClasses;
+		this.drugs = drugs;
+		this.protein = protein;
+
+		this.workDir = workingDirectory;
+
+		initializeDatasource();		
+		initializeWindows(protein);
 	}
+
+	private void initializeDatasource(){
+		query = new FromSnapshot(new File("/home/gbehey0/snapshot"), null);
+	}
+
+	private void initializeWindows(String protein){
+		if("PR".equals(protein)){
+			clean = SelectionWindow.PR_WINDOW_CLEAN;
+			region = SelectionWindow.PR_WINDOW_REGION;
+		} else if("RT".equals(protein)){
+			clean = SelectionWindow.RT_WINDOW_CLEAN;
+			region = SelectionWindow.RT_WINDOW_REGION;
+		} else {
+			throw new IllegalArgumentException(protein);
+		}
+	}
+
+	private File file(String filename){
+		return new File(workDir + File.separator + filename);
+	}
+
+	private String name(String filename){
+		return workDir + File.separator + filename;
+	}
+
+	public void start() throws IOException{
+		query();
+		phylo();
+		variableSelection();
+		network();
+		estimate();
+	}
+
+	private void query() throws FileNotFoundException {
+		ArrayList<String> longPairs = longitudinalQuery();
+		naiveAndTreatedQuery(longPairs);				
+	}
+
+	private ArrayList<String> longitudinalQuery(){
+		Table t = new Table();
+		query.setNextQuery(
+				new GetLongitudinalSequencePairs(drugs, drugClasses, organism, protein,
+						new SequencePairsTableOutput(t,	file(longitudinal), TableOutputType.CSV))
+		);
+		query.run();
+
+		ArrayList<String> pairs = new ArrayList<String>();
+		pairs.addAll(t.getColumn(2)); //TODO change to find(header)
+		pairs.addAll(t.getColumn(3)); //TODO change to find(header)
+		return pairs;
+	}
+
+	private void naiveAndTreatedQuery(ArrayList<String> longPairs) throws FileNotFoundException{
+		SequenceOutput so = new SequenceOutput(workDir, naive.replace(".fasta",""), region, drugs[0]);
+		query.setNextQuery(
+				new GetDrugClassNaiveSequences(drugClasses,
+						new RemoveSequencesFromLongitudinalPair(longPairs,
+								new CleanSequences(clean,
+										so))));
+		query.run();
+
+		so = new SequenceOutput(workDir, treated.replace(".fasta",""), region, so.getMutationTable(), drugs[0]);
+		query.setNextQuery(
+				new GetTreatedSequences(drugs,
+						new RemoveSequencesFromLongitudinalPair(longPairs,
+								new CleanSequences(clean,
+										so))));
+		query.run();
+	}
+
+	private void phylo() throws FileNotFoundException{
+		FastaConcat fc = new FastaConcat(name(naive),name(treated),name(phylo));		
+		fc.processFastaFile();
+		FastaToNexus ftn = new FastaToNexus(name(phylo),name(nex));
+		ftn.convert();
+
+		Paup p = new Paup();
+		p.run(name(phylo),name(tree));
+		try{
+			TreeParser tp = new TreeParser(name(tree));
+			TreeNode root = tp.parseTree();
+			TreeWeights tw = new TreeWeights(TreeWeights.getWeightFor(protein));
+			tw.calculateWeights(root);
+			PrintStream out = new PrintStream(new FileOutputStream(file(weights)));
+			out.println(root.printWeights());
+			out.flush();
+			out.close();
+		}catch(Exception e){
+			e.printStackTrace();
+			throw new Error("treeparsing or -weighting failed");
+		}
+	}
+
+	private void variableSelection() throws IOException {
+		RelativeFrequency rf = new RelativeFrequency(file(mt_full), file(mt_rf), 0.01); rf.select();
+		MutationTable mt = new MutationTable(name(mt_rf));
+		mt.removeInsertions();
+		mt.removeDeletions();
+		mt.removeUnknownMutations();
+		mt.removeMutationsOutsideRange(region.getStart(), region.getStop());//TODO needed?
+		//TODO remove certain mutations: known/transmission/... ?
+		mt.exportAsCsv(new FileOutputStream(file(mt_clean)));
+		FisherTest ft = new FisherTest(file(mt_clean), file(mt_fisher), drugs[0], 0.05);
+		ft.select();
+		mt = new MutationTable(name(mt_fisher));
+		mt.deleteRowsWithValue(mt.findColumn(drugs[0]), "y");
+		mt.deleteColumns(drugs[0]);
+		mt.exportAsCsv(new FileOutputStream(name(mt_treated)));
+		ArrayList<String> mutations = MutPos.execute(new String[]{name(mt_treated),name(this.mutations),name(positions),name(wildtypes)});
+		mt.selectColumns(mutations);
+		mt.exportAsCsv(new FileOutputStream(name(mt_mix)),',', false);
+		RemoveMixtures rm = new RemoveMixtures(mt);
+		rm.removeMixtures();
+		mt.exportAsCsv(new FileOutputStream(name(mt_nomix)),',', false);
+		mt.deleteColumn(0);
+		mt.exportAsCsv(new FileOutputStream(name(mt_final)),',', false);
+		mt.exportAsVdFiles(new FileOutputStream(name(vd)), new FileOutputStream(name(idt)));
+	}
+
+	private void network(){
+		BnLearner bnl = new BnLearner();
+		bnl.run(name(vd),name(idt),name(str));
+	}
+
+	private void estimate() throws FileNotFoundException{
+		//TODO better way
+		PrintStream out = new PrintStream(file(doublepositions));
+		out.println("215 215\n151 151\n");
+		out.flush();
+		out.close();
+		//TODO better way		
+		out = new PrintStream(file(mutagenesis));
+		out.println("");
+		out.flush();
+		out.close();
+
+		System.err.println("Estimation...");
+		Estimate estimate = new Estimate();
+		estimate.run(name(mt_final),name(naive),name(idt),name(str),name(vd),name(wildtypes),name(doublepositions),name(mutagenesis),name(weights),name(landscape),name(diag));
+	}
+	
+	public static void main(String[] args) {
+		
+	}
+
+
+
 }
 

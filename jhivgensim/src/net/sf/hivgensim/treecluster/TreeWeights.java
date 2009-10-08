@@ -6,8 +6,18 @@ import java.io.PrintStream;
 
 public class TreeWeights {
 	
-	public static short WEIGHT_FOR_PR = 50;
-	public static short WEIGHT_FOR_RT = 100;
+	public static final short WEIGHT_FOR_PR = 50;
+	public static final short WEIGHT_FOR_RT = 100;
+	
+	public static short getWeightFor(String protein){
+		if("PR".equals(protein)){
+			return WEIGHT_FOR_PR;
+		}
+		if("RT".equals(protein)){
+			return WEIGHT_FOR_RT;
+		}
+		throw new IllegalArgumentException(protein);		
+	}
 	
 	public class DoublePointer{
 		double value = 0;
