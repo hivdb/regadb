@@ -204,30 +204,7 @@ public class Utils {
 	public static Set<String> getAllMutations(SelectionWindow[] windows){
 		Set<String> mutations = new TreeSet<String>();
 		for(SelectionWindow win : windows){
-			for(int pos = win.getStart(); pos <= win.getStop(); pos++){
-				mutations.add(win.getProtein().getAbbreviation()+pos+"A");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"C");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"D");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"E");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"F");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"G");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"H");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"I");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"K");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"L");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"M");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"N");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"P");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"Q");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"R");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"S");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"T");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"V");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"W");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"Y");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"ins");
-				mutations.add(win.getProtein().getAbbreviation()+pos+"del");
-			}
+			mutations.addAll(win.getAllMutations());			
 		}
 		return mutations;
 	}

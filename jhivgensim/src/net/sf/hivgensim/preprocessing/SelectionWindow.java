@@ -1,5 +1,8 @@
 package net.sf.hivgensim.preprocessing;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.Protein;
 
@@ -109,5 +112,33 @@ public class SelectionWindow {
 	
 	public boolean contains(AaMutation mut){
 		return contains(mut.getId().getMutationPosition());
+	}
+	public Set<String> getAllMutations() {
+		Set<String> mutations = new TreeSet<String>();
+		for(int pos = getStart(); pos <= getStop(); pos++){
+			mutations.add(getProtein().getAbbreviation()+pos+"A");
+			mutations.add(getProtein().getAbbreviation()+pos+"C");
+			mutations.add(getProtein().getAbbreviation()+pos+"D");
+			mutations.add(getProtein().getAbbreviation()+pos+"E");
+			mutations.add(getProtein().getAbbreviation()+pos+"F");
+			mutations.add(getProtein().getAbbreviation()+pos+"G");
+			mutations.add(getProtein().getAbbreviation()+pos+"H");
+			mutations.add(getProtein().getAbbreviation()+pos+"I");
+			mutations.add(getProtein().getAbbreviation()+pos+"K");
+			mutations.add(getProtein().getAbbreviation()+pos+"L");
+			mutations.add(getProtein().getAbbreviation()+pos+"M");
+			mutations.add(getProtein().getAbbreviation()+pos+"N");
+			mutations.add(getProtein().getAbbreviation()+pos+"P");
+			mutations.add(getProtein().getAbbreviation()+pos+"Q");
+			mutations.add(getProtein().getAbbreviation()+pos+"R");
+			mutations.add(getProtein().getAbbreviation()+pos+"S");
+			mutations.add(getProtein().getAbbreviation()+pos+"T");
+			mutations.add(getProtein().getAbbreviation()+pos+"V");
+			mutations.add(getProtein().getAbbreviation()+pos+"W");
+			mutations.add(getProtein().getAbbreviation()+pos+"Y");
+			mutations.add(getProtein().getAbbreviation()+pos+"ins");
+			mutations.add(getProtein().getAbbreviation()+pos+"del");
+		}
+		return mutations;
 	}	
 }
