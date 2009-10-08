@@ -26,7 +26,6 @@ public class GenomeAnnotator {
 			System.out.println("Annotate organism orf protein position [aminoacid]");
 			System.exit(0);
 		}
-		
 		String organism = args[0];
 		String orf = args[1];
 		String protein = args[2];
