@@ -265,7 +265,7 @@ public class MutationTable extends Table {
 	}
 
 	public void removeMutationsOutsideRange(int start,int stop){
-		Pattern p = Pattern.compile("[A-Za-z]+([0-9]+)([A-Z]*|del|ins)");
+		Pattern p = Pattern.compile("(RT | PR)?[A-Z]([0-9]+)([A-Z*]+|del|ins)");
 		Matcher m = null;
 		ArrayList<Integer> toBeDeleted = new ArrayList<Integer>();
 		ArrayList<String> header = getRow(0);

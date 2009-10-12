@@ -6,6 +6,7 @@ import java.util.Set;
 
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ViralIsolate;
 
 public class PatientUtils {
@@ -30,4 +31,13 @@ public class PatientUtils {
 		return seqs;
 	}
 
+	public static Set<NtSequence> getSequencesForProtein(Patient p, Therapy t, int days, String protein) {
+		Set<NtSequence> seqs = new HashSet<NtSequence>();
+		for (NtSequence seq : PatientUtils.getSequences(p, t.getStartDate(),days)) {
+			if (NtSequenceUtils.coversRegion(seq, "HIV-1", protein)) {
+				seqs.add(seq);
+			}
+		}
+		return seqs;
+	}
 }

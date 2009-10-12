@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.hivgensim.bayesian.BCourseNetwork.Variable;
@@ -20,14 +21,13 @@ import net.sf.hivgensim.bayesian.BCourseNetwork.Variable;
  * @author kdforc0
  */
 public class ConsensusNetwork {
-	ArrayList networks;
+	List<BCourseNetwork> networks;
 
-	class ArcFeature implements Comparable {
+	class ArcFeature implements Comparable<ArcFeature> {
 		int support;
 		int head, tail;
 
-		public int compareTo(Object o) {
-			ArcFeature other = (ArcFeature) o;
+		public int compareTo(ArcFeature other) {
 			return other.support - support;
 		}
 
@@ -38,7 +38,7 @@ public class ConsensusNetwork {
 		}
 	}
 	
-	Map features;
+	Map<String, ArcFeature> features;
 
 	public static void main(String[] args) throws IOException {
 		/*
@@ -46,13 +46,13 @@ public class ConsensusNetwork {
 		 * This is a valid Bayesian network with arcs that occur in most
 		 * bootstrap replicates, with a given threshold.
 		 */
-        if (args.length == 0) {
+        if (args.length < 6) {
             System.err.println("Usage: "
                 + "consensusnetwork min-bootstrap consensus.str consensus.bootstraps data.vd data.1.str data.2.str ...");
             System.exit(1);
         }
 
-        ArrayList networks = new ArrayList();
+        ArrayList<BCourseNetwork> networks = new ArrayList<BCourseNetwork>();
 		for (int i = 4; i < args.length; ++i) {
 			InputStream strFile
 				= new BufferedInputStream(new FileInputStream(args[i]));
@@ -66,7 +66,7 @@ public class ConsensusNetwork {
         System.err.println("Considering: " + replicates + " replicates");
         
 		ConsensusNetwork n = new ConsensusNetwork(networks);
-		BCourseNetwork result = n.computeConsensus((int)(Double.valueOf(args[0]) * (double)replicates));
+		BCourseNetwork result = n.computeConsensus((int)(Double.valueOf(args[0]) * replicates));
 
 		result.save(new PrintStream(args[1]));
         
@@ -103,14 +103,14 @@ public class ConsensusNetwork {
 		 */
 		createFeatureMap();
 
-		ArrayList f = new ArrayList(features.values());
+		List<ArcFeature> f = new ArrayList<ArcFeature>(features.values());
 		Collections.sort(f);
 
 		BCourseNetwork result
-			= new BCourseNetwork(((BCourseNetwork) networks.get(0)).variables);
+			= new BCourseNetwork(networks.get(0).variables);
 
 		for (int i = 0; i < f.size(); ++i) {
-			ArcFeature a = (ArcFeature) f.get(i);
+			ArcFeature a = f.get(i);
 			if (a.support < minimumSupport)
 				break;
 			
@@ -123,21 +123,21 @@ public class ConsensusNetwork {
 	}
 
 	private void createFeatureMap() {
-		features = new HashMap();
+		features = new HashMap<String, ArcFeature>();
 		
 		for (int i = 0; i < networks.size(); ++i) {
-			BCourseNetwork n = (BCourseNetwork) networks.get(i);
+			BCourseNetwork n = networks.get(i);
 			
 			for (int j = 0; j < n.variables.size(); ++j) {
-				Variable v = (Variable) n.variables.get(j);
+				Variable v = n.variables.get(j);
 				
 				for (int k = 0; k < v.parents.size(); ++k) {
-					int p = ((Integer) v.parents.get(k)).intValue();
+					int p = v.parents.get(k);
 					String s = "" + p + " " + j;
 
 					ArcFeature f;
 					if (features.containsKey(s)) {
-						f = (ArcFeature) features.get(s);
+						f = features.get(s);
 					} else {
 						f = new ArcFeature(p, j, 0);
 						features.put(s, f);
@@ -149,7 +149,7 @@ public class ConsensusNetwork {
 		}
 	}
 
-	public ConsensusNetwork(ArrayList networks) {
+	public ConsensusNetwork(List<BCourseNetwork> networks) {
 		this.networks = networks;
 	}
 }

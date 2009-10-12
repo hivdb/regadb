@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kdforc0
@@ -17,16 +18,16 @@ public class BCourseNetwork {
 	class Variable {
 		String name;
 		String[] values;
-		ArrayList parents;
+		List<Integer> parents;
 
 		public Variable(String name) {
 			this.name = name;
 			this.values = null;
-			this.parents = new ArrayList();
+			this.parents = new ArrayList<Integer>();
 		}
 
 		public void setParents(int[] parents) {
-			this.parents = new ArrayList();
+			this.parents = new ArrayList<Integer>();
 			for (int i = 0; i < parents.length; ++i)
 				this.parents.add(new Integer(parents[i]));
 		}
@@ -44,15 +45,15 @@ public class BCourseNetwork {
 		}
 	}
 	
-	ArrayList variables;
+	ArrayList<Variable> variables;
 	
 	BCourseNetwork(InputStream strFile, InputStream vdFile) throws IOException {
 		readVariables(vdFile);
 		readStructure(strFile);
 	}
 
-	BCourseNetwork(ArrayList variables) {
-		this.variables = new ArrayList();
+	BCourseNetwork(List<Variable> variables) {
+		this.variables = new ArrayList<Variable>();
 		for (int i = 0; i < variables.size(); ++i) {
 			Variable v = (Variable) variables.get(i);
 			this.variables.add(new Variable(v.name));
@@ -75,13 +76,13 @@ public class BCourseNetwork {
 				parents[i] = Integer.parseInt(l[2+i]);
 			}
 			
-			((Variable) variables.get(v)).setParents(parents);
+			variables.get(v).setParents(parents);
 			++v;
 		}
 	}
 
 	private void readVariables(InputStream vdFile) throws IOException {
-		variables = new ArrayList();
+		variables = new ArrayList<Variable>();
 		LineNumberReader r = new LineNumberReader(new InputStreamReader(vdFile));
 		
 		String line = null;
