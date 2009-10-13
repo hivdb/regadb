@@ -87,7 +87,9 @@ public abstract class AbstractSelection {
 					}else{
 						ps.print(",");
 					}
-					ps.print(parts[i]);
+					if(i < parts.length){
+						ps.print(parts[i]);
+					}
 				}				
 			}
 			ps.println();
