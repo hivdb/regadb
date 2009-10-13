@@ -32,9 +32,8 @@ public class FisherTest extends AbstractSelection {
 				addFisherTestCommand(mutString);
 			}
 		}	
-		rSession.addCommandln("p <- p.adjust(p, method=\"fdr\")");
-		rSession.addCommandln("write(infoNames,file=\""+getSelectionTable().getAbsolutePath()+"\",append=F,sep=\",\")");
-		rSession.addCommandln("write.table(names(p)[p < "+pValue+"],\""+getSelectionTable().getAbsolutePath()+"\",sep=\",\",quote=F,col.names=F,row.names=F,append=T)");
+		rSession.addCommandln("p <- p.adjust(p, method=\"fdr\")");		
+		rSession.addCommandln("write.table(data[c(infoNames,names(p)[p < "+pValue+"])],\""+getSelectionTable().getAbsolutePath()+"\",sep=\",\",quote=F,col.names=T,row.names=F,append=F)");
 		try{
 			rSession.execute();
 		} catch(IOException e) {
