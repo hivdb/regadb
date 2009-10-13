@@ -48,7 +48,12 @@ public class MutPos {
 				String region = m.group(1);
 				String position = m.group(2);
 				allPositions.add(region+position);
-				prevalences.put(colName, histogram.get(i).get("y"));
+				Integer prevalence = histogram.get(i).get("y");
+				if(prevalence == null){
+					prevalences.put(colName, 0);
+				}else{
+					prevalences.put(colName, prevalence);
+				}
 			}
 		}
 
