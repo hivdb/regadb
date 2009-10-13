@@ -31,6 +31,7 @@ import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.DelimitedReader;
+import net.sf.regadb.io.db.util.DrugMap;
 import net.sf.regadb.io.db.util.FastaFile;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Parser;
@@ -243,9 +244,7 @@ public class ParseAll extends Parser{
 			DelimitedReader dr = new DelimitedReader(drugsFile,separator,delimiter);
 			Set<String> noMap = new HashSet<String>();
 
-			Map<String,DrugGeneric> gmap = new HashMap<String, DrugGeneric>();
-			for(DrugGeneric dg : Utils.prepareRegaDrugGenerics())
-				gmap.put(dg.getGenericId(), dg);
+			DrugMap gmap = new DrugMap();
 			
 			Map<String,DrugCommercial> cmap = new HashMap<String, DrugCommercial>();
 			for(DrugCommercial dc : Utils.prepareRegaDrugCommercials())
@@ -285,26 +284,10 @@ public class ParseAll extends Parser{
 			dr.close();
 			
 			for(Drugs ds : therapyMap.values())
-				toBoosted(gmap,ds.dgs);
+				gmap.toBoosted(ds.dgs);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	private void toBoosted(Map<String, DrugGeneric> gmap, Set<DrugGeneric> dgs){
-		for(DrugGeneric rtv : dgs){
-			if(rtv.getGenericId().equals("RTV")){
-				for(DrugGeneric pi : dgs){
-					DrugGeneric bpi = gmap.get(pi.getGenericId()+"/r");
-					if(bpi != null){
-						dgs.remove(pi);
-						dgs.remove(rtv);
-						dgs.add(bpi);
-						return;
-					}
-				}
-			}
 		}
 	}
 	
