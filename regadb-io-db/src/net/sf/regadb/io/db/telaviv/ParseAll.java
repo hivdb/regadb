@@ -14,17 +14,25 @@ import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ParseAll {
     
     public static void main(String[] args){
     	Arguments as = new Arguments();
+    	ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
     	PositionalArgument importDir = as.addPositionalArgument("import-dir", true);
     	PositionalArgument mappingDir = as.addPositionalArgument("mapping-dir", true);
     	PositionalArgument outputDir = as.addPositionalArgument("output-dir", true);
     	
     	if(!as.handle(args))
     		return;
+    	
+    	if(confDir.isSet())
+    		RegaDBSettings.createInstance(confDir.getValue());
+    	else
+    		RegaDBSettings.createInstance();
     	
         ParseAll pa = new ParseAll();
         pa.run(importDir.getValue(),
@@ -42,7 +50,7 @@ public class ParseAll {
         
         List<DateFormat> df = new ArrayList<DateFormat>();
         df.add(new SimpleDateFormat("MM/dd/yy HH:mm:ss"));
-        df.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0"));
+        df.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         
         ParsePatients pPatients = new ParsePatients(logger,df);
         ParseDrugs pDrugs = new ParseDrugs(logger);
