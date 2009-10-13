@@ -224,7 +224,6 @@ public class ConsensusCalculator implements IQuery<NtSequence> {
 		}
 	}
 
-
 	public void close() {		
 		printConsensusSequence(System.out);
 		printConsensusSequencePerSubtype(System.out);

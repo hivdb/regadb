@@ -20,6 +20,10 @@ public class GenomeAnnotator {
 		}
 		return Annotation.MUTATION;
 	}
+	
+	public Annotation annotate(String genome, String orf, String protein, int pos, char AA) {
+		return annotate(genome, orf, protein, pos, String.valueOf(AA));
+	}
 
 	public static void main(String[] args) {
 		if (args.length != 4 && args.length != 5) {
