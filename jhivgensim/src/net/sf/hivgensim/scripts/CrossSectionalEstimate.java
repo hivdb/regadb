@@ -32,6 +32,7 @@ import net.sf.hivgensim.treecluster.TreeParser;
 import net.sf.hivgensim.treecluster.TreeWeights;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.tools.MutPos;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class CrossSectionalEstimate {
 
@@ -89,7 +90,7 @@ public class CrossSectionalEstimate {
 	}
 
 	private void initializeDatasource(){
-		query = new FromSnapshot(new File("/home/gbehey0/snapshot"), null);
+		query = new FromSnapshot(new File("/home/gbehey0/snapshot"),null);
 	}
 
 	private void initializeWindows(String protein){
@@ -113,11 +114,16 @@ public class CrossSectionalEstimate {
 	}
 
 	public void start() throws IOException{
-		query();
-		phylo();
+		System.err.println("query");
+//		query();
+//		System.err.println("phylo");
+//		phylo();
+		System.err.println("processing mutation table");
 		variableSelection();
-		network();
-		estimate();
+//		System.err.println("learning network");
+//		network();
+//		System.err.println("estimating landscape");
+//		estimate();
 	}
 
 	private void query() throws FileNotFoundException {
@@ -136,6 +142,7 @@ public class CrossSectionalEstimate {
 		ArrayList<String> pairs = new ArrayList<String>();
 		pairs.addAll(t.getColumn(2)); //TODO change to find(header)
 		pairs.addAll(t.getColumn(3)); //TODO change to find(header)
+		t = null;
 		return pairs;
 	}
 
@@ -186,15 +193,16 @@ public class CrossSectionalEstimate {
 		mt.removeInsertions();
 		mt.removeDeletions();
 		mt.removeUnknownMutations();
-		mt.removeMutationsOutsideRange(region.getStart(), region.getStop());//TODO needed?
+		mt.removeMutationsOutsideRange(1,220);
 		//TODO remove certain mutations: known/transmission/... ?
 		mt.exportAsCsv(new FileOutputStream(file(mt_clean)));
 		FisherTest ft = new FisherTest(file(mt_clean), file(mt_fisher), drugs[0], 0.05);
 		ft.select();
 		mt = new MutationTable(name(mt_fisher));
-		mt.deleteRowsWithValue(mt.findColumn(drugs[0]), "y");
+		int col = mt.findColumn(drugs[0]);
+		mt.deleteRowsWithValue(col, "n");
 		mt.deleteColumns(drugs[0]);
-		mt.exportAsCsv(new FileOutputStream(name(mt_treated)));
+		mt.exportAsCsv(new FileOutputStream(name(mt_treated)));		
 		ArrayList<String> mutations = MutPos.execute(new String[]{name(mt_treated),name(this.mutations),name(positions),name(wildtypes)});
 		mt.selectColumns(mutations);
 		mt.exportAsCsv(new FileOutputStream(name(mt_mix)),',', false);
@@ -228,11 +236,10 @@ public class CrossSectionalEstimate {
 		estimate.run(name(mt_final),name(naive),name(idt),name(str),name(vd),name(wildtypes),name(doublepositions),name(mutagenesis),name(weights),name(landscape),name(diag));
 	}
 	
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws IOException {
+		RegaDBSettings.createInstance();
+		CrossSectionalEstimate cse = new CrossSectionalEstimate(new File("/home/gbehey0/azt/"), new String[]{"NNRTI","NRTI"}, new String[]{"AZT"}, "RT");
+		cse.start();
 	}
-
-
-
 }
 

@@ -10,7 +10,6 @@ import java.util.Set;
 
 import net.sf.hivgensim.preprocessing.MutationTable;
 import net.sf.hivgensim.preprocessing.SelectionWindow;
-import net.sf.hivgensim.preprocessing.Utils;
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.regadb.db.NtSequence;
 
@@ -51,7 +50,8 @@ public class SequenceOutput implements IQuery<NtSequence> {
 	}
 
 	public void process(NtSequence input) {
-		String aligned = Utils.getAlignedNtSequenceString(input,sw);
+//		String aligned = Utils.getAlignedNtSequenceString(input,sw);
+		String aligned = input.getNucleotides();
 		if(treated){
 			mt.addSequence(input,new SelectionWindow[]{sw},info);
 		}else{
