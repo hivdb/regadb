@@ -97,8 +97,7 @@ public class GetViralIsolates {
             e.printStackTrace();
         }
 
-        
-        System.err.println(sampleIds.size());
+        System.err.println("Imported "+ sampleIds.size() +" sample(s).");
     }
 
     public void handleIsolate(String sampleId, String nucleotides) {

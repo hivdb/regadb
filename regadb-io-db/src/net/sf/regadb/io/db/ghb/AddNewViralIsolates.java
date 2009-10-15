@@ -1,6 +1,5 @@
 package net.sf.regadb.io.db.ghb;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
@@ -53,7 +52,8 @@ public class AddNewViralIsolates extends GetViralIsolates{
 	
 	@Override
 	protected boolean findInTestResults(String sampleId, String nucleotides) {
-		Query q = t.createQuery("select tr.patient.id, tr.testDate from TestResult tr where tr.sampleId = :sampleId group by tr.patient.id");
+		Query q = t.createQuery("select tr.patient.id, tr.testDate from TestResult tr where tr.sampleId = :sampleId order by tr.testDate asc");
+		q.setMaxResults(1);
 		q.setParameter("sampleId", sampleId);
 		if(q.list().size() > 0){
 			Object[] r = (Object[])q.list().iterator().next();
