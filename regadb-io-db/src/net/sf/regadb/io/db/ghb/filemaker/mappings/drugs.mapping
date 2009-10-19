@@ -1,7 +1,20 @@
-"ghb_name","correct_name"
-"TMC 114","darunavir"
-"TMC114                 2x600","darunavir"
-"TMC114","darunavir" 
-"TMC114                1x800","darunavir"
-"TMC114                 1x800","darunavir"
-"TMC125","etravirine"
+ABT-378/r,lopinavir/r
+Atazanavir200,atazanavir
+BMS 232 632,atazanavir
+BMS 232632,atazanavir
+Meltrex,Kaletra (LPV+RTV)
+T 20,enfuvirtide
+T 20 subcutaan,enfuvirtide
+TMC 278/Stocrin,Stocrin (EFV)
+TMC 114,darunavir
+TMC114,darunavir
+TMC114                 1x800,darunavir
+TMC114                 2x600,darunavir
+TMC114                1x800,darunavir
+TMC125,etravirine
+TMC278/placebo,rilpivirine
+Ziagen/Epivir,
+meltrex,Kaletra (LPV+RTV)
+ziagen/epivir FDC,
+Ziagen                      1x600,Ziagen 600 mg (ABC)
+Norvir                    2x200,Norvir 200 mg (RTV)

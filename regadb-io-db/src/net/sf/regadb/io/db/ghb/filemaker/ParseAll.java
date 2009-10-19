@@ -2,8 +2,8 @@ package net.sf.regadb.io.db.ghb.filemaker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -16,6 +16,7 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.db.ghb.GetViralIsolates;
 import net.sf.regadb.io.db.ghb.lis.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.db.util.DrugsTimeLine;
 import net.sf.regadb.io.db.util.mapping.OfflineObjectStore;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -132,15 +133,11 @@ public class ParseAll {
 	        parseContacts.run(patientIdPatients, contactenFile);
 	        
 	        ParseTherapy parseTherapy = new ParseTherapy();
-	        parseTherapy.parseTherapy(medicatieFile,filemakerMappingPath);
-	        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
-	            parseTherapy.mergeTherapies(e.getValue());
-	            parseTherapy.setStopDates(e.getValue());
-	        }
-	        for(Entry<String, List<Therapy>> e : parseTherapy.therapies.entrySet()) {
+	        parseTherapy.parse(new File(medicatieFile),new File(filemakerMappingPath));
+	        for(Map.Entry<String, DrugsTimeLine> e : parseTherapy.getDrugsTimeLines().entrySet()) {
 	            Patient p = patientIdPatients.get(e.getKey());
 	            if(p!=null) {
-	                for(Therapy t : e.getValue())
+	                for(Therapy t : e.getValue().getTherapies())
 	                    p.getTherapies().add(t);
 	            } else {
 	                System.err.println("invalid patient id: " + e.getKey());
@@ -152,6 +149,8 @@ public class ParseAll {
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (MapperParseException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
     }
