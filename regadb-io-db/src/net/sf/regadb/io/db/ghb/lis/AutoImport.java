@@ -141,15 +141,16 @@ public class AutoImport {
     	
     }
     
-    public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore) throws MapperParseException{
+    public AutoImport(File mappingFile, File nationMappingFile, ObjectStore objectStore, String datasetDescription) throws MapperParseException{
     	init(mappingFile, objectStore);
+    	this.datasetDescription = datasetDescription;
     }
 
-    public AutoImport(String user, String pass, File mappingFile, String dataset) throws WrongUidException, WrongPasswordException, DisabledUserException, MapperParseException {
+    public AutoImport(String user, String pass, File mappingFile, String datasetDescription) throws WrongUidException, WrongPasswordException, DisabledUserException, MapperParseException {
         Login login;
 		login = Login.authenticate(user, pass);
 		init(mappingFile, new DbObjectStore(login));
-		datasetDescription = dataset;
+		this.datasetDescription = datasetDescription;
     }
     
     private void init(File mappingFile, ObjectStore objectStore) throws MapperParseException{

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import jxl.read.biff.BiffException;
+
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
@@ -14,6 +16,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.db.ghb.GetViralIsolates;
+import net.sf.regadb.io.db.ghb.ImportKwsContacts;
 import net.sf.regadb.io.db.ghb.lis.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.DrugsTimeLine;
@@ -58,12 +61,18 @@ public class ParseAll {
         String contactenFile;
         String medicatieFile;
         String filemakerMappingPath;
+        String kwsContactenFile;
         String outputPath;
         
         Arguments as = new Arguments();
         ValueArgument confDir = as.addValueArgument("c", "configuration-dir", false);
         PositionalArgument importDir = as.addPositionalArgument("import-dir", true);
         PositionalArgument workspaceDir = as.addPositionalArgument("workspace-dir", true);
+        PositionalArgument datasetDescription = as.addPositionalArgument("dataset", false);
+        datasetDescription.setValue("KUL");
+        ValueArgument kwsContactenFileName = as.addValueArgument("t", "kws-contacten-filename", false);
+        kwsContactenFileName.setValue("Contacten_2008.xls");
+        
         if(!as.handle(args))
         	return;
         
@@ -76,6 +85,8 @@ public class ParseAll {
         String filemakerDir = importDir.getValue() + File.separatorChar + "filemaker" + File.separatorChar;
         String seqDir = importDir.getValue() + File.separatorChar + "sequences" + File.separatorChar;
         
+        kwsContactenFile			= importDir.getValue() + File.separatorChar + kwsContactenFileName.getValue();
+        	
         eadNrEmdNrFile              = filemakerDir + "eadnr_emdnr.MER";
         patientenFile               = filemakerDir + "patienten.MER";
         symptomenFile               = filemakerDir + "symptomen.MER";
@@ -111,7 +122,14 @@ public class ParseAll {
         createNonStandardObjects(oos);
         oos.setPatients(eadPatients);
         try{
-        	AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos);
+        	try {
+        		ImportKwsContacts ikc = new ImportKwsContacts(oos, datasetDescription.getValue());
+				ikc.run(new File(kwsContactenFile));
+			} catch (BiffException e1) {
+				e1.printStackTrace();
+			}
+        	
+        	AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos, datasetDescription.getValue());
 			ai.run(new File(lisDir));
         
 	        GetViralIsolates gvi = new GetViralIsolates();
