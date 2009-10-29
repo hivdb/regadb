@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.ghb;
+package net.sf.regadb.io.db.ghb.merge;
 
 import java.util.Iterator;
 import java.util.Set;
