@@ -27,6 +27,7 @@ Getting the changes form the first version:
 	ghb0509-ghb0901-all-therapy.diff
 	ghb0901 regadb_user regadb_password
 	ghb-new regadb_user regadb_password
+	-copy-all
 
 NAME: ghb-new-um-0901
 

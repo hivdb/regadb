@@ -10,8 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import net.sf.regadb.util.args.Argument;
 import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
 import net.sf.regadb.util.args.ValueArgument;
@@ -37,6 +40,8 @@ public class MergeTherapies {
 	private Map<Integer,Integer> motivationIiMap;
 	private Map<Integer,Integer> genericIiMap;
 	private Map<Integer,Integer> commercialIiMap;
+	
+	private Set<String> handledPatients = new HashSet<String>();
 
 	public static void main(String args[]) throws Exception{
 		Arguments as = new Arguments();
@@ -51,6 +56,8 @@ public class MergeTherapies {
 		PositionalArgument u2 = as.addPositionalArgument("user2", true);
 		PositionalArgument p2 = as.addPositionalArgument("pass2", true);
 		
+		Argument all = as.addArgument("copy-all", false);
+		
 		if(!as.handle(args))
 			return;
 		
@@ -61,7 +68,7 @@ public class MergeTherapies {
 		
 		MergeTherapies mt = new MergeTherapies(db1.getValue(), u1.getValue(), p1.getValue(),
 				db2.getValue(), u2.getValue(), p2.getValue());
-		mt.run(new File(diff.getValue()));
+		mt.run(new File(diff.getValue()), all.isSet());
 	}
 	
 	public MergeTherapies(String db1, String u1, String p1,
@@ -74,14 +81,15 @@ public class MergeTherapies {
         createIiIiMaps();
 	}
 	
-	public void run(File diffFile) throws IOException, SQLException{
+	public void run(File diffFile, boolean copyAll) throws IOException, SQLException{
 		BufferedReader diff = new BufferedReader(new FileReader(diffFile));
 		String line;
 		while((line = diff.readLine()) != null){
 			if(line.startsWith("<")){
 				//remove
 				String a[] = line.substring(2).split(",");
-				remove(fixPatientId(a[0]), a[1].trim(), a.length > 2 && a[2].trim().length() > 0 ? a[2].trim():null);
+				String patientId = fixPatientId(a[0]); 
+				remove(patientId, a[1].trim(), a.length > 2 && a[2].trim().length() > 0 ? a[2].trim():null);
 			}
 		}
 		diff.close();
@@ -92,7 +100,13 @@ public class MergeTherapies {
 				//add
 				String a[] = line.substring(2).split(",");
 				try {
-					copy(a[0].trim(), a[1].trim(), a.length > 2 && a[2].trim().length() > 0 ? a[2].trim():null);
+					String patientId = a[0].trim();
+					if(!copyAll)
+						copy(patientId, a[1].trim(), a.length > 2 && a[2].trim().length() > 0 ? a[2].trim():null);
+					else if(handledPatients.add(patientId)){
+						removeAll(patientId);
+						copyAll(patientId);
+					}
 				} catch (NoPatientException e) {
 					System.err.println(e.getMessage());
 				} catch (DuplicateTherapyException e) {
@@ -124,6 +138,33 @@ public class MergeTherapies {
 			s2.close();
 		}
 		s.close();
+	}
+	
+	private void removeAll(String patientId) throws SQLException{
+		int patientIi = getPatientIi(db2, patientId);
+		if(patientIi != -1){
+			Statement s = db2.createStatement();
+			String subquery = "(select therapy_ii from regadbschema.therapy where patient_ii = "+ patientIi +")";
+			s.executeUpdate("delete from regadbschema.therapy_commercial where therapy_ii in "+ subquery);
+			s.executeUpdate("delete from regadbschema.therapy_generic where therapy_ii in "+ subquery);
+			s.executeUpdate("delete from regadbschema.therapy where therapy_ii in "+ subquery);
+			s.close();
+		}
+	}
+	
+	private void copyAll(String patientId) throws SQLException{
+		int patientIi1 = getPatientIi(db1, patientId);
+		int patientIi2 = getPatientIi(db2, patientId);
+		
+		if(patientIi1 != -1 && patientIi2 != -1){
+			Statement s = db1.createStatement();
+			ResultSet rs = s.executeQuery("select therapy_ii from regadbschema.therapy where patient_ii = "+ patientIi1);
+			while(rs.next()){
+				int therapyIi1 = rs.getInt("therapy_ii");
+				copyTherapy(therapyIi1, patientIi2);
+			}
+			s.close();
+		}
 	}
 	
 	private void copy(String patientId, String startDate, String stopDate) throws SQLException, NoPatientException, DuplicateTherapyException{
