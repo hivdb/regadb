@@ -195,7 +195,7 @@ public class GetViralIsolates {
     protected boolean findInTestResults(String sampleId, String nucleotides) {
     	for(Patient p : getPatients()) {
             for(TestResult res : p.getTestResults()) {
-                if(res.getSampleId().equals(sampleId)) {
+                if(res.getSampleId() != null && res.getSampleId().equals(sampleId)) {
             		ViralIsolate vi = createViralIsolate(res.getSampleId(), res.getTestDate(), nucleotides);
                     p.addViralIsolate(vi);
                     return true;
