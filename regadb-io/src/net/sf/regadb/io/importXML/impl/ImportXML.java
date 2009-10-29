@@ -29,7 +29,6 @@ import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.importXML.ImportHandler;
-import net.sf.regadb.io.importXML.ImportFromXMLBase.Keep;
 import net.sf.regadb.io.importXML.ImportFromXMLBase.SyncMode;
 
 import org.xml.sax.InputSource;
@@ -51,11 +50,24 @@ public class ImportXML {
     	this(Login.authenticate(user, password));
     }
     
-    public void setKeepMap(Map<String,Keep> keepMap){
-    	instance.setKeepMap(keepMap);
+    public Map<String,Boolean> getDoAddMap(){
+    	return instance.getDoAddMap();
     }
-    public void setDefaultKeep(Keep keep){
-    	instance.setDefaultKeep(keep);
+    public Map<String,Boolean> getDoDeleteMap(){
+    	return instance.getDoDeleteMap();
+    }
+    public Map<String,Boolean> getDoUpdateMap(){
+    	return instance.getDoUpdateMap();
+    }
+
+    public void setDefaultDoAdd(boolean doit){
+    	instance.setDefaultDoAdd(doit);
+    }
+    public void setDefaultDoDelete(boolean doit){
+    	instance.setDefaultDoDelete(doit);
+    }
+    public void setDefaultDoUpdate(boolean doit){
+    	instance.setDefaultDoUpdate(doit);
     }
     
     /**

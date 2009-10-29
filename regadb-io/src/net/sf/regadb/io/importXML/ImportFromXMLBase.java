@@ -35,7 +35,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class ImportFromXMLBase extends DefaultHandler{
-	public enum Keep{OLD, NEW, BOTH};
 	
     protected Patient patient = null;
     protected StringBuffer value = null;
@@ -51,11 +50,15 @@ public class ImportFromXMLBase extends DefaultHandler{
     private Map<String, Genome> genomes = null;
     private Map<String, Dataset> datasets = new HashMap<String, Dataset>();
     
-    private Map<String, Keep> keep = new HashMap<String, Keep>();
-    private Keep defaultKeep = Keep.NEW;
-    
     protected StringBuffer log = new StringBuffer();
     public enum SyncMode { Clean, CleanBase, Update, UpdateBase };
+    
+    private Map<String, Boolean> doAddMap = new HashMap<String, Boolean>();
+    private Map<String, Boolean> doDeleteMap = new HashMap<String, Boolean>();
+    private Map<String, Boolean> doUpdateMap = new HashMap<String, Boolean>();
+    private boolean defaultDoAdd = true;
+    private boolean defaultDoDelete = true;
+    private boolean defaultDoUpdate = true;
     
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -339,18 +342,38 @@ public class ImportFromXMLBase extends DefaultHandler{
         return genomes;
     }
     
-    public void setDefaultKeep(Keep keep){
-    	defaultKeep = keep;
+    public Map<String,Boolean> getDoAddMap(){
+    	return doAddMap;
     }
-    public Keep getDefaultKeep(){
-    	return defaultKeep;
+    public Map<String,Boolean> getDoDeleteMap(){
+    	return doDeleteMap;
+    }
+    public Map<String,Boolean> getDoUpdateMap(){
+    	return doUpdateMap;
     }
     
-    public void setKeepMap(Map<String, Keep> keep){
-    	this.keep = keep;
+    public void setDefaultDoAdd(boolean doAdd){
+    	defaultDoAdd = doAdd;
     }
-    public Keep getKeep(String className){
-    	Keep r = keep.get(className);
-    	return r == null ? getDefaultKeep() : r;
+    public void setDefaultDoDelete(boolean doDelete){
+    	defaultDoDelete = doDelete;
+    }
+    public void setDefaultDoUpdate(boolean doUpdate){
+    	defaultDoUpdate = doUpdate;
+    }
+    
+    public boolean doAdd(String className){
+    	Boolean doit = doAddMap.get(className);
+    	return doit == null ? defaultDoAdd : doit;
+    }
+    
+    public boolean doDelete(String className){
+    	Boolean doit = doDeleteMap.get(className);
+    	return doit == null ? defaultDoDelete : doit;
+    }
+    
+    public boolean doUpdate(String className){
+    	Boolean doit = doUpdateMap.get(className);
+    	return doit == null ? defaultDoUpdate : doit;
     }
 }
