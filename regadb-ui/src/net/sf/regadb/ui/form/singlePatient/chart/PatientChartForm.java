@@ -1,5 +1,8 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -56,9 +59,9 @@ public class PatientChartForm extends WGroupBox implements IForm
 		ds.setLegendEnabled(true);
 		chart.addSeries(ds);
 
-		ds = new WDataSeries(model.COLUMN_LV, SeriesType.PointSeries, Axis.YAxis);
-		ds.setMarker(MarkerType.CrossMarker);
-		chart.addSeries(ds);
+//		ds = new WDataSeries(model.COLUMN_LV, SeriesType.PointSeries, Axis.YAxis);
+//		ds.setMarker(MarkerType.CrossMarker);
+//		chart.addSeries(ds);
 
 		ds = new WDataSeries(model.COLUMN_CD, SeriesType.LineSeries, Axis.Y2Axis);
 		ds.setMarker(MarkerType.TriangleMarker);
@@ -185,36 +188,121 @@ public class PatientChartForm extends WGroupBox implements IForm
 		}
 		
 		private void init(Patient p){
-			TreeMap<Date,TestResult> vlMap = getMap(p, vlFilter);
-			TreeMap<Date,TestResult> cdMap = getMap(p, cdFilter);
-			
-			Iterator<Entry<Date, TestResult>> vli = vlMap.entrySet().iterator();
-			Iterator<Entry<Date, TestResult>> cdi = cdMap.entrySet().iterator();
-			Entry<Date, TestResult> vl;
-			Entry<Date, TestResult> cd;
-			
 			insertColumns(0, 4);
-			System.out.println("date,vl,limited-vl,cd4");
 			setHeaderData(COLUMN_DATE, Orientation.Horizontal, "Date");
 			setHeaderData(COLUMN_VL, Orientation.Horizontal, "Viral Load");
 			setHeaderData(COLUMN_LV, Orientation.Horizontal, "Limited Viral Load");
 			setHeaderData(COLUMN_CD, Orientation.Horizontal, "CD4");
+
+			manualInit();
 			
-			while(vli.hasNext()){
-				vl = vli.next();
-				cd = null;
-				while(cdi.hasNext() && (cd = cdi.next()).getKey().before(vl.getKey()))
-					insertRow(null, cd.getValue());
-				
-				insertRow(vl.getValue(), cd == null ? null : cd.getValue());
-			}
+//			TreeMap<Date,TestResult> vlMap = getMap(p, vlFilter);
+//			TreeMap<Date,TestResult> cdMap = getMap(p, cdFilter);
+//			
+//			Iterator<Entry<Date, TestResult>> vli = vlMap.entrySet().iterator();
+//			Iterator<Entry<Date, TestResult>> cdi = cdMap.entrySet().iterator();
+//			Entry<Date, TestResult> vl;
+//			Entry<Date, TestResult> cd;
+//			
+//			insertColumns(0, 4);
+//			System.out.println("date,vl,limited-vl,cd4");
+
+//			
+////			while(vli.hasNext()){
+////				vl = vli.next();
+////				cd = null;
+////				while(cdi.hasNext() && (cd = cdi.next()).getKey().before(vl.getKey()))
+////					insertRow(null, cd.getValue());
+////				
+////				insertRow(vl.getValue(), cd == null ? null : cd.getValue());
+////			}
+//			
+//			while(cdi.hasNext()){
+//				cd = cdi.next();
+//				insertRow(null, cd.getValue());
+//			}
+//			
+//			while(vli.hasNext()){
+//				vl = vli.next();
+//				insertRow(vl.getValue(), null);
+//			}
 			
-			while(cdi.hasNext()){
-				cd = cdi.next();
-				insertRow(null, cd.getValue());
+		}
+		
+		private void manualInit(){
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				insertRow(df.parse("2004-01-15"),null,96.0);
+				insertRow(df.parse("2004-01-21"),null,63.0);
+				insertRow(df.parse("2004-03-17"),null,64.0);
+				insertRow(df.parse("2004-04-28"),null,101.0);
+				insertRow(df.parse("2004-05-26"),null,94.0);
+				insertRow(df.parse("2004-06-23"),null,143.0);
+				insertRow(df.parse("2004-07-07"),null,153.0);
+				insertRow(df.parse("2004-09-08"),null,235.0);
+				insertRow(df.parse("2004-11-10"),null,255.0);
+				insertRow(df.parse("2005-02-09"),null,136.0);
+				insertRow(df.parse("2005-03-09"),null,277.0);
+				insertRow(df.parse("2005-04-06"),null,292.0);
+				insertRow(df.parse("2005-06-20"),null,252.0);
+				insertRow(df.parse("2005-08-31"),null,288.0);
+				insertRow(df.parse("2005-10-26"),null,184.0);
+				insertRow(df.parse("2006-01-25"),null,248.0);
+				insertRow(df.parse("2006-04-26"),null,175.0);
+				insertRow(df.parse("2006-07-05"),null,198.0);
+				insertRow(df.parse("2006-10-11"),null,263.0);
+				insertRow(df.parse("2007-01-11"),null,227.0);
+				insertRow(df.parse("2007-04-26"),null,165.0);
+				insertRow(df.parse("2007-08-27"),null,209.0);
+				insertRow(df.parse("2007-10-27"),null,123.0);
+				insertRow(df.parse("2007-12-03"),null,121.0);
+				insertRow(df.parse("2008-03-03"),null,108.0);
+				insertRow(df.parse("2008-06-04"),null,115.0);
+				insertRow(df.parse("2008-08-11"),null,90.0);
+				insertRow(df.parse("2008-11-20"),null,50.0);
+				insertRow(df.parse("2009-02-26"),null,23.0);
+				insertRow(df.parse("2004-01-15"),74.0,null);
+				insertRow(df.parse("2004-01-21"),105.0,null);
+				insertRow(df.parse("2004-03-17"),50.0,null);
+				insertRow(df.parse("2004-04-28"),50.0,null);
+				insertRow(df.parse("2004-05-26"),50.0,null);
+				insertRow(df.parse("2004-06-23"),50.0,null);
+				insertRow(df.parse("2004-09-08"),50.0,null);
+				insertRow(df.parse("2004-11-10"),50.0,null);
+				insertRow(df.parse("2005-02-09"),159.0,null);
+				insertRow(df.parse("2005-03-09"),50.0,null);
+				insertRow(df.parse("2005-04-06"),50.0,null);
+				insertRow(df.parse("2005-06-20"),56.0,null);
+				insertRow(df.parse("2005-08-31"),50.0,null);
+				insertRow(df.parse("2005-10-26"),50.0,null);
+				insertRow(df.parse("2006-01-25"),1.0,null);
+				insertRow(df.parse("2006-04-26"),1.0,null);
+				insertRow(df.parse("2006-07-05"),1.0,null);
+				insertRow(df.parse("2006-10-11"),1.0,null);
+				insertRow(df.parse("2007-01-11"),1.0,null);
+				insertRow(df.parse("2007-04-26"),1.0,null);
+				insertRow(df.parse("2007-08-27"),1.0,null);
+				insertRow(df.parse("2007-12-03"),1.0,null);
+				insertRow(df.parse("2008-03-03"),1.0,null);
+				insertRow(df.parse("2008-06-04"),1.0,null);
+				insertRow(df.parse("2008-08-06"),1.0,null);
+				insertRow(df.parse("2008-11-20"),1.0,null);
+				insertRow(df.parse("2009-02-26"),1.0,null);
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		}
 		
+		private void insertRow(Date date, Double vl, Double cd) {
+			int row = getRowCount();
+			insertRow(row);
+			setData(row,COLUMN_DATE,new WDate(date));
+			if(vl != null)
+				setData(row,COLUMN_VL,vl);
+			if(cd != null)
+				setData(row,COLUMN_CD,cd);
+		}
+
 		private void insertRow(TestResult vl, TestResult cd){
 			int row = getRowCount();
 			LimitedValue lv = vl == null ? null : vlFilter.getValue(vl);
@@ -226,9 +314,12 @@ public class PatientChartForm extends WGroupBox implements IForm
 			
 			insertRow(row);
 			setData(row, COLUMN_DATE, new WDate(date));
-			setData(row, COLUMN_VL, vlv);
-			setData(row, COLUMN_LV, lvv);
-			setData(row, COLUMN_CD, cdv);
+			if(vlv != null)
+				setData(row, COLUMN_VL, vlv);
+//			if(lvv != null)
+//				setData(row, COLUMN_LV, lvv);
+			if(cdv != null)
+				setData(row, COLUMN_CD, cdv);
 			
 			System.out.println(date +","+ vlv +","+ lvv +","+ cdv);
 		}
