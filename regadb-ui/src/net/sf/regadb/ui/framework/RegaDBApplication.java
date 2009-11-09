@@ -130,7 +130,7 @@ public class RegaDBApplication extends WApplication
 	}
 	
 	@Override
-	public void finalize() {
+	protected void finalize() throws Throwable{
 		if (login_ != null)
 			login_.closeSession();
 
