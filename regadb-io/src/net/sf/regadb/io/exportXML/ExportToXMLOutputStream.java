@@ -13,7 +13,7 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-public abstract class ExportToXMLOutputStream<T> implements ExportPatient {
+public abstract class ExportToXMLOutputStream<T> implements ExportPatient<T> {
 	
 	private PrintStream out;
 	private ExportToXML xml = new ExportToXML();
@@ -87,15 +87,35 @@ public abstract class ExportToXMLOutputStream<T> implements ExportPatient {
 	}
 	
 	public static class ViralIsolateXMLOutputStream extends ExportToXMLOutputStream<ViralIsolate>{
+		private boolean exportResults;
 
         public ViralIsolateXMLOutputStream(OutputStream out) {
-            super(out, "viralIsolates");
+            this(out, false);
+        }
+        
+        public ViralIsolateXMLOutputStream(OutputStream out, boolean exportResults){
+        	super(out,"viralIsolates");
+        	setExportResults(exportResults);
         }
 
         @Override
         public Element toXML(ViralIsolate t) {
             Element el = new Element("viralIsolates-el");
             getExportToXml().writeViralIsolate(t, el);
+            
+            if(!doExportResults()){
+	            //remove calculated elements
+	            Element e = el.getChild("ViralIsolate");
+	            e.getChild("testResults").removeContent();
+	            
+	            e = e.getChild("ntSequences");
+	            for(Object o : e.getChildren("ntSequences-el")){
+	            	Element ee = ((Element)o).getChild("NtSequence");
+	            	ee.getChild("testResults").removeContent();
+	            	ee.getChild("aaSequences").removeContent();
+	            }
+            }
+            
             return el;
         }
 
@@ -108,5 +128,11 @@ public abstract class ExportToXMLOutputStream<T> implements ExportPatient {
             }
         }
 	    
+        public void setExportResults(boolean exportResults){
+        	this.exportResults = exportResults;
+        }
+        public boolean doExportResults(){
+        	return exportResults;
+        }
 	}
 }

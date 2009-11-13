@@ -13,6 +13,9 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.util.mapping.DbObjectStore;
 import net.sf.regadb.io.db.util.mapping.ObjectStore;
@@ -39,17 +42,32 @@ public class ImportKwsContacts {
 		else
 			RegaDBSettings.createInstance();
 		
-		ImportKwsContacts pkc = new ImportKwsContacts();
-		pkc.run(user.getValue(), pass.getValue(), dataset.getValue(), new File(file.getValue()));
+		try {
+			ImportKwsContacts pkc = new ImportKwsContacts(user.getValue(), pass.getValue(), dataset.getValue());
+			pkc.run(new File(file.getValue()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void run(String user, String pass, String datasetDescription, File contactFile) throws BiffException, IOException{
-        Login login;
+	private ObjectStore os;
+	private String datasetDescription;
+	
+	public ImportKwsContacts(String user, String pass, String datasetDescription) throws WrongUidException, WrongPasswordException, DisabledUserException{
+		Login login = Login.authenticate(user, pass);
+		os = new DbObjectStore(login);
+		
+		this.datasetDescription = datasetDescription;
+	}
+	
+	public ImportKwsContacts(ObjectStore os, String datasetDescription){
+		this.os = os;
+		this.datasetDescription = datasetDescription;
+	}
+	
+	public void run(File contactFile) throws BiffException, IOException{
         DateFormat df = new SimpleDateFormat("M/d/yy H:m");
 		try {
-			login = Login.authenticate(user, pass);
-			ObjectStore os = new DbObjectStore(login);
-			
 			Dataset dataset = os.getDataset(datasetDescription);
 			
 			Test consultation = os.getTest("Consultation", "Contact", null);
@@ -67,18 +85,16 @@ public class ImportKwsContacts {
 				String ctype = sh.getCell(2, i).getContents();
 				
 				Patient p = os.getPatient(dataset, eadnr);
-				if(p != null){
-					Date d = df.parse(datum);
-					TestResult tr = new TestResult(ctype.equals("consultatie") ? consultation : hospitalisation);
-					tr.setTestDate(d);
-					tr.setValue(d.getTime()+"");
-					
-					if(!duplicateTestResult(p, tr))
-						p.addTestResult(tr);
-				}
-				else{
-					System.err.println("Invalid patient id: "+ eadnr);
-				}
+				if(p == null)
+					p = os.createPatient(dataset, eadnr);
+				
+				Date d = df.parse(datum);
+				TestResult tr = new TestResult(ctype.equals("consultatie") ? consultation : hospitalisation);
+				tr.setTestDate(d);
+				tr.setValue(d.getTime()+"");
+				
+				if(!duplicateTestResult(p, tr))
+					p.addTestResult(tr);
 			}
 			os.commit();
 			

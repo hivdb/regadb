@@ -18,7 +18,7 @@ import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ParseSequences extends Parser{
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
     public static void main(String [] args) {
         ParseSequences ps = new ParseSequences();
@@ -49,9 +49,10 @@ public class ParseSequences extends Parser{
         
         int CProtease = Utils.findColumn(seqsTable, "PrSeq");
         int CReverseTranscriptase = Utils.findColumn(seqsTable, "RTSeq");
-        int CGP41 = Utils.findColumn(seqsTable, "gp41Seq");
-        int CGP120 = Utils.findColumn(seqsTable, "gp120Seq");
-        int CGAG = Utils.findColumn(seqsTable, "gagSeq");
+        int CIN = Utils.findColumn(seqsTable, "Integrase_Seq");
+        int CGP41 = Utils.findColumn(seqsTable, "gp41_Seq");
+        int CGP120 = Utils.findColumn(seqsTable, "gp120_Seq");
+        int CGAG = Utils.findColumn(seqsTable, "gag_Seq");
         
         //int CRTAA = Utils.findColumn(seqsTable, "RTAA");
 

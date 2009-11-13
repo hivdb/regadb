@@ -1,0 +1,37 @@
+NAME: ghb-new
+
+1) import the newly generated patients.xml in db ghb-new
+2) import the last patients.xml exported from GHB (the running RegaDB) in ghb-new,
+   but since therapies will be merged differently and test results/viral isolates
+   are not manualy updated, we have to exclude them from the synching:
+	patients.xml
+	admin
+	admin
+	-dont-add Therapy,TestResult,ViralIsolate
+	-dont-update Therapy,TestResult,ViralIsolate
+	-dont-delete Therapy,TestResult,ViralIsolate
+
+NAME: ghb-new-u
+
+Now we merge the therapies.
+
+Getting the changes form the first version:
+1) import the first xml in a new db: ghb0509
+2) import the xml exported from GHB in a new db: ghb0901
+3) make sure both are merged
+	if this query returns rows "select * from patient where not patient_id ~ '^[0-9]*$')"
+	then run mergepatients.sh on the db
+4) create the therapy diff between the two db's:
+	./generate-therapy-diff.sh -e ghb0509 ghb0901
+5) run net.sf.regadb.io.db.ghb.MergeTherapies with options:
+	ghb0509-ghb0901-all-therapy.diff
+	ghb0901 regadb_user regadb_password
+	ghb-new regadb_user regadb_password
+	-copy-all
+
+NAME: ghb-new-um-0901
+
+Repeat this for every period of manual changes between db updates:
+ghb0901-upgraded - last export
+
+NAME: ghb-new-um

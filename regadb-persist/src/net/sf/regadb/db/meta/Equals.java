@@ -150,10 +150,33 @@ public class Equals {
         return o1 == o2
         || (o1 != null && o2 != null && isSameDrugCommercial(o1.getId().getDrugCommercial(),o2.getId().getDrugCommercial()));
     }
+    
+    public static boolean isSameTherapyCommercialEx(TherapyCommercial o1, TherapyCommercial o2) {
+        return (o1 == null && o2 == null)
+        || (isSameTherapyCommercial(o1, o2)
+      		  && isSame(o1.getDayDosageUnits(),o2.getDayDosageUnits())
+      		  && isSame(o1.getFrequency(),o2.getFrequency())
+      		  && o1.isBlind() == o2.isBlind()
+      		  && o1.isPlacebo() == o2.isPlacebo());
+    }
 
     public static boolean isSameTherapyGeneric(TherapyGeneric o1, TherapyGeneric o2) {
         return o1 == o2
         || (o1 != null && o2 != null && isSameDrugGeneric(o1.getId().getDrugGeneric(),o2.getId().getDrugGeneric()));
+    }
+    
+    public static boolean isSameTherapyGenericEx(TherapyGeneric o1, TherapyGeneric o2) {
+        return (o1 == null && o2 == null)
+          || (isSameTherapyGeneric(o1, o2)
+        		  && isSame(o1.getDayDosageMg(),o2.getDayDosageMg())
+          		  && isSame(o1.getFrequency(),o2.getFrequency())
+          		  && o1.isBlind() == o2.isBlind()
+          		  && o1.isPlacebo() == o2.isPlacebo());
+    }
+    
+    private static boolean isSame(Object o1, Object o2){
+    	return o1 == o2
+    		|| (o1 != null && o2 != null && o1.equals(o2));
     }
 
     public static boolean isSameAaMutation(AaMutation o1, AaMutation o2) {

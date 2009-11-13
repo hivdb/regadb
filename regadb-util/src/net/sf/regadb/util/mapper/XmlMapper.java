@@ -56,12 +56,12 @@ public class XmlMapper {
                 else
                     logErr("Unknown element '"+ e.getName() +"' in mapping file: "+ getFile().getAbsolutePath());
             }
-
-            
         } catch (JDOMException e) {
             e.printStackTrace();
+            throw new MapperParseException("Invalid mapping xml file.");
         } catch (IOException e) {
             e.printStackTrace();
+            throw new MapperParseException("Invalid mapping xml file.");
         }
     }
     

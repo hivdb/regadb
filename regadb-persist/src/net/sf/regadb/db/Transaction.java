@@ -1694,4 +1694,11 @@ public class Transaction {
     	}
     	return false;
     }
+    
+    public boolean isUsedSampleId(String sampleId){
+    	Query q = createQuery("select vi.id from ViralIsolate vi where vi.sampleId = :sampleId");
+    	q.setParameter("sampleId", sampleId);
+    	q.setMaxResults(1);
+    	return q.list().size() > 0;
+    }
 }
