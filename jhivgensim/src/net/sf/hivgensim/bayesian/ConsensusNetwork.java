@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.hivgensim.bayesian.BCourseNetwork.Variable;
-
 /**
  * @author kdforc0
  */
@@ -74,12 +72,12 @@ public class ConsensusNetwork {
 	}
 
 	private void writeBootstraps(BCourseNetwork network, PrintStream stream, int replicates) {
-        for (int j = 0; j < network.variables.size(); ++j) {
-            Variable v = (Variable) network.variables.get(j);
+        for (int j = 0; j < network.getVariables().size(); ++j) {
+            Variable v = (Variable) network.getVariables().get(j);
             
             for (int k = 0; k < v.parents.size(); ++k) {
                 int p = ((Integer) v.parents.get(k)).intValue();
-                Variable vp = (Variable) network.variables.get(p);
+                Variable vp = (Variable) network.getVariables().get(p);
                 String s = "" + p + " " + j;
 
                 ArcFeature f = (ArcFeature) features.get(s);
@@ -96,8 +94,8 @@ public class ConsensusNetwork {
             }
         }
     }
-
-    private BCourseNetwork computeConsensus(int minimumSupport) {
+	
+    public BCourseNetwork computeConsensus(int minimumSupport) {
 		/*
 		 * first create features with support, and put them in a sorted list.
 		 */
@@ -107,7 +105,7 @@ public class ConsensusNetwork {
 		Collections.sort(f);
 
 		BCourseNetwork result
-			= new BCourseNetwork(networks.get(0).variables);
+			= new BCourseNetwork(networks.get(0).getVariables());
 
 		for (int i = 0; i < f.size(); ++i) {
 			ArcFeature a = f.get(i);
@@ -128,8 +126,8 @@ public class ConsensusNetwork {
 		for (int i = 0; i < networks.size(); ++i) {
 			BCourseNetwork n = networks.get(i);
 			
-			for (int j = 0; j < n.variables.size(); ++j) {
-				Variable v = n.variables.get(j);
+			for (int j = 0; j < n.getVariables().size(); ++j) {
+				Variable v = n.getVariables().get(j);
 				
 				for (int k = 0; k < v.parents.size(); ++k) {
 					int p = v.parents.get(k);

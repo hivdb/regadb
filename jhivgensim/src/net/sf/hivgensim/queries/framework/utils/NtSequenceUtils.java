@@ -13,6 +13,7 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class NtSequenceUtils {
 	
@@ -98,5 +99,13 @@ public class NtSequenceUtils {
 		return null;
 	}
 
+	public static String getSubtype(NtSequence input){
+		for(TestResult tr : input.getTestResults()){
+			if(StandardObjects.getSubtypeTestDescription().equals(tr.getTest().getDescription())){
+				return tr.getValue();
+			}
+		}
+		return "";
+	}
 
 }

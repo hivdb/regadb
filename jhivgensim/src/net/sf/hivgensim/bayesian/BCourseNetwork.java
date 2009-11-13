@@ -15,38 +15,13 @@ import java.util.List;
  * @author kdforc0
  */
 public class BCourseNetwork {
-	class Variable {
-		String name;
-		String[] values;
-		List<Integer> parents;
-
-		public Variable(String name) {
-			this.name = name;
-			this.values = null;
-			this.parents = new ArrayList<Integer>();
-		}
-
-		public void setParents(int[] parents) {
-			this.parents = new ArrayList<Integer>();
-			for (int i = 0; i < parents.length; ++i)
-				this.parents.add(new Integer(parents[i]));
-		}
-
-		public boolean addParent(int i) {
-			if (! parents.contains(new Integer(i))) {
-				parents.add(new Integer(i));
-				return true;
-			} else
-				return false;
-		}
-
-		public void removeParent(int i) {
-			parents.remove(new Integer(i));
-		}
+	
+	private ArrayList<Variable> variables;
+	
+	public ArrayList<Variable> getVariables() {
+		return variables;
 	}
-	
-	ArrayList<Variable> variables;
-	
+
 	BCourseNetwork(InputStream strFile, InputStream vdFile) throws IOException {
 		readVariables(vdFile);
 		readStructure(strFile);
@@ -110,11 +85,9 @@ public class BCourseNetwork {
 		}
 	}
 
-	private boolean findPath(int j, int i) {
-		Variable v = (Variable) variables.get(i);
-		for (int k = 0; k < v.parents.size(); ++k) {
-			int p = ((Integer) v.parents.get(k)).intValue();
-			if (p == j)
+	public boolean findPath(int j, int i) {
+		for (Integer p : variables.get(i).parents) {
+			if (p.equals(j))
 				return true;
 			if (findPath(j, p))
 				return true;

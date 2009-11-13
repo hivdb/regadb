@@ -117,8 +117,9 @@ public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 		return new ConsensusMutationList(list);
 	}
 	
-	public static void main(String[] args){
-		System.out.println(ALL);
+	public static void main(String[] args) throws IOException{
+//		System.out.println(ALL);
+		System.out.println(retrieveListFromURL("http://cpr.stanford.edu/cpr/components/hiv_prrt/lists/sdrm_2009"));
 	}
 
 	public Iterator<ConsensusMutation> iterator() {

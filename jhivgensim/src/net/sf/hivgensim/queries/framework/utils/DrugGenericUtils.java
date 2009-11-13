@@ -114,6 +114,28 @@ public class DrugGenericUtils {
 	static Map<String, Protein> drugProteinMap;
 
 	public static Protein getProtein(DrugGeneric drug){
+		return getProteinForDrugClass(drug.getDrugClass());
+	}
+	
+	public static String[] getDrugClassForProtein(Protein protein){
+		return getDrugClassForProtein(protein.getAbbreviation());
+	}
+
+	public static String[] getDrugClassForProtein(String abbreviation) {
+		if (abbreviation.equals("PRO") || abbreviation.equals("PR")) {
+			return new String[] {"PI"};
+		} else if (abbreviation.equals("RT")) {
+			return new String[] {"NRTI", "NNRTI"};
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	public static Protein getProteinForDrugClass(DrugClass drugClass){
+		return getProteinForDrugClass(drugClass.getClassName());
+	}
+
+	public static Protein getProteinForDrugClass(String className) {
 		if(drugProteinMap == null){
 			drugProteinMap = new HashMap<String, Protein>();
 			drugProteinMap.put("NRTI", Utils.getProtein("HIV-1", "pol", "RT"));
@@ -122,11 +144,12 @@ public class DrugGenericUtils {
 			drugProteinMap.put("INI", Utils.getProtein("HIV-1", "pol", "IN"));
 			drugProteinMap.put("EI", Utils.getProtein("HIV-1", "env", "gp41"));
 		}
-		Protein result = drugProteinMap.get(drug.getDrugClass().getClassId());
+		Protein result = drugProteinMap.get(className);
 		if(result == null){
-			throw new IllegalArgumentException("No protein found for given drugclass: "+drug.getDrugClass().getClassId());
+			throw new IllegalArgumentException("No protein found for given drugclass: "+className);
 		}
 		return result;
 	}
+	
 
 }
