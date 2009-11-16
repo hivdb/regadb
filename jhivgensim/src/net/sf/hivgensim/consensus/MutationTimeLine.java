@@ -1,6 +1,6 @@
 package net.sf.hivgensim.consensus;
 
-import java.io.File;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.SortedMap;
@@ -9,11 +9,12 @@ import java.util.Map.Entry;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
+import net.sf.hivgensim.queries.SampleDateFilter;
 import net.sf.hivgensim.queries.SequenceProteinFilter;
 import net.sf.hivgensim.queries.framework.IQuery;
-import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -27,6 +28,7 @@ public class MutationTimeLine implements IQuery<Patient> {
 	private int delta;
 	private GetDrugClassNaiveSequences preQuery;
 	private String reference;
+	private PrintStream out;
 
 	public MutationTimeLine(Date begin, Date end, int field, int delta, String drugClass) {
 		this.begin = begin;
@@ -35,15 +37,22 @@ public class MutationTimeLine implements IQuery<Patient> {
 		this.delta = delta;
 		Protein protein = DrugGenericUtils.getProteinForDrugClass(drugClass);
 		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
-				new SequenceProteinFilter(protein, new MutationTimeLineProcessor()));
+				new SequenceProteinFilter(protein, 
+						new SampleDateFilter(begin, end, 
+								new MutationTimeLineProcessor())));
 		this.reference = SelectionWindow.getWindow(
 				protein.getOpenReadingFrame().getGenome().getOrganismName()
 				, protein.getOpenReadingFrame().getName(), protein.getAbbreviation())
 				.getReferenceAaSequence();
+		this.out = System.out;
 	}
 
 	public MutationTimeLine(int field, int delta, String drugClass) {
 		this(defaultBegin(), new Date(), field, delta, drugClass);
+	}
+	
+	public void setOutput(PrintStream out){
+		this.out = out;
 	}
 
 	private static Date defaultBegin() {
@@ -72,12 +81,10 @@ public class MutationTimeLine implements IQuery<Patient> {
 		return delta;
 	}
 
-	@Override
 	public void close() {
 		preQuery.close();
 	}
 
-	@Override
 	public void process(Patient input) {
 		preQuery.process(input);
 	}
@@ -90,14 +97,12 @@ public class MutationTimeLine implements IQuery<Patient> {
 			initializeWindows();
 		}
 		
-		@Override
 		public void close() {
 			for (Entry<Date, ConsensusWindow> consensus : windows.entrySet()) {
-				System.out.println(consensus.getKey()+" : "+consensus.getValue().getConsensus());
+				out.println(consensus.getKey()+" : "+consensus.getValue().getConsensusFor("HIV-1 Subtype B"));
 			}
 		}
 
-		@Override
 		public void process(AaSequence input) {
 			Date sampleDate = input.getNtSequence().getViralIsolate().getSampleDate();
 			ConsensusWindow window = windows.get(windows.tailMap(sampleDate).firstKey());
@@ -115,13 +120,17 @@ public class MutationTimeLine implements IQuery<Patient> {
 				this.windows.put(currentThreshold, new ConsensusWindow());
 				calendar.add(deltaField, delta);
 				currentThreshold = calendar.getTime();
+				System.err.println(currentThreshold);
 			}
+			//calendar.add after windows.put -> need one more
+			this.windows.put(currentThreshold, new ConsensusWindow());
+			
 		}
 	}
 	
 	public static void main(String[] args) {
 		RegaDBSettings.createInstance();
-		new FromSnapshot(new File("/home/tm/labo/small_snapshot"), 
+		new FromDatabase("admin", "admin", 
 				new MutationTimeLine(Calendar.MONTH, 1, "PI")).run();
 	}
 	

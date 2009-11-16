@@ -64,6 +64,7 @@ public class ConsensusCalculator implements IQuery<AaSequence> {
 		emptyMap.put(new Character('W'), 0d);
 		emptyMap.put(new Character('Y'), 0d);
 		emptyMap.put(new Character('*'), 0d);
+		emptyMap.put(new Character('-'), 0d);
 	}
 	
 	public ConsensusCalculator(String refSequence){

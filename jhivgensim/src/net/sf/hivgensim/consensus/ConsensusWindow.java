@@ -18,4 +18,8 @@ public class ConsensusWindow {
 		return this.consensus.getConsensusSequence();
 	}
 	
+	public String getConsensusFor(String subtype){
+		return this.consensus.getConsensusSequenceFor(subtype);
+	}
+	
 }

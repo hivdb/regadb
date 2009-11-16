@@ -37,6 +37,7 @@ class Variable implements Comparable<Variable> {
 		public void removeParent(int i) {
 			parents.remove(new Integer(i));
 		}
+		
 		@Override
 		public boolean equals(Object o) {
 			if(o.getClass()!=this.getClass()){
@@ -45,7 +46,6 @@ class Variable implements Comparable<Variable> {
 			return this.name.equals(((Variable) o).name);
 		}
 
-		@Override
 		public int compareTo(Variable o) {
 			return this.name.compareTo(o.name);
 		}

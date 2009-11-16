@@ -34,6 +34,7 @@ public class ResistanceMutationsInNaive {
 			return aa;
 		}
 
+		@Override
 		public String toString(){
 			return ""+getPos()+getAa();
 		}
@@ -79,7 +80,6 @@ public class ResistanceMutationsInNaive {
 
 			new FromSnapshot(new File("admin"), new GetDrugClassNaiveAASequences(drugClasses, new IQuery<AaSequence>() {
 
-				@Override
 				public void process(AaSequence input) {
 
 					int seqMuts = 0;
@@ -95,7 +95,6 @@ public class ResistanceMutationsInNaive {
 					System.out.print(seqMuts);
 				}
 
-				@Override
 				public void close() {
 					System.out.println();
 				}
