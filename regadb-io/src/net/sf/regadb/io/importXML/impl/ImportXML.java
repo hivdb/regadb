@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -47,6 +48,26 @@ public class ImportXML {
     }
     public ImportXML(String user, String password) throws WrongUidException, WrongPasswordException, DisabledUserException {
     	this(Login.authenticate(user, password));
+    }
+    
+    public Map<String,Boolean> getDoAddMap(){
+    	return instance.getDoAddMap();
+    }
+    public Map<String,Boolean> getDoDeleteMap(){
+    	return instance.getDoDeleteMap();
+    }
+    public Map<String,Boolean> getDoUpdateMap(){
+    	return instance.getDoUpdateMap();
+    }
+
+    public void setDefaultDoAdd(boolean doit){
+    	instance.setDefaultDoAdd(doit);
+    }
+    public void setDefaultDoDelete(boolean doit){
+    	instance.setDefaultDoDelete(doit);
+    }
+    public void setDefaultDoUpdate(boolean doit){
+    	instance.setDefaultDoUpdate(doit);
     }
     
     /**
@@ -173,7 +194,7 @@ public class ImportXML {
                 out.println("sync error:");
                 out.println(instance.getLog());
                 e.printStackTrace();
-                throw new RuntimeException(e);
+//                throw new RuntimeException(e);
             }
 
             ++isolatesRead;

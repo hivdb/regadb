@@ -98,6 +98,10 @@ public class TimeLine<T> {
         }
     }
     
+    public List<Period> getPeriods(Date d){
+    	return timeline.get(d);
+    }
+    
     public boolean overlap(Period p1, Period p2){
         return overlap(p1,p2,true);
     }

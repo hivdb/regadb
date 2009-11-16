@@ -60,11 +60,6 @@ public class SelectClauseButtonPanel extends WButtonPanel {
 		});
 	}
 	
-	public void setEnabled(boolean editable) {
-		super.setEnabled(editable);
-		cancelButton.setEnabled(true);
-	}
-	
 	private void cancel() {
 		owner.getQueryApp().setQueryEditable(true);
 		owner.getParentNode().removeChildNode(owner);

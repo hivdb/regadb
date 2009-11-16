@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class ImportFromXMLBase extends DefaultHandler{
+	
     protected Patient patient = null;
     protected StringBuffer value = null;
     private DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -51,6 +52,13 @@ public class ImportFromXMLBase extends DefaultHandler{
     
     protected StringBuffer log = new StringBuffer();
     public enum SyncMode { Clean, CleanBase, Update, UpdateBase };
+    
+    private Map<String, Boolean> doAddMap = new HashMap<String, Boolean>();
+    private Map<String, Boolean> doDeleteMap = new HashMap<String, Boolean>();
+    private Map<String, Boolean> doUpdateMap = new HashMap<String, Boolean>();
+    private boolean defaultDoAdd = true;
+    private boolean defaultDoDelete = true;
+    private boolean defaultDoUpdate = true;
     
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
@@ -332,5 +340,40 @@ public class ImportFromXMLBase extends DefaultHandler{
 
     public Map<String, Genome> getGenomes() {
         return genomes;
+    }
+    
+    public Map<String,Boolean> getDoAddMap(){
+    	return doAddMap;
+    }
+    public Map<String,Boolean> getDoDeleteMap(){
+    	return doDeleteMap;
+    }
+    public Map<String,Boolean> getDoUpdateMap(){
+    	return doUpdateMap;
+    }
+    
+    public void setDefaultDoAdd(boolean doAdd){
+    	defaultDoAdd = doAdd;
+    }
+    public void setDefaultDoDelete(boolean doDelete){
+    	defaultDoDelete = doDelete;
+    }
+    public void setDefaultDoUpdate(boolean doUpdate){
+    	defaultDoUpdate = doUpdate;
+    }
+    
+    public boolean doAdd(String className){
+    	Boolean doit = doAddMap.get(className);
+    	return doit == null ? defaultDoAdd : doit;
+    }
+    
+    public boolean doDelete(String className){
+    	Boolean doit = doDeleteMap.get(className);
+    	return doit == null ? defaultDoDelete : doit;
+    }
+    
+    public boolean doUpdate(String className){
+    	Boolean doit = doUpdateMap.get(className);
+    	return doit == null ? defaultDoUpdate : doit;
     }
 }

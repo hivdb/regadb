@@ -21,7 +21,7 @@ public class EditButtonPanel extends WButtonPanel {
 	private QueryEditorTreeContainer owner;
 	private List<QueryTreeNode> selection;
 	private List<WhereClause> cursorClauses;
-	private boolean enabled;
+	
 	private boolean pasted;
 	
 	private WPushButton cutButton_;
@@ -39,7 +39,6 @@ public class EditButtonPanel extends WButtonPanel {
 		this.owner = owner;
 		cursorClauses = new ArrayList<WhereClause>();
 		selection = new ArrayList<QueryTreeNode>();
-		enabled = true;
 		init();
 	}
 	
@@ -195,7 +194,7 @@ public class EditButtonPanel extends WButtonPanel {
 	}
 	
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		super.setEnabled(enabled);
 		checkButtons(enabled);
 	}
 	
@@ -217,7 +216,7 @@ public class EditButtonPanel extends WButtonPanel {
 
 	public void update() {
 		selection = owner.getSelection();
-		checkButtons(enabled);
+		checkButtons(isEnabled());
 	}
 	
 	private boolean firstHasGrandParent() {

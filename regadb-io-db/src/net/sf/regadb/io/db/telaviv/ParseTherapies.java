@@ -20,12 +20,12 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.io.db.telaviv.ParseDrugs.Drug;
+import net.sf.regadb.io.db.util.DrugMap;
 import net.sf.regadb.io.db.util.Logging;
 import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.TimeLine;
 import net.sf.regadb.io.db.util.Utils;
-import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.frequency.Frequency;
 import net.sf.regadb.util.pair.Pair;
 
@@ -35,6 +35,7 @@ public class ParseTherapies extends Parser{
 //			return p.getPatientId() +":"+ t.getValue().getStartDate().getTime()+"";
 //		}
 //	};
+	private DrugMap drugMap = new DrugMap();
 
     public ParseTherapies(Logging logger, List<DateFormat> df){
         super(logger,df);
@@ -212,6 +213,8 @@ public class ParseTherapies extends Parser{
                 real.getTherapyGenerics().add(tg);
             }
         }
+        
+        drugMap.toBoosted(real);
     }
     
     private boolean therapyContains(Therapy t, DrugCommercial d){

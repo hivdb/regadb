@@ -4,6 +4,7 @@
 
 db="$1"
 tables="$2"
+df="%Y-%m-%d %H:%M:%S"
 
 if [ $# -eq 1 ];
 then
@@ -11,8 +12,8 @@ then
 	do
 		tablename=`echo $table | sed -e 's/---/ /g'`;
 		tablefile=`echo $table | sed -e 's/---/_/g'`;
-		mdb-export "$db" "$tablename"  -D '%Y-%m-%d %H:%M:%S' > "$tablefile.csv";
+		mdb-export "$db" "$tablename"  -D "$df" > "$tablefile.csv";
 	done;
 else
-	while read table; do mdb-export "$db" "$table" > "$table.csv"; done < "$tables";
+	while read table; do mdb-export -D "$df" "$db" "$table" > "$table.csv"; done < "$tables";
 fi
