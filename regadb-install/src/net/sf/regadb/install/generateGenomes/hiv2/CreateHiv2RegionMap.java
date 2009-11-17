@@ -13,20 +13,23 @@ import net.sf.regadb.install.generateGenomes.GenerateGenome.RegionValue;
 
 
 public class CreateHiv2RegionMap {
-	String benAlignedRefSeq = Hiv2.benAligned;
+	String annotatedAlignedRefSeq;
 	
-	public static void main(String [] args) {
-		CreateHiv2RegionMap chiv2rm = new CreateHiv2RegionMap();
-		chiv2rm.run(Hiv2.ehoAligned);
+	public CreateHiv2RegionMap(String annotatedAlignedRefSeq) {
+		this.annotatedAlignedRefSeq = annotatedAlignedRefSeq;
 	}
 	
-	public void run(String alignedRefSeq) {
+	public static void main(String [] args) {
+		CreateHiv2RegionMap chiv2rm = new CreateHiv2RegionMap(Hiv2.benAligned);
         GenerateGenome hiv2benGen = new GenerateGenome("HIV-2-BEN","HIV-2-BEN","",GenerateGenome.getReferenceSequence("NC_001722.fasta"));
         Genome ben = hiv2benGen.generateFromFile("hiv2ben.genome");
+		chiv2rm.run(Hiv2.ehoAligned, hiv2benGen, ben);
+	}
+	
+	public void run(String alignedRefSeq, GenerateGenome generateGenome, Genome genome) {
+        System.err.println(generateGenome.toString());
         
-        System.err.println(hiv2benGen.toString());
-        
-        if(alignedRefSeq.length()!=benAlignedRefSeq.length()) {
+        if(alignedRefSeq.length()!=annotatedAlignedRefSeq.length()) {
         	throw new RuntimeException("ref seqs should be the same size!!!");
         }
 
@@ -34,16 +37,16 @@ public class CreateHiv2RegionMap {
         //alignedRefSeq = benAlignedRefSeq;
         
         StringBuilder mapping = new StringBuilder();
-        for(OpenReadingFrame orf : ben.getOpenReadingFrames()) {
+        for(OpenReadingFrame orf : genome.getOpenReadingFrames()) {
         	mapping.append("orf\n");
         	mapping.append(orf.getName() + "," + orf.getDescription() + ",");
         	
-        	mapping.append(translateRegions(getRegions(orf,hiv2benGen), alignedRefSeq));
+        	mapping.append(translateRegions(getRegions(orf,generateGenome), alignedRefSeq));
         	mapping.append("\n");
         	
         	for(Protein p : orf.getProteins()){
         		mapping.append(p.getFullName() +","+ p.getAbbreviation() +",");
-        		mapping.append(translateRegions(getRegions(p,hiv2benGen), alignedRefSeq));
+        		mapping.append(translateRegions(getRegions(p,generateGenome), alignedRefSeq));
         		mapping.append("\n");
         	}
         	
@@ -59,10 +62,10 @@ public class CreateHiv2RegionMap {
 		boolean first=true;
 		
 		for(Region rv : regions){
-    		int startPosBenAligned = toAlignedPos(benAlignedRefSeq, rv.getStart());
+    		int startPosBenAligned = toAlignedPos(annotatedAlignedRefSeq, rv.getStart());
     		int startPosRefSeq = toUnAlignedPos(alignedRefSeq, startPosBenAligned);
     		
-    		int endPosBenAligned = toAlignedPos(benAlignedRefSeq, rv.getEnd());
+    		int endPosBenAligned = toAlignedPos(annotatedAlignedRefSeq, rv.getEnd());
     		int endPosRefSeq = toUnAlignedPos(alignedRefSeq, endPosBenAligned);
     		
     		if(first)
@@ -138,14 +141,14 @@ public class CreateHiv2RegionMap {
 		StringBuilder newBen = new StringBuilder();
 		StringBuilder newRef = new StringBuilder();
 		
-		for(int i = 0; i<benAlignedRefSeq.length(); i++) {
-			if(!(benAlignedRefSeq.charAt(i)=='-' && alignedRefSeq.charAt(i)=='-')) {
-				newBen.append(benAlignedRefSeq.charAt(i));
+		for(int i = 0; i<annotatedAlignedRefSeq.length(); i++) {
+			if(!(annotatedAlignedRefSeq.charAt(i)=='-' && alignedRefSeq.charAt(i)=='-')) {
+				newBen.append(annotatedAlignedRefSeq.charAt(i));
 				newRef.append(alignedRefSeq.charAt(i));
 			}
 		}
 		
-		benAlignedRefSeq = newBen.toString();
+		annotatedAlignedRefSeq = newBen.toString();
 		return newRef.toString();
 	}
 }
