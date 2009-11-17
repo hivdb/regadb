@@ -703,7 +703,14 @@ public class Utils {
      }
      
      public static void handlePatientAttributeValue(NominalAttribute na, String value, Patient p) {
-        AttributeNominalValue anv = na.nominalValueMap.get(value);
+    	 AttributeNominalValue anv = null;
+    	 for (AttributeNominalValue anvt : na.attribute.getAttributeNominalValues()) {
+    		 if (anvt.getValue().equalsIgnoreCase(value)) 
+    			 anv = anvt;
+    	 }
+    	 
+    	 if (anv == null)
+    		 anv = na.nominalValueMap.get(value);
         
          if (anv != null)
          {
