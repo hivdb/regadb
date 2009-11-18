@@ -1,4 +1,4 @@
-package net.sf.regadb.install.generateGenomes.hiv2;
+package net.sf.regadb.install.generateGenomes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,18 +12,11 @@ import net.sf.regadb.install.generateGenomes.Region;
 import net.sf.regadb.install.generateGenomes.GenerateGenome.RegionValue;
 
 
-public class CreateHiv2RegionMap {
+public class CreateRegionMap {
 	String annotatedAlignedRefSeq;
 	
-	public CreateHiv2RegionMap(String annotatedAlignedRefSeq) {
+	public CreateRegionMap(String annotatedAlignedRefSeq) {
 		this.annotatedAlignedRefSeq = annotatedAlignedRefSeq;
-	}
-	
-	public static void main(String [] args) {
-		CreateHiv2RegionMap chiv2rm = new CreateHiv2RegionMap(Hiv2.benAligned);
-        GenerateGenome hiv2benGen = new GenerateGenome("HIV-2-BEN","HIV-2-BEN","",GenerateGenome.getReferenceSequence("NC_001722.fasta"));
-        Genome ben = hiv2benGen.generateFromFile("hiv2ben.genome");
-		chiv2rm.run(Hiv2.ehoAligned, hiv2benGen, ben);
 	}
 	
 	public void run(String alignedRefSeq, GenerateGenome generateGenome, Genome genome) {
