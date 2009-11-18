@@ -189,6 +189,7 @@ public class GenerateGenome {
         try {
             OpenReadingFrame orf=null;
             int orfOffset=0;
+            List<Region> orfRegions = null;
             
             BufferedReader in = new BufferedReader(new FileReader(f));
 
@@ -204,10 +205,19 @@ public class GenerateGenome {
                     List<Region> regions = toRegions(fields[2].trim());
                     orf = addOpenReadingFrame(fields[0].trim(), fields[1].trim(), regions);
                     orfOffset = regions.get(0).getStart();
+                    orfRegions = regions;
                 }
                 else if(orf != null){
                     String[] fields = line.split(",");
                     List<Region> regions = toRegions(fields[2].trim());
+                    
+                    for(Region r : orfRegions){
+                    	if(r.getStart() <= regions.get(0).getStart()
+                    			&& r.getEnd() >= regions.get(0).getEnd()){
+                    		orfOffset = r.getStart();
+                    		break;
+                    	}
+                    }
                     addProtein(orf, orfOffset, fields[0], fields[1], regions);
                 }
             }
