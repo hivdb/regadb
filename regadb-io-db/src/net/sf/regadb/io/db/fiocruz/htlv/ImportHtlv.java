@@ -21,8 +21,10 @@ import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -48,6 +50,8 @@ public class ImportHtlv {
 		Attribute ageA = new Attribute(StandardObjects.getNumberValueType(),personal,"Age",new TreeSet<AttributeNominalValue>());
 		Attribute clinicalStatusA = new Attribute(StandardObjects.getNominalValueType(),personal,"Clinical Status", new HashSet<AttributeNominalValue>());
 		
+		HashMap<String, Patient> patients = new HashMap<String, Patient>();
+		
 		for (int i = 1; i < t.numRows(); i++) {
 			Patient p = new Patient();
 			
@@ -61,6 +65,9 @@ public class ImportHtlv {
 			}
 			
 			ViralIsolate vi = addViralIsolate(p, accession, sequence);
+			
+			p.setPatientId(vi.getSampleId());
+			patients.put(p.getPatientId(), p);
 			
 			String region = t.valueAt(map.get("genomic_region"), i);
 			addViralIsolateTest(p, vi, "Region", region);
@@ -83,8 +90,8 @@ public class ImportHtlv {
 				}
 			
 			String country = t.valueAt(map.get("country"), i);
-//			if (isNotNull(country))
-//				Utils.handlePatientAttributeValue(originA, country, p);
+			if (isNotNull(country))
+				Utils.handlePatientAttributeValue(originA, country, p);
 			
 			String clinicalStatus = t.valueAt(map.get("clinical_status"), i);
 			if (isNotNull(clinicalStatus))
@@ -99,7 +106,7 @@ public class ImportHtlv {
 			handleNumericTest(StandardObjects.getGenericCD8Test(), cd8, p);
 			
 			String contact = t.valueAt(map.get("contact"), i);
-			addViralIsolateTest(p, vi, "Contact", contact);
+			addViralIsolateTest(p, vi, "Contact information", contact);
 			String article = t.valueAt(map.get("article"), i);
 			addViralIsolateTest(p, vi, "Article", article);
 			String authors = t.valueAt(map.get("authors"), i);
@@ -107,6 +114,8 @@ public class ImportHtlv {
 			String journal = t.valueAt(map.get("journal"), i);
 			addViralIsolateTest(p, vi, "Journal", journal);
 		}		
+		
+        IOUtils.exportPatientsXML(patients.values(), "/home/pieter/projects/htlv/htlv.xml", ConsoleLogger.getInstance());
 	}
 	
 	private static ViralIsolate addViralIsolate(Patient p, String id, String sequence) {
