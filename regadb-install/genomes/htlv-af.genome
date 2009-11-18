@@ -2,15 +2,7 @@ orf
 gag,group-specific antigen,450-1740
 pr55,pr55,450-738
 matrix,p19,453-843
-capsid,p24,840-1485 
-
-orf
-pol,polymerase,2245-4837
-protease,pro,1718-2405 
-
-orf
-rex,viral regulatory,4773-8009
-p27,p27,4773-4833+6950-8009
+capsid,p24,840-1485
 
 orf
 tax,viral transactivator,4829-8009
