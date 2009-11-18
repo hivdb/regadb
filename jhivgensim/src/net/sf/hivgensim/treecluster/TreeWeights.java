@@ -121,7 +121,7 @@ public class TreeWeights {
 			TreeWeights tw = new TreeWeights(50); // PR:50 RT:100
 			tw.calculateWeights(root);
 			PrintStream out = new PrintStream(new FileOutputStream("/home/gbehey0/out50.csv"));
-			out.println(root.printWeights());
+			out.println(root.printWeights().trim());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
