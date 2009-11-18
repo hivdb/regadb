@@ -70,11 +70,11 @@ public class ImportHtlv {
 			patients.put(p.getPatientId(), p);
 			
 			String region = t.valueAt(map.get("genomic_region"), i);
-			addViralIsolateTest(p, vi, "Region", region);
+			addViralIsolateTest(p, vi, "Isolate Region", region);
 			String status = t.valueAt(map.get("statuss"), i);
-			addViralIsolateTest(p, vi, "Status", status);
+			addViralIsolateTest(p, vi, "Isolate Status", status);
 			String isolated = t.valueAt(map.get("isolated"), i);
-			addViralIsolateTest(p, vi, "Isolated", isolated);
+			addViralIsolateTest(p, vi, "Isolate Isolated", isolated);
 			
 			String gender = t.valueAt(map.get("genre"), i);
 			if (isNotNull(gender))
@@ -175,17 +175,17 @@ public class ImportHtlv {
 	}
 	
 	private static void addViralIsolateTest(Patient p, ViralIsolate vi, String name, String value) {
-		Test t = viTestMap.get(name);
-		if (t == null) {
-			TestType type = 
-				new TestType(StandardObjects.getStringValueType(), null, new TestObject("Viral Isolate analysis"), name, new TreeSet<TestNominalValue>());
-			Test test = new Test(type, value);
-			
-			viTestMap.put(name, test);
-			TestResult tr = new TestResult(test);
-			tr.setValue(value);
-			tr.setViralIsolate(vi);
-			p.getTestResults().add(tr);
+		if (isNotNull(value)) {
+			Test t = viTestMap.get(name);
+			if (t == null) {
+				TestType type = 
+					new TestType(StandardObjects.getStringValueType(), null, StandardObjects.getViralIsolateAnalysisTestObject(), name + " (Type)", new TreeSet<TestNominalValue>());
+				Test test = new Test(type, name);
+				
+				viTestMap.put(name, test);
+				t = test;
+			}
+			p.createTestResult(t, null, null, value);
 		}
 	}
 	
