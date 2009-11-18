@@ -3,6 +3,7 @@ package net.sf.regadb.io.db.fiocruz.htlv;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +17,6 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestNominalValue;
-import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
@@ -66,7 +65,7 @@ public class ImportHtlv {
 			
 			ViralIsolate vi = addViralIsolate(p, accession, sequence);
 			
-			p.setPatientId(vi.getSampleId());
+			p.setPatientId(i+"");
 			patients.put(p.getPatientId(), p);
 			
 			String region = t.valueAt(map.get("genomic_region"), i);
@@ -179,7 +178,8 @@ public class ImportHtlv {
 			Test t = viTestMap.get(name);
 			if (t == null) {
 				TestType type = 
-					new TestType(StandardObjects.getStringValueType(), null, StandardObjects.getViralIsolateAnalysisTestObject(), name + " (Type)", new TreeSet<TestNominalValue>());
+					new TestType(StandardObjects.getViralIsolateAnalysisTestObject(), name);
+				type.setValueType(StandardObjects.getStringValueType());
 				Test test = new Test(type, name);
 				
 				viTestMap.put(name, test);
