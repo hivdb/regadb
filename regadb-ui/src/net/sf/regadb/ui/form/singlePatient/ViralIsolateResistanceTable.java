@@ -91,15 +91,19 @@ public class ViralIsolateResistanceTable extends WTable {
         Integer colN;
         Integer rowN;
         for(TestResult tr : testResults)
-        {            
-            colN = algoColumn.get(tr.getTest().getDescription());
-            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
-            if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
-            }
-            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
-            if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
+        {   
+            if(tr.getTest().getAnalysis()!=null
+                    && Equals.isSameTestType(gssTestType, tr.getTest().getTestType()))
+            {
+	            colN = algoColumn.get(tr.getTest().getDescription());
+	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
+	            if(colN!=null && rowN!=null) {
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
+	            }
+	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
+	            if(colN!=null && rowN!=null) {
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
+	            }
             }
         }
         
