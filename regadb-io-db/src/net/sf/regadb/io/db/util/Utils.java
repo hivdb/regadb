@@ -857,9 +857,24 @@ public class Utils {
          }
      }
      
+     private static AttributeNominalValue getANV(NominalAttribute na, String value) {
+    	 for (AttributeNominalValue anvt : na.attribute.getAttributeNominalValues()) {
+    		 if (anvt.getValue().equalsIgnoreCase(value)) 
+    			 return anvt;
+    	 }
+    	 
+    	 return null;
+     }
+     
      public static boolean addCountryOrGeographicOrigin(NominalAttribute countryNA, NominalAttribute geographicNA, String val, Patient p) {
-         AttributeNominalValue cnv = countryNA.nominalValueMap.get(val);
-         AttributeNominalValue gnv = geographicNA.nominalValueMap.get(val);
+         AttributeNominalValue cnv = getANV(countryNA, val);
+         AttributeNominalValue gnv = getANV(geographicNA, val);
+         
+         if (cnv == null)
+        	 cnv = countryNA.nominalValueMap.get(val);
+         if (gnv == null)
+        	 gnv = geographicNA.nominalValueMap.get(val);
+         
          if(cnv!=null) {
              PatientAttributeValue v = p.createPatientAttributeValue(countryNA.attribute);
              v.setAttributeNominalValue(cnv);
@@ -870,7 +885,7 @@ public class Utils {
              v.setAttributeNominalValue(gnv);
              return true;
          }
-         ConsoleLogger.getInstance().logError("No mapping for nominal value: " + val);
+         ConsoleLogger.getInstance().logWarning("No mapping for nominal value: " + val);
          return false;
      }
 

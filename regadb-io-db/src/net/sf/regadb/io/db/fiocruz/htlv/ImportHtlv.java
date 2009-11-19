@@ -44,8 +44,16 @@ public class ImportHtlv {
 		
 		Table countryMappingTable = 
 			Utils.readTable(mappingBasePath + File.separatorChar + "countryOfOrigin.mapping");
-		NominalAttribute originA = new NominalAttribute("Country of origin", countryMappingTable, demographics, Utils.selectAttribute("Country of origin", regadbAttributes));
+		Table geographicOriginMappingTable = 
+			Table.readTable(mappingBasePath+File.separatorChar+"geographicOrigin.mapping");
+		Table ethnicityMappingTable = 
+			Table.readTable(mappingBasePath+File.separatorChar+"ethnicity.mapping");
+		NominalAttribute originA = 
+			new NominalAttribute("Country of origin", countryMappingTable, demographics, Utils.selectAttribute("Country of origin", regadbAttributes));
+		NominalAttribute geographicOriginA = 
+			new NominalAttribute("Geographic origin", geographicOriginMappingTable, demographics, Utils.selectAttribute("Geographic origin", regadbAttributes));
 		NominalAttribute genderA = new NominalAttribute("Gender", null, personal, Utils.selectAttribute("Gender", regadbAttributes));
+		NominalAttribute ethnicityA = new NominalAttribute("Ethnicity", ethnicityMappingTable, personal, Utils.selectAttribute("Ethnicity", regadbAttributes));
 		Attribute ageA = new Attribute(StandardObjects.getNumberValueType(),personal,"Age",new TreeSet<AttributeNominalValue>());
 		Attribute clinicalStatusA = new Attribute(StandardObjects.getNominalValueType(),personal,"Clinical Status", new HashSet<AttributeNominalValue>());
 		
@@ -84,13 +92,12 @@ public class ImportHtlv {
 				 p.createPatientAttributeValue(ageA).setValue(Integer.parseInt(age.trim())+"");
 			
 			String ethnicity = t.valueAt(map.get("ethnic"), i);
-				if(isNotNull(ethnicity)) {
-					System.err.println(ethnicity);
-				}
+			if(isNotNull(ethnicity)) 
+				Utils.handlePatientAttributeValue(ethnicityA, ethnicity, p);
 			
 			String country = t.valueAt(map.get("country"), i);
 			if (isNotNull(country))
-				Utils.handlePatientAttributeValue(originA, country, p);
+				Utils.addCountryOrGeographicOrigin(originA, geographicOriginA, country, p);
 			
 			String clinicalStatus = t.valueAt(map.get("clinical_status"), i);
 			if (isNotNull(clinicalStatus))
