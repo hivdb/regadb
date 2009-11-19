@@ -102,7 +102,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		table_ = new FormTable(this);
 		sampleDateL = new Label(tr("form.viralIsolate.editView.sampleDate"));
 		sampleDateTF = new DateField(viralIsolateForm_.getInteractionState(), viralIsolateForm_, RegaDBSettings.getInstance().getDateFormat());
-		sampleDateTF.setMandatory(true);
+		sampleDateTF.setMandatory(RegaDBSettings.getInstance().getInstituteConfig().isSampleDateMandatory());
 		table_.addLineToTable(sampleDateL, sampleDateTF);
 		sampleIdL = new Label(tr("form.viralIsolate.editView.sampleId"));
 		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_){

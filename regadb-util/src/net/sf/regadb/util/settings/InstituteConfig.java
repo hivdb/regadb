@@ -16,6 +16,7 @@ public class InstituteConfig implements IConfigParser {
 	private int minYear;
 	private int maxDaysFuture;
 	private String serviceProviderUrl;
+	private boolean sampleDateMandatory = true;
 	
 	private WivConfig wivConfig;
 	
@@ -70,6 +71,10 @@ public class InstituteConfig implements IConfigParser {
 		if(ee != null)
 			organismFilter = new Filter(ee.getText());
 		
+		ee = e.getChild("sample-date-mandatory");
+		if(ee != null)
+			sampleDateMandatory = Boolean.parseBoolean(ee.getText());
+			
 		ee = e.getChild("forms");
 		if(ee != null){
 			for(Object oo : ee.getChildren()){
@@ -176,6 +181,10 @@ public class InstituteConfig implements IConfigParser {
 		return r;
 	}
 
+	public boolean isSampleDateMandatory() {
+		return sampleDateMandatory;
+	}
+	
 	public Filter getOrganismFilter(){
 		return organismFilter;
 	}

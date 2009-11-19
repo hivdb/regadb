@@ -11,6 +11,10 @@
     -->
     <query-result-dir>/etc/rega_institute/regadb/query</query-result-dir>
     
+	<!--  boolean value describing whether the viral isolate sample date should be mandatory 
+	--> 
+    <sample-date-mandatory>true</sample-date-mandatory>
+    
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
     -->
