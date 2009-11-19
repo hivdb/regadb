@@ -1701,4 +1701,16 @@ public class Transaction {
     	q.setMaxResults(1);
     	return q.list().size() > 0;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Test> getTests(TestObject to) 
+    {
+        Query q = session.createQuery("from Test test " +
+        		"where test.testType.testObject.description = :testObject " +
+        		"order by test.id");
+
+        q.setParameter("testObject", to.getDescription());
+        
+        return q.list();
+    }
 }

@@ -15,21 +15,28 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
+import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
+import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -78,6 +85,8 @@ public class ViralIsolateMainForm extends WContainerWidget
 	private WText fastaLabel_;
     
     private static final String defaultSequenceLabel_ = "Sequence ";
+    
+    private List<FormField> testFormFields_ = new ArrayList<FormField>();
 
 	public ViralIsolateMainForm(ViralIsolateForm viralIsolateForm)
 	{
@@ -103,6 +112,24 @@ public class ViralIsolateMainForm extends WContainerWidget
 		};
 		sampleIdTF.setMandatory(true);
 		table_.addLineToTable(sampleIdL, sampleIdTF);
+		
+		Transaction tr = RegaDBMain.getApp().createTransaction();
+        for(Test t : tr.getTests(StandardObjects.getViralIsolateAnalysisTestObject())) {
+            Label l = new Label(TestComboBox.getLabel(t));
+            FormField testResultField;
+            if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
+                testResultField = new ComboBox(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+                for(TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
+                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
+                }
+                ((ComboBox)testResultField).sort();
+            } else {
+                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
+            }
+
+            table_.addLineToTable(l, testResultField);
+            testFormFields_.add(testResultField);
+        }
 
 	    // Sequence group
 		Label currentSequenceL = new Label(
@@ -213,6 +240,32 @@ public class ViralIsolateMainForm extends WContainerWidget
 	{
 		sampleDateTF.setDate(vi.getSampleDate());
 		sampleIdTF.setText(vi.getSampleId());
+		
+		List<Test> tests = 
+			RegaDBMain.getApp().createTransaction()
+			.getTests(StandardObjects.getViralIsolateAnalysisTestObject());
+		
+		for(int i = 0; i < tests.size(); i++) {
+			TestResult theTr = null;
+			for (TestResult tr : vi.getTestResults()) {
+				if (tr.getTest().getDescription().equals(tests.get(i).getDescription())) 
+					theTr = tr;
+			}
+
+			FormField f = testFormFields_.get(i);
+			if (theTr != null) {
+				if (f instanceof ComboBox) {
+					((ComboBox) f).selectItem(theTr.getTestNominalValue().getValue());
+				} else {
+					if (theTr.getValue() != null)
+						f.setText(theTr.getValue());
+					else 
+						f.setText(new String(theTr.getData()));
+				}
+			} else {
+				//hide?
+			}
+		}
         
         for(NtSequence ntseq : vi.getNtSequences())
         {
