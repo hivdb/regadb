@@ -783,6 +783,10 @@ public class StandardObjects {
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Subsaharan Africa"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "North Africa"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Eastern Europe"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Middle East"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Polynesia"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Central Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Caribbean"));
         
         return geographicOrigin;
     }
