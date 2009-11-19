@@ -188,7 +188,9 @@ public class ImportHtlv {
 			TestResult tr = p.createTestResult(t);
 			tr.setData(value.getBytes());
 			tr.setViralIsolate(vi);
-			p.getTestResults().add(tr);
+			
+			tr.setPatient(vi.getPatient());
+			vi.getTestResults().add(tr);
 		}
 	}
 	
