@@ -185,7 +185,8 @@ public class ImportHtlv {
 				viTestMap.put(name, test);
 				t = test;
 			}
-			TestResult tr = p.createTestResult(t);
+			TestResult tr = new TestResult();
+			tr.setTest(t);
 			tr.setData(value.getBytes());
 			tr.setViralIsolate(vi);
 			
