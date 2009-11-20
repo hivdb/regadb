@@ -1,29 +1,28 @@
 orf
-gag-pro-pol,gag-pro-pol,824-5212
-pr55,pr55,824-1113
-capsid,p24,1214-1858
-matrix,p19,827-1216
-protease,pro,2092-2778
-pol,polymerase,2619-5210
+gag,gag,824-2114
+pr55,pr55,824-1115
+capsid,p24,1214-1859
+matrix,p19,827-1217
+nucleocapsid,p15,2386-2620 
 
 orf
-env,envelope,5203-6669
-surface,gp46,5203-6666
-transmembrane,gp21,6139-6669
+pro,pro,2092-2779
+protease,pro,2092-2779 
 
 orf
-px-I,p12,6857-7156
-p12 protein,p12,6857-7156
+pol,pol,2619-5211
+pol,polymerase,2619-5211
+p95RT/IN,reverse transcriptase/integrase,2619-5208 
 
 orf
-pxII,pxII,5147-7574
-p30 protein,p30,5147-5150+6852-7574
-p13 protein,p13,7311-7574
+env,envelope,5203-6670
+surface,gp46,5203-6667
+transmembrane,gp21,6139-6670 
 
 orf
-pxIII,pxIII,5147-7837
-rex,p27,5147-5206+7328-7837
+px-I,p12,6857-7157
+p12 protein,p12,6857-7157
 
 orf
-pxIV,pxIV,5147-8382
-tax,p40,5147-5150+7325-8382
+pxIII,pxIII,5147-7838
+rex,p27,5147-5207+7328-7838
