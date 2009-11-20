@@ -1,0 +1,29 @@
+orf
+gag-pro-pol,824-5212
+pr55,pr55,824-1113
+capsid,p24,1214-1858
+matrix,p19,827-1216
+protease,pro,2092-2778
+pol,polymerase,2619-5210
+
+orf
+env,envelope,5203-6669
+surface,gp46,5203-6666
+transmembrane,gp21,6139-6669
+
+orf
+px-I,p12,6857-7156
+p12 protein,p12,6857-7156
+
+orf
+pxII,pxII,5147-7574
+p30 protein,p30,5147-5150+6852-7574
+p13 protein,p13,7311-7574
+
+orf
+pxIII,pxIII,5147-7837
+rex,p27,5147-5206+7328-7837
+
+orf
+pxIV,pxIV,5147-8382
+tax,p40,5147-5150+7325-8382
