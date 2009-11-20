@@ -1324,6 +1324,9 @@ public class Transaction {
     }
 
     public TestType getTestType(TestType t){
+    	if (t == null)
+    		return null;
+    	
         return getTestType(t.getDescription(), (t.getGenome() != null ? t.getGenome().getOrganismName():null));
     }
     public TestType getTestType(String description, String organismName) {
