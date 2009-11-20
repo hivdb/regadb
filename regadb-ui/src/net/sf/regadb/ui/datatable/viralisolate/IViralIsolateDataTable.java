@@ -43,13 +43,13 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 
 	public List<ViralIsolate> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getViralIsolates(pt, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public long getDataSetSize(Transaction t)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getViralIsolateCount(pt, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 

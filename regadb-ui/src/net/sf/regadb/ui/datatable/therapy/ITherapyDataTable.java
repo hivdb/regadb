@@ -42,13 +42,13 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 
 	public List<Therapy> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getTherapies(pt, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public long getDataSetSize(Transaction t)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getTherapiesCount(pt, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 

@@ -26,8 +26,6 @@ import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
-import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
-import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
@@ -50,7 +48,6 @@ import net.sf.regadb.ui.form.query.wiv.WivArlEpidemiologyForm;
 import net.sf.regadb.ui.form.query.wiv.WivArlViralLoadForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.PatientEventForm;
-import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateCumulatedResistance;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
@@ -91,6 +88,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.PatientEventSelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectItem;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientSelectedItem;
+import net.sf.regadb.ui.tree.items.singlePatient.PatientTreeNode;
 import net.sf.regadb.ui.tree.items.singlePatient.SelectPatientEvent;
 import net.sf.regadb.ui.tree.items.singlePatient.TherapySelectedItem;
 import net.sf.regadb.ui.tree.items.singlePatient.ViralIsolateSelectedItem;
@@ -103,13 +101,11 @@ import eu.webtoolkit.jwt.WWidget;
 
 public class TreeContent
 {
-    public PatientItem singlePatientMain;
-    public PatientSelectItem patientSelect;
-    public PatientAddItem patientAdd;
-    public PatientSelectedItem patientSelected;
-    public ActionItem viewPatient;
-    public ActionItem editPatient;
-    public ActionItem deletePatient;
+	public PatientTreeNode patientTreeNode;
+//    public PatientItem singlePatientMain;
+//    public PatientSelectItem patientSelect;
+//    public PatientAddItem patientAdd;
+//    public PatientSelectedItem patientSelected;
     public ActionItem chart;
     public ActionItem measurements;
     public ActionItem measurementsSelect;
@@ -286,258 +282,238 @@ public class TreeContent
     
 	public TreeMenuNode setContent(RootItem rootItem)
 	{
-		singlePatientMain = new PatientItem(rootItem);
-		    patientSelect = new PatientSelectItem(singlePatientMain);
-			patientAdd = new PatientAddItem(singlePatientMain);
-            patientSelected = new PatientSelectedItem(singlePatientMain);
-                viewPatient = new ActionItem(WResource.tr("menu.singlePatient.view"), patientSelected, new ITreeAction()
-                {
-                    public void performAction(TreeMenuNode node) 
-                    {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Viewing, WWidget.tr("form.singlePatient.view"), patientSelected.getSelectedItem()));
-                    }
-                });
-                editPatient = new ActionItem(WResource.tr("menu.singlePatient.edit"), patientSelected, new ITreeAction()
-                {
-                    public void performAction(TreeMenuNode node) 
-                    {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Editing, WWidget.tr("form.singlePatient.edit"), patientSelected.getSelectedItem()));
-                    }
-                });
-                deletePatient = new ActionItem(WResource.tr("menu.singlePatient.delete"), patientSelected, new ITreeAction()
-                {
-                    public void performAction(TreeMenuNode node) 
-                    {
-                        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Deleting, WWidget.tr("form.singlePatient.delete"), patientSelected.getSelectedItem()));
-                    }
-                });
-				chart = new ActionItem(WResource.tr("menu.singlePatient.chart"), patientSelected, new ITreeAction()
-                {
-                    public void performAction(TreeMenuNode node) 
-                    {
-                        RegaDBMain.getApp().getFormContainer().setForm(new PatientChartForm(patientSelected.getSelectedItem()));
-                    }
-                });
-    			measurements = new ActionItem(WResource.tr("menu.singlePatient.measurements"), patientSelected);
-    				measurementsSelect = new ActionItem(WResource.tr("menu.singlePatient.measurements.select"), measurements, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node) 
-                        {
-                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectMeasurementForm());
-                        }
-                    });
-    				measurementsAdd = new ActionItem(WResource.tr("menu.singlePatient.measurements.add"), measurements, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							TreeContent.this.measurementSelected.setSelectedItem(null);
-							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
-						}
-    				});
-    				measurementSelected = new MeasurementSelectedItem(measurements);
-    				measurementView = new ActionItem(WResource.tr("menu.singlePatient.measurement.view"), measurementSelected, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Viewing, WWidget.tr("form.measurement.view"), measurementSelected.getSelectedItem()));
-						}
-    				});
-    				measurementEdit = new ActionItem(WResource.tr("menu.singlePatient.measurement.edit"), measurementSelected, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Editing, WWidget.tr("form.measurement.edit"), measurementSelected.getSelectedItem()));
-						}
-    				});
-                    measurementsDelete = new ActionItem(WResource.tr("menu.singlePatient.measurement.delete"), measurementSelected, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Deleting, WWidget.tr("form.measurement.delete"), measurementSelected.getSelectedItem()));
-                        }
-                    });
-
-    			therapies = new ActionItem(WResource.tr("menu.singlePatient.therapies"), patientSelected);
-    				therapiesSelect = new ActionItem(WResource.tr("menu.singlePatient.therapies.select"), therapies, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node) 
-                        {
-                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectTherapyForm());
-                        }
-                    });
-    				therapiesAdd = new ActionItem(WResource.tr("menu.singlePatient.therapies.add"), therapies, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							TreeContent.this.therapiesSelected.setSelectedItem(null);
-							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
-						}
-    				});
-                    therapiesCopyLast = new ActionItem(WResource.tr("menu.singlePatient.therapies.copyLast"), therapies, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            Patient p = TreeContent.this.patientSelected.getSelectedItem();
-                            Therapy lastTherapy = null;
-                            for(Therapy therapy : p.getTherapies()){
-                                if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
-                                    lastTherapy = therapy;
-                            }
-                            RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy));
-                        }
-                    });
-
-    				therapiesSelected = new TherapySelectedItem(therapies);
-    				therapiesView = new ActionItem(WResource.tr("menu.singlePatient.therapies.view"), therapiesSelected, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Viewing, WWidget.tr("form.therapy.view"), therapiesSelected.getSelectedItem()));
-						}
-    				});
-    				therapiesEdit = new ActionItem(WResource.tr("menu.singlePatient.therapies.edit"), therapiesSelected, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), therapiesSelected.getSelectedItem()));
-						}
-    				});
-                    therapiesDelete = new ActionItem(WResource.tr("menu.singlePatient.therapies.delete"), therapiesSelected, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Deleting, WWidget.tr("form.therapy.delete"), therapiesSelected.getSelectedItem()));
-                        }
-                    });
-    				
-    				viralIsolates = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates"), patientSelected);
-    				viralIsolatesSelect = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.select"), viralIsolates, new ITreeAction()
-                    {
-    					public void performAction(TreeMenuNode node) 
-                        {
-                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectViralIsolateForm());
-                        }
-                    });
-                    viralIsolatesAdd = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.add"), viralIsolates, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                        	TreeContent.this.viralIsolateSelected.setSelectedItem(null);
-                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), null));
-                        }
-                    });
-    				viralIsolateSelected = new ViralIsolateSelectedItem(viralIsolates);
-    				viralIsolateView = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.view"), viralIsolateSelected, new ITreeAction()
-    				{
-						public void performAction(TreeMenuNode node)
-						{
-							RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), viralIsolateSelected.getSelectedItem()));
-						}
-    				});
-                    viralIsolateEdit = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.edit"), viralIsolateSelected, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Editing, WWidget.tr("form.viralIsolate.edit"), viralIsolateSelected.getSelectedItem()));
-                        }
-                    });
-                    viralIsolatesDelete = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.delete"), viralIsolateSelected, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Deleting, WWidget.tr("form.viralIsolate.delete"), viralIsolateSelected.getSelectedItem()));
-                        }
-                    });
-                    viralIsolateEvolution = new ActionItem(RootItem.tr("menu.singlePatient.viralIsolates.evolution"), viralIsolates) {
-						@Override
-						public boolean isEnabled() {
-							if(!super.isEnabled()) {
-								return false;
-							} else {
-								if(TreeContent.this.patientSelected.getSelectedItem()==null)
-									return false;
-								return TreeContent.this.patientSelected.getSelectedItem().getViralIsolates().size()>1;
-							}
-						}
-                    };
-                    viralIsolateMutationEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.mutation"), viralIsolateEvolution, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateMutationEvolution(WWidget.tr("form.viralIsolate.evolution.mutation"), 
-                                    TreeContent.this.patientSelected.getSelectedItem()));
-                        }
-                    });
-                    viralIsolateResistanceEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.resistance"), viralIsolateEvolution, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateResistanceEvolutionForm(WWidget.tr("form.viralIsolate.evolution.resistance"), 
-                                    TreeContent.this.patientSelected.getSelectedItem()));
-                        }
-                    });
-                    viralIsolateCumulatedResistance = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.cumulatedResistance"), viralIsolates, new ITreeAction()
-                    {
-                        public void performAction(TreeMenuNode node)
-                        {
-                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
-                                    TreeContent.this.patientSelected.getSelectedItem()));
-                        }
-                    }){
-                        @Override
-                        public boolean isEnabled() {
-							if(!super.isEnabled()) {
-								return false;
-							} else {
-								if(TreeContent.this.patientSelected.getSelectedItem()==null)
-									return false;
-								return TreeContent.this.patientSelected.getSelectedItem().getViralIsolates().size()>1;
-							}
-						}
-                    };
-    		
-                    patientEvent = new ActionItem(WResource.tr("menu.singlePatient.event"), patientSelected);
-                    
-    	                patientEventSelect = new ActionItem(WResource.tr("menu.singlePatient.event.select"), patientEvent, new ITreeAction()
-    			        {
-    			        	public void performAction(TreeMenuNode node)
-    			        	{
-    			        		RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientEvent());
-    			        	}
-    			        });
-    	                
-    	                PatientEventAdd patientEventAdd2 = new PatientEventAdd(patientEvent);
-    	                
-    	                patientEventSelected = new PatientEventSelectedItem(patientEvent);
-    	                
-    		                patientEventView = new ActionItem(WResource.tr("menu.singlePatient.event.view"), patientEventSelected, new ITreeAction()
-    		                {
-    							public void performAction(TreeMenuNode node) {
-    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Viewing, WWidget.tr("menu.singlePatient.event.view"), patientEventSelected.getSelectedItem()));
-    							}
-    		                });
-    		                
-    		                patientEventEdit = new ActionItem(WResource.tr("menu.singlePatient.event.edit"), patientEventSelected, new ITreeAction()
-    		                {
-    							public void performAction(TreeMenuNode node) {
-    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Editing, WWidget.tr("menu.singlePatient.event.edit"), patientEventSelected.getSelectedItem()));
-    							}
-    		                });
-    		                
-    		                patientEventDelete = new ActionItem(WResource.tr("menu.singlePatient.event.delete"), patientEventSelected, new ITreeAction()
-    		                {
-    							public void performAction(TreeMenuNode node) {
-    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Deleting, WWidget.tr("menu.singlePatient.event.delete"), patientEventSelected.getSelectedItem()));
-    							}
-    		                });
-    		                
-    		                custom = new ActionItem(WResource.tr("menu.custom"), patientSelected);
-    		                contact = new ContactItem(custom);
-    		                
-    		                if(!true){
-    		                	singlePatientMain.expand();
-    		                	return singlePatientMain;
-    		                }
+		patientTreeNode = new PatientTreeNode(rootItem);
+//		singlePatientMain = new PatientItem(rootItem);
+//		    patientSelect = new PatientSelectItem(singlePatientMain);
+//			patientAdd = new PatientAddItem(singlePatientMain);
+//            patientSelected = new PatientSelectedItem(singlePatientMain);
+//				chart = new ActionItem(WResource.tr("menu.singlePatient.chart"), patientSelected, new ITreeAction()
+//                {
+//                    public void performAction(TreeMenuNode node) 
+//                    {
+//                        RegaDBMain.getApp().getFormContainer().setForm(new PatientChartForm(patientSelected.getSelectedItem()));
+//                    }
+//                });
+//    			measurements = new ActionItem(WResource.tr("menu.singlePatient.measurements"), patientSelected);
+//    				measurementsSelect = new ActionItem(WResource.tr("menu.singlePatient.measurements.select"), measurements, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node) 
+//                        {
+//                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectMeasurementForm());
+//                        }
+//                    });
+//    				measurementsAdd = new ActionItem(WResource.tr("menu.singlePatient.measurements.add"), measurements, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							TreeContent.this.measurementSelected.setSelectedItem(null);
+//							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
+//						}
+//    				});
+//    				measurementSelected = new MeasurementSelectedItem(measurements);
+//    				measurementView = new ActionItem(WResource.tr("menu.singlePatient.measurement.view"), measurementSelected, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Viewing, WWidget.tr("form.measurement.view"), measurementSelected.getSelectedItem()));
+//						}
+//    				});
+//    				measurementEdit = new ActionItem(WResource.tr("menu.singlePatient.measurement.edit"), measurementSelected, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Editing, WWidget.tr("form.measurement.edit"), measurementSelected.getSelectedItem()));
+//						}
+//    				});
+//                    measurementsDelete = new ActionItem(WResource.tr("menu.singlePatient.measurement.delete"), measurementSelected, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Deleting, WWidget.tr("form.measurement.delete"), measurementSelected.getSelectedItem()));
+//                        }
+//                    });
+//
+//    			therapies = new ActionItem(WResource.tr("menu.singlePatient.therapies"), patientSelected);
+//    				therapiesSelect = new ActionItem(WResource.tr("menu.singlePatient.therapies.select"), therapies, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node) 
+//                        {
+//                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectTherapyForm());
+//                        }
+//                    });
+//    				therapiesAdd = new ActionItem(WResource.tr("menu.singlePatient.therapies.add"), therapies, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							TreeContent.this.therapiesSelected.setSelectedItem(null);
+//							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));
+//						}
+//    				});
+//                    therapiesCopyLast = new ActionItem(WResource.tr("menu.singlePatient.therapies.copyLast"), therapies, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            Patient p = TreeContent.this.patientSelected.getSelectedItem();
+//                            Therapy lastTherapy = null;
+//                            for(Therapy therapy : p.getTherapies()){
+//                                if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
+//                                    lastTherapy = therapy;
+//                            }
+//                            RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy));
+//                        }
+//                    });
+//
+//    				therapiesSelected = new TherapySelectedItem(therapies);
+//    				therapiesView = new ActionItem(WResource.tr("menu.singlePatient.therapies.view"), therapiesSelected, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Viewing, WWidget.tr("form.therapy.view"), therapiesSelected.getSelectedItem()));
+//						}
+//    				});
+//    				therapiesEdit = new ActionItem(WResource.tr("menu.singlePatient.therapies.edit"), therapiesSelected, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), therapiesSelected.getSelectedItem()));
+//						}
+//    				});
+//                    therapiesDelete = new ActionItem(WResource.tr("menu.singlePatient.therapies.delete"), therapiesSelected, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Deleting, WWidget.tr("form.therapy.delete"), therapiesSelected.getSelectedItem()));
+//                        }
+//                    });
+//    				
+//    				viralIsolates = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates"), patientSelected);
+//    				viralIsolatesSelect = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.select"), viralIsolates, new ITreeAction()
+//                    {
+//    					public void performAction(TreeMenuNode node) 
+//                        {
+//                        	RegaDBMain.getApp().getFormContainer().setForm(new SelectViralIsolateForm());
+//                        }
+//                    });
+//                    viralIsolatesAdd = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.add"), viralIsolates, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                        	TreeContent.this.viralIsolateSelected.setSelectedItem(null);
+//                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), null));
+//                        }
+//                    });
+//    				viralIsolateSelected = new ViralIsolateSelectedItem(viralIsolates);
+//    				viralIsolateView = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.view"), viralIsolateSelected, new ITreeAction()
+//    				{
+//						public void performAction(TreeMenuNode node)
+//						{
+//							RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), viralIsolateSelected.getSelectedItem()));
+//						}
+//    				});
+//                    viralIsolateEdit = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.edit"), viralIsolateSelected, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Editing, WWidget.tr("form.viralIsolate.edit"), viralIsolateSelected.getSelectedItem()));
+//                        }
+//                    });
+//                    viralIsolatesDelete = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.delete"), viralIsolateSelected, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Deleting, WWidget.tr("form.viralIsolate.delete"), viralIsolateSelected.getSelectedItem()));
+//                        }
+//                    });
+//                    viralIsolateEvolution = new ActionItem(RootItem.tr("menu.singlePatient.viralIsolates.evolution"), viralIsolates) {
+//						@Override
+//						public boolean isEnabled() {
+//							if(!super.isEnabled()) {
+//								return false;
+//							} else {
+//								if(TreeContent.this.patientSelected.getSelectedItem()==null)
+//									return false;
+//								return TreeContent.this.patientSelected.getSelectedItem().getViralIsolates().size()>1;
+//							}
+//						}
+//                    };
+//                    viralIsolateMutationEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.mutation"), viralIsolateEvolution, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateMutationEvolution(WWidget.tr("form.viralIsolate.evolution.mutation"), 
+//                                    TreeContent.this.patientSelected.getSelectedItem()));
+//                        }
+//                    });
+//                    viralIsolateResistanceEvolution = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.evolution.resistance"), viralIsolateEvolution, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateResistanceEvolutionForm(WWidget.tr("form.viralIsolate.evolution.resistance"), 
+//                                    TreeContent.this.patientSelected.getSelectedItem()));
+//                        }
+//                    });
+//                    viralIsolateCumulatedResistance = new ActionItem(WResource.tr("menu.singlePatient.viralIsolates.cumulatedResistance"), viralIsolates, new ITreeAction()
+//                    {
+//                        public void performAction(TreeMenuNode node)
+//                        {
+//                            RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
+//                                    TreeContent.this.patientSelected.getSelectedItem()));
+//                        }
+//                    }){
+//                        @Override
+//                        public boolean isEnabled() {
+//							if(!super.isEnabled()) {
+//								return false;
+//							} else {
+//								if(TreeContent.this.patientSelected.getSelectedItem()==null)
+//									return false;
+//								return TreeContent.this.patientSelected.getSelectedItem().getViralIsolates().size()>1;
+//							}
+//						}
+//                    };
+//    		
+//                    patientEvent = new ActionItem(WResource.tr("menu.singlePatient.event"), patientSelected);
+//                    
+//    	                patientEventSelect = new ActionItem(WResource.tr("menu.singlePatient.event.select"), patientEvent, new ITreeAction()
+//    			        {
+//    			        	public void performAction(TreeMenuNode node)
+//    			        	{
+//    			        		RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientEvent());
+//    			        	}
+//    			        });
+//    	                
+//    	                PatientEventAdd patientEventAdd2 = new PatientEventAdd(patientEvent);
+//    	                
+//    	                patientEventSelected = new PatientEventSelectedItem(patientEvent);
+//    	                
+//    		                patientEventView = new ActionItem(WResource.tr("menu.singlePatient.event.view"), patientEventSelected, new ITreeAction()
+//    		                {
+//    							public void performAction(TreeMenuNode node) {
+//    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Viewing, WWidget.tr("menu.singlePatient.event.view"), patientEventSelected.getSelectedItem()));
+//    							}
+//    		                });
+//    		                
+//    		                patientEventEdit = new ActionItem(WResource.tr("menu.singlePatient.event.edit"), patientEventSelected, new ITreeAction()
+//    		                {
+//    							public void performAction(TreeMenuNode node) {
+//    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Editing, WWidget.tr("menu.singlePatient.event.edit"), patientEventSelected.getSelectedItem()));
+//    							}
+//    		                });
+//    		                
+//    		                patientEventDelete = new ActionItem(WResource.tr("menu.singlePatient.event.delete"), patientEventSelected, new ITreeAction()
+//    		                {
+//    							public void performAction(TreeMenuNode node) {
+//    								RegaDBMain.getApp().getFormContainer().setForm(new PatientEventForm(InteractionState.Deleting, WWidget.tr("menu.singlePatient.event.delete"), patientEventSelected.getSelectedItem()));
+//    							}
+//    		                });
+//    		                
+//    		                custom = new ActionItem(WResource.tr("menu.custom"), patientSelected);
+//    		                contact = new ContactItem(custom);
+//    		                
+//    		                if(!true){
+//    		                	singlePatientMain.expand();
+//    		                	return singlePatientMain;
+//    		                }
     		                
         
         queryMain = new QueryItem(rootItem);
@@ -1317,9 +1293,9 @@ public class TreeContent
                 }
             });
             
-		if(singlePatientMain.isEnabled())
+		if(patientTreeNode.isEnabled())
 		{
-			return singlePatientMain;
+			return patientTreeNode;
 		}
 		else
 		{

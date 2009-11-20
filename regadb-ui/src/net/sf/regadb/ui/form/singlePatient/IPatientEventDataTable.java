@@ -30,12 +30,12 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	private IFilter[] filters_ = new IFilter[4];
 	
 	public List<PatientEventValue> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending) {
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getPatientEvents(p, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 	
 	public long getDataSetSize(Transaction t) {
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.patientEventCount(p, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 	

@@ -115,7 +115,7 @@ public class TherapyForm extends FormWidget
 		{
 		    Therapy loadTherapy = getPreviousTherapy();
 		    
-            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
             t.attach(p);
             therapy_ = new Therapy();
             therapy_.setStartDate(new Date(System.currentTimeMillis()));
@@ -243,7 +243,7 @@ public class TherapyForm extends FormWidget
         
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
         t.attach(p);
         t.commit();
         
@@ -338,7 +338,7 @@ public class TherapyForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
         p.getTherapies().remove(therapy_);
         
         t.delete(therapy_);
