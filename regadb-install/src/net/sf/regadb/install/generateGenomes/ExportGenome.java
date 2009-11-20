@@ -33,6 +33,10 @@ public class ExportGenome {
         GenerateGenome hcvGen = new GenerateGenome("HCV","Hepatitis C virus","AF009606",GenerateGenome.getReferenceSequence("AF009606.fasta"));
         Genome hcv = hcvGen.generateFromFile("AF009606.genome");
         genomes.add(hcv);
+        
+        GenerateGenome htlv1Gen = new GenerateGenome("HTLV-1","Human T-lymphotropic virus Type 1","J02029",GenerateGenome.getReferenceSequence("J02029.fasta"));
+        Genome htlv1 = hcvGen.generateFromFile("J02029.genome");
+        genomes.add(htlv1);
 
         String fileName = "genomes.xml";
         ExportGenome export = new ExportGenome();
