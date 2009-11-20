@@ -107,6 +107,7 @@ public class InstituteConfig implements IConfigParser {
 		forms.clear();
 		addFormConfig(new SelectPatientFormConfig());
 		addFormConfig(new ContactFormConfig());
+		addFormConfig(new ViralIsolateFormConfig());
 		
 		setMinYear(-1);
 		setMaxDaysFuture(-1);
@@ -193,6 +194,10 @@ public class InstituteConfig implements IConfigParser {
 	}
 	public ContactFormConfig getContactFormConfig(){
 		return (ContactFormConfig) forms.get(ContactFormConfig.NAME);
+	}
+	
+	public ViralIsolateFormConfig getViralIsolateFormConfig(){
+		return (ViralIsolateFormConfig) forms.get(ViralIsolateFormConfig.NAME);
 	}
 	
 	public void setLogDir(File logDir) {

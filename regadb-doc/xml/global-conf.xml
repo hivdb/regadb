@@ -75,6 +75,18 @@
         </attributes>
       </form>
       
+	  <!--  viral isolate form configuration
+
+            this element is optional
+      -->
+      <form name="form.viralIsolate">
+		<!-- list of tests in the form -->
+        <tests>
+          <test description="Authors" />
+          <test description="Article" />
+        </tests>
+      </form>
+      
       <!--  custom contact form configuration 
 
             this element is optional

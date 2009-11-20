@@ -36,8 +36,9 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig.TestItem;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
@@ -114,7 +115,10 @@ public class ViralIsolateMainForm extends WContainerWidget
 		table_.addLineToTable(sampleIdL, sampleIdTF);
 		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
-        for(Test t : tr.getTests(StandardObjects.getViralIsolateAnalysisTestObject())) {
+		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+        if (config != null)
+		for(TestItem ti : config.getTests()) {
+        	Test t = tr.getTest(ti.description);
             Label l = new Label(TestComboBox.getLabel(t));
             FormField testResultField;
             if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
@@ -241,14 +245,14 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleDateTF.setDate(vi.getSampleDate());
 		sampleIdTF.setText(vi.getSampleId());
 		
-		List<Test> tests = 
-			RegaDBMain.getApp().createTransaction()
-			.getTests(StandardObjects.getViralIsolateAnalysisTestObject());
-		
-		for(int i = 0; i < tests.size(); i++) {
+		Transaction trans = RegaDBMain.getApp().createTransaction();
+		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+        if (config != null)
+		for(int i = 0; i < config.getTests().size(); i++) {
+			Test test = trans.getTest(config.getTests().get(i).description);
 			TestResult theTr = null;
 			for (TestResult tr : vi.getTestResults()) {
-				if (tr.getTest().getDescription().equals(tests.get(i).getDescription())) 
+				if (tr.getTest().getDescription().equals(test.getDescription())) 
 					theTr = tr;
 			}
 
