@@ -35,7 +35,7 @@ public class ExportGenome {
         genomes.add(hcv);
         
         GenerateGenome htlv1Gen = new GenerateGenome("HTLV-1","Human T-lymphotropic virus Type 1","J02029",GenerateGenome.getReferenceSequence("J02029.fasta"));
-        Genome htlv1 = hcvGen.generateFromFile("J02029.genome");
+        Genome htlv1 = htlv1Gen.generateFromFile("J02029.genome");
         genomes.add(htlv1);
 
         String fileName = "genomes.xml";
