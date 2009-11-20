@@ -55,6 +55,7 @@ public class ImportHtlv {
 		NominalAttribute genderA = new NominalAttribute("Gender", null, personal, Utils.selectAttribute("Gender", regadbAttributes));
 		NominalAttribute ethnicityA = new NominalAttribute("Ethnicity", ethnicityMappingTable, personal, Utils.selectAttribute("Ethnicity", regadbAttributes));
 		Attribute ageA = new Attribute(StandardObjects.getNumberValueType(),personal,"Age",new TreeSet<AttributeNominalValue>());
+		Attribute regionA = new Attribute(StandardObjects.getStringValueType(),demographics,"Region",new TreeSet<AttributeNominalValue>());
 		Attribute clinicalStatusA = new Attribute(StandardObjects.getNominalValueType(),personal,"Clinical Status", new HashSet<AttributeNominalValue>());
 		
 		HashMap<String, Patient> patients = new HashMap<String, Patient>();
@@ -98,6 +99,10 @@ public class ImportHtlv {
 			String country = t.valueAt(map.get("country"), i);
 			if (isNotNull(country))
 				Utils.addCountryOrGeographicOrigin(originA, geographicOriginA, country, p);
+			
+			String originRegion = t.valueAt(map.get("region"), i);
+			if(isNotNull(originRegion)) 
+				p.createPatientAttributeValue(regionA).setValue(originRegion.trim());
 			
 			String clinicalStatus = t.valueAt(map.get("clinical_status"), i);
 			if (isNotNull(clinicalStatus))
