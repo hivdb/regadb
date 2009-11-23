@@ -82,7 +82,7 @@ public class TestFastaAlign {
                     	Map<Short, String> aaMutations = new HashMap<Short, String>();
                     	System.out.print("protein:" + aaseq.getProtein().getAbbreviation() + ":");
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
-                    		String mut = aamut.getNtReferenceCodon() + aamut.getId() + aamut.getNtMutationCodon();
+                    		String mut = aamut.getNtReferenceCodon().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getNtMutationCodon().toUpperCase();
                     		aaMutations.put(aamut.getId().getMutationPosition(), mut);
                     	}
                     	
@@ -93,15 +93,15 @@ public class TestFastaAlign {
                     			insertions = new HashMap<Short, String>();
                     			aaInsertions.put(aains.getId().getInsertionPosition(), insertions);
                     		}
-                    		String mut = "---" + aains.getId().getInsertionPosition() + aains.getNtInsertionCodon();
-                    		insertions.put(aains.getId().getInsertionPosition(), mut);
+                    		String mut = "---" + aains.getId().getInsertionPosition() + aains.getNtInsertionCodon().toUpperCase();
+                    		insertions.put(aains.getId().getInsertionOrder(), mut);
                     	}
                     	
-                    	for (int i = aaseq.getProtein().getStartPosition(); i <= aaseq.getProtein().getStopPosition(); i++) {
-                    		if (aaMutations.get(i) != null) {
-                    			System.out.print(aaMutations.get(i) + " ");
+                    	for (int i = 0; i <= aaseq.getProtein().getStopPosition(); i++) {
+                    		if (aaMutations.get((short)i) != null) {
+                    			System.out.print(aaMutations.get((short)i) + " ");
                     		}
-                    		Map<Short, String> insertions = aaInsertions.get(i);
+                    		Map<Short, String> insertions = aaInsertions.get((short)i);
                     		if (insertions != null) {
                     			SortedSet<Short> sortedInsertions = new TreeSet<Short>(insertions.keySet());
                     			for (Short ins : sortedInsertions) {
