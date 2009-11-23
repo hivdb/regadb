@@ -95,5 +95,17 @@
     <ant antfile="build.xml" 
 	 dir="regadb-browser" 
 	 target="clean"/>
+    <delete includeemptydirs="true">
+      <fileset dir="build/libPool" 
+	       includes="**/*" 
+	       excludes=".gitignore" 
+	       defaultexcludes="false"/>
+    </delete>
+    <delete includeemptydirs="true">
+      <fileset dir="build/packages" 
+	       includes="**/*" 
+	       excludes=".gitignore"
+	       defaultexcludes="false"/>
+    </delete>
   </target>
 </project>
