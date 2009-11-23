@@ -51,11 +51,6 @@ public class RegaDBApplication extends WApplication
 		return getWindow().getTree_();
 	}
 	
-	public Header getHeader()
-	{
-		return getWindow().getHeader_();
-	}
-	
 	public FormContainer getFormContainer()
 	{
 		return getWindow().getContainer_();

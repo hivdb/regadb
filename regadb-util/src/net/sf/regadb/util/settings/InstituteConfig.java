@@ -17,6 +17,7 @@ public class InstituteConfig implements IConfigParser {
 	private int maxDaysFuture;
 	private String serviceProviderUrl;
 	private boolean sampleDateMandatory = true;
+	private String logo;
 	
 	private WivConfig wivConfig;
 	
@@ -34,6 +35,10 @@ public class InstituteConfig implements IConfigParser {
 		Element ee = e.getChild("log-dir");
 		if(ee != null)
 			logDir = new File(ee.getTextTrim());
+		
+		ee = e.getChild("logo");
+		if(ee != null)
+			logo = ee.getTextTrim();
 		
 		ee = e.getChild("query-result-dir");
 		if(ee != null)
@@ -206,6 +211,10 @@ public class InstituteConfig implements IConfigParser {
 
 	public File getLogDir() {
 		return logDir;
+	}
+	
+	public String getLogo() {
+		return logo;
 	}
 
 	public void setQueryResultDir(File queryResultDir) {

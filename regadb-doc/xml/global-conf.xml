@@ -11,6 +11,11 @@
     -->
     <query-result-dir>/etc/rega_institute/regadb/query</query-result-dir>
     
+    <!--  image file containing an alternative logo
+	      this field is optional
+	-->  
+  	<logo>pics/htlv/logo.gif</logo>
+    
 	<!--  boolean value describing whether the viral isolate sample date should be mandatory 
 	--> 
     <sample-date-mandatory>true</sample-date-mandatory>
