@@ -521,8 +521,47 @@ public class ViralIsolateMainForm extends WContainerWidget
             t.delete(tr);
         }
         
+		Transaction trans = RegaDBMain.getApp().createTransaction();
+		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+        if (config != null)
+		for(int i = 0; i < config.getTests().size(); i++) {
+            TestResult tr = null;
+            for (TestResult vi_tr : viralIsolateForm_.getViralIsolate().getTestResults()) {
+            	if (vi_tr.getTest().getDescription().equals(config.getTests().get(i).description))
+            		tr = vi_tr;
+            }
+            FormField f = testFormFields_.get(i);
+            if(f instanceof ComboBox) {
+                if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
+                	if (tr == null)
+                		tr = createTestResult(trans.getTest(config.getTests().get(i).description));
+                    tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
+                }
+            } else {
+                if(f.text()!=null && !f.text().trim().equals("")) {
+                	if (tr == null)
+                		tr = createTestResult(trans.getTest(config.getTests().get(i).description));
+                    tr.setData(f.text().getBytes());
+                }
+            }
+            if(tr!=null) {
+                t.save(tr);
+            }
+        }
+        
         viralIsolateForm_.getViralIsolate().setSampleDate(sampleDateTF.getDate());
         viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
+    }
+    
+    public TestResult createTestResult(Test t) {
+		TestResult tr = new TestResult();
+		tr.setTest(t);
+		tr.setViralIsolate(viralIsolateForm_.getViralIsolate());
+		
+		tr.setPatient(viralIsolateForm_.getViralIsolate().getPatient());
+		viralIsolateForm_.getViralIsolate().getTestResults().add(tr);
+		
+		return tr;
     }
     
     public void startAnalysis(Genome genome)
