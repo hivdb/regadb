@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework;
 
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WStdLocalizedStrings;
@@ -25,8 +26,10 @@ public class RegaDBWindow extends WTable
 		//! TODO make the edition configurable
 		if (RegaDBSettings.getInstance().getInstituteConfig().getLogo() == null)
 			new Header(this.getElementAt(0, 0), Edition.Clinical);
-		else
-			new WImage(RegaDBSettings.getInstance().getInstituteConfig().getLogo(), "Logo", getElementAt(0, 0));
+		else {
+			WImage image = new WImage(RegaDBSettings.getInstance().getInstituteConfig().getLogo(), "Logo", getElementAt(0, 0));
+			getElementAt(0, 0).setContentAlignment(AlignmentFlag.AlignCenter);
+		}
 		WTable contentTable = new WTable(this.getElementAt(1, 0));
 		tree_ = new Tree(contentTable.getElementAt(0, 0));
 		contentTable.getElementAt(0, 0).setStyleClass("main-tree");
