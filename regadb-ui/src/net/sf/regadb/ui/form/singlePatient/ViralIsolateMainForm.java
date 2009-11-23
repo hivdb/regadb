@@ -83,6 +83,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     private TextField genomeTF;
 	private Label subTypeL;
 	private TextField subTypeTF;
+    private Label basePairsL;
+    private TextField basePairsTF;
 	private WText fastaLabel_;
     
     private static final String defaultSequenceLabel_ = "Sequence ";
@@ -159,12 +161,18 @@ public class ViralIsolateMainForm extends WContainerWidget
 		subTypeTF = new TextField(viralIsolateForm_.getInteractionState(),
 				viralIsolateForm_);
 		table_.addLineToTable(subTypeL, subTypeTF);
+		basePairsL = new Label(tr("form.viralIsolate.editView.basePairs"));
+		basePairsTF = new TextField(viralIsolateForm_.getInteractionState(),
+				viralIsolateForm_);
+		table_.addLineToTable(basePairsL, basePairsTF);
 
 		if (viralIsolateForm_.isEditable()) {
 			genomeL.setHidden(true);
 			genomeTF.setHidden(true);
 			subTypeL.setHidden(true);
 			subTypeTF.setHidden(true);
+			basePairsL.setHidden(true);
+			basePairsTF.setHidden(true);
 			WTable uploadTable = new WTable();
 			upload_ = new FileUpload(viralIsolateForm_.getInteractionState(),
 					viralIsolateForm_);
@@ -348,6 +356,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         seqLabelTF.setText(seq.getLabel());
         seqDateTF.setDate(seq.getSequenceDate());
         ntTF.setText(seq.getNucleotides());
+        basePairsTF.setText(seq.getNucleotides().length() + "");
         
         for(TestResult tr : seq.getTestResults()){
             if(tr.getTest().getDescription().equals(StandardObjects.getSubtypeTestDescription())
