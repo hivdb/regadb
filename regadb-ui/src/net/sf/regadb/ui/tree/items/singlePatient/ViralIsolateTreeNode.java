@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateCumulatedResistance;
@@ -28,18 +29,7 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 	protected void init(){
 		super.init();
 		
-		evolution = new ActionItem(getResource("evolution"), this) {
-//			@Override
-//			public boolean isEnabled() {
-//				if(!super.isEnabled()) {
-//					return false;
-//				} else {
-//					if(RegaDBMain.getApp().getSelectedPatient()==null)
-//						return false;
-//					return RegaDBMain.getApp().getSelectedPatient().getViralIsolates().size()>1;
-//				}
-//			}
-        };
+		evolution = new ActionItem(getResource("evolution"), this);
         mutationEvolution = new ActionItem(getResource("evolution.mutation"), evolution, new ITreeAction()
         {
             public void performAction(TreeMenuNode node)
@@ -63,18 +53,7 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
                 RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
                         RegaDBMain.getApp().getSelectedPatient()));
             }
-        }){
-//            @Override
-//            public boolean isEnabled() {
-//				if(!super.isEnabled()) {
-//					return false;
-//				} else {
-//					if(RegaDBMain.getApp().getSelectedPatient()==null)
-//						return false;
-//					return RegaDBMain.getApp().getSelectedPatient().getViralIsolates().size()>1;
-//				}
-//			}
-        };
+        });
 	}
 	
 	public ActionItem getEvolutionActionItem(){
@@ -124,5 +103,15 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 		else{
 			return "";
 		}
+	}
+	
+	@Override
+	public void refresh(){
+		Patient p = RegaDBMain.getApp().getSelectedPatient();
+		boolean disabled = p == null || p.getViralIsolates().size() < 2;
+		evolution.setDisabled(disabled);
+		cumulatedResistance.setDisabled(disabled);
+		
+		super.refresh();
 	}
 }

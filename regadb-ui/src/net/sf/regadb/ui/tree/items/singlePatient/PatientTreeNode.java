@@ -129,6 +129,10 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		    	therapy.setSelectedItem(null);
 		    	viralIsolate.setSelectedItem(null);
 		    	event.setSelectedItem(null);
+		    	
+		    	boolean disabled = item.getViralIsolates().size()<2;
+				viralIsolate.getEvolutionActionItem().setDisabled(disabled);
+				viralIsolate.getCumulatedResistanceActionItem().setDisabled(disabled);
 	    	}
     	}
     }

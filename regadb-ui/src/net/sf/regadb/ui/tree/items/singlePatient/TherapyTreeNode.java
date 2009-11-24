@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
@@ -81,4 +82,9 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 			return "";
 	}
 
+	@Override
+	public void applyPrivileges(Privileges priv){
+		super.applyPrivileges(priv);
+		copyLast.setDisabled(priv != Privileges.READWRITE);
+	}
 }
