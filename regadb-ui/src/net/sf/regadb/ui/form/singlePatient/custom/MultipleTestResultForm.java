@@ -379,8 +379,10 @@ public class MultipleTestResultForm extends FormWidget {
     		return;
     	
         save();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesAdd.prograSelectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
+        	.getViralIsolateTreeNode().getAddActionItem().prograSelectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
+        	.getViralIsolateTreeNode().setSelectedItem(null);
         RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), sampleIdTF_.text(), dateTF_.getDate()));
     }
 }

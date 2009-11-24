@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.tree;
 
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
@@ -102,7 +103,7 @@ public abstract class ObjectTreeNode<Type> extends TreeMenuNode{
         }
         else{
         	getSelectedActionItem().collapse();
-        	getSelectActionItem().disable();
+        	getSelectedActionItem().disable();
         }
         	
         refresh();
@@ -126,6 +127,17 @@ public abstract class ObjectTreeNode<Type> extends TreeMenuNode{
 	public ActionItem getDeleteActionItem(){
 		return delete;
 	}
+	
+	public ITreeAction getFormAction()
+	{
+		return new ITreeAction()
+		{
+			public void performAction(TreeMenuNode node)
+			{
+			    getChildren().get(0).prograSelectNode();
+			}
+		};
+	}
     
     public abstract String getArgument(Type type);	
 
@@ -137,5 +149,12 @@ public abstract class ObjectTreeNode<Type> extends TreeMenuNode{
 	
 	protected void doSelected(){
 		getViewActionItem().selectNode();
+	}
+	
+	public void applyPrivileges(Privileges priv){
+		boolean disabled = priv != Privileges.READWRITE; 
+		getAddActionItem().setDisabled(disabled);
+		getEditActionItem().setDisabled(disabled);
+		getDeleteActionItem().setDisabled(disabled);
 	}
 }

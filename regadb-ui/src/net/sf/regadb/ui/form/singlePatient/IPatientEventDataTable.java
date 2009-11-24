@@ -40,10 +40,14 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	}
 	
 	public void selectAction(PatientEventValue selectedItem) {
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.setSelectedItem(selectedItem);
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.expand();
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.refreshAllChildren();
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventView.selectNode();
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.setSelectedItem(selectedItem);
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getSelectActionItem().expand();
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getSelectedActionItem().refreshAllChildren();
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getViewActionItem().selectNode();
 	}
 	
 	public String[] getRowData(PatientEventValue pev) {

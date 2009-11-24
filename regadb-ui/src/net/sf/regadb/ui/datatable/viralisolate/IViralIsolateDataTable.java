@@ -104,10 +104,14 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 
 	public void selectAction(ViralIsolate selectedItem)
 	{
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
+        	.setSelectedItem(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
+        	.getSelectedActionItem().expand();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
+        	.getSelectedActionItem().refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
+        	.getViewActionItem().selectNode();
 	}
 
 	public boolean[] sortableFields()

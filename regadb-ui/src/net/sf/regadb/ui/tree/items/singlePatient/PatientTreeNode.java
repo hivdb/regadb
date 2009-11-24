@@ -11,6 +11,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
+import net.sf.regadb.ui.tree.items.custom.ContactItem;
 import eu.webtoolkit.jwt.WTreeNode;
 import eu.webtoolkit.jwt.WWidget;
 
@@ -20,6 +21,9 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	private TherapyTreeNode therapy;
 	private ViralIsolateTreeNode viralIsolate;
 	private EventTreeNode event;
+	
+	private ActionItem custom;
+	private ContactItem contact;
 	
 	public PatientTreeNode(WTreeNode root) {
 		super("patient", root);
@@ -40,6 +44,31 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		therapy = new TherapyTreeNode(getSelectedActionItem());
 		viralIsolate = new ViralIsolateTreeNode(getSelectedActionItem());
 		event = new EventTreeNode(getSelectedActionItem());
+		
+		custom = new ActionItem(getResource("custom"), getSelectedActionItem());
+		contact = new ContactItem(custom);
+	}
+	
+	public ActionItem getChartActionItem(){
+		return chart;
+	}
+	public TestResultTreeNode getTestResultTreeNode(){
+		return testResult;
+	}
+	public TherapyTreeNode getTherapyTreeNode(){
+		return therapy;
+	}
+	public ViralIsolateTreeNode getViralIsolateTreeNode(){
+		return viralIsolate;
+	}
+	public EventTreeNode getEventTreeNode(){
+		return event;
+	}
+	public ActionItem getCustomActionItem(){
+		return custom;
+	}
+	public ContactItem getContactItem(){
+		return contact;
 	}
 
 	@Override
@@ -77,18 +106,6 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
     }
 
 	@Override
-	public ITreeAction getFormAction()
-	{
-		return new ITreeAction()
-		{
-			public void performAction(TreeMenuNode node)
-			{
-			    getChildren().get(0).prograSelectNode();
-			}
-		};
-	}
-
-	@Override
 	public boolean isEnabled()
 	{
 		return RegaDBMain.getApp().getLogin()!=null;
@@ -96,18 +113,32 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	
     @Override
     public void setSelectedItem(Patient item){
-    	super.setSelectedItem(item);
-    	
-    	if(item != null){
-	    	Privileges priv = RegaDBMain.getApp().getPrivilege(item.getSourceDataset());
-	    	if(priv == Privileges.READWRITE){
-	    		getEditActionItem().enable();
-	    		getDeleteActionItem().enable();
-	    	}
-	    	else{
-	    		getEditActionItem().disable();
-	    		getDeleteActionItem().disable();
+    	Patient prev = getSelectedItem();
+    	if(item != prev){
+	    	super.setSelectedItem(item);
+	    	
+	    	if(item != null){
+		    	Privileges priv = RegaDBMain.getApp().getPrivilege(item.getSourceDataset());
+		    	applyPrivileges(priv);
+		    	testResult.applyPrivileges(priv);
+		    	therapy.applyPrivileges(priv);
+		    	viralIsolate.applyPrivileges(priv);
+		    	event.applyPrivileges(priv);
+		    	
+		    	testResult.setSelectedItem(null);
+		    	therapy.setSelectedItem(null);
+		    	viralIsolate.setSelectedItem(null);
+		    	event.setSelectedItem(null);
 	    	}
     	}
+    }
+    
+    @Override
+    public void applyPrivileges(Privileges priv){
+    	super.applyPrivileges(priv);
+    	getAddActionItem().enable();
+    	
+    	boolean disabled = priv != Privileges.READWRITE;
+    	getContactItem().addContact.setDisabled(disabled);
     }
 }

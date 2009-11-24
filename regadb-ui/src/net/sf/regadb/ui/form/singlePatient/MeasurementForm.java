@@ -212,8 +212,10 @@ public class MeasurementForm extends FormWidget
 		update(testResult_, t);
 		t.commit();
 		
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(testResult_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().measurementSelected, RegaDBMain.getApp().getTree().getTreeContent().measurementView);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().setSelectedItem(testResult_);
+        redirectToView(
+        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getSelectedActionItem(),
+        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getViewActionItem());
 	}
     
     @Override
@@ -221,11 +223,15 @@ public class MeasurementForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().measurements, RegaDBMain.getApp().getTree().getTreeContent().measurementsSelect);
+            redirectToSelect(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getSelectActionItem());
         }
         else
         {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().measurementSelected, RegaDBMain.getApp().getTree().getTreeContent().measurementView);
+            redirectToView(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getSelectedActionItem(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getViewActionItem());
         } 
     }
     
@@ -247,7 +253,9 @@ public class MeasurementForm extends FormWidget
     @Override
     public void redirectAfterDelete() 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().measurementsSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(null);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
+        	.getSelectActionItem().selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
+        	.setSelectedItem(null);
     }
 }
