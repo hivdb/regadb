@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +80,16 @@ public class TestFastaAlign {
                     
                     System.out.println("sequence:" + seq.getName());
                     List<AaSequence> result = aligner.align(ntseq, g);
-                    for(AaSequence aaseq : result) {
+                    
+                    Collections.sort(result, new Comparator<AaSequence>(){
+						@Override
+						public int compare(AaSequence a1, AaSequence a2) {
+							return a1.getProtein().getAbbreviation().
+								compareTo(a2.getProtein().getAbbreviation());
+						}
+                    });
+                    
+                	for (AaSequence aaseq : result) {
                     	Map<Short, String> aaMutations = new HashMap<Short, String>();
                     	System.out.print("protein:" + aaseq.getProtein().getAbbreviation() + ":");
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
