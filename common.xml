@@ -12,6 +12,18 @@
       </fileset>
     </path>
 
+    <path id="jar-dependencies-path">
+      <fileset dir="../build/libPool">
+	<include name="*.jar" />
+      </fileset>
+    </path>
+
+    <pathconvert property="jar-dependencies" pathsep=" ">
+      <path refid="jar-dependencies-path" />
+      <flattenmapper />
+    </pathconvert>
+
+
     <target name="create-package" description="create-package" >
       <mkdir dir="../build/packages/${proj.name}"/>
       <copy todir="../build/libPool/">
