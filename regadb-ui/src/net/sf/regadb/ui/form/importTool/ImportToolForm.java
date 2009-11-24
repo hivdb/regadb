@@ -39,7 +39,8 @@ public class ImportToolForm extends FormWidget {
 		descriptionTF.setMandatory(true);
 		formTable.addLineToTable(descriptionL, descriptionTF);
 		
-		if (getInteractionState() == InteractionState.Adding) {
+		if (getInteractionState() == InteractionState.Editing || 
+				getInteractionState() == InteractionState.Adding) {
 			fileL = new Label(tr("form.importTool.excelFile"));
 			fileU = new FileUpload(getInteractionState(), this);
 			fileU.setMandatory(true);
