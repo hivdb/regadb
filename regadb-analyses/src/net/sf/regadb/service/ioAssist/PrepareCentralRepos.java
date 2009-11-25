@@ -19,6 +19,10 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom.Document;
@@ -30,8 +34,20 @@ public class PrepareCentralRepos
 {
     public static void main(String [] args)
     {
-        String outputDir = args[0];
-        
+    	Arguments as = new Arguments();
+    	PositionalArgument output = as.addPositionalArgument("output-dir", true);
+    	ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
+    	if(confDir.isSet())
+    		RegaDBSettings.createInstance(confDir.getValue());
+    	else
+    		RegaDBSettings.createInstance();
+    	
+    	String outputDir = new File(output.getValue()).getAbsolutePath();
+    	
         ExportToXML export = new ExportToXML();
         
         Element attributes = new Element("attributes");
@@ -195,7 +211,8 @@ public class PrepareCentralRepos
         ArrayList<String> typeList = countries.getColumn(3);
         for(int i = 1; i < countryList.size(); i++)
         {
-            if(typeList.get(i).equals("Independent State"))
+            if(typeList.get(i).equals("Independent State")
+            		|| typeList.get(i).equals("Proto Dependency"))
             {
                 AttributeNominalValue anv = new AttributeNominalValue(country, countryList.get(i));
                 country.getAttributeNominalValues().add(anv);
