@@ -40,7 +40,7 @@
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
     <war destfile="${dist}/${proj.name}.war" webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
-      <lib dir="${lib}"/>
+      <lib dir="../build/libPool"/>
       <classes dir="${build}"/>
     </war>
     <antcall target="create-package" />
