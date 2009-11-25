@@ -56,7 +56,7 @@ public class ImportRule {
 		remove.clicked().addListener(row.getTable(), new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
 				row.getTable().deleteRow(row.getRowNum());
-				form.getRules().remove(this);
+				form.getRules().remove(ImportRule.this);
 			}
 		});
 		
