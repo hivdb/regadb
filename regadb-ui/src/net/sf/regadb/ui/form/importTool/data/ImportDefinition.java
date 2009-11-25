@@ -1,10 +1,13 @@
 package net.sf.regadb.ui.form.importTool.data;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportDefinition {
 	private String description;
 	private File xmlFile;
+	private List<Rule> rules = new ArrayList<Rule>();
 
 	public File getXmlFile() {
 		return xmlFile;
@@ -20,5 +23,13 @@ public class ImportDefinition {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public List<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(List<Rule> rules) {
+		this.rules = rules;
 	}
 }

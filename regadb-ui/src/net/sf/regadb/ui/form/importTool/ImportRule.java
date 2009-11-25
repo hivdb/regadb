@@ -12,14 +12,15 @@ import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableRow;
 import eu.webtoolkit.jwt.WWidget;
 
@@ -35,22 +36,27 @@ public class ImportRule {
 	private DataProvider dataProvider;
 	private Rule rule;
 
-	public ImportRule(DataProvider dataProvider, InteractionState is, IForm form, final WTableRow row, Rule rule) {
+	public ImportRule(DataProvider dataProvider, final ImportToolForm form, final WTableRow row, Rule rule) {
+		InteractionState is = form.getInteractionState();
+		
 		column = new ComboBox<String>(dataProvider!=null?is:InteractionState.Viewing, form);
 		addToRow(row, 0, column);
 		type = new ComboBox<Rule.Type>(is, form);
 		addToRow(row, 1, type);
 		number = new TextField(is, form, FieldType.INTEGER);
+		number.setTextSize(2);
+		number.setText("1");
 		addToRow(row, 2, number);
 		name = new ComboBox<Serializable>(is, form);
 		addToRow(row, 3, name);
-		details = new WPushButton("form.importTool.rule.details");
+		details = new WPushButton(WString.tr("form.importTool.rule.details"));
 		addToRow(row, 4, details);
-		remove = new WPushButton("form.importTool.rule.delete");
-		addToRow(row, 5, details);
+		remove = new WPushButton(WString.tr("form.importTool.rule.delete"));
+		addToRow(row, 5, remove);
 		remove.clicked().addListener(row.getTable(), new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
 				row.getTable().deleteRow(row.getRowNum());
+				form.getRules().remove(this);
 			}
 		});
 		
@@ -61,10 +67,18 @@ public class ImportRule {
 		fillTypeNameCombo(rule);
 		
 		this.rule = rule;
+		
+		type.addComboChangeListener(new Signal.Listener(){
+			public void trigger() {
+				fillTypeNameCombo(getRule());
+			}			
+		});
 	}
 
 	private void fillColumnCombo(Rule rule) {
-		if (dataProvider.getHeaders() == null) {
+		column.clearItems();
+		
+		if (dataProvider == null) {
 			column.addItem(new DataComboMessage<String>(rule.getColumn(), rule.getColumn()));
 		} else { 
 			for (String d : dataProvider.getHeaders()) {
@@ -76,6 +90,8 @@ public class ImportRule {
 	}
 	
 	private void fillTypeCombo(Rule rule) {
+		type.clearItems();
+		
 		for (Rule.Type t : Rule.Type.values()) {
 			type.addItem(new DataComboMessage<Rule.Type>(t, t.getName()));
 		}
@@ -84,6 +100,8 @@ public class ImportRule {
 	}
 	
 	private void fillTypeNameCombo(Rule rule) {
+		name.clearItems();
+		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
 		name.setHidden(false);
 		if (type.currentValue() == Rule.Type.AttributeValue) {
@@ -138,5 +156,9 @@ public class ImportRule {
 	
 	private void addToRow(WTableRow row, int col, WWidget widget) {
 		row.getTable().getElementAt(row.getRowNum(), col).addWidget(widget);
+	}
+	
+	public Rule getRule() {
+		return rule;
 	}
 }

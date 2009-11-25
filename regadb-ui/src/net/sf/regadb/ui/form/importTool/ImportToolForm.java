@@ -3,8 +3,14 @@ package net.sf.regadb.ui.form.importTool;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
+import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
+import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -13,11 +19,16 @@ import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import com.thoughtworks.xstream.XStream;
 
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
 
 public class ImportToolForm extends FormWidget {
 	private FormTable formTable;
@@ -28,6 +39,10 @@ public class ImportToolForm extends FormWidget {
 	private FileUpload fileU;
 	
 	private ImportDefinition definition;
+	
+	private WTable ruleTable;
+	private List<ImportRule> rules = new ArrayList<ImportRule>();
+	private WPushButton addRuleButton;
 
 	public ImportToolForm(InteractionState interactionState, WString formName, ImportDefinition definition) {
 		super(formName, interactionState);
@@ -49,9 +64,49 @@ public class ImportToolForm extends FormWidget {
 		
 		this.definition = definition;
 		
+		ruleTable = new WTable(this);
+		addHeader("form.importTool.rules.column");
+		addHeader("form.importTool.rules.type");
+		addHeader("form.importTool.rules.number");
+		addHeader("form.importTool.rules.name");
+		addHeader("form.importTool.rules.detail");
+		addHeader("form.importTool.rules.delete");
+		
+		addRuleButton = new WPushButton(tr("form.importTool.addRuleButton"), this);
+		addRuleButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+			@Override
+			public void trigger(WMouseEvent arg) {
+				boolean canAdd = false;
+				if (!fileU.getFileUpload().getSpoolFileName().equals("")) {
+					Workbook book = null;
+					try {
+						book = Workbook.getWorkbook(new File(fileU.getFileUpload().getSpoolFileName()));
+					} catch (BiffException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					if (book != null) {
+						DataProvider dataProvider = new DataProvider(book.getSheet(0));
+						ImportRule rule = new ImportRule(dataProvider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), new Rule());
+						rules.add(rule);
+						canAdd = true;
+					}
+				}
+				
+				if (!canAdd) {
+					//TODO give error message
+				}
+			}
+		});
+		
 		fillData();
 		
 		addControlButtons();
+	}
+	
+	private void addHeader(String header) {
+		ruleTable.getElementAt(0, ruleTable.getColumnCount()).addWidget(new TableHeader(tr(header)));
 	}
     
     private void fillData()
@@ -103,5 +158,9 @@ public class ImportToolForm extends FormWidget {
 		
 		RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.setSelectedItem(definition);
 		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().importToolSelected, RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView);
+	}
+	
+	public List<ImportRule> getRules() {
+		return rules;
 	}
 }

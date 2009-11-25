@@ -14,7 +14,7 @@ public class DataProvider {
 	public List<String> getHeaders() {
 		List<String> headers = new ArrayList<String>();
 		for (int i = 0; i < sheet.getColumns(); i++) {
-			headers.add(sheet.getCell(0, i).getContents().trim());
+			headers.add(sheet.getCell(i, 0).getContents().trim());
 		}
 		return headers;
 	}
