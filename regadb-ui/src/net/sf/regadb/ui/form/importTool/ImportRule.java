@@ -161,4 +161,11 @@ public class ImportRule {
 	public Rule getRule() {
 		return rule;
 	}
+	
+	public void saveRule() {
+		rule.setColumn(column.currentValue());
+		rule.setNumber(Integer.parseInt(number.text()));
+		rule.setType(type.currentValue());
+		rule.setTypeName(name.currentString());
+	}
 }

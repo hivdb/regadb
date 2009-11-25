@@ -88,8 +88,7 @@ public class ImportToolForm extends FormWidget {
 					}
 					if (book != null) {
 						DataProvider dataProvider = new DataProvider(book.getSheet(0));
-						ImportRule rule = new ImportRule(dataProvider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), new Rule());
-						rules.add(rule);
+						addRule(dataProvider, new Rule());
 						canAdd = true;
 					}
 				}
@@ -105,6 +104,11 @@ public class ImportToolForm extends FormWidget {
 		addControlButtons();
 	}
 	
+	private void addRule(DataProvider provider, Rule r) {
+		ImportRule rule = new ImportRule(provider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), r);
+		rules.add(rule);
+	}
+	
 	private void addHeader(String header) {
 		ruleTable.getElementAt(0, ruleTable.getColumnCount()).addWidget(new TableHeader(tr(header)));
 	}
@@ -113,6 +117,10 @@ public class ImportToolForm extends FormWidget {
     {        
     	if (definition != null) {
     		descriptionTF.setText(definition.getDescription());
+    		
+    		for (Rule r : definition.getRules()) {
+    			addRule(null, r);
+    		}
     	}
     }
 	
@@ -142,6 +150,12 @@ public class ImportToolForm extends FormWidget {
 			definition = new ImportDefinition();
 		
 		definition.setDescription(descriptionTF.text());
+		
+		definition.getRules().clear();
+		for (ImportRule ir : this.rules) {
+			ir.saveRule();
+			definition.getRules().add(ir.getRule());
+		}
 		
 		XStream xstream = new XStream();
 		File f = 
