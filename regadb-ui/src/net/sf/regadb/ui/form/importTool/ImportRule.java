@@ -43,22 +43,25 @@ public class ImportRule {
 		addToRow(row, 0, column);
 		type = new ComboBox<Rule.Type>(is, form);
 		addToRow(row, 1, type);
+		name = new ComboBox<Serializable>(is, form);
+		addToRow(row, 2, name);
 		number = new TextField(is, form, FieldType.INTEGER);
 		number.setTextSize(2);
 		number.setText("1");
-		addToRow(row, 2, number);
-		name = new ComboBox<Serializable>(is, form);
-		addToRow(row, 3, name);
+		addToRow(row, 3, number);
 		details = new WPushButton(WString.tr("form.importTool.rule.details"));
 		addToRow(row, 4, details);
-		remove = new WPushButton(WString.tr("form.importTool.rule.delete"));
-		addToRow(row, 5, remove);
-		remove.clicked().addListener(row.getTable(), new Signal1.Listener<WMouseEvent>(){
-			public void trigger(WMouseEvent arg) {
-				row.getTable().deleteRow(row.getRowNum());
-				form.getRules().remove(ImportRule.this);
-			}
-		});
+		if (form.getInteractionState() == InteractionState.Editing || 
+				form.getInteractionState() == InteractionState.Adding) {
+			remove = new WPushButton(WString.tr("form.importTool.rule.delete"));
+			addToRow(row, 5, remove);
+			remove.clicked().addListener(row.getTable(), new Signal1.Listener<WMouseEvent>(){
+				public void trigger(WMouseEvent arg) {
+					row.getTable().deleteRow(row.getRowNum());
+					form.getRules().remove(ImportRule.this);
+				}
+			});
+		}
 		
 		this.dataProvider = dataProvider;
 		
@@ -104,11 +107,13 @@ public class ImportRule {
 		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
 		name.setHidden(false);
+		number.setEnabled(true);
 		if (type.currentValue() == Rule.Type.AttributeValue) {
 			List<Attribute> attributes = tr.getAttributes();
 			for (Attribute a : attributes) {
 				name.addItem(new DataComboMessage<Serializable>(a, a.getName()));
 			}
+			number.setEnabled(false);
 		} else if (type.currentValue() == Rule.Type.EventValue) {
 			List<Event> events = tr.getEvents();
 			for (Event e : events) {

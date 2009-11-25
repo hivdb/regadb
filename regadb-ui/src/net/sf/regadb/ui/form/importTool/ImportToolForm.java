@@ -67,37 +67,43 @@ public class ImportToolForm extends FormWidget {
 		ruleTable = new WTable(this);
 		addHeader("form.importTool.rules.column");
 		addHeader("form.importTool.rules.type");
-		addHeader("form.importTool.rules.number");
 		addHeader("form.importTool.rules.name");
+		addHeader("form.importTool.rules.number");
 		addHeader("form.importTool.rules.detail");
-		addHeader("form.importTool.rules.delete");
+		if (getInteractionState() == InteractionState.Editing || 
+				getInteractionState() == InteractionState.Adding) {
+			addHeader("form.importTool.rules.delete");
+		}
 		
-		addRuleButton = new WPushButton(tr("form.importTool.addRuleButton"), this);
-		addRuleButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
-			@Override
-			public void trigger(WMouseEvent arg) {
-				boolean canAdd = false;
-				if (!fileU.getFileUpload().getSpoolFileName().equals("")) {
-					Workbook book = null;
-					try {
-						book = Workbook.getWorkbook(new File(fileU.getFileUpload().getSpoolFileName()));
-					} catch (BiffException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
+		if (getInteractionState() == InteractionState.Editing || 
+				getInteractionState() == InteractionState.Adding) {
+			addRuleButton = new WPushButton(tr("form.importTool.addRuleButton"), this);
+			addRuleButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+				@Override
+				public void trigger(WMouseEvent arg) {
+					boolean canAdd = false;
+					if (!fileU.getFileUpload().getSpoolFileName().equals("")) {
+						Workbook book = null;
+						try {
+							book = Workbook.getWorkbook(new File(fileU.getFileUpload().getSpoolFileName()));
+						} catch (BiffException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						if (book != null) {
+							DataProvider dataProvider = new DataProvider(book.getSheet(0));
+							addRule(dataProvider, new Rule());
+							canAdd = true;
+						}
 					}
-					if (book != null) {
-						DataProvider dataProvider = new DataProvider(book.getSheet(0));
-						addRule(dataProvider, new Rule());
-						canAdd = true;
+					
+					if (!canAdd) {
+						//TODO give error message
 					}
 				}
-				
-				if (!canAdd) {
-					//TODO give error message
-				}
-			}
-		});
+			});
+		}
 		
 		fillData();
 		
