@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sf.regadb.build.builder.Jarbuilder;
 import net.sf.regadb.util.replace.ReplaceUtils;
 
 import org.apache.commons.io.FileUtils;
@@ -25,8 +24,6 @@ public class GenerateWindowsInstaller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Jarbuilder builder = new Jarbuilder();
-        builder.run(buildDir.getAbsolutePath(), reportDir.getAbsolutePath(), args[0], false);
         GenerateWindowsBundles.run(buildDir.getAbsolutePath(), bundleDir.getAbsolutePath());
         
         try {
