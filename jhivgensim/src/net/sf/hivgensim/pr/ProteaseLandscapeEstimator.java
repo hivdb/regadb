@@ -254,23 +254,6 @@ public class ProteaseLandscapeEstimator {
 		RegaDBSettings.createInstance();
 		ProteaseLandscapeEstimator est = new ProteaseLandscapeEstimator(new File("/home/gbehey0/kristof/pi_fl"));
 		est.start();
-//		FastaToNexus ftn = new FastaToNexus("/home/gbehey0/kristof/pi_fl2/phylo_aligned_PR.fasta","/home/gbehey0/kristof/pi_fl2/phylo.nex");
-//		ftn.convert();
-//		try{
-//			TreeParser tp = new TreeParser("/home/gbehey0/kristof/pi_fl2/tree.phy");
-//			TreeNode root = tp.parseTree();
-//			TreeWeights tw = new TreeWeights(TreeWeights.WEIGHT_FOR_PR);
-//			tw.calculateWeights(root);
-//			PrintStream out = new PrintStream(new FileOutputStream("/home/gbehey0/kristof/pi_fl2/weights.csv"));
-//			out.print(root.printWeights());
-//			out.flush();
-//			out.close();
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			throw new Error("treeparsing or -weighting failed");
-//		}
-		
-
 	}
 
 }
