@@ -1,4 +1,4 @@
-package net.sf.hivgensim.consensus;
+package net.sf.hivgensim.scripts;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -38,6 +38,8 @@ public class GenomeAnnotator {
 
 		RegaDBSettings.createInstance();		
 		GenomeAnnotator ga = new GenomeAnnotator();
+		System.out.println(SelectionWindow.getWindow(organism, orf, protein).getReferenceNtSequence());
+		System.out.println(SelectionWindow.getWindow(organism, orf, protein).getReferenceAaSequence());
 		if (aa == null) {
 			System.out.println(ga.referenceWildtype(organism, orf, protein, pos));
 		} else {

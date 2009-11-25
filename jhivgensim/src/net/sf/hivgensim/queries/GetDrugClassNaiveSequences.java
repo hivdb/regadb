@@ -1,9 +1,11 @@
 package net.sf.hivgensim.queries;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.utils.NtSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -25,6 +27,7 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 
 	@Override
 	public void process(Patient p) {
+		ArrayList<NtSequence> pSeqs = new ArrayList<NtSequence>();
 		Date sampleDate;
 		for(ViralIsolate vi : p.getViralIsolates()){
 			sampleDate = vi.getSampleDate();
@@ -51,12 +54,38 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 					}
 				}
 				if(seqIsNaive){
-					//how to avoid having seqs from same patient?
-					//not necessary for the moment					
-					getNextQuery().process(seq);
+					pSeqs.add(seq);
 				}
 			}
 		}
-
-	}	
+		if(pSeqs.isEmpty()){
+			return;
+		}
+		Date max = null;
+		for(NtSequence seq : pSeqs){
+			if((max == null || seq.getViralIsolate().getSampleDate().after(max)) &&
+					NtSequenceUtils.coversRegion(seq, "HIV-1", "PR") && seq.getAaSequences().iterator().next().getFirstAaPos() <= 10 && seq.getAaSequences().iterator().next().getLastAaPos() >= 95){
+				max = seq.getViralIsolate().getSampleDate();
+			}
+		}
+		if(max == null)
+			return;
+		NtSequence result = null;
+		String rt = "";
+		for(NtSequence seq : pSeqs){
+			if(!seq.getViralIsolate().getSampleDate().equals(max)){
+				continue;
+			}
+			if(NtSequenceUtils.coversRegion(seq, "HIV-1", "PR") && seq.getAaSequences().iterator().next().getFirstAaPos() <= 10 && seq.getAaSequences().iterator().next().getLastAaPos() >= 95){
+				result = seq;
+			}
+			else if(NtSequenceUtils.coversRegion(seq, "HIV-1", "RT")){
+				rt = seq.getNucleotides();
+			}	
+		}
+		if(result != null){
+			result.setNucleotides(result.getNucleotides()+rt);
+			getNextQuery().process(result);
+		}
+	}
 }

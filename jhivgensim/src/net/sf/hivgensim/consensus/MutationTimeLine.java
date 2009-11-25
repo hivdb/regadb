@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
-import net.sf.hivgensim.queries.SampleDateFilter;
-import net.sf.hivgensim.queries.SequenceProteinFilter;
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
@@ -36,10 +34,10 @@ public class MutationTimeLine implements IQuery<Patient> {
 		this.deltaField = field;
 		this.delta = delta;
 		Protein protein = DrugGenericUtils.getProteinForDrugClass(drugClass);
-		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
-				new SequenceProteinFilter(protein, 
-						new SampleDateFilter(begin, end, 
-								new MutationTimeLineProcessor())));
+//		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
+//				new SequenceProteinFilter(protein, 
+//						new SampleDateFilter(begin, end, 
+//								new MutationTimeLineProcessor())));
 		this.reference = SelectionWindow.getWindow(
 				protein.getOpenReadingFrame().getGenome().getOrganismName()
 				, protein.getOpenReadingFrame().getName(), protein.getAbbreviation())
