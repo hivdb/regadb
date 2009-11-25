@@ -34,7 +34,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import be.kuleuven.rega.research.FilterVISubtype;
-import be.kuleuven.rega.research.conserved.groupers.SubtypeGrouper;
 
 public class PatientDiscordance {
 

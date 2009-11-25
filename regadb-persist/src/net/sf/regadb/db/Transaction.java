@@ -557,6 +557,18 @@ public class Transaction {
         return q.scroll();
     }
     
+    public ScrollableResults getPatientsScrollable(int offset, int maxResults) {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                getPatientsQuery() + 
+                "group by patient order by patient");
+        q.setParameter("uid", login.getUid());
+        q.setFirstResult(offset);
+        q.setMaxResults(maxResults);
+
+        return q.scroll();
+    }
+    
     /**
      * Returns a Page of patients, checking access permissions,
      * checking all the filter constraints and grouped by the selected col.
