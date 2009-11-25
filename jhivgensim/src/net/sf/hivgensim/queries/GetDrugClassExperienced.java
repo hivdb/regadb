@@ -3,11 +3,10 @@ package net.sf.hivgensim.queries;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
-import net.sf.hivgensim.queries.framework.utils.NtSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
-import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -18,10 +17,16 @@ import net.sf.regadb.db.TherapyGeneric;
 public class GetDrugClassExperienced extends Query<Patient,NtSequence> {
 
 	private String drugclass;
+	private SelectionWindow selectionWindow;
 
 	public  GetDrugClassExperienced(String drugclass, IQuery<NtSequence> nextQuery){
 		super(nextQuery);
 		this.drugclass = drugclass;
+	}
+
+	public GetDrugClassExperienced(String drugclass, SelectionWindow sw, IQuery<NtSequence> nextQuery){
+		this(drugclass,nextQuery);
+		this.selectionWindow = sw;
 	}
 
 	public void process(Patient p) {
@@ -46,14 +51,11 @@ public class GetDrugClassExperienced extends Query<Patient,NtSequence> {
 			history.addAll(regimen);
 			if(!regimen.isEmpty()){
 				for(NtSequence seq : TherapyUtils.getAllSequencesDuringTherapy(p, t)){
-					if(NtSequenceUtils.coversRegion(seq, "HIV-1","PR")){
-						AaSequence aaseq = seq.getAaSequences().iterator().next();
-						if(aaseq.getFirstAaPos() == 1 && aaseq.getLastAaPos() == 99){
-							if(latest == null || latest.getViralIsolate().getSampleDate().before(seq.getViralIsolate().getSampleDate())){
-								latest = seq;
-							}
+					if(selectionWindow == null || selectionWindow.isAcceptable(seq)){
+						if(latest == null || latest.getViralIsolate().getSampleDate().before(seq.getViralIsolate().getSampleDate())){
+							latest = seq;
 						}
-					}										
+					}
 				}				
 			}
 		}

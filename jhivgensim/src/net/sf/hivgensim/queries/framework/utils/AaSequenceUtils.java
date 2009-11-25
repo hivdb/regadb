@@ -13,6 +13,10 @@ public class AaSequenceUtils {
 			aaseq.getProtein().getOpenReadingFrame().getGenome().getOrganismName().equalsIgnoreCase(organism);
 	}
 	
+	public static boolean coversRegion(AaSequence aaseq, String organism, String protein, int start, int stop){
+		return coversRegion(aaseq, organism, protein) && aaseq.getFirstAaPos() <= start && aaseq.getLastAaPos() >= stop;		
+	}
+	
 	public static String toString(AaSequence seq, String reference){
 		Map<Short, String> mutations = toCharSequence(seq, reference);
 
