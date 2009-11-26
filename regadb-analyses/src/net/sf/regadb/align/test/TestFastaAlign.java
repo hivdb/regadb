@@ -34,6 +34,8 @@ import org.biojavax.bio.seq.RichSequenceIterator;
 
 public class TestFastaAlign {
 	public static void main(String [] args) {
+		long start = System.currentTimeMillis();
+		
 		RegaDBSettings.createInstance();
 		
         RichSequenceIterator xna = null;
@@ -152,6 +154,9 @@ public class TestFastaAlign {
         {
             e.printStackTrace();
         }
+        
+        long end = System.currentTimeMillis();
+        System.err.println("time=" + (end-start));
 	}
 	
 	public static Genome getGenome(String genome) {
