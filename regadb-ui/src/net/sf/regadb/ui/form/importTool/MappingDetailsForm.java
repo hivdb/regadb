@@ -49,12 +49,14 @@ public class MappingDetailsForm extends DetailsForm {
 			}
 		}
 		
-		WPushButton add = new WPushButton(tr("form.importTool.details.mappings.addButton"), this);
-		add.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
-			public void trigger(WMouseEvent arg) {
-				addRow(rule.getForm().getInteractionState(), "", "");
-			}
-		});
+		if (rule.getForm().isEditable()) {
+			WPushButton add = new WPushButton(tr("form.importTool.details.mappings.addButton"), this);
+			add.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+				public void trigger(WMouseEvent arg) {
+					addRow(rule.getForm().getInteractionState(), "", "");
+				}
+			});
+		}
 		
 		init();
 	}

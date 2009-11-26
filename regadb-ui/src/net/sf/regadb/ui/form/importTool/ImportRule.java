@@ -85,6 +85,7 @@ public class ImportRule {
 		type.addComboChangeListener(new Signal.Listener(){
 			public void trigger() {
 				fillTypeNameCombo(getRule());
+				fillDetails(ImportRule.this.rule, ImportRule.this.dataProvider);
 			}			
 		});
 		name.addComboChangeListener(new Signal.Listener(){
@@ -150,7 +151,7 @@ public class ImportRule {
 	
 	//TODO show correct form
 	private void fillDetails(Rule rule, DataProvider provider) {
-		details.setDisabled(false);
+		details.setHidden(false);
 		if (type.currentValue() == Rule.Type.AttributeValue) {
 			Attribute attribute = (Attribute)name.currentItem().getDataValue();
 			if (ValueTypes.isNominal(attribute.getValueType()))
@@ -159,6 +160,8 @@ public class ImportRule {
 								getAttributeMappings(attribute, provider), 
 								WString.tr("form.importTool.details.attributeNV"), 
 								this));
+			else 
+				details.setHidden(true);
 		} else if (type.currentValue() == Rule.Type.EventValue) {
 			Event event = (Event)name.currentItem().getDataValue();
 			if (ValueTypes.isNominal(event.getValueType()))
@@ -167,6 +170,8 @@ public class ImportRule {
 								getEventMappings(event, provider), 
 								WString.tr("form.importTool.details.eventNV"), 
 								this));
+			else 
+				details.setHidden(true);
 		} else if (type.currentValue() == Rule.Type.TestValue) {
 			Test test = (Test)name.currentItem().getDataValue();
 			if (ValueTypes.isNominal(test.getTestType().getValueType()))
@@ -175,8 +180,10 @@ public class ImportRule {
 								getTestMappings(test, provider), 
 								WString.tr("form.importTool.details.testNV"), 
 								this));
+			else 
+				details.setHidden(true);
 		} else {
-			details.setDisabled(true);
+			details.setHidden(true);
 		}
 	}
 	
