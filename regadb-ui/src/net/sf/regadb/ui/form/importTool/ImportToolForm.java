@@ -114,7 +114,7 @@ public class ImportToolForm extends FormWidget {
 		
 		addControlButtons();
 	}
-	
+
 	private void addRule(Rule r) {
 		ImportRule rule = new ImportRule(dataProvider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), r);
 		rules.add(rule);
@@ -187,5 +187,9 @@ public class ImportToolForm extends FormWidget {
 	
 	public List<ImportRule> getRules() {
 		return rules;
+	}
+	
+	public DataProvider getDataProvider() {
+		return dataProvider;
 	}
 }

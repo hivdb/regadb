@@ -30,6 +30,7 @@ public class Rule {
 	private String typeName;
 	private int number;
 	private MappingDetails mappingDetails;
+	private RegimenDetails regimenDetails;
 
 	public String getColumn() {
 		return column;
@@ -69,5 +70,13 @@ public class Rule {
 
 	public void setMappingDetails(MappingDetails mappingDetails) {
 		this.mappingDetails = mappingDetails;
+	}
+	
+	public RegimenDetails getRegimenDetails() {
+		return regimenDetails;
+	}
+
+	public void setRegimenDetails(RegimenDetails regimenDetails) {
+		this.regimenDetails = regimenDetails;
 	}
 }

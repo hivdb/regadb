@@ -36,7 +36,7 @@ public class DataProvider {
 	public List<String> getValues(String header) {
 		List<String> values = new ArrayList<String>();
 		for (int i = 0; i < sheet.getColumns(); i++) {
-			if (sheet.getCell(0, i).getContents().trim().equals(header)) {
+			if (sheet.getCell(i, 0).getContents().trim().equals(header)) {
 				for (int j = 1; j < sheet.getRows(); j++) {
 					String value = sheet.getCell(i, j).getContents().trim();
 					values.add(value);

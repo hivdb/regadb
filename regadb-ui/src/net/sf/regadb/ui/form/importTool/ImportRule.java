@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Test;
@@ -157,7 +158,8 @@ public class ImportRule {
 			if (ValueTypes.isNominal(attribute.getValueType()))
 				addDetailsListener(details, 
 						new MappingDetailsForm(
-								getAttributeMappings(attribute, provider), 
+								getCurrentColumnData(), 
+								getAttributeValues(attribute), 
 								WString.tr("form.importTool.details.attributeNV"), 
 								this));
 			else 
@@ -167,7 +169,8 @@ public class ImportRule {
 			if (ValueTypes.isNominal(event.getValueType()))
 				addDetailsListener(details, 
 						new MappingDetailsForm(
-								getEventMappings(event, provider), 
+								getCurrentColumnData(), 
+								getEventValues(event), 
 								WString.tr("form.importTool.details.eventNV"), 
 								this));
 			else 
@@ -177,56 +180,57 @@ public class ImportRule {
 			if (ValueTypes.isNominal(test.getTestType().getValueType()))
 				addDetailsListener(details, 
 						new MappingDetailsForm(
-								getTestMappings(test, provider), 
+								getCurrentColumnData(), 
+								getTestValues(test), 
 								WString.tr("form.importTool.details.testNV"), 
 								this));
 			else 
 				details.setHidden(true);
+		} else if (type.currentValue() == Rule.Type.TherapyRegimen) {
+			addDetailsListener(details, 
+					new RegimenDetailsForm(
+							getCurrentColumnData(), 
+							getDrugValues(),
+							this));
 		} else {
 			details.setHidden(true);
 		}
 	}
 	
-	private Map<String, String> getEventMappings(Event e, DataProvider dp) {
+	private List<String> getDrugValues() {
+		List<String> drugs = new ArrayList<String>();
+		Transaction tr = RegaDBMain.getApp().createTransaction();
+		for (DrugGeneric dg : tr.getGenericDrugs()) {
+			drugs.add(dg.getGenericId());
+		}
+		for (DrugCommercial dc : tr.getCommercialDrugs()) {
+			drugs.add(dc.getName());
+		}
+		return drugs;
+	}
+
+	private List<String> getEventValues(Event e) {
 		List<String> databaseValues = new ArrayList<String>();
 		for (EventNominalValue env : e.getEventNominalValues()) {
 			databaseValues.add(env.getValue());
 		}
-		return getMappings(databaseValues, dp);
+		return databaseValues;
 	}
 	
-	private Map<String, String> getTestMappings(Test t, DataProvider dp) {
+	private List<String> getTestValues(Test t) {
 		List<String> databaseValues = new ArrayList<String>();
 		for (TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
 			databaseValues.add(tnv.getValue());
 		}
-		return getMappings(databaseValues, dp);
+		return databaseValues;
 	}
 	
-	private Map<String, String> getAttributeMappings(Attribute a, DataProvider dp) {
+	private List<String> getAttributeValues(Attribute a) {
 		List<String> databaseValues = new ArrayList<String>();
 		for (AttributeNominalValue anv : a.getAttributeNominalValues()) {
 			databaseValues.add(anv.getValue());
 		}
-		return getMappings(databaseValues, dp);
-	}
-	
-	private Map<String, String> getMappings(List<String> databaseValues, DataProvider dp) {
-		Map<String, String> mappings = new HashMap<String, String>();
-		if (dp != null) {
-			List<String> excelValues = dp.getValues(column.text());
-			for (String ev : excelValues) {
-				String evt = ev.trim();
-				String mapping = "";
-				for (String dv : databaseValues) {
-					if (evt.equalsIgnoreCase(dv)) {
-						mapping = dv;
-					}
-				}
-				mappings.put(evt, mapping);
-			}
-		}
-		return mappings;
+		return databaseValues;
 	}
 	
 	private void addDetailsListener(WPushButton button, final DetailsForm form) {
@@ -264,5 +268,12 @@ public class ImportRule {
 	
 	public ImportToolForm getForm() {
 		return form;
+	}
+	
+	public List<String> getCurrentColumnData() {
+		if (dataProvider == null)
+			return new ArrayList<String>();
+		else 
+			return dataProvider.getValues(column.currentValue());
 	}
 }
