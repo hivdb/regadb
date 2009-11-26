@@ -7,6 +7,7 @@
 package net.sf.regadb.db;
 
 public enum Privileges {
+	NONE (0),
     ANONYMOUS_READONLY (1),
     READONLY (2),
     READWRITE (3);
@@ -35,8 +36,8 @@ public enum Privileges {
             return Privileges.READONLY;
         case 3:
             return Privileges.READWRITE;
+        default:
+        	return Privileges.NONE;
         }
-        
-        return null;
     }
 }
