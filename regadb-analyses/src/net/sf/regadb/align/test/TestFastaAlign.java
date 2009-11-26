@@ -78,7 +78,7 @@ public class TestFastaAlign {
                     	g = getGenome(ntseq);
                     }
                     
-                    System.out.println("sequence:" + seq.getName());
+                    System.out.println("sequence=" + seq.getName());
                     List<AaSequence> result = aligner.align(ntseq, g);
                     
                     Collections.sort(result, new Comparator<AaSequence>(){
@@ -91,7 +91,10 @@ public class TestFastaAlign {
                     
                 	for (AaSequence aaseq : result) {
                     	Map<Short, String> aaMutations = new HashMap<Short, String>();
-                    	System.out.print("protein:" + aaseq.getProtein().getAbbreviation() + ":");
+                    	System.out.print("protein=" + aaseq.getProtein().getAbbreviation() + ",");
+                    	System.out.print("start=" + aaseq.getFirstAaPos() + ",");
+                    	System.out.print("end=" + aaseq.getLastAaPos() + ",");
+                    	System.out.print("mutations=");
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
                     		String mut = aamut.getNtReferenceCodon().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getNtMutationCodon().toUpperCase();
                     		aaMutations.put(aamut.getId().getMutationPosition(), mut);
