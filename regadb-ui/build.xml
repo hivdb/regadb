@@ -1,24 +1,19 @@
 <project name="regadb-ui" default="all" basedir=".">
-    <description>
-        RegaDB build file for regadb-ui
-    </description>
-  	<!-- set global properties for this build -->
-  	<property name="src" location="src"/>
-  	<property name="build" location="build"/>
-  	<property name="dist" location="dist"/>
-	<property name="lib" location="lib"/>
-	
-	<property name="srcResourceBundleFilesDir" location="${src}/net/sf/regadb/ui/i18n/resources"/>
-	<property name="buildResourceBundleFilesDir" location="${build}/net/sf/regadb/ui/i18n/resources"/>
-	
-	<property name="proj.name" value="regadb-ui"/>
-	<property name="proj.version" value="0.9"/>
-
-	<path id="project.classpath">
-		<fileset dir="lib">
-	      <include name="*.jar"/>
-	    </fileset>
-	</path>
+  <description>
+    RegaDB build file for regadb-ui
+  </description>
+  <import file="../common.xml"/>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+  <property name="lib" location="lib"/>
+  
+  <property name="srcResourceBundleFilesDir" location="${src}/net/sf/regadb/ui/i18n/resources"/>
+  <property name="buildResourceBundleFilesDir" location="${build}/net/sf/regadb/ui/i18n/resources"/>
+  
+  <property name="proj.name" value="regadb-ui"/>
+  <property name="proj.version" value="0.9"/>
 	
   <target name="init" depends="clean">
     <!-- Create the build directory structure used by compile -->
@@ -32,22 +27,23 @@
   		<classpath refid="project.classpath"/>
     </javac>
   	
-  	<mkdir dir="${buildResourceBundleFilesDir}"/>
-  	
-  	<copy todir="${buildResourceBundleFilesDir}">
-  	  <fileset dir="${srcResourceBundleFilesDir}"
-  	           includes="**/*.properties" />
-  	</copy>
+    <mkdir dir="${buildResourceBundleFilesDir}"/>
+    
+    <copy todir="${buildResourceBundleFilesDir}">
+      <fileset dir="${srcResourceBundleFilesDir}"
+  	       includes="**/*.properties" />
+    </copy>
   </target>
 
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the war file -->
-  	<jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
-  	<war destfile="${dist}/${proj.name}.war" webxml="WebRoot/WEB-INF/web.xml">
-  	  <fileset dir="WebRoot"/>
-  	  <lib dir="${lib}"/>
-  	  <classes dir="${build}"/>
-  	</war>
+    <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+    <war destfile="${dist}/${proj.name}.war" webxml="WebRoot/WEB-INF/web.xml">
+      <fileset dir="WebRoot"/>
+      <lib dir="../build/libPool"/>
+      <classes dir="${build}"/>
+    </war>
+    <antcall target="create-package" />
   </target>
   
   <!-- Clean up -->

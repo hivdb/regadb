@@ -398,8 +398,8 @@ public class SinglePatientForm extends FormWidget
         update(patient_, t);
         t.commit();
         
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientSelected, RegaDBMain.getApp().getTree().getTreeContent().viewPatient);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(patient_);
+        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode, RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViewActionItem());
     }
     
     @Override
@@ -407,12 +407,16 @@ public class SinglePatientForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().singlePatientMain, RegaDBMain.getApp().getTree().getTreeContent().patientSelect);
+            redirectToSelect(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode,
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectActionItem());
         }
         else
         {
-            RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(patient_);
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientSelected, RegaDBMain.getApp().getTree().getTreeContent().viewPatient);
+            RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(patient_);
+            redirectToView(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode,
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViewActionItem());
         } 
     }
     
@@ -431,8 +435,8 @@ public class SinglePatientForm extends FormWidget
     @Override
     public void redirectAfterDelete() 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem(null);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(null);
     }
     
     private void storeAttributeTF(String text, PatientAttributeValue attributeValue, Attribute attribute, Patient p, Transaction t)

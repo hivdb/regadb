@@ -1,20 +1,15 @@
 <project name="regadb-swing" default="all" basedir=".">
-    <description>
-        RegaDB build file for regadb-swing
-    </description>
+  <description>
+    RegaDB build file for regadb-swing
+  </description>
+  <import file="../common.xml"/>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-	<property name="proj.name" value="regadb-swing"/>
-	<property name="proj.version" value="0.9"/>
+  <property name="proj.name" value="regadb-swing"/>
+  <property name="proj.version" value="0.9"/>
 
-	<path id="project.classpath">
-		<fileset dir="lib">
-	      <include name="*.jar"/>
-	    </fileset>
-	</path>
-	
   <target name="init" depends="clean">
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
@@ -31,6 +26,7 @@
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the jar file -->
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+    <antcall target="create-package" />
   </target>
   
   <!-- Clean up -->

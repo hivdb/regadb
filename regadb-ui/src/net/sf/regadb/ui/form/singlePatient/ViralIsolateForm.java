@@ -9,7 +9,6 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.BlastAnalysis;
 import net.sf.regadb.service.wts.ServiceException;
@@ -46,7 +45,7 @@ public class ViralIsolateForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         if(getInteractionState()==InteractionState.Adding)
         {
-            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
             t.attach(p);
             viralIsolate_ = p.createViralIsolate();
             viralIsolate_.getNtSequences().add(new NtSequence(viralIsolate_));
@@ -134,8 +133,11 @@ public class ViralIsolateForm extends FormWidget
         
         _mainForm.startAnalysis(genome);
              
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(viralIsolate_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(viralIsolate_);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
+        redirectToView(
+        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem(),
+        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
 	}
 	
 	private Genome blast(){
@@ -168,11 +170,15 @@ public class ViralIsolateForm extends FormWidget
         {
         	deleteObject();
         	
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().viralIsolates, RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesSelect);
+            redirectToSelect(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectActionItem());
         }
         else
         {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected, RegaDBMain.getApp().getTree().getTreeContent().viralIsolateView);
+            redirectToView(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
         } 
     }
     
@@ -181,7 +187,7 @@ public class ViralIsolateForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
         p.getViralIsolates().remove(viralIsolate_);
         
         t.delete(viralIsolate_);
@@ -194,8 +200,11 @@ public class ViralIsolateForm extends FormWidget
     @Override
     public void redirectAfterDelete() 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
+    	RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
+        	.getSelectActionItem().selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
+        	.setSelectedItem(null);
     }
     
     @Override
