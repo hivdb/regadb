@@ -4,29 +4,39 @@ public class Rule {
 	public enum Type {
 		PatientId("Patient id"),
 		AttributeValue("Attribute value"),
-		TestDate("Test date"),
+		TestDate("Test date", true),
 		TestValue("Test value"),
-		EventStartDate("Event start date"),
-		EventEndDate("Event end date"),
+		EventStartDate("Event start date", true),
+		EventEndDate("Event end date", true),
 		EventValue("Event value"),
 		TherapyRegimen("Therapy regimen"),
-		TherapyStartDate("Therapy start date"),
-		TherapyEndDate("Therapy end date"),
+		TherapyStartDate("Therapy start date", true),
+		TherapyEndDate("Therapy end date", true),
 		TherapyMotivation("Therapy motivation"),
 		TherapyComment("Therapy comment"),
 		ViralIsolateSampleId("Viral isolate sample id"),
-		ViralIsolateSampleDate("Viral isolate sample date"),
+		ViralIsolateSampleDate("Viral isolate sample date", true),
 		ViralIsolateSampleSequence1("Viral isolate sequence"),
 		ViralIsolateSampleManualSubtype("Viral isolate manual subtype");
 		
 		private String name;
+		private boolean date;
+		
+		private Type(String name, boolean date) {
+			this.name = name;
+			this.date = date;
+		}
 		
 		private Type(String name) {
-			this.name = name;
+			this(name, false);
 		}
 		
 		public String getName() {
 			return name;
+		}
+		
+		public boolean isDate() {
+			return date;
 		}
 	}
 	
@@ -36,6 +46,7 @@ public class Rule {
 	private int number;
 	private MappingDetails mappingDetails;
 	private RegimenDetails regimenDetails;
+	private DateDetails dateDetails;
 
 	public String getColumn() {
 		return column;
@@ -83,5 +94,13 @@ public class Rule {
 
 	public void setRegimenDetails(RegimenDetails regimenDetails) {
 		this.regimenDetails = regimenDetails;
+	}
+	
+	public DateDetails getDateDetails() {
+		return dateDetails;
+	}
+
+	public void setDateDetails(DateDetails dateDetails) {
+		this.dateDetails = dateDetails;
 	}
 }

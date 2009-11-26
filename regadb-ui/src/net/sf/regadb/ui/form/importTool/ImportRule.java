@@ -150,7 +150,6 @@ public class ImportRule {
 			name.selectItem(rule.getTypeName());
 	}
 	
-	//TODO show correct form
 	private void fillDetails(Rule rule, DataProvider provider) {
 		details.setHidden(false);
 		if (type.currentValue() == Rule.Type.AttributeValue) {
@@ -192,6 +191,9 @@ public class ImportRule {
 							getCurrentColumnData(), 
 							getDrugValues(),
 							this));
+		} else if (type.currentValue().isDate()){
+			addDetailsListener(details, 
+					new DateDetailsForm(this, this.getRule().getDateDetails()));
 		} else {
 			details.setHidden(true);
 		}
