@@ -2,6 +2,7 @@ package net.sf.regadb.ui.form.importTool.data;
 
 public class Rule {
 	public enum Type {
+		PatientId("Patient id"),
 		AttributeValue("Attribute value"),
 		TestDate("Test date"),
 		TestValue("Test value"),
