@@ -44,10 +44,11 @@ public class ImportRule {
 	
 	private ImportToolForm form;
 	
-	private DetailsForm detailsForm;
+	private DetailsBox detailsBox;
 
 	public ImportRule(DataProvider dataProvider, final ImportToolForm form, final WTableRow row, Rule rule) {
 		this.form = form;
+		this.rule = rule;
 		
 		InteractionState is = form.getInteractionState();
 		column = new ComboBox<String>(dataProvider!=null?is:InteractionState.Viewing, form);
@@ -80,8 +81,6 @@ public class ImportRule {
 		fillTypeCombo(rule);
 		fillTypeNameCombo(rule);
 		fillDetails(rule, dataProvider);
-		
-		this.rule = rule;
 		
 		type.addComboChangeListener(new Signal.Listener(){
 			public void trigger() {
@@ -207,28 +206,31 @@ public class ImportRule {
 	
 	private Map<String, String> getMappings(List<String> databaseValues, DataProvider dp) {
 		Map<String, String> mappings = new HashMap<String, String>();
-		List<String> excelValues = dp.getValues(column.text());
-		for (String ev : excelValues) {
-			String evt = ev.trim();
-			String mapping = "";
-			for (String dv : databaseValues) {
-				if (evt.equalsIgnoreCase(dv)) {
-					mapping = dv;
+		if (dp != null) {
+			List<String> excelValues = dp.getValues(column.text());
+			for (String ev : excelValues) {
+				String evt = ev.trim();
+				String mapping = "";
+				for (String dv : databaseValues) {
+					if (evt.equalsIgnoreCase(dv)) {
+						mapping = dv;
+					}
 				}
+				mappings.put(evt, mapping);
 			}
-			mappings.put(evt, mapping);
 		}
 		return mappings;
 	}
 	
 	private void addDetailsListener(WPushButton button, final DetailsForm form) {
-		this.detailsForm = form;
+		this.detailsBox = new DetailsBox(form);
 		if (detailsListener != null) 
 			button.clicked().removeListener(detailsListener);
 		
 		detailsListener = new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent arg) {
-				DetailsBox box = new DetailsBox(form);
+				detailsBox.getForm().init();
+				detailsBox.show();
 			}
 		};
 		button.clicked().addListener(button, detailsListener);
@@ -248,10 +250,8 @@ public class ImportRule {
 		rule.setType(type.currentValue());
 		rule.setTypeName(name.currentString());
 		
-		if (detailsForm != null) {
-			//TODO validate
-			WString error = detailsForm.validate();
-			detailsForm.save(rule);
+		if (detailsBox != null) {
+			detailsBox.getForm().save(rule);
 		}
 	}
 	

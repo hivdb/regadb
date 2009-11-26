@@ -18,4 +18,8 @@ public abstract class DetailsForm extends WContainerWidget {
 	public abstract WString validate();
 	
 	public abstract void save(Rule rule);
+	
+	public abstract void save();
+	
+	public abstract void init();
 }

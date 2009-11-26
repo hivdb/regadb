@@ -11,14 +11,12 @@ import eu.webtoolkit.jwt.WTableRow;
 import eu.webtoolkit.jwt.WWidget;
 
 public class SimpleTable extends WTable{
-	int currentRow;
 	int maxColumns = 0;
 	int headerColumns = 0;
 	
 	public SimpleTable(WContainerWidget parent) {
 		super(parent);
     	setStyleClass("datatable datatable-grid");
-    	currentRow = 1;
 	}
 	
 	public void setHeaders(CharSequence... titles) {
@@ -50,16 +48,16 @@ public class SimpleTable extends WTable{
 	
 	public WTableRow addRow(List<WWidget> widgets) {
 		int col = 0;
+		int row = getRowCount();
 		for (WWidget widget : widgets) {
-			getElementAt(currentRow, col).addWidget(widget);
+			getElementAt(row, col).addWidget(widget);
 			col++;
 		}
-		WTableRow row = this.getRowAt(currentRow);
-		currentRow++;
+		WTableRow tableRow = this.getRowAt(row);
 		
 		maxColumns = Math.max(maxColumns, col);
 		
-		return row;
+		return tableRow;
 	}
 	
 	/**

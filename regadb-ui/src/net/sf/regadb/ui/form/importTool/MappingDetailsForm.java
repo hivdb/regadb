@@ -22,8 +22,13 @@ public class MappingDetailsForm extends DetailsForm {
 	private List<TextField> originalValues = new ArrayList<TextField>();
 	private List<TextField> regadbValues = new ArrayList<TextField>();
 	
+	private ImportRule rule;
+	
+	private MappingDetails details = new MappingDetails();
+	
 	public MappingDetailsForm(Map<String, String> values, WString title, final ImportRule rule) {
 		super(title);
+		this.rule = rule;
 		
 		mappingTable = new SimpleTable(this);
 		ArrayList<CharSequence> headers = new ArrayList<CharSequence>();
@@ -33,23 +38,35 @@ public class MappingDetailsForm extends DetailsForm {
 			headers.add(tr("form.importTool.details.mappings.delete"));
 		mappingTable.setHeaders(headers);
 		
-		MappingDetails details = rule.getRule().getMappingDetails();
-		if (details != null) {
-			for (Map.Entry<String, String> e: details.getMappings().entrySet()) {
-				addRow(rule.getForm().getInteractionState(), e.getKey(), e.getValue());
+		MappingDetails localDetails = rule.getRule().getMappingDetails();
+		if (localDetails != null) {
+			for (Map.Entry<String, String> e: localDetails.getMappings().entrySet()) {
+				details.getMappings().put(e.getKey(), e.getValue());
 			}
 		} else {
 			for (Map.Entry<String, String> e : values.entrySet()) {
-				addRow(rule.getForm().getInteractionState(), e.getKey(), e.getValue());
+				details.getMappings().put(e.getKey(), e.getValue());
 			}
 		}
 		
-		WPushButton add = new WPushButton(tr("form.importTool.details.mappings.addButton"));
+		WPushButton add = new WPushButton(tr("form.importTool.details.mappings.addButton"), this);
 		add.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
 				addRow(rule.getForm().getInteractionState(), "", "");
 			}
 		});
+		
+		init();
+	}
+	
+	public void init() {
+		mappingTable.clear();
+		originalValues.clear();
+		regadbValues.clear();
+		
+		for (Map.Entry<String, String> e : details.getMappings().entrySet()) {
+			addRow(rule.getForm().getInteractionState(), e.getKey(), e.getValue());
+		}
 	}
 	
 	private void addRow(InteractionState is, String originalValue, String regadbValue) {
@@ -62,7 +79,7 @@ public class MappingDetailsForm extends DetailsForm {
 		regadb.setText(regadbValue);
 		widgets.add(regadb);
 		regadbValues.add(regadb);
-		WPushButton delete = new WPushButton("form.importTool.details.mappings.deleteButton");
+		WPushButton delete = new WPushButton(tr("form.importTool.details.mappings.deleteButton"));
 		if (is == InteractionState.Adding || is == InteractionState.Editing) {
 			widgets.add(delete);
 		}
@@ -75,13 +92,16 @@ public class MappingDetailsForm extends DetailsForm {
 			}
 		});
 	}
-
-	public void save(Rule rule) {
-		MappingDetails details = new MappingDetails();
+	
+	public void save() {
+		details.getMappings().clear();
 		for (int i = 0; i < originalValues.size(); i++) {
 			details.getMappings().put(originalValues.get(i).text().trim(), 
 					regadbValues.get(i).text().trim());
 		}
+	}
+	
+	public void save(Rule rule) {
 		rule.setMappingDetails(details);
 	}
 
