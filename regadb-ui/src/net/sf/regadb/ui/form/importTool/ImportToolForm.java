@@ -24,6 +24,7 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 import com.thoughtworks.xstream.XStream;
 
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
@@ -38,11 +39,12 @@ public class ImportToolForm extends FormWidget {
 	private Label fileL;
 	private FileUpload fileU;
 	
-	private ImportDefinition definition;
-	
 	private WTable ruleTable;
 	private List<ImportRule> rules = new ArrayList<ImportRule>();
 	private WPushButton addRuleButton;
+	
+	private ImportDefinition definition;
+	private DataProvider dataProvider;
 
 	public ImportToolForm(InteractionState interactionState, WString formName, ImportDefinition definition) {
 		super(formName, interactionState);
@@ -59,6 +61,20 @@ public class ImportToolForm extends FormWidget {
 			fileL = new Label(tr("form.importTool.excelFile"));
 			fileU = new FileUpload(getInteractionState(), this);
 			fileU.setMandatory(true);
+			fileU.getFileUpload().uploaded().addListener(this, new Signal.Listener(){
+				public void trigger() {
+					Workbook book = null;
+					try {
+						book = Workbook.getWorkbook(new File(fileU.getFileUpload().getSpoolFileName()));
+					} catch (BiffException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					dataProvider = new DataProvider(book.getSheet(0));
+				}
+			});
 			formTable.addLineToTable(fileL, fileU);
 		}
 		
@@ -82,20 +98,9 @@ public class ImportToolForm extends FormWidget {
 				@Override
 				public void trigger(WMouseEvent arg) {
 					boolean canAdd = false;
-					if (!fileU.getFileUpload().getSpoolFileName().equals("")) {
-						Workbook book = null;
-						try {
-							book = Workbook.getWorkbook(new File(fileU.getFileUpload().getSpoolFileName()));
-						} catch (BiffException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						if (book != null) {
-							DataProvider dataProvider = new DataProvider(book.getSheet(0));
-							addRule(dataProvider, new Rule());
-							canAdd = true;
-						}
+					if (dataProvider != null) {
+						addRule(new Rule());
+						canAdd = true;
 					}
 					
 					if (!canAdd) {
@@ -110,8 +115,8 @@ public class ImportToolForm extends FormWidget {
 		addControlButtons();
 	}
 	
-	private void addRule(DataProvider provider, Rule r) {
-		ImportRule rule = new ImportRule(provider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), r);
+	private void addRule(Rule r) {
+		ImportRule rule = new ImportRule(dataProvider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), r);
 		rules.add(rule);
 	}
 	
@@ -125,7 +130,7 @@ public class ImportToolForm extends FormWidget {
     		descriptionTF.setText(definition.getDescription());
     		
     		for (Rule r : definition.getRules()) {
-    			addRule(null, r);
+    			addRule(r);
     		}
     	}
     }
