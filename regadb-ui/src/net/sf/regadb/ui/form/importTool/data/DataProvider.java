@@ -33,6 +33,19 @@ public class DataProvider {
 		return null;
 	}
 	
+	public List<String> getValues(String header) {
+		List<String> values = new ArrayList<String>();
+		for (int i = 0; i < sheet.getColumns(); i++) {
+			if (sheet.getCell(0, i).getContents().trim().equals(header)) {
+				for (int j = 1; j < sheet.getRows(); j++) {
+					String value = sheet.getCell(i, j).getContents().trim();
+					values.add(value);
+				}
+			}
+		}
+		return values;
+	}
+	
 	public int getNumberRows() {
 		return sheet.getRows() - 1;
 	}

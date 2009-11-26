@@ -1,11 +1,17 @@
 package net.sf.regadb.ui.form.importTool;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
@@ -35,10 +41,15 @@ public class ImportRule {
 	
 	private DataProvider dataProvider;
 	private Rule rule;
+	
+	private ImportToolForm form;
+	
+	private DetailsForm detailsForm;
 
 	public ImportRule(DataProvider dataProvider, final ImportToolForm form, final WTableRow row, Rule rule) {
-		InteractionState is = form.getInteractionState();
+		this.form = form;
 		
+		InteractionState is = form.getInteractionState();
 		column = new ComboBox<String>(dataProvider!=null?is:InteractionState.Viewing, form);
 		addToRow(row, 0, column);
 		type = new ComboBox<Rule.Type>(is, form);
@@ -68,12 +79,18 @@ public class ImportRule {
 		fillColumnCombo(rule);
 		fillTypeCombo(rule);
 		fillTypeNameCombo(rule);
+		fillDetails(rule, dataProvider);
 		
 		this.rule = rule;
 		
 		type.addComboChangeListener(new Signal.Listener(){
 			public void trigger() {
 				fillTypeNameCombo(getRule());
+			}			
+		});
+		name.addComboChangeListener(new Signal.Listener(){
+			public void trigger() {
+				fillDetails(ImportRule.this.rule, ImportRule.this.dataProvider);
 			}			
 		});
 	}
@@ -133,30 +150,88 @@ public class ImportRule {
 	}
 	
 	//TODO show correct form
-	private void fillDetails(Rule rule) {
+	private void fillDetails(Rule rule, DataProvider provider) {
 		details.setDisabled(false);
 		if (type.currentValue() == Rule.Type.AttributeValue) {
 			Attribute attribute = (Attribute)name.currentItem().getDataValue();
 			if (ValueTypes.isNominal(attribute.getValueType()))
-				addDetailsListener(details, null);
+				addDetailsListener(details, 
+						new MappingDetailsForm(
+								getAttributeMappings(attribute, provider), 
+								WString.tr("form.importTool.details.attributeNV"), 
+								this));
 		} else if (type.currentValue() == Rule.Type.EventValue) {
 			Event event = (Event)name.currentItem().getDataValue();
 			if (ValueTypes.isNominal(event.getValueType()))
-				addDetailsListener(details, null);
+				addDetailsListener(details, 
+						new MappingDetailsForm(
+								getEventMappings(event, provider), 
+								WString.tr("form.importTool.details.eventNV"), 
+								this));
 		} else if (type.currentValue() == Rule.Type.TestValue) {
 			Test test = (Test)name.currentItem().getDataValue();
 			if (ValueTypes.isNominal(test.getTestType().getValueType()))
-				addDetailsListener(details, null);
+				addDetailsListener(details, 
+						new MappingDetailsForm(
+								getTestMappings(test, provider), 
+								WString.tr("form.importTool.details.testNV"), 
+								this));
 		} else {
 			details.setDisabled(true);
 		}
 	}
 	
-	private void addDetailsListener(WPushButton button, Signal1.Listener<WMouseEvent> listener) {
+	private Map<String, String> getEventMappings(Event e, DataProvider dp) {
+		List<String> databaseValues = new ArrayList<String>();
+		for (EventNominalValue env : e.getEventNominalValues()) {
+			databaseValues.add(env.getValue());
+		}
+		return getMappings(databaseValues, dp);
+	}
+	
+	private Map<String, String> getTestMappings(Test t, DataProvider dp) {
+		List<String> databaseValues = new ArrayList<String>();
+		for (TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
+			databaseValues.add(tnv.getValue());
+		}
+		return getMappings(databaseValues, dp);
+	}
+	
+	private Map<String, String> getAttributeMappings(Attribute a, DataProvider dp) {
+		List<String> databaseValues = new ArrayList<String>();
+		for (AttributeNominalValue anv : a.getAttributeNominalValues()) {
+			databaseValues.add(anv.getValue());
+		}
+		return getMappings(databaseValues, dp);
+	}
+	
+	private Map<String, String> getMappings(List<String> databaseValues, DataProvider dp) {
+		Map<String, String> mappings = new HashMap<String, String>();
+		List<String> excelValues = dp.getValues(column.text());
+		for (String ev : excelValues) {
+			String evt = ev.trim();
+			String mapping = "";
+			for (String dv : databaseValues) {
+				if (evt.equalsIgnoreCase(dv)) {
+					mapping = dv;
+				}
+			}
+			mappings.put(evt, mapping);
+		}
+		return mappings;
+	}
+	
+	private void addDetailsListener(WPushButton button, final DetailsForm form) {
+		this.detailsForm = form;
 		if (detailsListener != null) 
 			button.clicked().removeListener(detailsListener);
-		detailsListener = listener;
-		button.clicked().addListener(button, listener);
+		
+		detailsListener = new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent arg) {
+				DetailsBox box = new DetailsBox(form);
+			}
+		};
+		button.clicked().addListener(button, detailsListener);
 	}
 	
 	private void addToRow(WTableRow row, int col, WWidget widget) {
@@ -172,5 +247,15 @@ public class ImportRule {
 		rule.setNumber(Integer.parseInt(number.text()));
 		rule.setType(type.currentValue());
 		rule.setTypeName(name.currentString());
+		
+		if (detailsForm != null) {
+			//TODO validate
+			WString error = detailsForm.validate();
+			detailsForm.save(rule);
+		}
+	}
+	
+	public ImportToolForm getForm() {
+		return form;
 	}
 }

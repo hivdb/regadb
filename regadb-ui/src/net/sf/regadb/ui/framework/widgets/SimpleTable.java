@@ -1,10 +1,13 @@
 package net.sf.regadb.ui.framework.widgets;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableRow;
 import eu.webtoolkit.jwt.WWidget;
 
 public class SimpleTable extends WTable{
@@ -17,7 +20,12 @@ public class SimpleTable extends WTable{
     	setStyleClass("datatable datatable-grid");
     	currentRow = 1;
 	}
+	
 	public void setHeaders(CharSequence... titles) {
+		setHeaders(Arrays.asList(titles));
+	}
+	
+	public void setHeaders(List<CharSequence> titles) {
         int row = 0;
         headerColumns = 0;
         for (CharSequence title : titles) {
@@ -36,15 +44,22 @@ public class SimpleTable extends WTable{
 		}
 	}
 	
-	public void addRow(WWidget... widgets) {
+	public void addRow(WWidget ... widgets) {
+		addRow(Arrays.asList(widgets));
+	}
+	
+	public WTableRow addRow(List<WWidget> widgets) {
 		int col = 0;
 		for (WWidget widget : widgets) {
 			getElementAt(currentRow, col).addWidget(widget);
 			col++;
 		}
+		WTableRow row = this.getRowAt(currentRow);
 		currentRow++;
 		
 		maxColumns = Math.max(maxColumns, col);
+		
+		return row;
 	}
 	
 	/**

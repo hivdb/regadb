@@ -20,10 +20,6 @@ public class Rule {
 			this.name = name;
 		}
 		
-		private Type(String name, Details details) {
-			this.name = name;
-		}
-		
 		public String getName() {
 			return name;
 		}
@@ -33,8 +29,8 @@ public class Rule {
 	private Type type;
 	private String typeName;
 	private int number;
-	private Details details;
-	
+	private MappingDetails mappingDetails;
+
 	public String getColumn() {
 		return column;
 	}
@@ -67,11 +63,11 @@ public class Rule {
 		this.number = number;
 	}
 	
-	public Details getDetails() {
-		return details;
+	public MappingDetails getMappingDetails() {
+		return mappingDetails;
 	}
-	
-	public void setDetails(Details details) {
-		this.details = details;
+
+	public void setMappingDetails(MappingDetails mappingDetails) {
+		this.mappingDetails = mappingDetails;
 	}
 }
