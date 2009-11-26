@@ -59,13 +59,4 @@ public class ActionItem extends TreeMenuNode
 	        return action_;
         }
 	}
-
-	@Override
-	public boolean isEnabled()
-	{
-		if(getParent()!=null)
-			return getParentNode().isEnabled();
-		else 
-			return true;
-	}
 }
