@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -39,7 +40,7 @@ public class ImportToolForm extends FormWidget {
 	private Label fileL;
 	private FileUpload fileU;
 	
-	private WTable ruleTable;
+	private SimpleTable ruleTable;
 	private List<ImportRule> rules = new ArrayList<ImportRule>();
 	private WPushButton addRuleButton;
 	
@@ -80,16 +81,18 @@ public class ImportToolForm extends FormWidget {
 		
 		this.definition = definition;
 		
-		ruleTable = new WTable(this);
-		addHeader("form.importTool.rules.column");
-		addHeader("form.importTool.rules.type");
-		addHeader("form.importTool.rules.name");
-		addHeader("form.importTool.rules.number");
-		addHeader("form.importTool.rules.detail");
+		ruleTable = new SimpleTable(this);
+		List<WString> headers = new ArrayList<WString>();
+		headers.add(tr("form.importTool.rules.column"));
+		headers.add(tr("form.importTool.rules.type"));
+		headers.add(tr("form.importTool.rules.name"));
+		headers.add(tr("form.importTool.rules.number"));
+		headers.add(tr("form.importTool.rules.detail"));
 		if (getInteractionState() == InteractionState.Editing || 
 				getInteractionState() == InteractionState.Adding) {
-			addHeader("form.importTool.rules.delete");
+			headers.add(tr("form.importTool.rules.delete"));
 		}
+		ruleTable.setHeaders(headers);
 		
 		if (getInteractionState() == InteractionState.Editing || 
 				getInteractionState() == InteractionState.Adding) {
@@ -118,10 +121,6 @@ public class ImportToolForm extends FormWidget {
 	private void addRule(Rule r) {
 		ImportRule rule = new ImportRule(dataProvider, ImportToolForm.this, ruleTable.getRowAt(ruleTable.getRowCount()), r);
 		rules.add(rule);
-	}
-	
-	private void addHeader(String header) {
-		ruleTable.getElementAt(0, ruleTable.getColumnCount()).addWidget(new TableHeader(tr(header)));
 	}
     
     private void fillData()

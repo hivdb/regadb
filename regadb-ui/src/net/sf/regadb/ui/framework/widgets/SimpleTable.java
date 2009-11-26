@@ -23,7 +23,7 @@ public class SimpleTable extends WTable{
 		setHeaders(Arrays.asList(titles));
 	}
 	
-	public void setHeaders(List<CharSequence> titles) {
+	public void setHeaders(List<? extends CharSequence> titles) {
         int row = 0;
         headerColumns = 0;
         for (CharSequence title : titles) {
