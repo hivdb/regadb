@@ -12,7 +12,11 @@ public class Rule {
 		TherapyStartDate("Therapy start date"),
 		TherapyEndDate("Therapy end date"),
 		TherapyMotivation("Therapy motivation"),
-		TherapyComment("Therapy comment");
+		TherapyComment("Therapy comment"),
+		ViralIsolateSampleId("Viral isolate sample id"),
+		ViralIsolateSampleDate("Viral isolate sample date"),
+		ViralIsolateSampleSequence1("Viral isolate sequence"),
+		ViralIsolateSampleManualSubtype("Viral isolate manual subtype");
 		
 		private String name;
 		
