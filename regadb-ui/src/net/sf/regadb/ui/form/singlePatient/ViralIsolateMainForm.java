@@ -25,6 +25,7 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
@@ -356,7 +357,9 @@ public class ViralIsolateMainForm extends WContainerWidget
         seqLabelTF.setText(seq.getLabel());
         seqDateTF.setDate(seq.getSequenceDate());
         ntTF.setText(seq.getNucleotides());
-        basePairsTF.setText(seq.getNucleotides().length() + "");
+        
+        if (!viralIsolateForm_.isEditable())
+        	basePairsTF.setText(seq.getNucleotides().length() + "");
         
         for(TestResult tr : seq.getTestResults()){
             if(tr.getTest().getDescription().equals(StandardObjects.getSubtypeTestDescription())
