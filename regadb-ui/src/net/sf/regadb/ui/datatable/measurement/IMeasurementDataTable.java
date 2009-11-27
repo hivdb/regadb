@@ -45,13 +45,13 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public List<TestResult> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getNonViralIsolateTestResults(pt, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
 	public long getDataSetSize(Transaction t)
 	{
-		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient pt = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getNonViralIsolateTestResultsCount(pt, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 
@@ -99,10 +99,14 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 
 	public void selectAction(TestResult selectedItem)
 	{
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().measurementSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().measurementView.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
+        	.setSelectedItem(selectedItem);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
+        	.getSelectedActionItem().expand();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
+        	.getSelectedActionItem().refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
+        	.getViewActionItem().selectNode();
 	}
 
     public boolean[] sortableFields()

@@ -30,20 +30,24 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	private IFilter[] filters_ = new IFilter[4];
 	
 	public List<PatientEventValue> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending) {
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.getPatientEvents(p, startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 	
 	public long getDataSetSize(Transaction t) {
-		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.patientEventCount(p, HibernateStringUtils.filterConstraintsQuery(this));
 	}
 	
 	public void selectAction(PatientEventValue selectedItem) {
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.setSelectedItem(selectedItem);
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.expand();
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.refreshAllChildren();
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventView.selectNode();
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.setSelectedItem(selectedItem);
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getSelectActionItem().expand();
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getSelectedActionItem().refreshAllChildren();
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getViewActionItem().selectNode();
 	}
 	
 	public String[] getRowData(PatientEventValue pev) {

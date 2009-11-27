@@ -36,10 +36,4 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
     {
         return null;
     }
-
-    @Override
-    public boolean isEnabled()
-    {
-        return type_!=null;
-    }
 }
