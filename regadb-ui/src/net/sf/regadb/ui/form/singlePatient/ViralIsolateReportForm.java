@@ -101,7 +101,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolateForm_.getViralIsolate());
+        Genome genome = viralIsolateForm_.getViralIsolate().getGenome();
         if(genome != null){
             TestType testType = t.getTestType(StandardObjects.getGssTestType(genome));
             if(testType != null){

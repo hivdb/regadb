@@ -113,19 +113,6 @@ public class ViralIsolateFormUtils {
             return genericId;
     }
     
-    public static Genome getGenome(ViralIsolate vi){
-        if(vi != null){
-            Set<NtSequence> ntseqs = vi.getNtSequences();
-            if(ntseqs != null && ntseqs.size() > 0){
-                Set<AaSequence> aaseqs = ntseqs.iterator().next().getAaSequences();
-                if(aaseqs != null && aaseqs.size() > 0){
-                    return aaseqs.iterator().next().getProtein().getOpenReadingFrame().getGenome();
-                }
-            }
-        }
-        return null;
-    }
-    
     public static ArrayList<String> combineMutations(ArrayList<String> mutations){
         Map<String,StringBuilder> positions = new HashMap<String,StringBuilder>();
         

@@ -19,6 +19,8 @@ public class ViralIsolate implements java.io.Serializable {
     private String sampleId;
 
     private Date sampleDate;
+    
+    private Genome genome;
 
     private Set<NtSequence> ntSequences = new HashSet<NtSequence>(0);
 
@@ -32,15 +34,17 @@ public class ViralIsolate implements java.io.Serializable {
     }
 
     public ViralIsolate(PatientImpl patient, String sampleId, Date sampleDate,
+    		Genome genome,
             Set<NtSequence> ntSequences, Set<TestResult> testResults) {
         this.patient = patient;
         this.sampleId = sampleId;
         this.sampleDate = sampleDate;
         this.ntSequences = ntSequences;
         this.testResults = testResults;
+        this.genome = genome;
     }
 
-    public Integer getViralIsolateIi() {
+	public Integer getViralIsolateIi() {
         return this.viralIsolateIi;
     }
 
@@ -79,6 +83,14 @@ public class ViralIsolate implements java.io.Serializable {
     public void setSampleDate(Date sampleDate) {
         this.sampleDate = sampleDate;
     }
+    
+    public Genome getGenome() {
+		return genome;
+	}
+
+	public void setGenome(Genome genome) {
+		this.genome = genome;
+	}
 
     public Set<NtSequence> getNtSequences() {
         return this.ntSequences;

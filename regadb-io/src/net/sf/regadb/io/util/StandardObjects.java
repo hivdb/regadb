@@ -332,6 +332,9 @@ public class StandardObjects {
         return map.get(testTypeDescription);
     }
     public static TestType getTestType(String testTypeDescription, Genome genome){
+    	if (genome == null)
+    		return null;
+    	
         Map<String, TestType> map = standardGenomeTestTypes.get(genome.getOrganismName());
         if(map == null)
             return null;

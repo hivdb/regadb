@@ -81,7 +81,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
             }
         }
         
-        Genome genome = ViralIsolateFormUtils.getGenome((ViralIsolate)patient_.getViralIsolates().toArray()[0]);
+        Genome genome = ((ViralIsolate)(patient_.getViralIsolates().toArray()[0])).getGenome();
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         
         resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults, gssTestType);
