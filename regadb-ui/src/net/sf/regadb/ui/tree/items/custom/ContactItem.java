@@ -12,9 +12,9 @@ public class ContactItem extends ActionItem {
     public ActionItem addContact;
     
     public ContactItem(ActionItem root) {
-        super(tr("menu.custom.contacts"), root);
+        super(tr("menu.patient.custom.contact"), root);
         
-        lastContact = new ActionItem(tr("menu.custom.contacts.newest"), this, new ITreeAction() {
+        lastContact = new ActionItem(tr("menu.patient.custom.contact.last"), this, new ITreeAction() {
             public void performAction(TreeMenuNode node) {
                 RegaDBMain.getApp().getFormContainer().setForm(
                         new MultipleTestResultForm( tr("form.multipleTestResults.contact.newest"),
@@ -24,7 +24,7 @@ public class ContactItem extends ActionItem {
             }   
         });
         
-        addContact = new ActionItem(tr("menu.custom.contacts.add"), this, new ITreeAction() {
+        addContact = new ActionItem(tr("menu.patient.custom.contact.add"), this, new ITreeAction() {
             public void performAction(TreeMenuNode node) {
                 RegaDBMain.getApp().getFormContainer().setForm(
                         new MultipleTestResultForm( tr("form.multipleTestResults.contact.add"),

@@ -154,11 +154,15 @@ public class PatientEventForm extends FormWidget
 	public void cancel() {
 		if( getInteractionState() == InteractionState.Adding )
         {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().patientEvent, RegaDBMain.getApp().getTree().getTreeContent().patientEventSelect);
+            redirectToSelect(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectActionItem());
         }
         else
         {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected, RegaDBMain.getApp().getTree().getTreeContent().patientEventView);
+            redirectToView(
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedActionItem(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewActionItem());
         }
 	}
 	
@@ -177,8 +181,10 @@ public class PatientEventForm extends FormWidget
 	
 	@Override
 	public void redirectAfterDelete() {
-		RegaDBMain.getApp().getTree().getTreeContent().patientEventSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.setSelectedItem(null);
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+			.getSelectActionItem().selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
+        	.setSelectedItem(null);
 	}
 	
 	@Override
@@ -216,8 +222,10 @@ public class PatientEventForm extends FormWidget
 			update(patientEvent_, t);
 			t.commit();
 			
-	        RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected.setSelectedItem(patientEvent_);
-	        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().patientEventSelected, RegaDBMain.getApp().getTree().getTreeContent().patientEventView);
+	        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().setSelectedItem(patientEvent_);
+	        redirectToView(
+	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedActionItem(),
+	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewActionItem());
 		}
 	}
 	

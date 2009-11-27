@@ -187,16 +187,16 @@ public class IPatientDataTable implements IDataTable<Object[]>
 
     public void selectAction(Object[] selectedItem) 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.setSelectedItem((Patient)selectedItem[0]);
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().patientSelected.refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().viewPatient.selectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem((Patient)selectedItem[0]);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.expand();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViewActionItem().selectNode();
     
         clearItems();
     }
     
     public static void clearItems() {
-        ArrayList<TreeMenuNode> patientAttributes = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getChildren();
+        ArrayList<TreeMenuNode> patientAttributes = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getChildren();
         
         for(TreeMenuNode tn : patientAttributes)
         {
