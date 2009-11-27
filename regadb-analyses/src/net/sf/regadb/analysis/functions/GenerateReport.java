@@ -119,16 +119,10 @@ public class GenerateReport
     }
     
     private String getOrganismName(ViralIsolate vi){
-        String organismName="";
-        if(vi.getNtSequences().size() > 0){
-            NtSequence ntSeq = vi.getNtSequences().iterator().next();
-            
-            if(ntSeq.getAaSequences().size() > 0){
-                AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
-                organismName = aaSeq.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-            }
+        if(vi.getGenome() != null){
+        	return vi.getGenome().getOrganismName();
         }
-        return organismName;
+        return "";
     }
     
     private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest, int dateTolerance)
