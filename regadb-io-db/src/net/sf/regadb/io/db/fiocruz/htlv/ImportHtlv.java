@@ -32,11 +32,15 @@ public class ImportHtlv {
 	private static Map<String, Test> viTestMap = new HashMap<String, Test>();
 	
 	public static void main(String [] args) throws FileNotFoundException, UnsupportedEncodingException {
-		Table t = Table.readTable("/home/pieter/projects/htlv/htlv.csv");
+		if (args.length < 3) {
+			System.err.println("Usage: regadb-import-fiocruz-htlv file.csv file.xml mappingPath");
+			System.exit(0);
+		}
+		
+		Table t = Table.readTable(args[0]);
 		Map<String, Integer> map = getColumnMap(t);
 		
-		String mappingBasePath = 
-			"/home/pieter/projects/regadb/regadb-io-db/src/net/sf/regadb/io/db/fiocruz/htlv/mappings";
+		String mappingBasePath = args[1];
 		RegaDBSettings.createInstance();
 		List<Attribute> regadbAttributes = Utils.prepareRegaDBAttributes();
 		AttributeGroup demographics = new AttributeGroup("Demographics");
@@ -126,7 +130,7 @@ public class ImportHtlv {
 			addViralIsolateTest(p, vi, "Journal", journal);
 		}		
 		
-        IOUtils.exportPatientsXML(patients.values(), "/home/pieter/projects/htlv/htlv.xml", ConsoleLogger.getInstance());
+        IOUtils.exportPatientsXML(patients.values(), args[2], ConsoleLogger.getInstance());
 	}
 	
 	private static ViralIsolate addViralIsolate(Patient p, String id, String sequence) {
