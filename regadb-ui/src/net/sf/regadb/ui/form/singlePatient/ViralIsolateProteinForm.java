@@ -59,15 +59,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 
 	public void init()
 	{
-        boolean aligning = false;
-        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
-        {
-            if(ntseq.getAaSequences().size()==0)
-            {
-                aligning = true;
-                break;
-            }
-        }
+        boolean aligning = isAligning();
         
         //alignment refresh
         if(aligning)
@@ -113,22 +105,22 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		proteinGroupTable_.addLineToTable(nonSynonymousL, nonSynonymousTF);
 	}
     
+	private boolean isAligning() {
+		for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences()) {
+            if(ntseq.isAligned() == null || !ntseq.isAligned())
+                return true;
+        }
+		
+		return false;
+	}
+	
     private void checkAlignments()
     {
-        boolean aligning = false;
-        
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
         t.commit();
         
-        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
-        {
-            if(ntseq.getAaSequences().size()==0)
-            {
-                aligning = true;
-                break;
-            }
-        }
+        boolean aligning = isAligning();
         
         if(!aligning)
         {
@@ -151,6 +143,12 @@ public class ViralIsolateProteinForm extends WContainerWidget
 				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
 			}
 		}
+		
+		if (ntSequenceCombo_.size() == 0) {
+			proteinGroupTable_.clear();
+        	addWidget(new WarningMessage(new WImage("pics/formWarning.gif"), tr("form.viralIsolate.editView.message.noProteinData"), MessageType.INFO));
+		}
+		
         ntSequenceCombo_.sort();
 		
 		setAaSequenceCombo();

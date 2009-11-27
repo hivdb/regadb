@@ -24,6 +24,9 @@
     <property name="nucleotides" type="string">
       <column name="nucleotides" />
     </property>
+	<property name="aligned" type="boolean">
+      <column name="aligned" />
+    </property>
     <set name="aaSequences" inverse="true" cascade="all">
       <key>
         <column name="nt_sequence_ii" not-null="true" />
