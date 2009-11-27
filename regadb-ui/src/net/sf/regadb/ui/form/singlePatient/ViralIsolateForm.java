@@ -132,7 +132,7 @@ public class ViralIsolateForm extends FormWidget
 			}
 		}
         
-		viralIsolate_.setGenome(genome);
+		viralIsolate_.setGenome(t.getGenome(genome.getOrganismName()));
 		
         update(viralIsolate_, t);
         t.commit();
