@@ -73,7 +73,7 @@ public class ViralIsolateReportForm extends WContainerWidget
                 
                 if( resRepTemplateCB_.currentItem() != null){
                     Transaction t = RegaDBMain.getApp().createTransaction();
-                    Patient patient = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+                    Patient patient = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
                     File chartFile = getChart(t, patient);
                     GenerateReport report = new GenerateReport(resRepTemplateCB_.currentValue().getDocument(),
                                                                viralIsolateForm_.getViralIsolate(),

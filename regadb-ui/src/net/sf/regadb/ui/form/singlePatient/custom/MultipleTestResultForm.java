@@ -204,7 +204,7 @@ public class MultipleTestResultForm extends FormWidget {
 	private void fillData() {
         if(!(getInteractionState()==InteractionState.Adding)) {
             Transaction t = RegaDBMain.getApp().createTransaction();
-            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
             
             Date newestDate = null;
             for(Test test : tests_) {
@@ -292,7 +292,7 @@ public class MultipleTestResultForm extends FormWidget {
         Transaction t = RegaDBMain.getApp().createTransaction();        
         boolean duplicateSampleId = false;
         
-        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem();
+        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 
         if(!sampleIdTF_.getFormText().equals("")) {
             for(TestResult tr : p.getTestResults()) {
@@ -379,8 +379,10 @@ public class MultipleTestResultForm extends FormWidget {
     		return;
     	
         save();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolatesAdd.prograSelectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().viralIsolateSelected.setSelectedItem(null);
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
+        	.getViralIsolateTreeNode().getAddActionItem().prograSelectNode();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
+        	.getViralIsolateTreeNode().setSelectedItem(null);
         RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), sampleIdTF_.text(), dateTF_.getDate()));
     }
 }

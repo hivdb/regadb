@@ -5,7 +5,10 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
+import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -114,7 +117,7 @@ public class RegaDBApplication extends WApplication
 	}
 	
 	public Patient getSelectedPatient(){
-		return getTree().getTreeContent().patientSelected.getSelectedItem();
+		return getTree().getTreeContent().patientTreeNode.getSelectedItem();
 	}
 	
 	public SettingsUser getSettingsUser(){
@@ -122,6 +125,18 @@ public class RegaDBApplication extends WApplication
 	}
 	public Role getRole(){
 		return RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(getSettingsUser().getRole());
+	}
+	
+	public Privileges getPrivilege(Dataset dataset){
+		Transaction t = getLogin().createTransaction();
+		String uid = t.getSettingsUser().getUid();
+		t.commit();
+		
+		for(DatasetAccess da : dataset.getDatasetAccesses()){
+			if(da.getId().getSettingsUser().getUid().equals(uid))
+				return Privileges.getPrivilege(da.getPermissions());
+		}
+		return Privileges.NONE;
 	}
 	
 	@Override

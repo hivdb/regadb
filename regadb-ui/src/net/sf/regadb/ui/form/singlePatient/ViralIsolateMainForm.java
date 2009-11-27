@@ -616,7 +616,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         Integer ii = viralIsolateForm_.getViralIsolate().getViralIsolateIi();
         
-        for(Dataset ds : RegaDBMain.getApp().getTree().getTreeContent().patientSelected.getSelectedItem().getDatasets()){
+        for(Dataset ds : RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem().getDatasets()){
             ViralIsolate vi = t.getViralIsolate(ds, id);
             if(vi != null && !vi.getViralIsolateIi().equals(ii)){
                 unique = false;
