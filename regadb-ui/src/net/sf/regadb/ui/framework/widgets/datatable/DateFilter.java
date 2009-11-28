@@ -114,12 +114,14 @@ public class DateFilter extends WContainerWidget implements IFilter
 	
 	public Object getFirstDate()
 	{
-		return WDate.fromString(getDateField1().getText(), dateFormat).getDate();
+		WDate d = WDate.fromString(getDateField1().getText(), dateFormat);
+		return d == null ? null : d.getDate();
 	}
 	
 	public Object getSecondDate()
 	{
-		return WDate.fromString(getDateField2().getText(), dateFormat).getDate();
+		WDate d = WDate.fromString(getDateField2().getText(), dateFormat);
+		return d == null ? null : d.getDate();
 	}
 	
 	public WString getComboState()

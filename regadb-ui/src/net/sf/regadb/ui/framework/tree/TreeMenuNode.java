@@ -226,5 +226,7 @@ public abstract class TreeMenuNode extends WTreeNode
 
 	public abstract ITreeAction getFormAction();
 	
-	public abstract boolean isEnabled();
+	public boolean isEnabled(){
+		return !super.isDisabled() && super.isEnabled();
+	}
 }
