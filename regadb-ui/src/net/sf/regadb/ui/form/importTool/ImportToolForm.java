@@ -20,7 +20,6 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import com.thoughtworks.xstream.XStream;
@@ -30,7 +29,6 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WTable;
 
 public class ImportToolForm extends FormWidget {
 	private FormTable formTable;
@@ -39,10 +37,14 @@ public class ImportToolForm extends FormWidget {
 	private TextField descriptionTF;
 	private Label fileL;
 	private FileUpload fileU;
+	private Label scriptL;
+	private WPushButton scriptB;
 	
 	private SimpleTable ruleTable;
 	private List<ImportRule> rules = new ArrayList<ImportRule>();
 	private WPushButton addRuleButton;
+	
+	private ScriptForm scriptForm;
 	
 	private ImportDefinition definition;
 	private DataProvider dataProvider;
@@ -78,6 +80,17 @@ public class ImportToolForm extends FormWidget {
 			});
 			formTable.addLineToTable(fileL, fileU);
 		}
+		
+		scriptL = new Label(tr("form.importTool.script"));
+		scriptB = new WPushButton(tr("form.importTool.scriptButton"));
+		scriptB.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent arg) {
+				if (scriptForm == null)
+					scriptForm = new ScriptForm(ImportToolForm.this);
+				scriptForm.show();
+			}
+		});
+		formTable.addLineToTable(scriptL, scriptB);
 		
 		this.definition = definition;
 		
@@ -167,6 +180,9 @@ public class ImportToolForm extends FormWidget {
 			definition.getRules().add(ir.getRule());
 		}
 		
+		if (scriptForm != null) 
+			definition.setScript(scriptForm.getScript());
+		
 		XStream xstream = new XStream();
 		File f = 
 			new File(RegaDBSettings.getInstance().getInstituteConfig().getImportToolDir().getAbsolutePath()
@@ -190,5 +206,9 @@ public class ImportToolForm extends FormWidget {
 	
 	public DataProvider getDataProvider() {
 		return dataProvider;
+	}
+	
+	public ImportDefinition getDefinition() {
+		return definition;
 	}
 }

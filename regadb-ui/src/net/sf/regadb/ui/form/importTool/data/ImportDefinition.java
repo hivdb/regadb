@@ -8,6 +8,7 @@ public class ImportDefinition {
 	private String description;
 	private File xmlFile;
 	private List<Rule> rules = new ArrayList<Rule>();
+	private ScriptDefinition script;
 
 	public File getXmlFile() {
 		return xmlFile;
@@ -31,5 +32,13 @@ public class ImportDefinition {
 
 	public void setRules(List<Rule> rules) {
 		this.rules = rules;
+	}
+	
+	public ScriptDefinition getScript() {
+		return script;
+	}
+
+	public void setScript(ScriptDefinition script) {
+		this.script = script;
 	}
 }
