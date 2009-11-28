@@ -5,18 +5,18 @@ import java.util.List;
 
 import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
 import net.sf.regadb.ui.framework.forms.fields.Label;
+import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
-import eu.webtoolkit.jwt.WTextEdit;
 
 public class ScriptForm extends WDialog {
 	private Label newColumnsL;
 	private TextField newColumnsTF;
 	private Label scriptL;
-	private WTextEdit scriptTE;
+	private TextArea scriptTE;
 	
 	private ScriptDefinition script;
 
@@ -36,16 +36,16 @@ public class ScriptForm extends WDialog {
 		getContents().addWidget(newColumnsTF);
 		scriptL = new Label(tr("form.importTool.details.script.script"));
 		getContents().addWidget(scriptL);
-		scriptTE = new WTextEdit(getContents());
+		scriptTE = new TextArea(form.getInteractionState(), null);
 		scriptTE.setText(script.getScript());
-		scriptTE.setEnabled(form.isEditable());
+		getContents().addWidget(scriptTE);
 		
         WPushButton ok = new WPushButton(tr("form.importTool.details.script.box.ok"), getContents());
         ok.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent arg) {
 				hide();
 				ScriptForm.this.script.setNewColumns(Arrays.asList(newColumnsTF.text().split(",")));
-				ScriptForm.this.script.setScript(scriptTE.getText());
+				ScriptForm.this.script.setScript(scriptTE.text());
 			}
 		});
         WPushButton cancel = new WPushButton(tr("form.importTool.details.script.box.cancel"), getContents());
