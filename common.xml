@@ -26,14 +26,16 @@
       <flattenmapper />
     </pathconvert>
 
+    <target name="copy-lib-to-libpool" description="copy-lib-to-libpool">
+      <copy todir="../build/libPool/">
+	<fileset dir="lib" />
+      </copy>
+    </target>
 
     <target name="create-package" description="create-package" >
       <mkdir dir="../build/packages/${proj.name}"/>
       <copy todir="../build/libPool/">
 	<fileset dir="${dist}" />
-      </copy>
-      <copy todir="../build/libPool/">
-	<fileset dir="lib" />
       </copy>
       <copy todir="../build/packages/${proj.name}">
 	<fileset dir="${dist}" />

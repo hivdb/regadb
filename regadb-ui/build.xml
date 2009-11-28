@@ -37,12 +37,8 @@
 
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the war file -->
-    <copy todir="../build/libPool/">
-      <fileset dir="lib" />
-    </copy>
-    
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
-    
+    <antcall target="copy-lib-to-libpool" />
     <war destfile="${dist}/${proj.name}.war" webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
       <lib dir="../build/libPool"/>
