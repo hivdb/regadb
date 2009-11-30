@@ -181,7 +181,7 @@ public class GenerateReport
     {
         List<TestResult> testResults = new ArrayList<TestResult>();
         try{
-            Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+            Genome g = vi.getGenome();
             TestType gssTestType = StandardObjects.getGssTestType(g);
             
             for(TestResult tr : vi.getTestResults())
@@ -215,7 +215,7 @@ public class GenerateReport
         boolean foundMatchinqSeq;
         
         
-        Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+        Genome g = vi.getGenome();
         
         for(Protein protein : t.getProteins(g))
         {   
