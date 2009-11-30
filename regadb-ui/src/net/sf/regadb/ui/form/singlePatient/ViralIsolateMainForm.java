@@ -369,27 +369,9 @@ public class ViralIsolateMainForm extends WContainerWidget
             }
         }
         
-        Genome genome = getGenome(seq);
+        Genome genome = seq.getViralIsolate().getGenome();
         if(genome != null)
             genomeTF.setText(genome.getOrganismName());
-    }
-    
-    //TODO move these two functions to a more appropriate place
-    public static Genome getGenome(ViralIsolate vi){
-        Genome genome=null;
-        if(vi.getNtSequences().size() > 0){
-            NtSequence ntSeq = vi.getNtSequences().iterator().next();
-            genome = getGenome(ntSeq);
-        }
-        return genome;
-    }
-    public static Genome getGenome(NtSequence ntSeq){
-        Genome genome=null;
-        if(ntSeq.getAaSequences().size() > 0){
-            AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
-            genome = aaSeq.getProtein().getOpenReadingFrame().getGenome();
-        }
-        return genome;
     }
     
     private String getUniqueSequenceLabel(ViralIsolate vi)
@@ -446,6 +428,7 @@ public class ViralIsolateMainForm extends WContainerWidget
             currentSeq.setLabel(seqLabelTF.getFormText());
             currentSeq.setSequenceDate(seqDateTF.getDate());
             currentSeq.setNucleotides(ntTF.getFormText());
+            currentSeq.setAligned(false);
             
             for(AaSequence aaseq : currentSeq.getAaSequences())
             {

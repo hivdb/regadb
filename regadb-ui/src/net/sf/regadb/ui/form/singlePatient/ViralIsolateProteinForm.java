@@ -44,6 +44,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private TextField nonSynonymousTF;
     
 	private WarningMessage warningMessage;
+	private WarningMessage noProteinData;
 //    private WPushButton refreshAlignments_;
     WTimer refreshAlignmentsTimer_;
     
@@ -103,11 +104,13 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		nonSynonymousL = new Label(tr("form.viralIsolate.editView.label.nonSynonymous"));
 		nonSynonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		proteinGroupTable_.addLineToTable(nonSynonymousL, nonSynonymousTF);
+		
+		proteinGroupTable_.setHidden(true);
 	}
     
 	private boolean isAligning() {
 		for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences()) {
-            if(ntseq.isAligned() == null || !ntseq.isAligned())
+            if(!ntseq.isAligned())
                 return true;
         }
 		
@@ -144,9 +147,11 @@ public class ViralIsolateProteinForm extends WContainerWidget
 			}
 		}
 		
-		if (ntSequenceCombo_.size() == 0) {
-			proteinGroupTable_.clear();
-        	addWidget(new WarningMessage(new WImage("pics/formWarning.gif"), tr("form.viralIsolate.editView.message.noProteinData"), MessageType.INFO));
+		if (ntSequenceCombo_.size() == 0 && !isAligning()) {
+			noProteinData = new WarningMessage(new WImage("pics/formWarning.gif"), tr("form.viralIsolate.editView.message.noProteinData"), MessageType.INFO);
+			addWidget(noProteinData);
+		} else if (ntSequenceCombo_.size() != 0 && !isAligning()) {
+			proteinGroupTable_.setHidden(false);
 		}
 		
         ntSequenceCombo_.sort();
