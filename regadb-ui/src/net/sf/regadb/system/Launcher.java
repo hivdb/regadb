@@ -8,12 +8,13 @@ import net.sf.regadb.system.cron.Cron;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class Launcher implements javax.servlet.ServletContextListener{
-	private Cron cron;
+	private Cron cron = null;
 	
 	public void contextDestroyed(ServletContextEvent arg0) {
 		System.err.println("RegaDB stopped");
 		
-		cron.stop();
+		if(cron != null)
+			cron.stop();
 	}
 
 	public void contextInitialized(ServletContextEvent arg0) {
