@@ -51,6 +51,7 @@ public class Rule {
 	private MappingDetails mappingDetails;
 	private RegimenDetails regimenDetails;
 	private DateDetails dateDetails;
+	private SequenceDetails sequenceDetails;
 
 	public String getColumn() {
 		return column;
@@ -106,5 +107,13 @@ public class Rule {
 
 	public void setDateDetails(DateDetails dateDetails) {
 		this.dateDetails = dateDetails;
+	}
+	
+	public SequenceDetails getSequenceDetails() {
+		return sequenceDetails;
+	}
+
+	public void setSequenceDetails(SequenceDetails sequenceDetails) {
+		this.sequenceDetails = sequenceDetails;
 	}
 }

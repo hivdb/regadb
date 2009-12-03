@@ -195,6 +195,9 @@ public class ImportRule {
 							getCurrentColumnData(), 
 							getDrugValues(),
 							this));
+		} else if (type.currentValue() == Rule.Type.ViralIsolateSampleSequence1){
+			addDetailsListener(details, 
+					new SequenceDetailsForm(this, this.getRule().getSequenceDetails()));
 		} else if (type.currentValue().isDate()){
 			addDetailsListener(details, 
 					new DateDetailsForm(this, this.getRule().getDateDetails()));
