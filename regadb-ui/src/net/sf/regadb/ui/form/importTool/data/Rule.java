@@ -40,6 +40,10 @@ public class Rule {
 		}
 	}
 	
+	public Rule() {
+		number = 1;
+	}
+	
 	private String column;
 	private Type type;
 	private String typeName;

@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.widgets;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,5 +78,17 @@ public class SimpleTable extends WTable{
 	    if(colspan > 1){
 	    	getElementAt(0,headerColumns-1).setColumnSpan(colspan);
 	    }
+	}
+	
+	public void clearData() {
+		List<WTableRow> dataRows = new ArrayList<WTableRow>();
+		
+		for (int i = 1; i < this.getRowCount(); i++) {
+			dataRows.add(this.getRowAt(i));
+		}
+		
+		for (WTableRow row : dataRows) {
+			this.deleteRow(row.getRowNum());
+		}
 	}
 }

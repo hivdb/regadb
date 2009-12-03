@@ -65,7 +65,7 @@ public abstract class MappingsDetailsTable extends WContainerWidget {
 	}
 	
 	public void init() {
-		mappingTable.clear();
+		mappingTable.clearData();
 		originalValues.clear();
 		regadbValues.clear();
 		

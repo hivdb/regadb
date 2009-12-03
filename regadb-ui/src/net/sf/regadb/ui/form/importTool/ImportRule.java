@@ -60,7 +60,6 @@ public class ImportRule {
 		addToRow(row, 2, name);
 		number = new TextField(is, form, FieldType.INTEGER);
 		number.setTextSize(2);
-		number.setText("1");
 		addToRow(row, 3, number);
 		details = new WPushButton(WString.tr("form.importTool.rule.details"));
 		addToRow(row, 4, details);
@@ -79,6 +78,7 @@ public class ImportRule {
 		this.dataProvider = dataProvider;
 		
 		fillColumnCombo(rule);
+		number.setText(rule.getNumber()+"");
 		fillTypeCombo(rule);
 		fillTypeNameCombo(rule);
 		fillDetails(rule, dataProvider);

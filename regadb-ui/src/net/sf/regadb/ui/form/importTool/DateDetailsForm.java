@@ -55,7 +55,7 @@ public class DateDetailsForm extends DetailsForm {
 
 	@Override
 	public void init() {
-		mappingTable.clear();
+		mappingTable.clearData();
 		dateFormats.clear();
 		nullDates.clear();
 		for (String dateFormat : details.getDateFormats()) {
