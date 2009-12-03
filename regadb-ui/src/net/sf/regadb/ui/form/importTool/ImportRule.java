@@ -140,7 +140,8 @@ public class ImportRule {
 			for (Event e : events) {
 				name.addItem(new DataComboMessage<Serializable>(e, e.getName()));
 			}
-		} else if (type.currentValue() == Rule.Type.TestValue) {
+		} else if (type.currentValue() == Rule.Type.TestValue || 
+				type.currentValue() == Rule.Type.ViralIsolateSampleManualSubtype) {
 			List<Test> tests = tr.getTests();
 			for (Test t : tests) {
 				name.addItem(new DataComboMessage<Serializable>(t, t.getDescription()));
