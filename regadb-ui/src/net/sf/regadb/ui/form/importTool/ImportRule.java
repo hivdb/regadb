@@ -126,7 +126,10 @@ public class ImportRule {
 		Transaction tr = RegaDBMain.getApp().createTransaction();
 		name.setHidden(false);
 		number.setEnabled(true);
-		if (type.currentValue() == Rule.Type.AttributeValue) {
+		if (type.currentValue() == Rule.Type.PatientId) {
+			number.setEnabled(false);
+			name.setHidden(true);
+		} else if (type.currentValue() == Rule.Type.AttributeValue) {
 			List<Attribute> attributes = tr.getAttributes();
 			for (Attribute a : attributes) {
 				name.addItem(new DataComboMessage<Serializable>(a, a.getName()));

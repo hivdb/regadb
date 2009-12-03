@@ -12,6 +12,7 @@ import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
+import net.sf.regadb.ui.form.importTool.data.ValidateRules;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -20,6 +21,7 @@ import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -129,6 +131,19 @@ public class ImportToolForm extends FormWidget {
 		
 		fillData();
 		
+		WPushButton startImport = new WPushButton(tr("form.importTool.startImportButton"));
+		getExtraButtons().add(startImport);
+		startImport.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent arg) {
+				ValidateRules validate = new ValidateRules();
+				createDefinitionObject();
+				WString error = validate.validateRules(ImportToolForm.this.definition.getRules());
+				if (error != null) {
+					UIUtils.showWarningMessageBox(ImportToolForm.this, error);
+				}
+			}
+		});
+		
 		addControlButtons();
 	}
 
@@ -168,8 +183,7 @@ public class ImportToolForm extends FormWidget {
 		
 	}
 
-	@Override
-	public void saveData() {
+	private void createDefinitionObject() {
 		if (definition == null)
 			definition = new ImportDefinition();
 		
@@ -182,6 +196,11 @@ public class ImportToolForm extends FormWidget {
 		}
 		
 		definition.setScript(scriptForm.getScript());
+	}
+	
+	@Override
+	public void saveData() {
+		createDefinitionObject();
 		
 		XStream xstream = new XStream();
 		File f = 
