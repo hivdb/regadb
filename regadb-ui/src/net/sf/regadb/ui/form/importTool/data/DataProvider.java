@@ -34,11 +34,11 @@ public class DataProvider {
 	public String getValue(int row, String header) {
 		Map<String, String> rowValues = new HashMap<String, String>();
 		
-		for (int r = 0; r < sheet.getRows(); r++) {
+		for (int r = 1; r < sheet.getRows(); r++) {
 			if (row == r) {
 				for (int c = 0; c < sheet.getColumns(); c++) {
-					String h = sheet.getCell(0, c).getContents().trim();
-					String v = sheet.getCell(r, c).getContents().trim();
+					String h = sheet.getCell(c, 0).getContents().trim();
+					String v = sheet.getCell(c, r).getContents().trim();
 					rowValues.put(h, v);
 				}
 			}
@@ -62,7 +62,7 @@ public class DataProvider {
 	public List<String> getValues(String header) {
 		List<String> values = new ArrayList<String>();
 		
-		for (int i = 0; i < sheet.getColumns(); i++) {
+		for (int i = 1; i < sheet.getRows(); i++) {
 			values.add(getValue(i, header));
 		}
 		
