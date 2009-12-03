@@ -55,7 +55,6 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     protected void process(File csvFile) throws Exception{
     	Transaction t = createTransaction();
     	
@@ -64,7 +63,7 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         
         List<Patient> patients;
         
-        String aq = getArcPatientQuery("patient.patientIi");
+        String aq = getArcPatientQuery("patient.id");
         if(aq != null){
 		    HibernateFilterConstraint hfc = new HibernateFilterConstraint();
 		    hfc.setClause(aq);
