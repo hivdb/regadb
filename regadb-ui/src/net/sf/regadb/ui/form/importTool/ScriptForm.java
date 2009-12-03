@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.importTool;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
@@ -20,6 +21,7 @@ public class ScriptForm extends WDialog {
 	private TextArea scriptTE;
 	
 	private ScriptDefinition script;
+	private DataProvider dataProvider;
 
 	public ScriptForm(ImportToolForm form) {
 		super(tr("form.importTool.details.script.title"));
@@ -64,6 +66,9 @@ public class ScriptForm extends WDialog {
 				hide();
 				ScriptForm.this.script.setNewColumns(Arrays.asList(newColumnsTF.text().split(",")));
 				ScriptForm.this.script.setScript(scriptTE.text());
+				if (dataProvider != null) {
+					dataProvider.setScript(getScript());
+				}
 			}
 		});
         WPushButton cancel = new WPushButton(tr("form.importTool.details.script.box.cancel"), getContents());
@@ -88,5 +93,9 @@ public class ScriptForm extends WDialog {
 	
 	public ScriptDefinition getScript() {
 		return script;
+	}
+
+	public void setDataProvider(DataProvider dataProvider) {
+		this.dataProvider = dataProvider;
 	}
 }

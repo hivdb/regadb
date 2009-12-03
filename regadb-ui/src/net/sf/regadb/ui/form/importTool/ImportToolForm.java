@@ -11,6 +11,7 @@ import jxl.read.biff.BiffException;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
+import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -52,6 +53,8 @@ public class ImportToolForm extends FormWidget {
 	public ImportToolForm(InteractionState interactionState, WString formName, ImportDefinition definition) {
 		super(formName, interactionState);
 		
+		this.definition = definition;
+		
 		formTable = new FormTable(this);
 
 		descriptionL = new Label(tr("form.importTool.description"));
@@ -75,7 +78,7 @@ public class ImportToolForm extends FormWidget {
 						e.printStackTrace();
 					}
 					
-					dataProvider = new DataProvider(book.getSheet(0));
+					dataProvider = new DataProvider(book.getSheet(0), getScriptDefinition());
 				}
 			});
 			formTable.addLineToTable(fileL, fileU);
@@ -83,16 +86,14 @@ public class ImportToolForm extends FormWidget {
 		
 		scriptL = new Label(tr("form.importTool.script"));
 		scriptB = new WPushButton(tr("form.importTool.scriptButton"));
+		scriptForm = new ScriptForm(ImportToolForm.this);
 		scriptB.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
-				if (scriptForm == null)
-					scriptForm = new ScriptForm(ImportToolForm.this);
+				scriptForm.setDataProvider(dataProvider);
 				scriptForm.show();
 			}
 		});
 		formTable.addLineToTable(scriptL, scriptB);
-		
-		this.definition = definition;
 		
 		ruleTable = new SimpleTable(this);
 		List<WString> headers = new ArrayList<WString>();
@@ -180,8 +181,7 @@ public class ImportToolForm extends FormWidget {
 			definition.getRules().add(ir.getRule());
 		}
 		
-		if (scriptForm != null) 
-			definition.setScript(scriptForm.getScript());
+		definition.setScript(scriptForm.getScript());
 		
 		XStream xstream = new XStream();
 		File f = 
@@ -210,5 +210,9 @@ public class ImportToolForm extends FormWidget {
 	
 	public ImportDefinition getDefinition() {
 		return definition;
+	}
+	
+	public ScriptDefinition getScriptDefinition() {
+		return scriptForm.getScript();
 	}
 }
