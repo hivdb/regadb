@@ -7,6 +7,7 @@ import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import eu.webtoolkit.jwt.JSlot;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -32,11 +33,28 @@ public class ScriptForm extends WDialog {
 		newColumnsL = new Label(tr("form.importTool.details.script.newColumns"));
 		getContents().addWidget(newColumnsL);
 		newColumnsTF = new TextField(form.getInteractionState(), null);
+		newColumnsTF.setTextSize(50);
 		newColumnsTF.setText(getNewColumnsString(this.script.getNewColumns()));
 		getContents().addWidget(newColumnsTF);
 		scriptL = new Label(tr("form.importTool.details.script.script"));
 		getContents().addWidget(scriptL);
 		scriptTE = new TextArea(form.getInteractionState(), null);
+		if (scriptTE.getFormWidget() != null) {
+			JSlot blockFocus = new JSlot();
+			String id = scriptTE.getFormWidget().getId();
+			blockFocus.setJavaScript(
+					"function(){" + 
+					"	if(e.keyCode==9){" + 
+					"		document.getElementById(\"" + id + "\").value=document.getElementById(\"" + id + "\").value+\"\t\";" + 
+					"		e.preventDefault();" + 
+					"		e.stopPropagation();" + 
+					"	}" + 
+					"	document.getElementById(\""+ id +"\").focus();" + 
+					"}"
+			);
+			scriptTE.getFormWidget().keyWentDown().addListener(blockFocus);
+		}
+		scriptTE.setSize(50, 20);
 		scriptTE.setText(script.getScript());
 		getContents().addWidget(scriptTE);
 		
