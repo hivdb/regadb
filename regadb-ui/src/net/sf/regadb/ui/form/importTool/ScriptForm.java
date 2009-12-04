@@ -5,12 +5,14 @@ import java.util.List;
 
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import eu.webtoolkit.jwt.JSlot;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WDialog;
+import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 
@@ -43,15 +45,14 @@ public class ScriptForm extends WDialog {
 		scriptTE = new TextArea(form.getInteractionState(), null);
 		if (scriptTE.getFormWidget() != null) {
 			JSlot blockFocus = new JSlot();
-			String id = scriptTE.getFormWidget().getId();
 			blockFocus.setJavaScript(
-					"function(){" + 
-					"	if(e.keyCode==9){" + 
-					"		document.getElementById(\"" + id + "\").value=document.getElementById(\"" + id + "\").value+\"\t\";" + 
-					"		e.preventDefault();" + 
-					"		e.stopPropagation();" + 
+					"function(obj, event){" + 
+					"	if(event.keyCode == 9){" + 
+					"		var WT = " + WEnvironment.getJavaScriptWtScope() + ";" + 
+					"		obj.value = obj.value+\"\t\";" + 
+					"		WT.cancelEvent(event, WT.CancelDefaultAction);" +  
 					"	}" + 
-					"	document.getElementById(\""+ id +"\").focus();" + 
+					"	obj.focus();" + 
 					"}"
 			);
 			scriptTE.getFormWidget().keyWentDown().addListener(blockFocus);
