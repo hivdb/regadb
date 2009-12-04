@@ -49,10 +49,13 @@ public class ScriptForm extends WDialog {
 					"function(obj, event){" + 
 					"	if(event.keyCode == 9){" + 
 					"		var WT = " + WEnvironment.getJavaScriptWtScope() + ";" + 
-					"		obj.value = obj.value+\"\t\";" + 
+					"		var range = WT.getSelectionRange(obj);" + 
+					"		obj.value = obj.value.substring(0, range.selectionStart) " +
+					"					+  \"\t\" " +
+					"					+ obj.value.substring(range.selectionEnd, obj.value.length);" + 
 					"		WT.cancelEvent(event, WT.CancelDefaultAction);" +  
+					"		WT.setSelectionRange(obj, range.selectionStart + 1, range.selectionEnd + 1);" +
 					"	}" + 
-					"	obj.focus();" + 
 					"}"
 			);
 			scriptTE.getFormWidget().keyWentDown().addListener(blockFocus);
