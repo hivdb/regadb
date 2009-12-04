@@ -10,6 +10,8 @@ import java.util.List;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.forms.fields.DateField;
+import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.util.date.DateUtils;
 
 import org.hibernate.Query;
@@ -20,7 +22,8 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
         super(tr("menu.query.wiv.arc.deaths"),tr("form.query.wiv.label.arc.deaths"),tr("file.query.wiv.arc.deaths"));
         String query = "select pc, dd from PatientImpl as p inner join p.patientAttributeValues pc inner join p.patientAttributeValues dd where "
         	+ getArcPatientQuery("p.patientIi") +" and "
-        	+"pc.attribute.name = 'PatCode' and dd.attribute.name = 'Death date' order by dd.value desc";
+        	+"pc.attribute.name = 'PatCode' and dd.attribute.name = 'Death date'"
+        	+" and cast(dd.attribute.value as long) >= :var_start_date and cast(dd.attribute.value as long) <= :var_start_date order by dd.value desc";
         setQuery(query);
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
@@ -58,5 +61,10 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
         t.commit();
         
         out.exportAsCsv(new FileOutputStream(csvFile),';',false);
+    }
+    
+    protected void setQueryParameter(Query q, String name, IFormField f){
+        if(f.getClass() == DateField.class)
+            q.setLong(name, ((DateField)f).getDate().getTime());
     }
 }

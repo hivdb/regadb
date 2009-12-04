@@ -1246,7 +1246,9 @@ public class Transaction {
             queryString += " and " + filterConstraints.clause_;
         }
         
-        queryString += " order by " + sortField +", settingsUser ";
+        queryString += " order by " + sortField;
+        if(!sortField.equals("settingsUser"))
+        	queryString += ", settingsUser ";
     
         Query q = session.createQuery(queryString);
         
