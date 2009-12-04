@@ -1238,25 +1238,19 @@ public class Transaction {
     public List<SettingsUser> getUsersWhitoutLoggedin(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, String uid)
     {
         String queryString = "from SettingsUser as settingsUser ";
-        
         queryString += "where not settingsUser.uid = :uid";
-        
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += " and " + filterConstraints.clause_;
         }
-        
-        queryString += " order by " + sortField +", settingsUser ";
+        queryString += " order by " + sortField;
     
         Query q = session.createQuery(queryString);
-        
         q.setParameter("uid", uid);
-        
         for(Pair<String, Object> arg : filterConstraints.arguments_)
         {
             q.setParameter(arg.getKey(), arg.getValue());
         }
-        
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
         
