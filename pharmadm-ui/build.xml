@@ -26,6 +26,7 @@
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the jar file -->
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+    <antcall target="copy-lib-to-libpool" />
     <jar jarfile="${dist}/${proj.name}-jarbuilder.jar" basedir="${build}">
       <manifest>
   	<attribute name="Main-Class" value="com.pharmadm.custom.rega.gui.QueryEditorApp"/>

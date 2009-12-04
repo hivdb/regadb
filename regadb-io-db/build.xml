@@ -26,7 +26,7 @@
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the jar file -->
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
-  	
+    <antcall target="copy-lib-to-libpool" />
     <jar jarfile="${dist}/${proj.name}-brescia-auto-import.jar" basedir="${build}">
       <manifest>
   	<attribute name="Main-Class" value="net.sf.regadb.io.db.brescia.BresciaAutoImport"/>
@@ -72,6 +72,13 @@
     <jar jarfile="${dist}/${proj.name}-pt-change-schema.jar" basedir="${build}">
       <manifest>
   	<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.ChangeSchema"/>
+  	<attribute name="Class-Path" value="${jar-dependencies}"/>
+      </manifest>
+    </jar>
+  	
+    <jar jarfile="${dist}/${proj.name}-saturn-change-schema.jar" basedir="${build}">
+      <manifest>
+  	<attribute name="Main-Class" value="net.sf.regadb.io.db.saturn.ChangeSchema"/>
   	<attribute name="Class-Path" value="${jar-dependencies}"/>
       </manifest>
     </jar>

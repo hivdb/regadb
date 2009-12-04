@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
@@ -173,11 +172,6 @@ public class QueryToolRunnable implements Runnable {
             if(result != null){
         		List<Selection> selections = getFlatSelectionList(newList);
 
-        		Set<Dataset> userDatasets = new HashSet<Dataset>();
-                for(DatasetAccess da : t.getSettingsUser().getDatasetAccesses()) {
-                    userDatasets.add(da.getId().getDataset());
-                }
-            	
 	            FileOutputStream os = new FileOutputStream(csvFile);
 	            ExportToCsv csvExport = new ExportToCsv();
 				Set<Integer> accessiblePatients = getAccessiblePatients(t);
@@ -191,7 +185,9 @@ public class QueryToolRunnable implements Runnable {
             		synchronized (mutex) {
                 		o = result.get();
 					}
-            		writtenLines+= (processLine(o, t, os, csvExport, selections, userDatasets, accessiblePatients)?1:0);
+            		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
+            		//this access solving stuff is horrible and could use a little rewrite, someday
+            		writtenLines+= (processLine(o, t, os, csvExport, selections, new HashSet<Dataset>(), accessiblePatients)?1:0);
             		lines++;
             		statusMsg = " (" + writtenLines + ")";
             	}
@@ -232,7 +228,10 @@ public class QueryToolRunnable implements Runnable {
     
 
     private Set<Integer> getAccessiblePatients(Transaction t) {
-		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery("select pd.id.patient.patientIi from PatientDataset pd where pd.id.dataset.settingsUser.uid = '" + login.getUid() + "'", null);
+		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery(
+				"select pd.id.patient.patientIi from PatientDataset pd where " +
+				"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ login.getUid() +"') "+
+				"or pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + login.getUid() + "')", null);
 		Set<Integer> results = new HashSet<Integer>();
 		while (!result.isLast()) {
 			results.add((Integer) result.get()[0]);
@@ -241,7 +240,7 @@ public class QueryToolRunnable implements Runnable {
 	}
 
 	private boolean processLine(Object[] o, Transaction t, FileOutputStream os, ExportToCsv csvExport, List<Selection> selections, Set<Dataset> userDatasets, Set<Integer> accessiblePatients) throws IOException {
-		String line = getLine(o, selections, userDatasets, csvExport, accessiblePatients);
+		String line = getLine(o, selections, csvExport, userDatasets, accessiblePatients);
 		t.clearCache(o);
 		if (line != "") {
 			os.write(line.getBytes());
@@ -250,7 +249,7 @@ public class QueryToolRunnable implements Runnable {
 		return false;
     }
 	
-    private String getLine(Object[] array, List<Selection> selections, Set<Dataset> userDatasets, ExportToCsv csvExport, Set<Integer> accessiblePatients) {
+    private String getLine(Object[] array, List<Selection> selections, ExportToCsv csvExport, Set<Dataset> userDatasets, Set<Integer> accessiblePatients) {
 		boolean lastTableAccess = false;
 		
 		CsvLine line = new CsvLine();

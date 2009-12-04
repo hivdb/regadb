@@ -240,7 +240,8 @@ public class ImportDrugs
                
                 generics = drugEl.getChild("DrugGenerics").getChildren("DrugGeneric");
                 
-                if(t.getDrugCommercial(name)==null)
+                DrugCommercial dcDb = t.getDrugCommercial(name); 
+                if(dcDb == null)
                 {
                     if(simulate)
                     {
@@ -261,6 +262,21 @@ public class ImportDrugs
                        
                         t.save(dc);
                     }
+                }
+                else{
+                	report.add("Synchronizing: "+ name);
+                	if(!simulate)
+                	{
+                		dcDb.setAtcCode(atcCode);
+                		dcDb.getDrugGenerics().clear();
+                        for(Object g : generics)
+                        {
+                            genericId = ((Element)g).getChild("id").getTextTrim();
+                            dg = t.getDrugGeneric(genericId);
+                            dcDb.getDrugGenerics().add(dg);
+                        }
+                        t.save(dcDb);
+                	}
                 }
             }
         } 

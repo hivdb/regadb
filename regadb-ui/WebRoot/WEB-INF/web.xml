@@ -24,6 +24,11 @@
     <url-pattern>/RegaDB/*</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>RegaDB</servlet-name>
+    <url-pattern>/regadb/*</url-pattern>
+  </servlet-mapping>
+    
   <listener>
     <listener-class>net.sf.regadb.system.Launcher</listener-class>
   </listener>
