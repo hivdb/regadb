@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.csv.Table;
+import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Therapy;
@@ -22,7 +23,7 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
-public class WivArcTherapyAtcForm extends WivQueryForm {
+public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
     private String therapyDateConstraint = " not ((tp.startDate > :var_date and not cast(:var_date as date) is null) or ( not tp.stopDate is null and tp.stopDate < :var_date )) ";
     
     private DateField dateField;
@@ -33,7 +34,9 @@ public class WivArcTherapyAtcForm extends WivQueryForm {
         String query = "select tp, pav "+
         	"from Therapy tp inner join tp.patient p inner join p.patientAttributeValues pav "+
         	"where "+ therapyDateConstraint +
-        	"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("p.patientIi");
+        	"and pav.attribute.name = 'PatCode' "
+        	+"and "+ getArcPatientQuery("p.id") +" "
+        	+"and "+ getContactConstraint("p.id");
         
         setQuery(query);
     }
@@ -113,12 +116,18 @@ public class WivArcTherapyAtcForm extends WivQueryForm {
             atcs.add(tg.getId().getDrugGeneric().getAtcCode());
         }
         for(TherapyCommercial tc : tp.getTherapyCommercials()){
-            for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
-            	String ss[] = dg.getAtcCode().split("[+]");
-            	for(String s : ss){
-            		atcs.add(s.trim());
-            	}
-            }
+        	DrugCommercial dc = tc.getId().getDrugCommercial();
+        	if(dc.getAtcCode() != null || dc.getAtcCode().length() != 0){
+        		atcs.add(dc.getAtcCode());
+        	}
+        	else{
+	            for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+	            	String ss[] = dg.getAtcCode().split("[+]");
+	            	for(String s : ss){
+	            		atcs.add(s.trim());
+	            	}
+	            }
+        	}
         }
     }
     
