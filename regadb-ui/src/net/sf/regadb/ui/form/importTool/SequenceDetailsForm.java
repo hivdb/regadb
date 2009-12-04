@@ -26,8 +26,8 @@ public class SequenceDetailsForm extends DetailsForm {
 		if (localDetails != null)
 			details.setRetrievalOptions(localDetails.getRetrievalOptions());
 		
-		if (localDetails.getRetrievalOptions() != null) 
-			retrievalOptionsCombo.selectItem(localDetails.getRetrievalOptions().getText());
+		if (details.getRetrievalOptions() != null) 
+			retrievalOptionsCombo.selectItem(details.getRetrievalOptions().getText());
 	}
 	
 	public void init() {
