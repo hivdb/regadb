@@ -96,14 +96,13 @@ public class Aligner {
 
             for (Protein protein : orf.getProteins()) {
 
-                if ((aligned.getFirstAa() < getLastAa(protein))
-                        && (aligned.getLastAa() > getFirstAa(protein))) {
+                if (coversProtein(aligned, protein)) {
                     AaSequence s = new AaSequence();
                     result.add(s);
 
                     s.setProtein(protein);
-                    s.setFirstAaPos((short) Math.max(1, posInProtein(protein, aligned.getFirstAa())));
-                    s.setLastAaPos((short) Math.min(getAaLength(protein), posInProtein(protein, aligned.getLastAa())));
+                    s.setFirstAaPos((short)Math.max(firstPositionInProtein(aligned, protein), Math.max(1, posInProtein(protein, aligned.getFirstAa()))));
+                    s.setLastAaPos((short) Math.min(lastPositionInProtein(aligned, protein), Math.min(getAaLength(protein), posInProtein(protein, aligned.getLastAa()))));
 
                     Set<AaMutation> mutations = s.getAaMutations();
                     Set<AaInsertion> insertions = s.getAaInsertions();
@@ -139,6 +138,71 @@ public class Aligner {
             throw new RuntimeException(e);
         }
     }
+    
+    /*
+     * Checks if the AlignmentResult covers a (part of a) protein
+     * 
+     * The method checks the start- and stop position of the aligned sequence (relative to the open reading frame) but also checks if 
+     * there are actual AA in the region. The alignment result contains only mutations and no information about the reference so this
+     * method checks if there is at least one mutation that is not an insertion or that at least on one position there is no mutation. 
+     */
+    private boolean coversProtein(AlignmentResult aligned, Protein protein){
+    	if ((aligned.getFirstAa() < getLastAa(protein)) && (aligned.getLastAa() > getFirstAa(protein))){
+    		int nbMutationsInThisProtein = 0;
+    		for (Mutation m:aligned.getMutations()) {
+    			if (m.getAaPos() >= getFirstAa(protein) && m.getAaPos() <= getLastAa(protein)) {
+    				nbMutationsInThisProtein++;
+    				if(!"---".equals(m.getTargetCodon().seqString())){
+    					return true;
+    				}
+    			}
+    		}
+    		return nbMutationsInThisProtein < getAaLength(protein);
+    	}
+    	return false;
+    }
+
+    /*
+     * Returns the first AA position in the protein that doesn't correspond to an insertion.
+     */
+    private int firstPositionInProtein(AlignmentResult aligned, Protein protein){
+    	for(int position = getFirstAa(protein); position <= getLastAa(protein); ++position){
+    		boolean mutationAtThisPosition = false;
+    		for(Mutation m : aligned.getMutations()){
+    			if(m.getAaPos() == position && !"---".equals(m.getTargetCodon().seqString())){
+    				return position - getFirstAa(protein) + 1;
+    			}else if(m.getAaPos() == position){
+    				mutationAtThisPosition = true;
+    				break;
+    			}
+    		}
+    		if(!mutationAtThisPosition){
+    			return position - getFirstAa(protein) + 1;
+    		}
+    	}		
+    	return -1;
+    }
+
+    /*
+     * Returns the last AA position in the protein that doesn't correspond to an insertion.
+     */
+    private int lastPositionInProtein(AlignmentResult aligned, Protein protein){
+    	for(int position = getLastAa(protein); position >= getFirstAa(protein); --position){
+    		boolean mutationAtThisPosition = false;
+    		for(Mutation m : aligned.getMutations()){
+    			if(m.getAaPos() == position && !"---".equals(m.getTargetCodon().seqString())){
+    				return position - getFirstAa(protein) + 1;
+    			}else if(m.getAaPos() == position){
+    				mutationAtThisPosition = true;
+    				break;
+    			}
+    		}
+    		if(!mutationAtThisPosition){
+    			return position - getFirstAa(protein) + 1;
+    		}
+    	}		
+    	return -1;
+    }	
     
     private int posInProtein(Protein p, int aa) {
         return aa - p.getStartPosition()/3;
