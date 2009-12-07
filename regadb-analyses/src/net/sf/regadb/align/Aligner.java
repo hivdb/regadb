@@ -109,8 +109,8 @@ public class Aligner {
 
                     for (Mutation m:aligned.getMutations()) {
                         //System.err.println(m);
-                        if (m.getAaPos() >= getFirstAa(protein)
-                            && m.getAaPos() <= getLastAa(protein)) {
+                        if (m.getAaPos() >= s.getFirstAaPos() + getFirstAa(protein) - 1
+                            && m.getAaPos() <= s.getLastAaPos() + getFirstAa(protein) - 1) {
                             if (m.getInsIndex() == -1) {
                                 AaMutation aam = new AaMutation();
                                 aam.setId(new AaMutationId((short) posInProtein(protein, m.getAaPos()), s));
