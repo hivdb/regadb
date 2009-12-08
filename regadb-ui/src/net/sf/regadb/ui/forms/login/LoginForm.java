@@ -156,7 +156,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
             if(validateLogin())
             {
                 RegaDBMain.getApp().getTree().getRootTreeNode().refreshAllChildren();
-                RegaDBMain.getApp().getTree().getTreeContent().singlePatientMain.prograSelectNode();
+                RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.prograSelectNode();
                 
                 if(proxyCB!=null)
                 {

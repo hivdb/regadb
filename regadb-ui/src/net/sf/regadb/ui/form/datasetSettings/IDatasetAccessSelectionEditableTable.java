@@ -16,7 +16,6 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.editableTable.IEditableTable;
 import eu.webtoolkit.jwt.Signal;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
 public class IDatasetAccessSelectionEditableTable implements IEditableTable<DatasetAccess>
@@ -53,6 +52,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
             {
                 DatasetAccess dsa = new DatasetAccess(new DatasetAccessId(user_, cuda.getId().getDataset()),privillege.getValue(), ((TextField)widgets[2]).text());
                 user_.getDatasetAccesses().add(dsa);
+                cuda.getId().getDataset().getDatasetAccesses().add(dsa);
             }
         }
     }
@@ -67,6 +67,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
     public void deleteData(DatasetAccess da)
     {
         user_.getDatasetAccesses().remove(da);
+        da.getId().getDataset().getDatasetAccesses().remove(da);
         transaction_.delete(da);
     }
     
@@ -142,7 +143,7 @@ public class IDatasetAccessSelectionEditableTable implements IEditableTable<Data
                     }
                 }
                 
-                comboRights.setCurrentItem(selected);
+                comboRights.setCurrentItem(getPrivilegeString(daPermissions));
             }
             
             //provider user
