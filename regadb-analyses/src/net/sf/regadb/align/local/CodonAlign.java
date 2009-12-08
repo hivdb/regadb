@@ -278,7 +278,7 @@ public class CodonAlign {
         
         SymbolList seq2ORFLead = ORF == 0 ? null : seq2.subList(1, ORF);
         seq2 = new SimpleSymbolList(seq2.subList(ORF + 1, seq2.length()));
-
+        
         int aaLength = seq2.length() / 3;
 
         SymbolList seq2ORFEnd = (aaLength * 3 == seq2.length()) ? null : seq2.subList(aaLength * 3 + 1, seq2.length());
@@ -301,18 +301,11 @@ public class CodonAlign {
                 lastNonGap = i * 3;
             }
         }
-
+        
         if (seq2ORFLead != null)
-            for (int i = 1; i <= seq2ORFLead.length(); ++i)
-                if ((firstNonGap - seq2ORFLead.length() + i) >= 1)
-                    seq2.edit(new Edit(firstNonGap - seq2ORFLead.length() + i,
-                            seq2ORFLead.getAlphabet(), seq2ORFLead.symbolAt(i)));
-
+        	seq2.edit(new Edit(firstNonGap - seq2ORFLead.length(), seq2ORFLead.length(), seq2ORFLead));
         if (seq2ORFEnd != null)
-            for (int i = 1; i <= seq2ORFEnd.length(); ++i)
-                if (lastNonGap + i <= seq2.length())
-                    seq2.edit(new Edit(lastNonGap + i, seq2ORFEnd.getAlphabet(),
-                            seq2ORFEnd.symbolAt(i)));
+        	seq2.edit(new Edit(lastNonGap + 1, seq2ORFEnd.length(), seq2ORFEnd));
 
         Map<String, SymbolList> alignment = new HashMap<String, SymbolList>();
         alignment.put("ref", seq1);
