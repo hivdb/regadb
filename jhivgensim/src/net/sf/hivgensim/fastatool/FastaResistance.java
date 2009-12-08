@@ -12,15 +12,16 @@ import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.seq.RNATools;
 import org.biojava.bio.symbol.IllegalAlphabetException;
 import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
 
-public class FastaRemoveResistance extends FastaTool {
+public class FastaResistance extends FastaTool {
 
 	private ConsensusMutationList mutations;
 	private HashMap<String,Pair<Integer,Integer>> proteinMap = new HashMap<String, Pair <Integer,Integer>>();
 	private Table resultTable = new Table();
 	private ArrayList<String> header = new ArrayList<String>();
 	
-	public FastaRemoveResistance(String input, String output) throws IOException{
+	public FastaResistance(String input, String output) throws IOException{
 		super(input,output);
 		mutations = ConsensusMutationList.retrieveListFromURL("http://cpr.stanford.edu/cpr/components/hiv_prrt/lists/sdrm_2009");
 		proteinMap.put("PR",new Pair<Integer,Integer>(1,99));
@@ -29,6 +30,7 @@ public class FastaRemoveResistance extends FastaTool {
 		header.add("PI");
 		header.add("NRTI");
 		header.add("NNRTI");
+		header.add("any");
 		resultTable.addRow(header);
 	}
 
@@ -50,15 +52,17 @@ public class FastaRemoveResistance extends FastaTool {
 				row.add("n");
 			}
 			String drugclass = null;
-			String sequence = RNATools.translate(DNATools.toRNA(DNATools.createDNA(fs.getSequence()))).seqString();
+			SymbolList seq = RNATools.translate(DNATools.toRNA(DNATools.createDNA(fs.getSequence())));
+			String sequence = seq.seqString();
 			for(String protein : proteinMap.keySet()){
 				int start = proteinMap.get(protein).getKey();
 				int stop = proteinMap.get(protein).getValue();
 				for(int i = start; i <= stop; ++i){
-					drugclass = mutations.resistantForDrugClass(protein, i - start + 1, sequence.charAt(i - 1));
+					drugclass = mutations.resistantForDrugClass(protein, i - start + 1, seq.symbolAt(i).getMatches());
 					if(drugclass != null){
 						System.err.print(" "+(i - start + 1)+sequence.charAt(i - 1));
 						row.set(header.indexOf(drugclass),"y");
+						row.set(header.size() - 1, "y");
 					}
 				}
 			}
@@ -76,7 +80,7 @@ public class FastaRemoveResistance extends FastaTool {
 			System.err.println("Usage: fastaResistance in.fasta out.csv");
 			System.exit(1);
 		}
-		FastaRemoveResistance frr = new FastaRemoveResistance(args[0],args[1]);
+		FastaResistance frr = new FastaResistance(args[0],args[1]);
 		frr.processFastaFile();
 	}
 

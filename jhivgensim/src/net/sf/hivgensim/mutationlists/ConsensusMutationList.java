@@ -7,6 +7,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.biojava.bio.seq.ProteinTools;
+import org.biojava.bio.symbol.Alphabet;
+import org.biojava.bio.symbol.IllegalSymbolException;
+
 public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 	
 	public static ConsensusMutationList retrieveListFromURL(String url) throws IOException{
@@ -63,12 +67,14 @@ public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 		return result;
 	}
 	
-	public String resistantForDrugClass(String protein, int pos, char c){
+	public String resistantForDrugClass(String protein, int pos, Alphabet a) throws IndexOutOfBoundsException, IllegalSymbolException{
 		for(ConsensusMutation cm : subList(protein)){
-			if(cm.getPosition() == pos && (cm.getMutationAminoAcid() == c || c == 'X')){
-				return cm.getDrugClassId();
+			if(cm.getPosition() == pos){
+				if(a.contains(ProteinTools.createProtein(String.valueOf(cm.getMutationAminoAcid())).symbolAt(1))){
+					return cm.getDrugClassId();
+				}
 			}
-		}		
+		}
 		return null;
 	}
 	
