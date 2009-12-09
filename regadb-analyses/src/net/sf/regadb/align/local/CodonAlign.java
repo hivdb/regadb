@@ -124,7 +124,7 @@ public class CodonAlign {
 
             System.err.println("Scores: " + ntAlignment.getScore() + " " + ntCodonAlignment.getScore());
             
-            if (ntAlignment.getScore() - ntCodonAlignment.getScore() > 50) {
+            if (ntAlignment.getScore() - ntCodonAlignment.getScore() > 100) {
                 /*
                  * a possible frameshift
                  */
@@ -151,7 +151,7 @@ public class CodonAlign {
                             if (refGapStart == -1)
                                 refGapStart = i;
                         } else {
-                            if (refGapStart > 0) {
+                            if (refGapStart > 1) {
                                 int refGapStop = i;
 
                                 if ((refGapStop - refGapStart) % 3 != 0) {
@@ -177,7 +177,7 @@ public class CodonAlign {
                                          * fix it !
                                          */
                                         for (int j = 0; j < 3 - (refGapStop - refGapStart) % 3; ++j) {
-                                            targetFixed.edit(new Edit(seq2pos, 0, DNATools.createDNA("n"))); 
+                                        	targetFixed.edit(new Edit(seq2pos + 1, 0, DNATools.createDNA("n"))); 
                                         }
 
                                         fixed = true;
@@ -224,7 +224,7 @@ public class CodonAlign {
                                         // (targetGapStop - targetGapStart) % 3,
                                         // Nucleotide::N);
                                         for (int j = 0; j < (targetGapStop - targetGapStart) % 3; ++j) {
-                                            targetFixed.edit(new Edit(seq2pos, 0, DNATools.createDNA("n"))); 
+                                        	targetFixed.edit(new Edit(seq2pos + 1, 0, DNATools.createDNA("n"))); 
                                         }
 
                                         fixed = true;
