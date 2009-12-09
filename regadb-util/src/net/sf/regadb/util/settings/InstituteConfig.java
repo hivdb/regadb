@@ -132,6 +132,10 @@ public class InstituteConfig implements IConfigParser {
 		e.setText(getQueryResultDir().getAbsolutePath());
 		r.addContent(e);
 		
+		e = new Element("import-tool-dir");
+		e.setText(getImportToolDir().getAbsolutePath());
+		r.addContent(e);
+		
 		if(wivConfig != null)
 			r.addContent(wivConfig.toXml());
 		
