@@ -35,8 +35,24 @@ import org.biojavax.bio.seq.RichSequenceIterator;
 public class TestFastaAlign {
 	public static void main(String [] args) {
 		long start = System.currentTimeMillis();
-		
+
 		RegaDBSettings.createInstance();
+
+		final String output = "--output=";
+		boolean nt = true;
+		for (String a : args) {
+			if (a.startsWith(output)) {
+				String outputFormat = a.substring(a.indexOf(output) + output.length());
+				if (outputFormat.equals("aa"))
+					nt = false;
+				else if (outputFormat.equals("nt"))
+					nt = true;
+				else {
+					System.err.println("Wrong output format! Exiting!");
+					System.exit(0);
+				}
+			}
+		}
 		
         RichSequenceIterator xna = null;
         FileReader uploadedStream = null;
@@ -98,7 +114,11 @@ public class TestFastaAlign {
                     	System.out.print("end=" + aaseq.getLastAaPos() + ",");
                     	System.out.print("mutations=");
                     	for(AaMutation aamut : aaseq.getAaMutations()) {
-                    		String mut = aamut.getNtReferenceCodon().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getNtMutationCodon().toUpperCase();
+                    		String mut;
+                    		if (nt)
+                    			mut = aamut.getNtReferenceCodon().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getNtMutationCodon().toUpperCase();
+                    		else 
+                    			mut = aamut.getAaReference().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getAaMutation().toUpperCase();
                     		aaMutations.put(aamut.getId().getMutationPosition(), mut);
                     	}
                     	
@@ -109,7 +129,11 @@ public class TestFastaAlign {
                     			insertions = new HashMap<Short, String>();
                     			aaInsertions.put(aains.getId().getInsertionPosition(), insertions);
                     		}
-                    		String mut = "---" + aains.getId().getInsertionPosition() + aains.getNtInsertionCodon().toUpperCase();
+                    		String mut;
+                    		if (nt)
+                    			mut = "---" + aains.getId().getInsertionPosition() + aains.getNtInsertionCodon().toUpperCase();
+                    		else
+                    			mut = "-" + aains.getId().getInsertionPosition() + aains.getAaInsertion().toUpperCase();
                     		insertions.put(aains.getId().getInsertionOrder(), mut);
                     	}
             
