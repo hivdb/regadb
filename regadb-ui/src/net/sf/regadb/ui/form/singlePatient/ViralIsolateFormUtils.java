@@ -4,7 +4,10 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,6 +26,37 @@ import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateFormUtils {
+	private final static Map<String,List<String>> proteinAbbrevDrugClass = new HashMap<String,List<String>>();
+	static{
+		List<String> l = new LinkedList<String>();
+		l.add("PI");
+		proteinAbbrevDrugClass.put("PR", l);
+		
+		l = new LinkedList<String>();
+		l.add("NRTI");
+		l.add("NNRTI");
+		proteinAbbrevDrugClass.put("RT", l);
+		
+		l = new LinkedList<String>();
+		l.add("EI");
+		proteinAbbrevDrugClass.put("gp41", l);
+		proteinAbbrevDrugClass.put("gp120", l);
+		
+		l = new LinkedList<String>();
+		l.add("INI");
+		proteinAbbrevDrugClass.put("IN", l);
+	}
+	
+	public static Collection<String> getRelevantDrugClassIds(Collection<String> proteinAbbreviations){
+		List<String> drugClasses = new ArrayList<String>();
+        for(String proteinAbbreviation : proteinAbbreviations){
+        	List<String> iis = proteinAbbrevDrugClass.get(proteinAbbreviation);
+        	if(iis != null)
+        		drugClasses.addAll(iis);
+        }
+        return drugClasses;
+	}
+	
     public static void putResistanceTableResult(TestResult tr, final WTableCell cell, boolean onlyIfCurrentValueIsNA, final boolean canShowMutations)
     {
         //make sure we do not override a sensible value

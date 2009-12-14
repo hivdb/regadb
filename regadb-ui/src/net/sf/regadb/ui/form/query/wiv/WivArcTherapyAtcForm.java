@@ -117,11 +117,11 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         }
         for(TherapyCommercial tc : tp.getTherapyCommercials()){
         	DrugCommercial dc = tc.getId().getDrugCommercial();
-        	if(dc.getAtcCode() != null || dc.getAtcCode().length() != 0){
+        	if(dc.getAtcCode() != null && dc.getAtcCode().length() != 0){
         		atcs.add(dc.getAtcCode());
         	}
         	else{
-	            for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+	            for(DrugGeneric dg : dc.getDrugGenerics()){
 	            	String ss[] = dg.getAtcCode().split("[+]");
 	            	for(String s : ss){
 	            		atcs.add(s.trim());
