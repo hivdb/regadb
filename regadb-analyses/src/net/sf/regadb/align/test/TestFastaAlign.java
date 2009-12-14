@@ -158,14 +158,17 @@ public class TestFastaAlign {
                 }
                 catch (NoSuchElementException e) 
                 {
+                	e.printStackTrace();
                     System.out.println("ERROR");
                 } 
                 catch (BioException e) 
                 {
+                	e.printStackTrace();
                 	System.out.println("ERROR");
                 }
                 catch (Exception e) 
                 {
+                	e.printStackTrace();
                 	System.out.println("ERROR");
                 }
             }
