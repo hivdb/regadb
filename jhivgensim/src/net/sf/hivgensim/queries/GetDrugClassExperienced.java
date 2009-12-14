@@ -34,7 +34,7 @@ public class GetDrugClassExperienced extends Query<Patient,NtSequence> {
 		Set<DrugGeneric> history = new HashSet<DrugGeneric>();
 		Set<DrugGeneric> regimen = new HashSet<DrugGeneric>();
 
-		for(Therapy t : TherapyUtils.sortTherapies(p.getTherapies())){
+		for(Therapy t : TherapyUtils.sortTherapiesByStartDate(p.getTherapies())){
 			regimen.clear();
 			for(TherapyGeneric tg : t.getTherapyGenerics()){
 				if(tg.getId().getDrugGeneric().getDrugClass().getClassId().equals(drugclass)){

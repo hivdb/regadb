@@ -1,6 +1,9 @@
 package net.sf.hivgensim.queries.framework.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +19,41 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class DrugGenericUtils {
 
+	public static List<DrugGeneric> getDrugsSortedOnResistanceRanking(List<DrugGeneric> genericDrugs, boolean includeAPV) {
+		List<DrugGeneric> resistanceGenericDrugs = new ArrayList<DrugGeneric>();
+
+		for (DrugGeneric dg : genericDrugs) {
+			if (dg.getResistanceTableOrder() != null
+					&& dg.getDrugClass().getResistanceTableOrder() != null) {
+				resistanceGenericDrugs.add(dg);
+			}
+		}
+
+		Collections.sort(resistanceGenericDrugs, new Comparator<DrugGeneric>() {
+			public int compare(DrugGeneric dg1, DrugGeneric dg2) {
+				if (dg1.getDrugClass().getClassId().equals(
+						dg2.getDrugClass().getClassId())) {
+					return dg1.getResistanceTableOrder().compareTo(
+							dg2.getResistanceTableOrder());
+				} else {
+					return dg1.getDrugClass().getResistanceTableOrder()
+					.compareTo(
+							dg2.getDrugClass()
+							.getResistanceTableOrder());
+				}
+			}
+		});
+
+		if(includeAPV) {
+			for (DrugGeneric dg : genericDrugs) {
+				if(dg.getGenericId().startsWith("APV"))
+					resistanceGenericDrugs.add(dg);
+			}
+		}
+
+		return resistanceGenericDrugs;
+	}
+	
 	//returns true if one class has been found
 	public static boolean containsDrugsFromDrugClasses(Set<DrugGeneric> drugs, String[] drugclasses){
 		for(DrugGeneric dg : drugs){

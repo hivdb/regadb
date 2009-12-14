@@ -25,7 +25,7 @@ public class TestTimeToFailure {
 		QueryInput in = new FromSnapshot(new File(snapshot), new IQuery<Patient>() {
 			@Override
 			public void process(Patient p) {
-				List<Therapy> therapies = TherapyUtils.sortTherapies(p.getTherapies());
+				List<Therapy> therapies = TherapyUtils.sortTherapiesByStartDate(p.getTherapies());
 
 				for (Therapy t : therapies) {
 					if (t.getStartDate() == null || t.getStopDate() == null) {

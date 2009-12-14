@@ -23,6 +23,18 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class TherapyUtils {
 	
+	public static long daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
+		int days = 0;
+
+		for(Therapy t : therapies) {
+			if(TherapyUtils.hasClassExperience(drugClass, t)) {
+				days+=DateUtils.millisecondsToDays(t.getStopDate().getTime()-t.getStartDate().getTime());
+			}
+		}
+
+		return days;
+	}
+	
 	public static Set<DrugGeneric> allDrugGenerics(Therapy t){
 		Set<DrugGeneric> dgs = new HashSet<DrugGeneric>();
 		for(TherapyGeneric tg : t.getTherapyGenerics()){
@@ -94,27 +106,16 @@ public class TherapyUtils {
 		return false;
 	}
 
-	public static List<Therapy> sortTherapies(List<Therapy> therapies){
-		Comparator<Therapy> c = new Comparator<Therapy>(){
-			public int compare(Therapy o1, Therapy o2) {
-				return o1.getStartDate().compareTo(o2.getStartDate());
-			}			
-		};
-		Collections.sort(therapies,c);
-		return therapies;
-	}
+	public static List<Therapy> sortTherapiesByStartDate(Set<Therapy> therapies){
+		List<Therapy> sortedTherapies = new ArrayList<Therapy>(therapies);
 
-	public static List<Therapy> sortTherapies(Set<Therapy> t){
-		List<Therapy> result = new ArrayList<Therapy>(t.size());
-		result.addAll(t);
-	
-		Comparator<Therapy> c = new Comparator<Therapy>(){
-			public int compare(Therapy o1, Therapy o2) {
-				return o1.getStartDate().compareTo(o2.getStartDate());
-			}			
-		};
-		Collections.sort(result,c);
-		return result;
+		Collections.sort(sortedTherapies, new Comparator<Therapy>() {
+			public int compare(Therapy t1, Therapy t2) {
+				return t1.getStartDate().compareTo(t2.getStartDate());
+			}
+		});
+
+		return sortedTherapies;
 	}
 
 	public static Set<NtSequence> getLatestSequencesDuringTherapy(Patient p, Therapy t){

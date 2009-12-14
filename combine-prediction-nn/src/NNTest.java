@@ -152,7 +152,7 @@ public class NNTest {
 				if(allDrugs==null){
 					allDrugs = DrugGenericUtils.prepareRegaDrugGenerics();
 				}
-				List<Therapy> therapies = TherapyUtils.sortTherapies(p.getTherapies());
+				List<Therapy> therapies = TherapyUtils.sortTherapiesByStartDate(p.getTherapies());
 
 				for (Therapy t : therapies) {
 					if (t.getStartDate() == null || t.getStopDate() == null) {

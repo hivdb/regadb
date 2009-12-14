@@ -9,11 +9,12 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
 /**
- * Therapy Change Event
+ * Treatment Change Episode
  * 
  * @author plibin0
  */
 public class TCE {
+	
 	private Date startDate;
 	private List<Therapy> therapiesBefore = new ArrayList<Therapy>();
 	private List<DrugGeneric> drugs = new ArrayList<DrugGeneric>();
