@@ -150,8 +150,10 @@ public class TestFastaAlign {
                     			}
                     		}
                     	}
-                    	System.out.print(toPrint.substring(0,toPrint.length() - 1));
-                    	System.out.print("\n");
+                    	if (toPrint.length() > 0) {
+	                    	System.out.print(toPrint.substring(0,toPrint.length() - 1));
+	                    	System.out.print("\n");
+                    	}
                     }
                 }
                 catch (NoSuchElementException e) 
