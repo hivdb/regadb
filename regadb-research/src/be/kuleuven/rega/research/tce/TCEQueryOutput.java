@@ -20,6 +20,7 @@ import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.DateUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
+import net.sf.hivgensim.queries.framework.utils.ViralIsolateUtils;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
@@ -36,6 +37,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.util.Utils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
@@ -119,11 +121,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(vi.getSampleId());
 		addColumn(dateOutputFormat.format(vi.getSampleDate()));
 
-		String seqs = "";
-		for(NtSequence ntSeq : vi.getNtSequences()) {
-			seqs += ntSeq.getNucleotides() + "+";
-		}
-		addColumn(seqs.substring(0,seqs.length()-1));
+		addColumn(ViralIsolateUtils.getConcatenatedNucleotideSequence(vi));
 		addColumn(extractSubtype(vi));
 		for(TestResult tr : vi.getTestResults()) {
 			TestType tt = tr.getTest().getTestType();
@@ -391,7 +389,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	public static void main(String [] args) {
 		if(args.length != 3){
 			System.err.println("Usage: TCEQueryOutput input.snapshot output.table organism");
+			System.exit(1);
 		}
+		RegaDBSettings.createInstance();
 		QueryInput input = new FromSnapshot(new File(args[0]),new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV, args[2])));
 		input.run();
 	}
