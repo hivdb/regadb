@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
@@ -11,30 +12,46 @@ import net.sf.regadb.db.ViralIsolate;
 public class ViralIsolateUtils {
 	
 	public static String getConcatenatedNucleotideSequence(ViralIsolate vi){
-		int numberOfSequences = vi.getNtSequences().size();
-		if(numberOfSequences == 0){
+		if(vi.getNtSequences().size() == 0)
 			return "";
-		}else if(numberOfSequences == 1){
+		if(vi.getNtSequences().size() == 1)
 			return vi.getNtSequences().iterator().next().getNucleotides();
-		}else if(numberOfSequences == 2){
-			String pr = "";
-			String rt = "";
-			for(NtSequence seq : vi.getNtSequences()){
-				if(seq.getAaSequences().size() == 0){
-					continue;
-				}
-				String abbreviation = seq.getAaSequences().iterator().next().getProtein().getAbbreviation();
-				if(abbreviation.equals("PR"))
-					pr = seq.getNucleotides();
-				else if(abbreviation.equals("RT"))
-					rt = seq.getNucleotides();				
+		if(vi.getNtSequences().size() > 2){
+			String seq = "";
+			for(NtSequence sequence : vi.getNtSequences()){
+				seq+="+"+sequence.getNucleotides();
 			}
-			return pr + rt;
-		}else{
-			System.err.println(numberOfSequences);
-			return "";
-//			throw new Error("Unable to concatenate >2 NtSequences");
-		}		
+			return seq;
+		}
+		boolean prFound = false;
+		boolean rtFound = false;
+		String pr = "";
+		String rt = "";
+		for(NtSequence seq : vi.getNtSequences()){
+			for(AaSequence aaseq : seq.getAaSequences()){
+				if(aaseq.getProtein().getAbbreviation().equals("PR")){
+					if(prFound){
+						System.err.println("already PR "+vi.getSampleId());
+						System.exit(1);
+					}else{
+						prFound = true;
+						pr = seq.getNucleotides();
+					}
+				}else if(aaseq.getProtein().getAbbreviation().equals("RT")){
+					if(rtFound){
+						System.err.println("already RT "+vi.getSampleId());
+						System.exit(1);
+					}else{
+						rtFound = true;
+						rt = seq.getNucleotides();
+					}
+				}
+			}
+		}
+		if(pr.equals(rt)){
+			return pr;
+		}
+		return pr+rt;
 	}
 	
 	public static String extractSubtype(ViralIsolate vi) {
