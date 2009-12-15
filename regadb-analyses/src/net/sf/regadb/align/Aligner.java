@@ -97,7 +97,7 @@ public class Aligner {
 				s.setFirstAaPos(psb.start);
 				s.setLastAaPos(psb.stop);
 				result.add(s);
-
+				
 				Set<AaMutation> mutations = s.getAaMutations();
 				Set<AaInsertion> insertions = s.getAaInsertions();
 
@@ -156,7 +156,25 @@ public class Aligner {
 		short position = 0;
 		short nbAASeen = 0;
 		short insCorrection = 0;
+		boolean first = true;
 		for(Protein protein : sortedProteins){
+			//check for insertions before the first protein
+			//so we start at the true start of the protein
+			if(first){
+				while(position < getFirstAa(protein)){					
+					for(Mutation m : aligned.getMutations()){					
+						if(m.getAaPos() == position){
+							if(m.getInsIndex() != -1){
+								insCorrection++;
+							}
+						}					
+					}					
+					position++;
+				}
+				first = false;
+			}
+			
+			
 			if(!coversProtein(aligned, protein)){
 				position+=getAaLength(protein);
 				continue;

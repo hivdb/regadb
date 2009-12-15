@@ -302,8 +302,13 @@ public class CodonAlign {
             }
         }
         
-        if (seq2ORFLead != null)
-        	seq2.edit(new Edit(firstNonGap - seq2ORFLead.length(), seq2ORFLead.length(), seq2ORFLead));
+        if (seq2ORFLead != null){
+			if(firstNonGap - seq2ORFLead.length() < 1){
+				//no need to add lead because it will match a region before the reference sequence
+			} else {
+				seq2.edit(new Edit(firstNonGap - seq2ORFLead.length(), seq2ORFLead.length(), seq2ORFLead));
+			}
+        }
         if (seq2ORFEnd != null)
         	seq2.edit(new Edit(lastNonGap + 1, seq2ORFEnd.length(), seq2ORFEnd));
 
