@@ -85,12 +85,15 @@ public class ViralIsolateResistanceTable extends WTable {
             }
         }
         
+        ViralIsolateFormConfig config = 
+        	RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+        
         //clear table
         for(int i = 1; i < getRowCount(); i++)
         {
             for(int j = 2; j< getColumnCount(); j++)
             {
-                ViralIsolateFormUtils.putResistanceTableResult(null, getElementAt(i, j), false, showMutations);
+                ViralIsolateFormUtils.putResistanceTableResult(null, getElementAt(i, j), config, false, showMutations);
             }
         }
         
@@ -107,11 +110,11 @@ public class ViralIsolateResistanceTable extends WTable {
 	            colN = algoColumn.get(tr.getTest().getDescription());
 	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
 	            if(colN!=null && rowN!=null) {
-	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), config, false, showMutations);
 	            }
 	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
 	            if(colN!=null && rowN!=null) {
-	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), config, true, showMutations);
 	            }
             }
         }

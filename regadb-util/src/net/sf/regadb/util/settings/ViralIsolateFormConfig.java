@@ -151,4 +151,11 @@ public class ViralIsolateFormConfig extends FormConfig {
 	public List<String> getAlgorithms() {
 		return algorithms;
 	}
+	
+	public ScoreInfo getScoreInfo(double score, boolean assumption) {
+		if (assumption) 
+			return gssAssumptions.get(score);
+		else
+			return gss.get(score);
+	}
 }
