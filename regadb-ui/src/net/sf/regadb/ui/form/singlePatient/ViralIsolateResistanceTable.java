@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
@@ -41,8 +44,7 @@ public class ViralIsolateResistanceTable extends WTable {
         col = getColumnCount();
         getElementAt(0, col).addWidget(new WText(""));
         int maxWidth = 0;
-        for(Test test : t.getTests())
-        {
+        for(Test test : getAlgorithms(t, gssTestType)) {
             if(test.getAnalysis()!=null
                     && Equals.isSameTestType(gssTestType, test.getTestType()) )
             {
@@ -113,6 +115,19 @@ public class ViralIsolateResistanceTable extends WTable {
 	            }
             }
         }
-        
+    }
+    
+    private List<Test> getAlgorithms(Transaction t, TestType gssTT) {
+    	ViralIsolateFormConfig config = 
+    		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+    	
+    	if (config.getAlgorithms() == null) {
+    		return t.getTests();
+    	} else {
+    		List<Test> tests = new ArrayList<Test>();
+    		for (String a : config.getAlgorithms())
+    			tests.add(t.getTest(a, gssTT.getDescription(), gssTT.getGenome().getOrganismName()));
+    		return tests;
+    	}
     }
 }
