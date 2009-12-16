@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -39,20 +40,20 @@ public class GenerateReport
     private StringBuffer rtfBuffer_;
     private static final long MILLISECS_PER_DAY = 1000*60*60*24;
     
-    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile){
+    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile){
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        init(vi, patient, algorithm, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
+        init(vi, patient, algorithms, drugClasses, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
     }
     
-    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
+    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile, int dateTolerance)
     {
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        init(vi, patient, algorithm, t, chartFile, dateTolerance);
+        init(vi, patient, algorithms, drugClasses, t, chartFile, dateTolerance);
     }
     
-    public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
+    public void init(ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile, int dateTolerance)
     {
         replace("$REPORT_GENERATION_DATE", DateUtils.format(new Date()));
         replace("$PATIENT_NAME", patient.getFirstName());
@@ -78,10 +79,10 @@ public class GenerateReport
         replace("$TYPE", getOrganismName(vi));
         replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
         
-        if (algorithm != null) {
-	        replace("$ASI_ALGORITHM", algorithm.getDescription());
-	        List<TestResult> results = getGssTestResults(vi, algorithm);
-	        setRITable(results, t);
+        if (algorithms != null && algorithms.size() > 0) {
+	        replace("$ASI_ALGORITHM", algorithmsToString(algorithms));
+	        List<TestResult> results = getGssTestResults(vi, algorithms);
+	        setRITable(drugClasses, results, t);
         }
         
         setMutations(vi, t);
@@ -93,7 +94,15 @@ public class GenerateReport
         }
     }
     
-    private String getClinicalFileNumber(Patient patient)
+    private String algorithmsToString(Collection<String> algorithms) {
+    	StringBuilder sb = new StringBuilder();
+    	for(String algorithm : algorithms)
+    		sb.append(", "+ algorithm);
+    	
+    	return sb.toString().substring(2);
+	}
+
+	private String getClinicalFileNumber(Patient patient)
     {
         for(PatientAttributeValue pav : patient.getPatientAttributeValues())
         {
@@ -173,7 +182,7 @@ public class GenerateReport
         return drugs.toString();
     }
     
-    private List<TestResult> getGssTestResults(ViralIsolate vi, Test algorithm)
+    private List<TestResult> getGssTestResults(ViralIsolate vi, Collection<String> algorithms)
     {
         List<TestResult> testResults = new ArrayList<TestResult>();
         try{
@@ -183,7 +192,7 @@ public class GenerateReport
             for(TestResult tr : vi.getTestResults())
             {
                 if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType) 
-                        && tr.getTest().getDescription().equals(algorithm.getDescription())) {
+                        && algorithms.contains(tr.getTest().getDescription())) {
                     testResults.add(tr);
                 }
             }
@@ -266,7 +275,7 @@ public class GenerateReport
             rtfBuffer_.replace(findStart, findStart + find.length(), pic.toString());
     }
     
-    public void setRITable(List<TestResult> testResults, Transaction t)
+    public void setRITable(Collection<String> drugClasses, List<TestResult> testResults, Transaction t)
     {
         List<DrugGeneric> drugs = new ArrayList<DrugGeneric>();
         List<DrugClass> sortedDrugClasses_  = t.getDrugClassesSortedOnResistanceRanking();
@@ -274,6 +283,9 @@ public class GenerateReport
         List<DrugGeneric> genericDrugs;
         boolean addedAmprenavir = false;
         for(DrugClass dc : sortedDrugClasses_) {
+        	if(!drugClasses.contains(dc.getClassId()))
+        		continue;
+        	
             genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
             for(DrugGeneric dg : genericDrugs) {
                 if(!addedAmprenavir && dg.getGenericId().startsWith("FPV")) {

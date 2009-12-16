@@ -74,20 +74,24 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         });
     }
     
-    @SuppressWarnings("unchecked")
 	private void refreshTable() {
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
         
         Genome genome = viralIsolateForm_.getViralIsolate().getGenome();
-        List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
-        		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
-        		" where nt.viralIsolate.id="+ viralIsolateForm_.getViralIsolate().getViralIsolateIi()).list();
-        Collection<String> drugClasses = ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
+        Collection<String> drugClasses = getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi());
         
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
         
         t.commit();
+    }
+    
+    @SuppressWarnings("unchecked")
+	static Collection<String> getRelevantDrugClassIds(Transaction t, int viralIsolateIi){
+        List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
+        		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
+        		" where nt.viralIsolate.id="+ viralIsolateIi).list();
+        return ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
     }
 }
