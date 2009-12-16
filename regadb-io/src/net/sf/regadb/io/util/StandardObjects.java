@@ -184,8 +184,8 @@ public class StandardObjects {
         genomeTestTypes.clear();
         tt = new TestType(numberValueType, null, resistanceTestObject, getGssDescription(), new TreeSet<TestNominalValue>());
         genomeTestTypes.add(tt);
-        
-        createStandardGenomeTestTypes(allGenomes,genomeTestTypes,false);
+        createStandardGenomeTestTypes(hiv1Genome,genomeTestTypes,false);
+        createStandardGenomeTestTypes(hiv2aGenome,genomeTestTypes,false);
 
         
         genericCD4Test          = createTest(createTestType(numberValueType, null, patientTestObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");

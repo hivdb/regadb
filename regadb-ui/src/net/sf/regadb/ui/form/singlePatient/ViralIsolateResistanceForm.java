@@ -1,6 +1,9 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 
+import java.util.Collection;
+import java.util.List;
+
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
@@ -71,13 +74,19 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         });
     }
     
-    private void refreshTable() {
+    @SuppressWarnings("unchecked")
+	private void refreshTable() {
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
         
         Genome genome = viralIsolateForm_.getViralIsolate().getGenome();
+        List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
+        		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
+        		" where nt.viralIsolate.id="+ viralIsolateForm_.getViralIsolate().getViralIsolateIi()).list();
+        Collection<String> drugClasses = ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
+        
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
-        resistanceTable_.loadTable(showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
+        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
         
         t.commit();
     }

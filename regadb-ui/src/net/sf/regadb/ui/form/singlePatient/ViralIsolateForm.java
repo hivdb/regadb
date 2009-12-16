@@ -120,8 +120,6 @@ public class ViralIsolateForm extends FormWidget
         _mainForm.saveData(t);
         
         //remove resistance tests
-        Genome oldgenome = viralIsolate_.getGenome();
-        
         Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
 		while (i.hasNext()) {
 			TestResult test = i.next();

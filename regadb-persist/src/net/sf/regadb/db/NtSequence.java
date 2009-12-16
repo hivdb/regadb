@@ -22,7 +22,7 @@ public class NtSequence implements java.io.Serializable {
 
     private String nucleotides;
     
-    private Boolean aligned;
+    private boolean aligned;
 
 	private Set<AaSequence> aaSequences = new HashSet<AaSequence>(0);
 
@@ -95,11 +95,11 @@ public class NtSequence implements java.io.Serializable {
         this.nucleotides = nucleotides;
     }
     
-    public Boolean isAligned() {
+    public boolean isAligned() {
 		return aligned;
 	}
 
-	public void setAligned(Boolean aligned) {
+	public void setAligned(boolean aligned) {
 		this.aligned = aligned;
 	}
 

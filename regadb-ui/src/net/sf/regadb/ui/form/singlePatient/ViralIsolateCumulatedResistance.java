@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,8 +57,14 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         refreshTable();
     }
     
-    private void refreshTable() {
+    @SuppressWarnings("unchecked")
+	private void refreshTable() {
         Transaction t =  RegaDBMain.getApp().createTransaction();
+        
+        List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
+        		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
+        		" where nt.viralIsolate.patient.id="+ patient_.getPatientIi()).list();
+        Collection<String> drugClasses = ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
         
         Set<TestResult> cumulatedTestResults = new HashSet<TestResult>();
         
@@ -84,7 +92,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         Genome genome = ((ViralIsolate)(patient_.getViralIsolates().toArray()[0])).getGenome();
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         
-        resistanceTable_.loadTable(showMutations_.isChecked(), cumulatedTestResults, gssTestType);
+        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), cumulatedTestResults, gssTestType);
         
         t.commit();
     }

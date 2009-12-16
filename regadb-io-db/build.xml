@@ -83,7 +83,14 @@
        	</manifest>
      </jar>
   	
-    <antcall target="create-package" />
+    <jar jarfile="${dist}/${proj.name}-saturn-change-schema.jar" basedir="${build}">
+      <manifest>
+  	<attribute name="Main-Class" value="net.sf.regadb.io.db.saturn.ChangeSchema"/>
+  	<attribute name="Class-Path" value="${jar-dependencies}"/>
+      </manifest>
+    </jar>
+
+  	<antcall target="create-package" />
   </target>
   
   <!-- Clean up -->

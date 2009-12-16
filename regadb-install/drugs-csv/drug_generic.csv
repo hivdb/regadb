@@ -35,7 +35,9 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 35,DRV,1,darunavir,J05AE10,HIV-1+HIV-2A+HIV-2B
 36,DRV/r,1,darunavir/r,J05AE10+J05AE03,HIV-1+HIV-2A+HIV-2B
 37,FPV/r,1,fosamprenavir/r,J05AE07+J05AE03,HIV-1+HIV-2A+HIV-2B
-38,ETV,3,etravirine,J05AG-ETV,HIV-1+HIV-2A+HIV-2B
+38,ETV,3,etravirine,J05AG04,HIV-1+HIV-2A+HIV-2B
 39,RTG,6,raltegravir,J05AX08,HIV-1+HIV-2A+HIV-2B
 40,MVC,4,maraviroc,J05AX09,HIV-1+HIV-2A+HIV-2B
 41,CPV,3,capravirine,J05AG-CPV,HIV-1+HIV-2A+HIV-2B
+42,EVG,6,elvitegravir,none,HIV-1+HIV-2A+HIV-2B
+42,EVG/r,6,elvitegravir/r,none+J05AE03,HIV-1+HIV-2A+HIV-2B
