@@ -44,6 +44,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	private TextField nonSynonymousTF;
     
 	private WarningMessage warningMessage;
+	private WarningMessage noProteinData;
 //    private WPushButton refreshAlignments_;
     WTimer refreshAlignmentsTimer_;
     
@@ -59,15 +60,7 @@ public class ViralIsolateProteinForm extends WContainerWidget
 
 	public void init()
 	{
-        boolean aligning = false;
-        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
-        {
-            if(ntseq.getAaSequences().size()==0)
-            {
-                aligning = true;
-                break;
-            }
-        }
+        boolean aligning = isAligning();
         
         //alignment refresh
         if(aligning)
@@ -111,24 +104,26 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		nonSynonymousL = new Label(tr("form.viralIsolate.editView.label.nonSynonymous"));
 		nonSynonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		proteinGroupTable_.addLineToTable(nonSynonymousL, nonSynonymousTF);
+		
+		proteinGroupTable_.setHidden(true);
 	}
     
+	private boolean isAligning() {
+		for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences()) {
+            if(!ntseq.isAligned())
+                return true;
+        }
+		
+		return false;
+	}
+	
     private void checkAlignments()
     {
-        boolean aligning = false;
-        
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
         t.commit();
         
-        for(NtSequence ntseq : viralIsolateForm_.getViralIsolate().getNtSequences())
-        {
-            if(ntseq.getAaSequences().size()==0)
-            {
-                aligning = true;
-                break;
-            }
-        }
+        boolean aligning = isAligning();
         
         if(!aligning)
         {
@@ -151,6 +146,14 @@ public class ViralIsolateProteinForm extends WContainerWidget
 				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
 			}
 		}
+		
+		if (ntSequenceCombo_.size() == 0 && !isAligning()) {
+			noProteinData = new WarningMessage(new WImage("pics/formWarning.gif"), tr("form.viralIsolate.editView.message.noProteinData"), MessageType.INFO);
+			addWidget(noProteinData);
+		} else if (ntSequenceCombo_.size() != 0 && !isAligning()) {
+			proteinGroupTable_.setHidden(false);
+		}
+		
         ntSequenceCombo_.sort();
 		
 		setAaSequenceCombo();

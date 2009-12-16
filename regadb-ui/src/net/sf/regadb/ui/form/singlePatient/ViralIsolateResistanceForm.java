@@ -79,12 +79,12 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
         
+        Genome genome = viralIsolateForm_.getViralIsolate().getGenome();
         List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
         		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
         		" where nt.viralIsolate.id="+ viralIsolateForm_.getViralIsolate().getViralIsolateIi()).list();
         Collection<String> drugClasses = ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
         
-        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolateForm_.getViralIsolate());
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
         

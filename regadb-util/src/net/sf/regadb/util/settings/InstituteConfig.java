@@ -17,6 +17,8 @@ public class InstituteConfig implements IConfigParser {
 	private int minYear;
 	private int maxDaysFuture;
 	private String serviceProviderUrl;
+	private boolean sampleDateMandatory = true;
+	private String logo;
 	
 	private WivConfig wivConfig;
 	
@@ -34,6 +36,10 @@ public class InstituteConfig implements IConfigParser {
 		Element ee = e.getChild("log-dir");
 		if(ee != null)
 			logDir = new File(ee.getTextTrim());
+		
+		ee = e.getChild("logo");
+		if(ee != null)
+			logo = ee.getTextTrim();
 		
 		ee = e.getChild("query-result-dir");
 		if(ee != null)
@@ -75,6 +81,10 @@ public class InstituteConfig implements IConfigParser {
 		if(ee != null)
 			organismFilter = new Filter(ee.getText());
 		
+		ee = e.getChild("sample-date-mandatory");
+		if(ee != null)
+			sampleDateMandatory = Boolean.parseBoolean(ee.getText());
+			
 		ee = e.getChild("forms");
 		if(ee != null){
 			for(Object oo : ee.getChildren()){
@@ -107,6 +117,7 @@ public class InstituteConfig implements IConfigParser {
 		forms.clear();
 		addFormConfig(new SelectPatientFormConfig());
 		addFormConfig(new ContactFormConfig());
+		addFormConfig(new ViralIsolateFormConfig());
 		
 		setMinYear(-1);
 		setMaxDaysFuture(-1);
@@ -185,6 +196,10 @@ public class InstituteConfig implements IConfigParser {
 		return r;
 	}
 
+	public boolean isSampleDateMandatory() {
+		return sampleDateMandatory;
+	}
+	
 	public Filter getOrganismFilter(){
 		return organismFilter;
 	}
@@ -195,12 +210,20 @@ public class InstituteConfig implements IConfigParser {
 		return (ContactFormConfig) forms.get(ContactFormConfig.NAME);
 	}
 	
+	public ViralIsolateFormConfig getViralIsolateFormConfig(){
+		return (ViralIsolateFormConfig) forms.get(ViralIsolateFormConfig.NAME);
+	}
+	
 	public void setLogDir(File logDir) {
 		this.logDir = logDir;
 	}
 
 	public File getLogDir() {
 		return logDir;
+	}
+	
+	public String getLogo() {
+		return logo;
 	}
 
 	public void setQueryResultDir(File queryResultDir) {

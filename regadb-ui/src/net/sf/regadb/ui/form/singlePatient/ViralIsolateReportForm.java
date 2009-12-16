@@ -83,7 +83,13 @@ public class ViralIsolateReportForm extends WContainerWidget
                                                                chartFile
                                                                );
                     
-                    String fileName = viralIsolateForm_.getViralIsolate().getSampleId() + "_" +algorithmCB_.currentValue().getDescription()+"_"+resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
+                    
+                    String fileName = "";
+                    if (viralIsolateForm_.getViralIsolate().getSampleId() != null)
+                    	fileName += viralIsolateForm_.getViralIsolate().getSampleId() + "_";
+                    if (algorithmCB_.currentValue() != null)
+                    	fileName += algorithmCB_.currentValue().getDescription() + "_";
+                    fileName += resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
                     
                     reportA_.setText(fileName);
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
@@ -101,7 +107,7 @@ public class ViralIsolateReportForm extends WContainerWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolateForm_.getViralIsolate());
+        Genome genome = viralIsolateForm_.getViralIsolate().getGenome();
         if(genome != null){
             TestType testType = t.getTestType(StandardObjects.getGssTestType(genome));
             if(testType != null){
@@ -110,19 +116,15 @@ public class ViralIsolateReportForm extends WContainerWidget
                     algorithmCB_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
                 }
                 algorithmCB_.sort();
-                
-                for(ResistanceInterpretationTemplate rit : t.getResRepTemplates())
-                {
-                    resRepTemplateCB_.addItem(new DataComboMessage<ResistanceInterpretationTemplate>(rit, rit.getName()));
-                }
-                resRepTemplateCB_.sort();
+            } else {
+            	algorithmCB_.setHidden(true);
             }
-        }
-        
-        if(algorithmCB_.size() == 0){
-            algorithmCB_.setEnabled(false);
-            resRepTemplateCB_.setEnabled(false);
-            generateButton_.setEnabled(false);
+                
+            for(ResistanceInterpretationTemplate rit : t.getResRepTemplates())
+            {
+            	resRepTemplateCB_.addItem(new DataComboMessage<ResistanceInterpretationTemplate>(rit, rit.getName()));
+            }
+            resRepTemplateCB_.sort();
         }
         
         t.commit();

@@ -95,18 +95,22 @@ public class ViralIsolateResistanceTable extends WTable {
         Integer colN;
         Integer rowN;
         for(TestResult tr : testResults)
-        {
-        	if(!drugClasses.contains(tr.getDrugGeneric().getDrugClass().getClassId()))
-        		continue;
-        	
-            colN = algoColumn.get(tr.getTest().getDescription());
-            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
-            if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
-            }
-            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
-            if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
+        {   
+            if(tr.getTest().getAnalysis()!=null
+                    && Equals.isSameTestType(gssTestType, tr.getTest().getTestType()))
+            {
+            	if(!drugClasses.contains(tr.getDrugGeneric().getDrugClass().getClassId()))
+            		continue;
+            	
+	            colN = algoColumn.get(tr.getTest().getDescription());
+	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
+	            if(colN!=null && rowN!=null) {
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
+	            }
+	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
+	            if(colN!=null && rowN!=null) {
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
+	            }
             }
         }
         

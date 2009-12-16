@@ -21,6 +21,9 @@
     <property name="sampleDate" type="date">
       <column name="sample_date" length="13" />
     </property>
+	<many-to-one name="genome" class="net.sf.regadb.db.Genome" fetch="select" cascade="save-update" index="open_reading_frame_genome_ii_idx">
+      <column name="genome_ii" />
+    </many-to-one>
     <set name="ntSequences" inverse="true" cascade="all">
       <key>
         <column name="viral_isolate_ii" not-null="true" />

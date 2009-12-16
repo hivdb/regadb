@@ -31,7 +31,7 @@ public class ProcessXMLImport extends Thread {
 		clientFileName = fileUpload.getClientFileName();
 		xmlFile = new File(fileUpload.getSpoolFileName());
 		dataset_ = dataset;
-		logFile = RegaDBMain.getApp().createTempFile(clientFileName.replace('.', '_'), "log");
+		logFile = RegaDBMain.getApp().createTempFile("import", "log");
 		login_ = login;
 		uid = login.getUid();
 	}

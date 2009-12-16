@@ -15,6 +15,15 @@
 	  this field is required 
     -->
     <import-tool-dir>/etc/rega_institute/regadb/import</import-tool-dir>
+
+    <!--  image file containing an alternative logo
+	      this field is optional
+	-->  
+  	<logo>pics/htlv/logo.gif</logo>
+    
+	<!--  boolean value describing whether the viral isolate sample date should be mandatory 
+	--> 
+    <sample-date-mandatory>true</sample-date-mandatory>
     
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
@@ -74,6 +83,18 @@
           <attribute name="First name" group="Personal" />
           <attribute name="Last name" group="Personal" />
         </attributes>
+      </form>
+      
+	  <!--  viral isolate form configuration
+
+            this element is optional
+      -->
+      <form name="form.viralIsolate">
+		<!-- list of tests in the form -->
+        <tests>
+          <test description="Authors" />
+          <test description="Article" />
+        </tests>
       </form>
       
       <!--  custom contact form configuration 

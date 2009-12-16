@@ -1,0 +1,28 @@
+orf
+gag,gag,824-2114
+pr55,pr55,824-1115
+capsid,p24,1214-1859
+matrix,p19,827-1217
+nucleocapsid,p15,2386-2620 
+
+orf
+pro,pro,2092-2779
+protease,pro,2092-2779 
+
+orf
+pol,pol,2619-5211
+pol,polymerase,2619-5211
+p95RT/IN,reverse transcriptase/integrase,2619-5208 
+
+orf
+env,envelope,5203-6670
+surface,gp46,5203-6667
+transmembrane,gp21,6139-6670 
+
+orf
+px-I,p12,6857-7157
+p12 protein,p12,6857-7157
+
+orf
+pxIII,pxIII,5147-7838
+rex,p27,5147-5207+7328-7838

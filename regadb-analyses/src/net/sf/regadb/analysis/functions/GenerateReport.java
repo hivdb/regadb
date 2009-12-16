@@ -54,7 +54,6 @@ public class GenerateReport
     
     public void init(ViralIsolate vi, Patient patient, Test algorithm, Transaction t, File chartFile, int dateTolerance)
     {
-        replace("$ASI_ALGORITHM", algorithm.getDescription());
         replace("$REPORT_GENERATION_DATE", DateUtils.format(new Date()));
         replace("$PATIENT_NAME", patient.getFirstName());
         replace("$PATIENT_LASTNAME", patient.getLastName());
@@ -79,8 +78,11 @@ public class GenerateReport
         replace("$TYPE", getOrganismName(vi));
         replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
         
-        List<TestResult> results = getGssTestResults(vi, algorithm);
-        setRITable(results, t);
+        if (algorithm != null) {
+	        replace("$ASI_ALGORITHM", algorithm.getDescription());
+	        List<TestResult> results = getGssTestResults(vi, algorithm);
+	        setRITable(results, t);
+        }
         
         setMutations(vi, t);
         
@@ -119,16 +121,10 @@ public class GenerateReport
     }
     
     private String getOrganismName(ViralIsolate vi){
-        String organismName="";
-        if(vi.getNtSequences().size() > 0){
-            NtSequence ntSeq = vi.getNtSequences().iterator().next();
-            
-            if(ntSeq.getAaSequences().size() > 0){
-                AaSequence aaSeq = ntSeq.getAaSequences().iterator().next();
-                organismName = aaSeq.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
-            }
+        if(vi.getGenome() != null){
+        	return vi.getGenome().getOrganismName();
         }
-        return organismName;
+        return "";
     }
     
     private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest, int dateTolerance)
@@ -181,7 +177,7 @@ public class GenerateReport
     {
         List<TestResult> testResults = new ArrayList<TestResult>();
         try{
-            Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+            Genome g = vi.getGenome();
             TestType gssTestType = StandardObjects.getGssTestType(g);
             
             for(TestResult tr : vi.getTestResults())
@@ -215,7 +211,7 @@ public class GenerateReport
         boolean foundMatchinqSeq;
         
         
-        Genome g = vi.getNtSequences().iterator().next().getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome();
+        Genome g = vi.getGenome();
         
         for(Protein protein : t.getProteins(g))
         {   

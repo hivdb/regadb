@@ -1318,6 +1318,9 @@ public class Transaction {
     }
 
     public TestType getTestType(TestType t){
+    	if (t == null)
+    		return null;
+    	
         return getTestType(t.getDescription(), (t.getGenome() != null ? t.getGenome().getOrganismName():null));
     }
     public TestType getTestType(String description, String organismName) {
@@ -1694,5 +1697,17 @@ public class Transaction {
     	q.setParameter("sampleId", sampleId);
     	q.setMaxResults(1);
     	return q.list().size() > 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Test> getTests(TestObject to) 
+    {
+        Query q = session.createQuery("from Test test " +
+        		"where test.testType.testObject.description = :testObject " +
+        		"order by test.id");
+
+        q.setParameter("testObject", to.getDescription());
+        
+        return q.list();
     }
 }
