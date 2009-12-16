@@ -208,6 +208,10 @@ public class PatientChart
     public void setSettings(int width, int height, Test algorithm) {
         IMAGE_WIDTH = width;
         CHART_HEIGHT = height;
+        
+        if (algorithm == null)
+        	return;
+        	
         if(!algorithm.getDescription().equals(positionAlgorithm_) || positionMap_==null) {
             positionAlgorithm_ = algorithm.getDescription();
             positionMap_ = createPositionMap(DescribeMutations.describeMutations(((AnalysisData)algorithm.getAnalysis().getAnalysisDatas().toArray()[0]).getData()));
@@ -306,8 +310,11 @@ public class PatientChart
 
 		for (ViralIsolate vi : data.getViralIsolates())
 		{
+			if (vi.getSampleDate() == null)
+				continue;
+			
 			int yStart = yTop;
-
+			
 			int x = computeX(vi.getSampleDate());
 			vg.setColor(Color.BLACK);
 			vg.setStroke(dashed);

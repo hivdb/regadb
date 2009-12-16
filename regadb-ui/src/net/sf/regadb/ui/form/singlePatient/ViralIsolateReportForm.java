@@ -83,7 +83,13 @@ public class ViralIsolateReportForm extends WContainerWidget
                                                                chartFile
                                                                );
                     
-                    String fileName = viralIsolateForm_.getViralIsolate().getSampleId() + "_" +algorithmCB_.currentValue().getDescription()+"_"+resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
+                    
+                    String fileName = "";
+                    if (viralIsolateForm_.getViralIsolate().getSampleId() != null)
+                    	fileName += viralIsolateForm_.getViralIsolate().getSampleId() + "_";
+                    if (algorithmCB_.currentValue() != null)
+                    	fileName += algorithmCB_.currentValue().getDescription() + "_";
+                    fileName += resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
                     
                     reportA_.setText(fileName);
                     WMemoryResource memResource = new WMemoryResource("application/rtf");
