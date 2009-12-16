@@ -15,7 +15,13 @@ public class AdministratorItem extends TreeMenuNode
     @Override
     public ITreeAction getFormAction()
     {
-        return null;
+		return new ITreeAction()
+		{
+			public void performAction(TreeMenuNode node)
+			{
+			    getChildren().get(0).prograSelectNode();
+			}
+		};
     }
 
     @Override
