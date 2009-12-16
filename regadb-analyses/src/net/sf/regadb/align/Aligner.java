@@ -216,7 +216,9 @@ public class Aligner {
 					psb.stopOrf = position;
 				}
 				position++;
-			}			
+			}
+			if(psb.start == 0 && psb.stop == 0)
+				continue;
 			proteinSequenceBounds.put(protein, psb);
 			nbAASeen = 0;
 		}
