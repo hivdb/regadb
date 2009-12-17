@@ -123,7 +123,7 @@ public class ImportToolForm extends FormWidget {
 					}
 					
 					if (!canAdd) {
-						//TODO give error message
+						UIUtils.showWarningMessageBox(ImportToolForm.this, tr("form.importTool.cannotAddRule"));
 					}
 				}
 			});
