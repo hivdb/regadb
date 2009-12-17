@@ -206,6 +206,11 @@ public class ImportToolForm extends FormWidget {
 		File f = 
 			new File(RegaDBSettings.getInstance().getInstituteConfig().getImportToolDir().getAbsolutePath()
 					+ File.separatorChar + descriptionTF.text() + ".xml");
+		
+		if (getInteractionState() == InteractionState.Adding && f.exists()) {
+			UIUtils.showWarningMessageBox(this, tr("form.importTool.fileAlreadyExists").arg(descriptionTF.text()));
+			return;
+		}
 
 		try {
 			FileWriter fw = new FileWriter(f);
