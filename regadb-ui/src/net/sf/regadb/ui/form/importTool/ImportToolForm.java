@@ -143,6 +143,7 @@ public class ImportToolForm extends FormWidget {
 				}
 			}
 		});
+		startImport.setDisabled(getInteractionState() == InteractionState.Deleting);
 		
 		addControlButtons();
 	}
@@ -173,14 +174,18 @@ public class ImportToolForm extends FormWidget {
 
 	@Override
 	public WString deleteObject() {
-		// TODO Auto-generated method stub
+		File f = new File(RegaDBSettings.getInstance().getInstituteConfig().getImportToolDir().getAbsolutePath()
+					+ File.separatorChar + descriptionTF.text() + ".xml");
+		
+		if (f.exists())
+			f.delete();
+		
 		return null;
 	}
 
 	@Override
 	public void redirectAfterDelete() {
-		// TODO Auto-generated method stub
-		
+		redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().importTool, RegaDBMain.getApp().getTree().getTreeContent().importToolSelect);
 	}
 
 	private void createDefinitionObject() {
