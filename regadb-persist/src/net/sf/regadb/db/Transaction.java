@@ -347,6 +347,13 @@ public class Transaction {
         
         return q.list();
     }
+    
+    @SuppressWarnings("unchecked")
+    public TherapyMotivation getTherapyMotivation(String value) {
+        Query q = session.createQuery("from TherapyMotivation tm where tm.value = :value order by tm.id");
+        q.setParameter("value", value);
+        return (TherapyMotivation)q.uniqueResult();
+    }
 
     @SuppressWarnings("unchecked")
 	public List<TestType> getUsedTestsTypes(){

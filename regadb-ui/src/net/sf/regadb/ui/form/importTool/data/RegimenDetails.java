@@ -1,16 +1,14 @@
 package net.sf.regadb.ui.form.importTool.data;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class RegimenDetails extends MappingDetails {
-	private List<String> delimiters = new ArrayList<String>();
+	private String delimiter;
 
-	public List<String> getDelimiters() {
-		return delimiters;
+	public String getDelimiter() {
+		return delimiter;
 	}
 
-	public void setDelimiters(List<String> delimiters) {
-		this.delimiters = delimiters;
+	public void setDelimiters(String delimiter) {
+		this.delimiter = delimiter;
 	}
 }
