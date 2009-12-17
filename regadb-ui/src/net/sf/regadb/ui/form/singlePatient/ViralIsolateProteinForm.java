@@ -27,13 +27,11 @@ public class ViralIsolateProteinForm extends WContainerWidget
 {
 	private ViralIsolateForm viralIsolateForm_;
 	
-	private Label ntSequenceComboL_;
-	private ComboBox<NtSequence> ntSequenceCombo_;
-	private Label aaSequenceComboL_;
-	private ComboBox<AaSequence> aaSequenceCombo_;
+	private Label proteinComboL_;
+	private ComboBox<AaSequence> proteinCombo_;
 	private FormTable proteinGroupTable_;
-	private Label proteinL;
-	private TextField proteinTF;
+	private Label sequenceL;
+	private TextField sequenceTF;
 	private Label regionL;
 	private TextField regionTF;
 	private Label alignmentL;
@@ -80,15 +78,12 @@ public class ViralIsolateProteinForm extends WContainerWidget
         }        
 		
 		proteinGroupTable_ = new FormTable(this);
-		ntSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
-		ntSequenceCombo_ = new ComboBox<NtSequence>(InteractionState.Editing, null);
-        proteinGroupTable_.addLineToTable(ntSequenceComboL_, ntSequenceCombo_);
-        aaSequenceComboL_ = new Label(tr("form.viralIsolate.editView.label.aaSequence"));
-		aaSequenceCombo_ = new ComboBox<AaSequence>(InteractionState.Editing, null);
-		proteinGroupTable_.addLineToTable(aaSequenceComboL_, aaSequenceCombo_);
-		proteinL = new Label(tr("form.viralIsolate.editView.label.protein"));
-		proteinTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-		proteinGroupTable_.addLineToTable(proteinL, proteinTF);
+        proteinComboL_ = new Label(tr("form.viralIsolate.editView.label.protein"));
+        proteinCombo_ = new ComboBox<AaSequence>(InteractionState.Editing, null);
+		proteinGroupTable_.addLineToTable(proteinComboL_, proteinCombo_);
+		sequenceL = new Label(tr("form.viralIsolate.editView.label.ntSequence"));
+		sequenceTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+		proteinGroupTable_.addLineToTable(sequenceL, sequenceTF);
 		regionL = new Label(tr("form.viralIsolate.editView.label.region"));
 		regionTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		proteinGroupTable_.addLineToTable(regionL, regionTF);
@@ -104,6 +99,12 @@ public class ViralIsolateProteinForm extends WContainerWidget
 		nonSynonymousL = new Label(tr("form.viralIsolate.editView.label.nonSynonymous"));
 		nonSynonymousTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
 		proteinGroupTable_.addLineToTable(nonSynonymousL, nonSynonymousTF);
+		
+		proteinCombo_.addComboChangeListener(new Signal.Listener(){
+			public void trigger() {
+				setAaData();
+			}
+		});
 		
 		proteinGroupTable_.setHidden(true);
 	}
@@ -136,82 +137,38 @@ public class ViralIsolateProteinForm extends WContainerWidget
 	
 	void fillData(ViralIsolate vi)
 	{
-        ntSequenceCombo_.clearItems();
-        aaSequenceCombo_.clearItems();
+        proteinCombo_.clearItems();
+        for (NtSequence ntseq : vi.getNtSequences()) {
+            for(AaSequence aaseq : ntseq.getAaSequences()) {
+            	proteinCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getProtein().getAbbreviation()));
+    		}
+        }
+        proteinCombo_.sort();
         
-		for(NtSequence ntseq : vi.getNtSequences())
-		{
-			if(ntseq.getAaSequences()!=null && ntseq.getAaSequences().size()!=0)
-			{
-				ntSequenceCombo_.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
-			}
-		}
-		
-		if (ntSequenceCombo_.size() == 0 && !isAligning()) {
+		if (proteinCombo_.size() == 0 && !isAligning()) {
 			noProteinData = new WarningMessage(new WImage("pics/formWarning.gif"), tr("form.viralIsolate.editView.message.noProteinData"), MessageType.INFO);
 			addWidget(noProteinData);
-		} else if (ntSequenceCombo_.size() != 0 && !isAligning()) {
+		} else if (proteinCombo_.size() != 0 && !isAligning()) {
 			proteinGroupTable_.setHidden(false);
+			setAaData();
 		}
-		
-        ntSequenceCombo_.sort();
-		
-		setAaSequenceCombo();
-		setAaData();
-		
-		ntSequenceCombo_.addComboChangeListener(new Signal.Listener()
-				{
-					public void trigger()
-					{
-						setAaSequenceCombo();
-						setAaData();
-					}
-				});
-		
-		aaSequenceCombo_.addComboChangeListener(new Signal.Listener()
-				{
-					public void trigger()
-					{
-						setAaData();
-					}
-				});
-			
 	}
 	
 	private void setAaData()
 	{
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        AaSequence aaSequence = aaSequenceCombo_.currentValue();
+        AaSequence aaSequence = proteinCombo_.currentValue();
 		
-        if(aaSequence!=null)
-        {
+        if(aaSequence!=null) {
             t.attach(aaSequence);
         
-    		proteinTF.setText(aaSequence.getProtein().getAbbreviation());
+    		sequenceTF.setText(aaSequence.getNtSequence().getLabel());
     		regionTF.setText(aaSequence.getFirstAaPos() + " - " + aaSequence.getLastAaPos());
     		alignmentTF.setText("<pre>" + visAaSeq_.getAlignmentView(aaSequence)+"</pre>");
             synonymousTF.setText(MutationHelper.getSynonymousMutations(aaSequence));
             nonSynonymousTF.setText(MutationHelper.getNonSynonymousMutations(aaSequence));
-            
-            t.commit();
         }
-	}
-	
-	private void setAaSequenceCombo()
-	{
-		NtSequence ntSeq = ntSequenceCombo_.currentValue();
-		
-		aaSequenceCombo_.clearItems();
-		
-        Transaction t = RegaDBMain.getApp().createTransaction();
-
-        if(ntSeq!=null)
-        for(AaSequence aaseq : ntSeq.getAaSequences())
-		{
-			aaSequenceCombo_.addItem(new DataComboMessage<AaSequence>(aaseq, aaseq.getProtein().getAbbreviation()));
-		}
-        aaSequenceCombo_.sort();
         
         t.commit();
 	}
