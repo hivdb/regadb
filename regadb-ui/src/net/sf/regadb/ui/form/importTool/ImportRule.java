@@ -166,6 +166,9 @@ public class ImportRule {
 								getAttributeValues(attribute), 
 								WString.tr("form.importTool.details.attributeNV"), 
 								this));
+			else if (ValueTypes.isDate(attribute.getValueType())) 
+				addDetailsListener(details, 
+						new DateDetailsForm(this, this.getRule().getDateDetails()));
 			else 
 				details.setHidden(true);
 		} else if (type.currentValue() == Rule.Type.EventValue) {
@@ -177,6 +180,9 @@ public class ImportRule {
 								getEventValues(event), 
 								WString.tr("form.importTool.details.eventNV"), 
 								this));
+			else if (ValueTypes.isDate(event.getValueType())) 
+				addDetailsListener(details, 
+						new DateDetailsForm(this, this.getRule().getDateDetails()));
 			else 
 				details.setHidden(true);
 		} else if (type.currentValue() == Rule.Type.TestValue) {
@@ -188,6 +194,9 @@ public class ImportRule {
 								getTestValues(test), 
 								WString.tr("form.importTool.details.testNV"), 
 								this));
+			else if (ValueTypes.isDate(test.getTestType().getValueType())) 
+				addDetailsListener(details, 
+						new DateDetailsForm(this, this.getRule().getDateDetails()));
 			else 
 				details.setHidden(true);
 		} else if (type.currentValue() == Rule.Type.TherapyMotivation) {
