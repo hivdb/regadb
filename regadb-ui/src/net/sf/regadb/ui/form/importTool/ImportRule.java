@@ -13,6 +13,7 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
@@ -189,6 +190,13 @@ public class ImportRule {
 								this));
 			else 
 				details.setHidden(true);
+		} else if (type.currentValue() == Rule.Type.TherapyMotivation) {
+			addDetailsListener(details, 
+					new MappingDetailsForm(
+							getCurrentColumnData(), 
+							getTherapyMotivations(), 
+							WString.tr("form.importTool.details.therapyMotivation"), 
+							this));
 		} else if (type.currentValue() == Rule.Type.TherapyRegimen) {
 			addDetailsListener(details, 
 					new RegimenDetailsForm(
@@ -206,6 +214,14 @@ public class ImportRule {
 		}
 	}
 	
+	private List<String> getTherapyMotivations() {
+		List<String> motivations = new ArrayList<String>();
+		Transaction tr = RegaDBMain.getApp().createTransaction();
+		for (TherapyMotivation tm : tr.getTherapyMotivations()) 
+			motivations.add(tm.getValue());
+		return motivations;
+	}
+
 	private List<String> getDrugValues() {
 		List<String> drugs = new ArrayList<String>();
 		Transaction tr = RegaDBMain.getApp().createTransaction();
