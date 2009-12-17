@@ -24,6 +24,7 @@ import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.xls.ExcelTable;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -71,16 +72,13 @@ public class ImportToolForm extends FormWidget {
 			fileU.setMandatory(true);
 			fileU.getFileUpload().uploaded().addListener(this, new Signal.Listener(){
 				public void trigger() {
-					Workbook book = null;
+					ExcelTable table = new ExcelTable("dd/MM/yyyy");
 					try {
-						book = Workbook.getWorkbook(new File(fileU.getFileUpload().getSpoolFileName()));
-					} catch (BiffException e) {
-						e.printStackTrace();
+						table.loadFile(new File(fileU.getFileUpload().getSpoolFileName()));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					
-					dataProvider = new DataProvider(book.getSheet(0), getScriptDefinition());
+					dataProvider = new DataProvider(table, getScriptDefinition());
 				}
 			});
 			formTable.addLineToTable(fileL, fileU);

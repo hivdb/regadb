@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jxl.Sheet;
 import net.sf.regadb.util.script.Python;
+import net.sf.regadb.util.xls.ExcelTable;
 
 public class DataProvider {
-	private Sheet sheet;
+	private ExcelTable sheet;
 	private ScriptDefinition script;
 
-	public DataProvider(Sheet sheet, ScriptDefinition script) {
+	public DataProvider(ExcelTable sheet, ScriptDefinition script) {
 		this.sheet = sheet;
 		this.script = script;
 	}
@@ -20,8 +20,8 @@ public class DataProvider {
 	public List<String> getHeaders() {
 		List<String> headers = new ArrayList<String>();
 		
-		for (int i = 0; i < sheet.getColumns(); i++) {
-			headers.add(sheet.getCell(i, 0).getContents().trim());
+		for (int i = 0; i < sheet.columnCount(); i++) {
+			headers.add(sheet.getCell(0, i).trim());
 		}
 		
 		for (String newCol : script.getNewColumns()) {
@@ -34,11 +34,11 @@ public class DataProvider {
 	public String getValue(int row, String header) {
 		Map<String, String> rowValues = new HashMap<String, String>();
 		
-		for (int r = 1; r < sheet.getRows(); r++) {
+		for (int r = 1; r < sheet.rowCount(); r++) {
 			if (row == r) {
-				for (int c = 0; c < sheet.getColumns(); c++) {
-					String h = sheet.getCell(c, 0).getContents().trim();
-					String v = sheet.getCell(c, r).getContents().trim();
+				for (int c = 0; c < sheet.columnCount(); c++) {
+					String h = sheet.getCell(0, c).trim();
+					String v = sheet.getCell(r, c).trim();
 					rowValues.put(h, v);
 				}
 			}
@@ -62,7 +62,7 @@ public class DataProvider {
 	public List<String> getValues(String header) {
 		List<String> values = new ArrayList<String>();
 		
-		for (int i = 1; i < sheet.getRows(); i++) {
+		for (int i = 1; i < sheet.rowCount(); i++) {
 			values.add(getValue(i, header));
 		}
 		
@@ -70,7 +70,7 @@ public class DataProvider {
 	}
 	
 	public int getNumberRows() {
-		return sheet.getRows() - 1;
+		return sheet.rowCount() - 1;
 	}
 	
 	public void setScript(ScriptDefinition script) {

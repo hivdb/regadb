@@ -6,5 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jxl.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jython2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
