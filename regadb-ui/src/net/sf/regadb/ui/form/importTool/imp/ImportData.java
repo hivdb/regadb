@@ -13,14 +13,24 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
@@ -77,7 +87,7 @@ public class ImportData {
 	}
 	
 	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t) {
-		Patient p;
+		Patient p = null;
 		Map<Attribute, String> attributes = new HashMap<Attribute, String>();
 		Map<Integer, TestResult> testResults = new HashMap<Integer, TestResult>(); 
 		Map<Integer, PatientEventValue> eventValues = new HashMap<Integer, PatientEventValue>();
@@ -114,7 +124,10 @@ public class ImportData {
 					value = handleValueType(r, vt, value);
 					if (value != null) {
 						TestResult tr = getTestResult(r.getNumber(), testResults);
-						tr.setValue(value);
+						if (ValueTypes.getValueType(test.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) 
+							tr.setTestNominalValue(t.getTestNominalValue(test.getTestType(), value));
+						else
+							tr.setValue(value);
 						tr.setTest(test);
 					}
 					else 
@@ -131,7 +144,10 @@ public class ImportData {
 					value = handleValueType(r, event.getValueType(), value);
 					if (value != null) {
 						PatientEventValue pev = getEventValue(r.getNumber(), eventValues);
-						pev.setValue(value);
+						if (ValueTypes.getValueType(event.getValueType()) == ValueTypes.NOMINAL_VALUE) 
+							pev.setEventNominalValue(t.getEventNominalValue(event, value));
+						else
+							pev.setValue(value);
 						pev.setEvent(event);
 					}
 					else 
@@ -168,10 +184,29 @@ public class ImportData {
 				if (!value.equals("")) {
 					String mappedDrug;
 					String [] drugs = value.split(r.getRegimenDetails().getDelimiter());
+					Therapy therapy = getTherapy(r.getNumber(), therapies);
 					for (String drug : drugs) {
-						 mappedDrug = r.getRegimenDetails().getMappings().get(drug);
+						if (drug.equals(""))
+							continue;
+						
+						mappedDrug = r.getRegimenDetails().getMappings().get(drug);
 						if (mappedDrug == null)
 							return WString.tr("importTool.import.errorWithTherapyRegimen").arg(drug).arg(row).arg(header);
+						else {
+							DrugCommercial dc = t.getDrugCommercial(mappedDrug);
+							DrugGeneric dg = t.getDrugGeneric(mappedDrug);
+							if (dc != null) {
+								TherapyCommercial tc = new TherapyCommercial(
+										new TherapyCommercialId(therapy, dc),
+										false, false);
+								therapy.getTherapyCommercials().add(tc);
+							} else if (dg != null) {
+								TherapyGeneric tg = new TherapyGeneric(
+										new TherapyGenericId(therapy, dg),
+										false, false);
+								therapy.getTherapyGenerics().add(tg);
+							}
+						}
 					}
 				}
 			} else if (type == Rule.Type.ViralIsolateSampleDate) {
@@ -199,6 +234,50 @@ public class ImportData {
 					ntseq.setViralIsolate(getIsolate(r.getNumber(), isolates));
 					getIsolate(r.getNumber(), isolates).getNtSequences().add(ntseq);
 				}
+			}
+		}
+		
+		for (Map.Entry<Attribute, String> e : attributes.entrySet()) {
+			PatientAttributeValue pav = p.createPatientAttributeValue(e.getKey());
+			if (ValueTypes.getValueType(e.getKey().getValueType()) == ValueTypes.NOMINAL_VALUE) 
+				pav.setAttributeNominalValue(new AttributeNominalValue(e.getKey(), e.getValue()));
+			else 
+				pav.setValue(e.getValue());
+		}
+		
+		for (Map.Entry<Integer, TestResult> e : testResults.entrySet()) {
+			if (e.getValue().getTest() != null) {
+				if (e.getValue().getTestDate() == null) 
+					return WString.tr("importTool.import.testResultMissingDate").arg(e.getValue().getTest().getDescription());
+				else 
+					p.addTestResult(e.getValue());
+			}
+		}
+		
+		for (Map.Entry<Integer, PatientEventValue> e : eventValues.entrySet()) {
+			if (e.getValue().getEvent() != null) { 
+				if (e.getValue().getStartDate() == null)
+					return WString.tr("importTool.import.eventMissingStartDate").arg(e.getValue().getEvent().getName());
+				else 
+					p.addPatientEventValue(e.getValue());
+			}
+		}
+		
+		for (Map.Entry<Integer, Therapy> e : therapies.entrySet()) {
+			if (e.getValue().getTherapyCommercials().size() > 0 || e.getValue().getTherapyGenerics().size() > 0) {
+				if (e.getValue().getStartDate() == null)
+					return WString.tr("importTool.import.therapyMissingStartDate").arg(row);
+				else
+					p.addTherapy(e.getValue());
+			}
+		}
+		
+		for (Map.Entry<Integer, ViralIsolate> e : isolates.entrySet()) {
+			if (e.getValue().getSampleId() != null && e.getValue().getNtSequences().size() > 0) {
+				if (e.getValue().getSampleDate() == null)
+					return WString.tr("importTool.import.viralIsolateDate").arg(e.getValue().getSampleId());
+				else 
+					p.addViralIsolate(e.getValue());
 			}
 		}
 		
