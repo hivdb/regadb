@@ -52,6 +52,8 @@ public class ImportToolForm extends FormWidget {
 	
 	private ImportDefinition definition;
 	private DataProvider dataProvider;
+	
+	private StartImportForm startImportForm;
 
 	public ImportToolForm(InteractionState interactionState, WString formName, ImportDefinition definition) {
 		super(formName, interactionState);
@@ -108,6 +110,8 @@ public class ImportToolForm extends FormWidget {
 		}
 		ruleTable.setHeaders(headers);
 		
+		startImportForm = new StartImportForm();
+		
 		if (getInteractionState() == InteractionState.Editing || 
 				getInteractionState() == InteractionState.Adding) {
 			addRuleButton = new WPushButton(tr("form.importTool.addRuleButton"), this);
@@ -120,9 +124,8 @@ public class ImportToolForm extends FormWidget {
 						canAdd = true;
 					}
 					
-					if (!canAdd) {
+					if (!canAdd) 
 						UIUtils.showWarningMessageBox(ImportToolForm.this, tr("form.importTool.cannotAddRule"));
-					}
 				}
 			});
 		}
@@ -138,6 +141,8 @@ public class ImportToolForm extends FormWidget {
 				WString error = validate.validateRules(ImportToolForm.this.definition.getRules());
 				if (error != null) {
 					UIUtils.showWarningMessageBox(ImportToolForm.this, error);
+				} else {
+					startImportForm.show();
 				}
 			}
 		});
