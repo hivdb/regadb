@@ -145,7 +145,7 @@ public class ImportRule {
 				type.currentValue() == Rule.Type.ViralIsolateSampleManualSubtype) {
 			List<Test> tests = tr.getTests();
 			for (Test t : tests) {
-				name.addItem(new DataComboMessage<Serializable>(t, t.getDescription()));
+				name.addItem(new DataComboMessage<Serializable>(t, Rule.getTestName(t)));
 			}
 		} else {
 			name.setHidden(true);

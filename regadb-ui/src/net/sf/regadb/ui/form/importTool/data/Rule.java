@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.importTool.data;
 
+import net.sf.regadb.db.Test;
+
 public class Rule {
 	public enum Type {
 		PatientId("Patient id"),
@@ -115,5 +117,12 @@ public class Rule {
 
 	public void setSequenceDetails(SequenceDetails sequenceDetails) {
 		this.sequenceDetails = sequenceDetails;
+	}
+	
+	public static String getTestName(Test t) {
+		String testName = t.getDescription();
+		if (t.getTestType().getGenome() != null)
+			testName += "(" + t.getTestType().getGenome().getOrganismName() + ")";
+		return testName;
 	}
 }

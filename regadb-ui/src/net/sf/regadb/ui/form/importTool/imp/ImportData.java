@@ -90,11 +90,15 @@ public class ImportData {
 	
 	public List<WString> doImport(boolean simulate) {
 		Transaction tr = RegaDBMain.getApp().createTransaction();
+		Map<String, Test> testsMap = new HashMap<String, Test>();
+		for (Test t : tr.getTests()) {
+			testsMap.put(Rule.getTestName(t), t);
+		}
 		
 		List<WString> errors = new ArrayList<WString>();
 		List<Patient> patients = new ArrayList<Patient>();
 		for (int i = 1; i < this.dataProvider.getNumberRows(); i++) {
-			WString error = doImport(i, dataProvider.getRowValues(i), tr, patients);
+			WString error = doImport(i, dataProvider.getRowValues(i), tr, testsMap, patients);
 			if (error != null)
 				errors.add(error);
 		}
