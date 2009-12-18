@@ -8,7 +8,7 @@ public class RegimenDetails extends MappingDetails {
 		return delimiter;
 	}
 
-	public void setDelimiters(String delimiter) {
+	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
 	}
 }

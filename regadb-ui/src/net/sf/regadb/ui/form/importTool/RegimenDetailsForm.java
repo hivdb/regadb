@@ -30,6 +30,7 @@ public class RegimenDetailsForm extends DetailsForm {
 		
 		delimiterL = new Label(tr("form.importTool.details.regimen.delimiter"));
 		delimiterTF = new TextField(rule.getForm().getInteractionState(), null, FieldType.ALFANUMERIC);
+		delimiterTF.setText(rule.getRule().getRegimenDetails().getDelimiter());
 		WPushButton updateTable = new WPushButton(tr("form.importTool.details.regimen.updateTable"));
 		updateTable.clicked().addListener(updateTable, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
@@ -74,6 +75,7 @@ public class RegimenDetailsForm extends DetailsForm {
 	}
 
 	public void save() {
+		details.setDelimiter(delimiterTF.text().trim());
 		table.save();
 	}
 
