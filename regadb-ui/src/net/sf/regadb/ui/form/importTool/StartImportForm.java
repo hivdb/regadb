@@ -71,7 +71,7 @@ public class StartImportForm extends WDialog {
 				} else {
 					String text = "";
 					for (WString e : errors) {
-						text += e.toString() + "\n";
+						text += e.toString() + "<br/>";
  					}
 					errorsT.setText(text);
 					hideErrors(false);
