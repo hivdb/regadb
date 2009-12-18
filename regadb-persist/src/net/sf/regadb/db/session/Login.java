@@ -110,24 +110,26 @@ public class Login {
         Transaction t  = new Transaction(this, getSession());
         SettingsUser su = t.getSettingsUser(uid);
         
-        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(su.getRole()).getBlockedAttributes();
-        if(blockAttributes && attributes!=null) {
-        	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
-        	Attribute attribute;
-        	for(AttributeConfig a : attributes) {
-        		attribute = t.getAttribute(a.getName(), a.getGroup());
-        		if(attribute!=null) {
-        			attribute_iis.add(attribute.getAttributeIi());
-        		} else {
-        			System.err.println("Blocked Attribute cannot be found: " + a.getGroup() + " - " +a.getName());
-        		}
-        	}
-        	
-        	if(attribute_iis.size()>0)
-        		session_.enableFilter("attributeFilter").setParameterList("attribute_ii_list", attribute_iis);
+        if(su != null){
+	        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(su.getRole()).getBlockedAttributes();
+	        if(blockAttributes && attributes!=null) {
+	        	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
+	        	Attribute attribute;
+	        	for(AttributeConfig a : attributes) {
+	        		attribute = t.getAttribute(a.getName(), a.getGroup());
+	        		if(attribute!=null) {
+	        			attribute_iis.add(attribute.getAttributeIi());
+	        		} else {
+	        			System.err.println("Blocked Attribute cannot be found: " + a.getGroup() + " - " +a.getName());
+	        		}
+	        	}
+	        	
+	        	if(attribute_iis.size()>0)
+	        		session_.enableFilter("attributeFilter").setParameterList("attribute_ii_list", attribute_iis);
+	        }
+	        
+	        prepareQueries();
         }
-        
-        prepareQueries();
     }
     
     public Login copyLogin()
