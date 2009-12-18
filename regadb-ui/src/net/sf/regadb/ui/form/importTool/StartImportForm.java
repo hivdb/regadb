@@ -61,6 +61,7 @@ public class StartImportForm extends WDialog {
 							new File(xlsFile.getFileUpload().getSpoolFileName()),
 							new File(fastaFile.getFileUpload().getSpoolFileName()),
 							dataset.currentValue());
+				importData.doImport(true);
 			}
 		});
 		

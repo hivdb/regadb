@@ -7,8 +7,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -18,13 +20,11 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
-import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
@@ -40,6 +40,7 @@ import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.SequenceDetails;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.xls.ExcelTable;
 
 import org.biojava.bio.seq.Sequence;
@@ -63,6 +64,7 @@ public class ImportData {
 		}
 		this.dataProvider = new DataProvider(table, definition.getScript());
 		this.dataset = dataset;
+		this.definition = definition;
 		
         RichSequenceIterator xna = null;
         
@@ -86,7 +88,31 @@ public class ImportData {
         }
 	}
 	
-	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t) {
+	public List<WString> doImport(boolean simulate) {
+		Transaction tr = RegaDBMain.getApp().createTransaction();
+		
+		List<WString> errors = new ArrayList<WString>();
+		List<Patient> patients = new ArrayList<Patient>();
+		for (int i = 1; i < this.dataProvider.getNumberRows(); i++) {
+			WString error = doImport(i, dataProvider.getRowValues(i), tr, patients);
+			if (error != null)
+				errors.add(error);
+		}
+		
+		if(errors.size() > 0)
+			return errors;
+		else {
+			if (!simulate) {
+				for (Patient p : patients) {
+					tr.save(p);
+				}
+				tr.commit();
+			}
+			return null;
+		}
+	}
+	
+	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t, List<Patient> patients) {
 		Patient p = null;
 		Map<Attribute, String> attributes = new HashMap<Attribute, String>();
 		Map<Integer, TestResult> testResults = new HashMap<Integer, TestResult>(); 

@@ -31,7 +31,7 @@ public class DataProvider {
 		return headers;
 	}
 	
-	public String getValue(int row, String header) {
+	public Map<String, String> getRowValues(int row) {
 		Map<String, String> rowValues = new HashMap<String, String>();
 		
 		for (int r = 1; r < sheet.rowCount(); r++) {
@@ -54,7 +54,11 @@ public class DataProvider {
 			Python.getInstance().execute(function, "convert_row", rowValues);
 		}
 		
-		String toReturn = rowValues.get(header);
+		return rowValues;
+	}
+	
+	public String getValue(int row, String header) {
+		String toReturn = getRowValues(row).get(header);
 		
 		return toReturn == null ? "":toReturn;
 	}

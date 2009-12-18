@@ -110,7 +110,7 @@ public class ImportToolForm extends FormWidget {
 		}
 		ruleTable.setHeaders(headers);
 		
-		startImportForm = new StartImportForm();
+		startImportForm = new StartImportForm(this);
 		
 		if (getInteractionState() == InteractionState.Editing || 
 				getInteractionState() == InteractionState.Adding) {
