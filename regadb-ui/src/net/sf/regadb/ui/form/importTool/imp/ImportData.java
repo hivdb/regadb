@@ -306,7 +306,7 @@ public class ImportData {
 		for (Map.Entry<Integer, ViralIsolate> e : isolates.entrySet()) {
 			if (e.getValue().getSampleId() != null && e.getValue().getNtSequences().size() > 0) {
 				if (e.getValue().getSampleDate() == null)
-					return WString.tr("importTool.import.viralIsolateDate").arg(e.getValue().getSampleId());
+					return WString.tr("importTool.import.viralIsolateDateMissing").arg(e.getValue().getSampleId());
 				else 
 					p.addViralIsolate(e.getValue());
 			}
