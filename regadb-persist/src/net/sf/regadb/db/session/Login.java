@@ -35,6 +35,7 @@ import org.hibernate.Session;
 public class Login {
     private String uid;
     private Session session_;
+    private Transaction transaction;
 
     /**
      * Create a new authenticated login to the database.
@@ -78,8 +79,20 @@ public class Login {
      * 
      * @return
      */
-    public Transaction createTransaction() {
-        return new Transaction(this, getSession());
+    public Transaction createTransaction()
+    {
+      return getTransaction(true);
+    }
+
+    public Transaction getTransaction(boolean createNewTransaction)
+    {
+      if (this.transaction == null || !this.transaction.isActive())
+      {
+        if (createNewTransaction)
+          return (this.transaction = new net.sf.regadb.db.Transaction(this, this.session_));
+        return (this.transaction = null);
+      }
+      return this.transaction;
     }
     
     public String getUid() {

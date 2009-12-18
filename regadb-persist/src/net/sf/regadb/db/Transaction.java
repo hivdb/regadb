@@ -10,11 +10,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.regadb.db.login.DbException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.Filter;
 
+import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
@@ -106,9 +108,15 @@ public class Transaction {
         session.beginTransaction();
     }
     
-    public void commit() {
-        session.getTransaction().commit();
-    }
+    public void commit() throws DbException {
+		try {
+			this.session.getTransaction().commit();
+		} catch (HibernateException he) {
+			this.session.getTransaction().rollback();
+			this.session.clear();
+			throw new DbException("Could not commit to database: ", he);
+		}
+	}
 
     public void rollback() {
         session.getTransaction().rollback();
@@ -1709,5 +1717,9 @@ public class Transaction {
         q.setParameter("testObject", to.getDescription());
         
         return q.list();
+    }
+    
+    public boolean isActive() {
+      return this.session.getTransaction().isActive();
     }
 }
