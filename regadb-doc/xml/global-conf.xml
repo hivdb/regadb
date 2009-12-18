@@ -103,20 +103,20 @@
         		<algorithm name="REGA v8.0.1" />
         	</algorithms>
         	<scores>
-        		<score gss="0.0" color="#fff" background-color="#ff0000"/>
-        		<score gss="0.25" color="#000" background-color="#ffff00"/>
-        		<score gss="0.5" color="#000" background-color="#ffff00"/>
-        		<score gss="0.75" color="#000" background-color="#ffff00"/>
-        		<score gss="1.0" color="#000" background-color="#00ff00"/>
-        		<score gss="1.5" color="#000" background-color="#00ff00"/>
+        		<score gss="0.0" string="R" color="#fff" background-color="#ff0000"/>
+        		<score gss="0.25" string="I"  color="#000" background-color="#ffff00"/>
+        		<score gss="0.5" string="I" color="#000" background-color="#ffff00"/>
+        		<score gss="0.75" string="S"  color="#000" background-color="#ffff00"/>
+        		<score gss="1.0" string="S"  color="#000" background-color="#00ff00"/>
+        		<score gss="1.5" string="S" color="#000" background-color="#00ff00"/>
         	</scores>
 			<scores-assumptions>
-        		<score gss="0.0" color="#fff" background-color="#ff0000"/>
-        		<score gss="0.25" color="#000" background-color="#ffff00"/>
-        		<score gss="0.5" color="#000" background-color="#ffff00"/>
-        		<score gss="0.75" color="#000" background-color="#ffff00"/>
-        		<score gss="1.0" color="#000" background-color="#00ff00"/>
-        		<score gss="1.5" color="#000" background-color="#00ff00"/>
+        		<score gss="0.0" string="R" color="#fff" background-color="#ff0000"/>
+        		<score gss="0.25" string="I" color="#000" background-color="#ffff00"/>
+        		<score gss="0.5" string="I" color="#000" background-color="#ffff00"/>
+        		<score gss="0.75" string="S" color="#000" background-color="#ffff00"/>
+        		<score gss="1.0" string="S" color="#000" background-color="#00ff00"/>
+        		<score gss="1.5" string="S" color="#000" background-color="#00ff00"/>
         	</scores-assumptions>
         </resistance>
       </form>
