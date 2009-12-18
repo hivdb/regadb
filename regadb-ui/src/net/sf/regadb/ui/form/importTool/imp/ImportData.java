@@ -116,7 +116,7 @@ public class ImportData {
 		}
 	}
 	
-	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t, List<Patient> patients) {
+	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t, Map<String, Test> testsMap, List<Patient> patients) {
 		Patient p = null;
 		Map<Attribute, String> attributes = new HashMap<Attribute, String>();
 		Map<Integer, TestResult> testResults = new HashMap<Integer, TestResult>(); 
@@ -137,6 +137,7 @@ public class ImportData {
 				if (p == null) {
 					p = new Patient();
 					p.setPatientId(value);
+					p.addDataset(this.dataset);
 				}
 			} else if (type == Rule.Type.AttributeValue) {
 				if (!value.equals("")) {
@@ -149,7 +150,7 @@ public class ImportData {
 				}
 			} else if (type == Rule.Type.TestValue) {
 				if (!value.equals("")) {
-					Test test = t.getTest(r.getTypeName());
+					Test test = testsMap.get(r.getTypeName());
 					ValueType vt = test.getTestType().getValueType();
 					value = handleValueType(r, vt, value);
 					if (value != null) {
@@ -311,6 +312,8 @@ public class ImportData {
 			}
 		}
 		
+		patients.add(p);
+		
 		return null;
 	}
 	
@@ -344,11 +347,15 @@ public class ImportData {
 	
 	private String handleValueType(Rule r, ValueType valueType, String value) {
 		if (ValueTypes.getValueType(valueType) == ValueTypes.DATE) {
-			if (handleDateValue(r, value) != null)
-				return value;
+			Date d = handleDateValue(r, value);
+			if (d != null)
+				return d.getTime()+"";
 			else 
 				return null;
 		} else if (ValueTypes.getValueType(valueType) == ValueTypes.LIMITED_NUMBER) {
+			if (Character.isDigit(value.charAt(0)))
+				value = "=" + value;
+			
 			if (ValueTypes.isValidLimitedNumber(value))
 				return value;
 			else 

@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.importTool;
 
 import java.io.File;
+import java.util.List;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Transaction;
@@ -16,6 +17,7 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 public class StartImportForm extends WDialog {
@@ -25,7 +27,7 @@ public class StartImportForm extends WDialog {
 	private FileUpload fastaFile;
 	private ComboBox<Dataset> dataset;
 	private Label errorsL = new Label(tr("form.importTool.start.errors"));
-	private WText errors;
+	private WText errorsT;
 
 	public StartImportForm(ImportToolForm importToolForm) {
 		super(tr("form.importTool.start.title"));
@@ -43,8 +45,8 @@ public class StartImportForm extends WDialog {
 		Label datasetL = new Label(tr("form.importTool.start.dataset"));
 		dataset = new ComboBox<Dataset>(InteractionState.Editing, null);
 		table.addLineToTable(datasetL, dataset);
-		errors = new WText();
-		table.addLineToTable(errorsL, errors);
+		errorsT = new WText();
+		table.addLineToTable(errorsL, errorsT);
 		hideErrors(true);
 		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
@@ -61,7 +63,19 @@ public class StartImportForm extends WDialog {
 							new File(xlsFile.getFileUpload().getSpoolFileName()),
 							new File(fastaFile.getFileUpload().getSpoolFileName()),
 							dataset.currentValue());
-				importData.doImport(true);
+				List<WString> errors = importData.doImport(true);
+				if (errors == null) {
+					importData.doImport(false);
+					errorsT.setText(tr("form.importTool.start.success"));
+					hideErrors(false);
+				} else {
+					String text = "";
+					for (WString e : errors) {
+						text += e.toString() + "\n";
+ 					}
+					errorsT.setText(text);
+					hideErrors(false);
+				}
 			}
 		});
 		
@@ -75,7 +89,7 @@ public class StartImportForm extends WDialog {
 	}
 		
 	private void hideErrors(boolean hide) {
-		errors.setHidden(hide);
+		errorsT.setHidden(hide);
 		errorsL.setHidden(hide);
 	}
 }
