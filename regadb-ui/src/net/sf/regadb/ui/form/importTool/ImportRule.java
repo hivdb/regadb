@@ -199,7 +199,7 @@ public class ImportRule {
 						new DateDetailsForm(this, this.getRule().getDateDetails()));
 			else 
 				details.setHidden(true);
-		} else if (type.currentValue() == Rule.Type.TherapyMotivation) {
+		} else if (type.currentValue() == Rule.Type.TherapyStopMotivation) {
 			addDetailsListener(details, 
 					new MappingDetailsForm(
 							getCurrentColumnData(), 

@@ -14,7 +14,7 @@ public class Rule {
 		TherapyRegimen("Therapy regimen"),
 		TherapyStartDate("Therapy start date", true),
 		TherapyEndDate("Therapy end date", true),
-		TherapyMotivation("Therapy motivation"),
+		TherapyStopMotivation("Therapy stop motivation"),
 		TherapyComment("Therapy comment"),
 		ViralIsolateSampleId("Viral isolate sample id"),
 		ViralIsolateSampleDate("Viral isolate sample date", true),

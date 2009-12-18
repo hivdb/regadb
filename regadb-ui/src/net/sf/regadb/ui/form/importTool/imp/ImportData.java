@@ -203,7 +203,7 @@ public class ImportData {
 				if (!value.equals("")) {
 					getTherapy(r.getNumber(), therapies).setComment(value);
 				}
-			} else if (type == Rule.Type.TherapyMotivation) {
+			} else if (type == Rule.Type.TherapyStopMotivation) {
 				if (!value.equals("")) {
 					value = r.getMappingDetails().getMappings().get(value);
 					if (value != null)
