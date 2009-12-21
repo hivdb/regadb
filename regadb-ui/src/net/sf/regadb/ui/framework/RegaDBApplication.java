@@ -180,8 +180,8 @@ public class RegaDBApplication extends WApplication
 	  public void setError(String e1, String e2, Exception e) {
 		getRoot().clear();
 		WContainerWidget wc = new WContainerWidget(getRoot());
-		wc.setStyleClass("mpf-error");
-		new WText(tr("mpf.error.title"), wc);
+		wc.setStyleClass("regadb-error");
+		new WText(tr("regadb.error.title"), wc);
 		new WText(new WString("<p><b>" + e1 + "</b></p>"), wc);
 		if (e2 != null)
 			new WText(new WString(e2), TextFormat.PlainText, wc);
