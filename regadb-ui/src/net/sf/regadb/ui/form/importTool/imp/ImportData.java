@@ -281,7 +281,7 @@ public class ImportData {
 		for (Map.Entry<Attribute, String> e : attributes.entrySet()) {
 			PatientAttributeValue pav = p.createPatientAttributeValue(e.getKey());
 			if (ValueTypes.getValueType(e.getKey().getValueType()) == ValueTypes.NOMINAL_VALUE) 
-				pav.setAttributeNominalValue(new AttributeNominalValue(e.getKey(), e.getValue()));
+				pav.setAttributeNominalValue(t.getAttributeNominalValue(e.getKey(), e.getValue()));
 			else 
 				pav.setValue(e.getValue());
 		}
