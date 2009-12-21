@@ -16,7 +16,6 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
@@ -306,6 +305,8 @@ public class ImportData {
 			if (e.getValue().getEvent() != null) { 
 				if (e.getValue().getStartDate() == null)
 					return WString.tr("importTool.import.eventMissingStartDate").arg(e.getValue().getEvent().getName());
+				else if (!isStartBeforeEnd(e.getValue().getStartDate(), e.getValue().getEndDate()))
+					return WString.tr("importTool.import.eventEndBeforeStartDate").arg(e.getKey()).arg(row);
 				else 
 					p.addPatientEventValue(e.getValue());
 			}
@@ -315,6 +316,8 @@ public class ImportData {
 			if (e.getValue().getTherapyCommercials().size() > 0 || e.getValue().getTherapyGenerics().size() > 0) {
 				if (e.getValue().getStartDate() == null)
 					return WString.tr("importTool.import.therapyMissingStartDate").arg(row);
+				else if (!isStartBeforeEnd(e.getValue().getStartDate(), e.getValue().getStopDate()))
+					return WString.tr("importTool.import.therapyEndBeforeStartDate").arg(e.getKey()).arg(row);
 				else
 					p.addTherapy(e.getValue());
 			}
@@ -401,5 +404,12 @@ public class ImportData {
 			}
 		}
 		return null;
+	}
+	
+	public boolean isStartBeforeEnd(Date start, Date end) {
+		if (end == null)
+			return true;
+		else 
+			return start.before(end);
 	}
 }
