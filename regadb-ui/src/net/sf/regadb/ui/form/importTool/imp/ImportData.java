@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
@@ -88,6 +89,10 @@ public class ImportData {
         }
 	}
 	
+	/**
+	 * @param simulate
+	 * @return an empty list in case there were no errors
+	 */
 	public List<WString> doImport(boolean simulate) {
 		Transaction tr = RegaDBMain.getApp().createTransaction();
 		Map<String, Test> testsMap = new HashMap<String, Test>();
@@ -112,7 +117,7 @@ public class ImportData {
 				}
 				tr.commit();
 			}
-			return null;
+			return errors;
 		}
 	}
 	
