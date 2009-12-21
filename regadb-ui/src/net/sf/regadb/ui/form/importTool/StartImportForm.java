@@ -14,11 +14,16 @@ import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDialog;
+import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WTimer;
+import eu.webtoolkit.jwt.WContainerWidget.Overflow;
 
 public class StartImportForm extends WDialog {
 	private ImportToolForm importToolForm;
@@ -26,8 +31,15 @@ public class StartImportForm extends WDialog {
 	private FileUpload xlsFile;
 	private FileUpload fastaFile;
 	private ComboBox<Dataset> dataset;
-	private Label errorsL = new Label(tr("form.importTool.start.errors"));
-	private WText errorsT;
+	private Label statusL = new Label(tr("form.importTool.start.status"));
+	private WText statusT;
+	private WContainerWidget statusScroll;
+	
+	private List<WString> errors;
+	private WTimer importTimer;
+	
+	private WPushButton startImport;
+	private WPushButton closeButton;
 
 	public StartImportForm(ImportToolForm importToolForm) {
 		super(tr("form.importTool.start.title"));
@@ -45,8 +57,11 @@ public class StartImportForm extends WDialog {
 		Label datasetL = new Label(tr("form.importTool.start.dataset"));
 		dataset = new ComboBox<Dataset>(InteractionState.Editing, null);
 		table.addLineToTable(datasetL, dataset);
-		errorsT = new WText();
-		table.addLineToTable(errorsL, errorsT);
+		statusScroll = new WContainerWidget();
+		statusScroll.setOverflow(Overflow.OverflowScroll);
+		statusScroll.setMaximumSize(WLength.Auto, new WLength(100));
+		statusT = new WText(statusScroll);
+		table.addLineToTable(statusL, statusScroll);
 		hideErrors(true);
 		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
@@ -54,42 +69,73 @@ public class StartImportForm extends WDialog {
 			dataset.addItem(new DataComboMessage<Dataset>(d, d.getDescription()));
 		}
 		
-		WPushButton startImport = new WPushButton(tr("form.importTool.start.startButton"));
-		getContents().addWidget(startImport);
-		startImport.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+		importTimer = new WTimer();
+		importTimer.setInterval(2000);
+		importTimer.timeout().addListener(this, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
-				ImportData importData = 
-					new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
-							new File(xlsFile.getFileUpload().getSpoolFileName()),
-							new File(fastaFile.getFileUpload().getSpoolFileName()),
-							dataset.currentValue());
-				List<WString> errors = importData.doImport(true);
-				if (errors == null) {
-					importData.doImport(false);
-					errorsT.setText(tr("form.importTool.start.success"));
-					hideErrors(false);
-				} else {
-					String text = "";
-					for (WString e : errors) {
-						text += e.toString() + "<br/>";
- 					}
-					errorsT.setText(text);
-					hideErrors(false);
+				if (errors != null) {
+					if (errors.size() == 0) {
+						statusT.setText(tr("form.importTool.start.success"));
+						hideErrors(false);
+					} else {
+						String text = "";
+						for (WString e : errors) {
+							text += e.toString() + "<br/>";
+						}
+						statusT.setText(text);
+						hideErrors(false);
+					}
+					
+					closeButton.setEnabled(true);
+					startImport.setEnabled(true);
+					errors = null;
+					importTimer.stop();
 				}
 			}
 		});
 		
-		WPushButton close = new WPushButton(tr("form.importTool.start.close"));
-		getContents().addWidget(close);
-		close.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+		closeButton = new WPushButton(tr("form.importTool.start.close"));
+		getContents().addWidget(closeButton);
+		closeButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
 				StartImportForm.this.hide();
+			}
+		});
+		
+		startImport = new WPushButton(tr("form.importTool.start.startButton"));
+		getContents().addWidget(startImport);
+		startImport.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+			public void trigger(WMouseEvent arg) {
+				statusT.setText(tr("form.importTool.start.importing"));
+				closeButton.setEnabled(false);
+				startImport.setEnabled(false);
+				
+				final WApplication app = RegaDBMain.getApp();
+				
+				Thread t = new Thread(new Runnable(){
+					public void run() {
+						app.attachThread();
+
+						ImportData importData = 
+							new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
+									new File(xlsFile.getFileUpload().getSpoolFileName()),
+									new File(fastaFile.getFileUpload().getSpoolFileName()),
+									dataset.currentValue());
+						List<WString> errors = importData.doImport(true);
+						if (errors.size() == 0) {
+							importData.doImport(false);
+						}
+						StartImportForm.this.errors = errors;
+					}
+				});
+				t.start();
+				importTimer.start();
 			}
 		});
 	}
 		
 	private void hideErrors(boolean hide) {
-		errorsT.setHidden(hide);
-		errorsL.setHidden(hide);
+		statusScroll.setHidden(hide);
+		statusL.setHidden(hide);
 	}
 }
