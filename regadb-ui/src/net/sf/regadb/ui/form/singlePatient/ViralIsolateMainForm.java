@@ -590,7 +590,9 @@ public class ViralIsolateMainForm extends WContainerWidget
     }
     
     public boolean checkSampleId(){
-    	return ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), viralIsolateForm_.getViralIsolate());
+    	return ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), 
+    			viralIsolateForm_.getViralIsolate(),
+    			RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem().getDatasets());
     }
     
     public MyComboBox getSeqComboBox(){

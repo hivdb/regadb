@@ -10,9 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import net.sf.regadb.db.Attribute;
@@ -35,19 +37,16 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.SequenceDetails;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.xls.ExcelTable;
 
 import org.biojava.bio.seq.Sequence;
 import org.biojavax.bio.seq.RichSequenceIterator;
-import org.hibernate.FlushMode;
 
 import eu.webtoolkit.jwt.WString;
 
@@ -328,7 +327,7 @@ public class ImportData {
 			if (e.getValue().getSampleId() != null && e.getValue().getNtSequences().size() > 0) {
 				if (e.getValue().getSampleDate() == null)
 					return WString.tr("importTool.import.viralIsolateDateMissing").arg(e.getValue().getSampleId()).arg(row);
-				else if (!ViralIsolateFormUtils.checkSampleId(e.getValue().getSampleId(), e.getValue()))
+				else if (!ViralIsolateFormUtils.checkSampleId(e.getValue().getSampleId(), e.getValue(), getDatasets()))
 					return WString.tr("importTool.import.nonUniqueSampleId").arg(e.getValue().getSampleId()).arg(row);
 				else 
 					p.addViralIsolate(e.getValue());
@@ -338,6 +337,12 @@ public class ImportData {
 		patients.add(p);
 		
 		return null;
+	}
+	
+	private Set<Dataset> getDatasets() {
+		Set<Dataset> datasets = new HashSet<Dataset>();
+		datasets.add(this.dataset);
+		return datasets;
 	}
 	
 	private ViralIsolate getIsolate(int index, Map<Integer, ViralIsolate> isolates) {

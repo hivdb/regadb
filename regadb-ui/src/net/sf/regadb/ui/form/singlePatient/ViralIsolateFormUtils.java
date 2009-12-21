@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.TestResult;
@@ -188,13 +189,13 @@ public class ViralIsolateFormUtils {
         return r;
     }
     
-    public static boolean checkSampleId(String id, ViralIsolate isolate){
+    public static boolean checkSampleId(String id, ViralIsolate isolate, Set<Dataset> scope){
         boolean unique=true;
 
         Transaction t = RegaDBMain.getApp().createTransaction();
         Integer ii = isolate.getViralIsolateIi();
         
-        for(Dataset ds : RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem().getDatasets()){
+        for(Dataset ds : scope){
             ViralIsolate vi = t.getViralIsolate(ds, id);
             if(vi != null && !vi.getViralIsolateIi().equals(ii)){
                 unique = false;
