@@ -659,3 +659,8 @@ table.datatable td.navigation{
 	text-align: right;
 }
 
+.regadb-error {
+        padding: 10px;
+}
+
+
