@@ -189,10 +189,9 @@ public class ViralIsolateFormUtils {
         return r;
     }
     
-    public static boolean checkSampleId(String id, ViralIsolate isolate, Set<Dataset> scope){
+    public static boolean checkSampleId(String id, ViralIsolate isolate, Set<Dataset> scope, Transaction t){
         boolean unique=true;
 
-        Transaction t = RegaDBMain.getApp().createTransaction();
         Integer ii = isolate.getViralIsolateIi();
         
         for(Dataset ds : scope){
@@ -203,7 +202,6 @@ public class ViralIsolateFormUtils {
             }
         }
         
-        t.commit();
         return unique;
     }
 }

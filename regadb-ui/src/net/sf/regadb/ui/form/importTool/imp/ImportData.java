@@ -327,7 +327,7 @@ public class ImportData {
 			if (e.getValue().getSampleId() != null && e.getValue().getNtSequences().size() > 0) {
 				if (e.getValue().getSampleDate() == null)
 					return WString.tr("importTool.import.viralIsolateDateMissing").arg(e.getValue().getSampleId()).arg(row);
-				else if (!ViralIsolateFormUtils.checkSampleId(e.getValue().getSampleId(), e.getValue(), getDatasets()))
+				else if (!ViralIsolateFormUtils.checkSampleId(e.getValue().getSampleId(), e.getValue(), getDatasets(), t))
 					return WString.tr("importTool.import.nonUniqueSampleId").arg(e.getValue().getSampleId()).arg(row);
 				else 
 					p.addViralIsolate(e.getValue());
