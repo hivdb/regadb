@@ -41,6 +41,7 @@ import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.SequenceDetails;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.xls.ExcelTable;
 
@@ -323,6 +324,8 @@ public class ImportData {
 			if (e.getValue().getSampleId() != null && e.getValue().getNtSequences().size() > 0) {
 				if (e.getValue().getSampleDate() == null)
 					return WString.tr("importTool.import.viralIsolateDateMissing").arg(e.getValue().getSampleId());
+				else if (!ViralIsolateFormUtils.checkSampleId(e.getValue().getSampleId(), e.getValue()))
+					return WString.tr("importTool.import.nonUniqueSampleId").arg(e.getValue().getSampleId()).arg(row);
 				else 
 					p.addViralIsolate(e.getValue());
 			}
