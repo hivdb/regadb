@@ -35,6 +35,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
@@ -46,6 +47,7 @@ import net.sf.regadb.util.xls.ExcelTable;
 
 import org.biojava.bio.seq.Sequence;
 import org.biojavax.bio.seq.RichSequenceIterator;
+import org.hibernate.FlushMode;
 
 import eu.webtoolkit.jwt.WString;
 
@@ -93,8 +95,7 @@ public class ImportData {
 	 * @param simulate
 	 * @return an empty list in case there were no errors
 	 */
-	public List<WString> doImport(boolean simulate) {
-		Transaction tr = RegaDBMain.getApp().createTransaction();
+	public List<WString> doImport(Transaction tr, boolean simulate) {
 		Map<String, Test> testsMap = new HashMap<String, Test>();
 		for (Test t : tr.getTests()) {
 			testsMap.put(Rule.getTestName(t), t);

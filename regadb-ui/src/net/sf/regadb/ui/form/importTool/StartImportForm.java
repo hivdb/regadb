@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.form.importTool.imp.ImportData;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -115,16 +116,22 @@ public class StartImportForm extends WDialog {
 				Thread t = new Thread(new Runnable(){
 					public void run() {
 						app.attachThread();
+						
+						final Login workerLogin = RegaDBMain.getApp().getLogin().copyLogin();
+						final Transaction tr = workerLogin.getTransaction(true);
 
 						ImportData importData = 
 							new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
 									new File(xlsFile.getFileUpload().getSpoolFileName()),
 									new File(fastaFile.getFileUpload().getSpoolFileName()),
 									dataset.currentValue());
-						List<WString> errors = importData.doImport(true);
+						List<WString> errors = importData.doImport(tr, true);
 						if (errors.size() == 0) {
-							importData.doImport(false);
+							importData.doImport(tr, false);
 						}
+						
+						workerLogin.closeSession();
+						
 						StartImportForm.this.errors = errors;
 					}
 				});
