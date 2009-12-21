@@ -167,6 +167,8 @@ public class ImportData {
 			} else if (type == Rule.Type.TestDate) {
 				if (!value.equals("")) {
 					Date d = handleDateValue(r, value);
+					if (d == null)
+						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
 					getTestResult(r.getNumber(), testResults).setTestDate(d);
 				}
 			} else if (type == Rule.Type.EventValue) {
@@ -187,16 +189,22 @@ public class ImportData {
 			} else if (type == Rule.Type.EventStartDate) {
 				if (!value.equals("")) {
 					Date d = handleDateValue(r, value);
+					if (d == null)
+						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
 					getEventValue(r.getNumber(), eventValues).setStartDate(d);
 				}
 			} else if (type == Rule.Type.EventEndDate) {
 				if (!value.equals("")) {
 					Date d = handleDateValue(r, value);
+					if (d == null)
+						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
 					getEventValue(r.getNumber(), eventValues).setEndDate(d);
 				}
 			} else if (type == Rule.Type.TherapyStartDate) {
 				if (!value.equals("")) {
 					Date d = handleDateValue(r, value);
+					if (d == null)
+						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
 					getTherapy(r.getNumber(), therapies).setStartDate(d);
 				}
 			} else if (type == Rule.Type.TherapyComment) {
@@ -243,6 +251,8 @@ public class ImportData {
 			} else if (type == Rule.Type.ViralIsolateSampleDate) {
 				if (!value.equals("")) {
 					Date d = handleDateValue(r, value);
+					if (d == null)
+						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
 					getIsolate(r.getNumber(), isolates).setSampleDate(d);
 				}
 			} else if (type == Rule.Type.ViralIsolateSampleId) {
