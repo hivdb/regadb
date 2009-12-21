@@ -227,9 +227,10 @@ public class ImportData {
 			} else if (type == Rule.Type.TherapyRegimen) {
 				if (!value.equals("")) {
 					String mappedDrug;
-					String [] drugs = value.split(r.getRegimenDetails().getDelimiter());
 					Therapy therapy = getTherapy(r.getNumber(), therapies);
-					for (String drug : drugs) {
+					StringTokenizer tokenizer = new StringTokenizer(value, r.getRegimenDetails().getDelimiter());
+					while (tokenizer.hasMoreTokens()) {
+						String drug = tokenizer.nextToken();
 						if (drug.equals(""))
 							continue;
 						
