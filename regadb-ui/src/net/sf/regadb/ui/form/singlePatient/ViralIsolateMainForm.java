@@ -111,7 +111,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleIdL = new Label(tr("form.viralIsolate.editView.sampleId"));
 		sampleIdTF = new TextField(viralIsolateForm_.getInteractionState(), viralIsolateForm_){
 		    public boolean checkUniqueness(){
-		        return checkSampleId(getFormText());
+		        return checkSampleId();
 		    }
 		};
 		sampleIdTF.setMandatory(true);
@@ -590,25 +590,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     }
     
     public boolean checkSampleId(){
-        return checkSampleId(sampleIdTF.getFormText());
-    }
-    
-    public boolean checkSampleId(String id){
-        boolean unique=true;
-
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        Integer ii = viralIsolateForm_.getViralIsolate().getViralIsolateIi();
-        
-        for(Dataset ds : RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem().getDatasets()){
-            ViralIsolate vi = t.getViralIsolate(ds, id);
-            if(vi != null && !vi.getViralIsolateIi().equals(ii)){
-                unique = false;
-                break;
-            }
-        }
-        
-        t.commit();
-        return unique;
+    	return ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), viralIsolateForm_.getViralIsolate());
     }
     
     public MyComboBox getSeqComboBox(){
