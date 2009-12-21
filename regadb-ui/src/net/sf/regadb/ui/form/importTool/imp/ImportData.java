@@ -302,7 +302,7 @@ public class ImportData {
 		for (Map.Entry<Integer, TestResult> e : testResults.entrySet()) {
 			if (e.getValue().getTest() != null) {
 				if (e.getValue().getTestDate() == null) 
-					return WString.tr("importTool.import.testResultMissingDate").arg(e.getValue().getTest().getDescription());
+					return WString.tr("importTool.import.testResultMissingDate").arg(e.getValue().getTest().getDescription()).arg(row);
 				else 
 					p.addTestResult(e.getValue());
 			}
@@ -311,7 +311,7 @@ public class ImportData {
 		for (Map.Entry<Integer, PatientEventValue> e : eventValues.entrySet()) {
 			if (e.getValue().getEvent() != null) { 
 				if (e.getValue().getStartDate() == null)
-					return WString.tr("importTool.import.eventMissingStartDate").arg(e.getValue().getEvent().getName());
+					return WString.tr("importTool.import.eventMissingStartDate").arg(e.getValue().getEvent().getName()).arg(row);
 				else if (!isStartBeforeEnd(e.getValue().getStartDate(), e.getValue().getEndDate()))
 					return WString.tr("importTool.import.eventEndBeforeStartDate").arg(e.getKey()).arg(row);
 				else 
