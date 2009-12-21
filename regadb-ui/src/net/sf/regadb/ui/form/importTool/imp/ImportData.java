@@ -212,6 +212,13 @@ public class ImportData {
 						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
 					getTherapy(r.getNumber(), therapies).setStartDate(d);
 				}
+			} else if (type == Rule.Type.TherapyEndDate) {
+				if (!value.equals("")) {
+					Date d = handleDateValue(r, value);
+					if (d == null)
+						return WString.tr("importTool.import.errorWithDateValue").arg(row).arg(header);
+					getTherapy(r.getNumber(), therapies).setStopDate(d);
+				}
 			} else if (type == Rule.Type.TherapyComment) {
 				if (!value.equals("")) {
 					getTherapy(r.getNumber(), therapies).setComment(value);
