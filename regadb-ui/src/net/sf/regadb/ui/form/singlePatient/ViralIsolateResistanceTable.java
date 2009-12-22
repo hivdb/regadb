@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class ViralIsolateResistanceTable extends WTable {
         this.setStyleClass("datatable datatable-resistance");
     }
     
-    public void loadTable(boolean showMutations, Set<TestResult> testResults, TestType gssTestType) {
+    public void loadTable(Collection<String> drugClasses, boolean showMutations, Set<TestResult> testResults, TestType gssTestType) {
         clear();
         
         if(gssTestType == null){
@@ -62,6 +63,9 @@ public class ViralIsolateResistanceTable extends WTable {
         boolean firstGenericDrugInThisClass;
         for(DrugClass dc : sortedDrugClasses_)
         {
+        	if(!drugClasses.contains(dc.getClassId()))
+        		continue;
+        	
             genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
             firstGenericDrugInThisClass = true;
             for(DrugGeneric dg : genericDrugs)
@@ -91,7 +95,10 @@ public class ViralIsolateResistanceTable extends WTable {
         Integer colN;
         Integer rowN;
         for(TestResult tr : testResults)
-        {            
+        {
+        	if(!drugClasses.contains(tr.getDrugGeneric().getDrugClass().getClassId()))
+        		continue;
+        	
             colN = algoColumn.get(tr.getTest().getDescription());
             rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
             if(colN!=null && rowN!=null) {
