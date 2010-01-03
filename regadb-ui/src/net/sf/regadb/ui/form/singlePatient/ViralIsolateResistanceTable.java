@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
@@ -41,8 +44,7 @@ public class ViralIsolateResistanceTable extends WTable {
         col = getColumnCount();
         getElementAt(0, col).addWidget(new WText(""));
         int maxWidth = 0;
-        for(Test test : t.getTests())
-        {
+        for(Test test : getAlgorithms(t, gssTestType)) {
             if(test.getAnalysis()!=null
                     && Equals.isSameTestType(gssTestType, test.getTestType()) )
             {
@@ -83,32 +85,52 @@ public class ViralIsolateResistanceTable extends WTable {
             }
         }
         
+        ViralIsolateFormConfig config = 
+        	RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+        
         //clear table
         for(int i = 1; i < getRowCount(); i++)
         {
             for(int j = 2; j< getColumnCount(); j++)
             {
-                ViralIsolateFormUtils.putResistanceTableResult(null, getElementAt(i, j), false, showMutations);
+                ViralIsolateFormUtils.putResistanceTableResult(null, getElementAt(i, j), config, false, showMutations);
             }
         }
         
         Integer colN;
         Integer rowN;
         for(TestResult tr : testResults)
-        {
-        	if(!drugClasses.contains(tr.getDrugGeneric().getDrugClass().getClassId()))
-        		continue;
-        	
-            colN = algoColumn.get(tr.getTest().getDescription());
-            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
-            if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), false, showMutations);
-            }
-            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
-            if(colN!=null && rowN!=null) {
-                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), true, showMutations);
+        {   
+            if(tr.getTest().getAnalysis()!=null
+                    && Equals.isSameTestType(gssTestType, tr.getTest().getTestType()))
+            {
+            	if(!drugClasses.contains(tr.getDrugGeneric().getDrugClass().getClassId()))
+            		continue;
+            	
+	            colN = algoColumn.get(tr.getTest().getDescription());
+	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
+	            if(colN!=null && rowN!=null) {
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), config, false, showMutations);
+	            }
+	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
+	            if(colN!=null && rowN!=null) {
+	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), config, true, showMutations);
+	            }
             }
         }
-        
+    }
+    
+    private List<Test> getAlgorithms(Transaction t, TestType gssTT) {
+    	ViralIsolateFormConfig config = 
+    		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+    	
+    	if (config.getAlgorithms() == null) {
+    		return t.getTests();
+    	} else {
+    		List<Test> tests = new ArrayList<Test>();
+    		for (String a : config.getAlgorithms())
+    			tests.add(t.getTest(a, gssTT.getDescription(), gssTT.getGenome().getOrganismName()));
+    		return tests;
+    	}
     }
 }

@@ -1245,6 +1245,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addObject(new DbObject("NtSequence", null, "nt_sequence", "nucleotide sequence"));
         catalog.addObject(new DbObject("NtSequence", "ntSequenceIi", "index", "index"));
         catalog.addObject(new DbObject("NtSequence", "sequenceDate", "sequence_date", "sequence date"));
+        catalog.addObject(new DbObject("NtSequence", "aligned", "aligned", "sequence aligned"));
         catalog.addObject(new DbObject("NtSequence", "label", "sequence_label", "sequence label"));
         catalog.addObject(new DbObject("NtSequence", "nucleotides", "nucleotides", "nucleotides"));
         catalog.addObject(new DbObject("NtSequence", "testResults", "test_result_count",  "test results").setValueType(ValueType.Number));
@@ -1598,6 +1599,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         // nucleotide sequence
         catalog.addAll(getPropertyComparisonClauses("NtSequence", "sequenceDate"));
         catalog.addAll(getPropertyComparisonClauses("NtSequence", "label"));
+        catalog.addAll(getPropertyComparisonClauses("NtSequence", "aligned"));
         catalog.addAll(getPropertyComparisonClauses("NtSequence", "nucleotides"));
         
         catalog.addAll(getCollectionSizeClauses(catalog.getObject("NtSequence", "aaSequences"), "number of"));

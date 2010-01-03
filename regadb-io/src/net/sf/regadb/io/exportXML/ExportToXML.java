@@ -14,37 +14,37 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.ValueType;
-import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AttributeNominalValue;
+import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.AaMutation;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
-import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
+import net.sf.regadb.db.PatientDataset;
 import net.sf.regadb.db.QueryDefinition;
-import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.EventNominalValue;
-import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.CombinedQuery;
 import net.sf.regadb.db.TherapyMotivation;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.CombinedQueryDefinition;
 import net.sf.regadb.db.DrugCommercial;
-import net.sf.regadb.db.Test;
+import net.sf.regadb.db.CombinedQueryDefinition;
 import net.sf.regadb.db.UserAttribute;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.DrugClass;
+import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
@@ -1227,6 +1227,12 @@ public class ExportToXML
 			sampleDateprimitiveValEl.addContent(XMLTools.dateToRelaxNgString(ViralIsolatevar.getSampleDate()));
 			parentNode.addContent(sampleDateprimitiveValEl);
 		}
+		if(ViralIsolatevar.getGenome()!=null &&ViralIsolatevar.getGenome().getOrganismName()!=null)
+		{
+			Element genomevar = new Element("genome");
+			parentNode.addContent(genomevar);
+			genomevar.addContent(ViralIsolatevar.getGenome().getOrganismName());
+		}
 		Element ntSequencesEl = new Element("ntSequences");
 		parentNode.addContent(ntSequencesEl);
 		for (NtSequence NtSequenceloopvar : ViralIsolatevar.getNtSequences())
@@ -1276,6 +1282,9 @@ public class ExportToXML
 			nucleotidesprimitiveValEl.addContent(NtSequencevar.getNucleotides().toString());
 			parentNode.addContent(nucleotidesprimitiveValEl);
 		}
+		Element alignedprimitiveValEl = new Element("aligned");
+		alignedprimitiveValEl.addContent(String.valueOf(NtSequencevar.isAligned()));
+		parentNode.addContent(alignedprimitiveValEl);
 		Element aaSequencesEl = new Element("aaSequences");
 		parentNode.addContent(aaSequencesEl);
 		for (AaSequence AaSequenceloopvar : NtSequencevar.getAaSequences())

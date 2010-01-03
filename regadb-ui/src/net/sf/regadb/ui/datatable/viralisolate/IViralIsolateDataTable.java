@@ -88,7 +88,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		}
 		row[2] = proteinBuffer.toString();
 		
-		Genome genome = ViralIsolateMainForm.getGenome(type);
+		Genome genome = type.getGenome();
 		row[3] = (genome == null ? "":genome.getOrganismName());
 		
 		return row;
