@@ -85,24 +85,11 @@ public class ViralIsolateFormUtils {
                 @Override
                 public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) {
                     mutations = combineMutations(mutations);
+                    
                     ScoreInfo si = config.getScoreInfo(gss, remarks != null && !remarks.equals("null"));
-                    if (si != null) {
-                    	toReturn.setText(si.getStringRepresentation());
-                    	cell.getDecorationStyle().setForegroundColor(convert(si.getColor()));
-                    	cell.getDecorationStyle().setBackgroundColor(convert(si.getBackgroundColor()));
-                    } else if(gss == 0.0) {
-                    	toReturn.setText("R");
-                    	cell.setStyleClass("resistance-R");
-                    } else if(gss == 0.25 || gss == 0.5 || gss == 0.75) {
-                    	toReturn.setText("I");
-                    	cell.setStyleClass("resistance-I");
-                    } else if(gss == 1.0 || gss == 1.5) {
-                    	toReturn.setText("S");
-                    	cell.setStyleClass("resistance-S");
-                    } else {
-                        toReturn.setText("Cannot interprete");
-                        cell.setStyleClass("resistance-X");
-                    }
+                    toReturn.setText(si.getStringRepresentation());
+                    cell.getDecorationStyle().setForegroundColor(convert(si.getColor()));
+                    cell.getDecorationStyle().setBackgroundColor(convert(si.getBackgroundColor()));
                     
                     if(remarks!=null && !remarks.equals("null")) {
                         if (si == null) 

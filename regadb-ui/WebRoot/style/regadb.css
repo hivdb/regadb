@@ -361,26 +361,6 @@ table.datatable-resistance td.resistance-NA {
 	background-color:#000;	
 }
 
-table.datatable-resistance td.resistance-R {
-	color:#fff;
-	background-color:red;	
-}
-
-table.datatable-resistance td.resistance-I {
-	color:#000;
-	background-color:yellow;	
-}
-
-table.datatable-resistance td.resistance-S {
-	color:#000;
-	background-color:#00ff00;	
-}
-
-table.datatable-resistance td.resistance-X {
-	color:#fff;
-	background-color:#000;	
-}
-
 table.datatable-resistance td.resistance-remarks {
 	background-color:#e5e5e5;
 	color:#000;
