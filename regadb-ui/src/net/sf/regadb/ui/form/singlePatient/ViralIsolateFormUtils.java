@@ -72,7 +72,8 @@ public class ViralIsolateFormUtils {
         if(tr==null)
         {
             toReturn.setText("NA");
-            cell.setStyleClass("resistance-NA");
+            cell.getDecorationStyle().setForegroundColor(convert(Color.white));
+            cell.getDecorationStyle().setBackgroundColor(convert(Color.black));
         }
         else
         {
@@ -121,7 +122,7 @@ public class ViralIsolateFormUtils {
         }
     }
     
-    private static WColor convert(Color c) {
+    public static WColor convert(Color c) {
     	return new WColor(c.getRed(), c.getGreen(), c.getBlue());
     }
     

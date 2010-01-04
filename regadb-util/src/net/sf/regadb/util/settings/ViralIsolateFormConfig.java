@@ -26,6 +26,7 @@ public class ViralIsolateFormConfig extends FormConfig {
 		private Color color;
 		private Color backgroundColor;
 		private String stringRepresentation;
+		private String description;
 		private double gssCutoff;
 		
 		public ScoreInfo() {
@@ -33,10 +34,11 @@ public class ViralIsolateFormConfig extends FormConfig {
 		}
 		
 		public ScoreInfo(Color color, Color backgroundColor,
-				String stringRepresentation, double gssCutoff) {
+				String stringRepresentation, String description, double gssCutoff) {
 			this.color = color;
 			this.backgroundColor = backgroundColor;
 			this.stringRepresentation = stringRepresentation;
+			this.description = description;
 			this.gssCutoff = gssCutoff;
 		}
 
@@ -62,6 +64,14 @@ public class ViralIsolateFormConfig extends FormConfig {
 		
 		public void setStringRepresentation(String stringRepresentation) {
 			this.stringRepresentation = stringRepresentation;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
 		}
 		
 		public double getGssCutoff() {
@@ -124,11 +134,13 @@ public class ViralIsolateFormConfig extends FormConfig {
 			String backgroundColor = ((Element) o)
 					.getAttributeValue("background-color");
 			String stringRepresentation = ((Element) o).getAttributeValue("string");
+			String description = ((Element) o).getAttributeValue("description");
 
 			ScoreInfo si = new ScoreInfo();
 			si.setColor(Color.decode(color));
 			si.setBackgroundColor(Color.decode(backgroundColor));
 			si.setStringRepresentation(stringRepresentation);
+			si.setDescription(description);
 			si.setGssCutoff(Double.parseDouble(gssCutoff));
 			gssInfo.add(si);
 		}
@@ -138,9 +150,9 @@ public class ViralIsolateFormConfig extends FormConfig {
 		tests.clear();
 		
 		gss.clear();
-		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", 0.0));
-		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", 0.5));
-		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S", Double.POSITIVE_INFINITY));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", "Resistant", 0.0));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", "Intermediate resistant", 0.5));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S", "Susceptible", Double.POSITIVE_INFINITY));
 	}
 
 	public Element toXml(){
@@ -182,5 +194,9 @@ public class ViralIsolateFormConfig extends FormConfig {
 			}
 		}
 		return null;
+	}
+	
+	public List<ScoreInfo> getScoreInfos() {
+		return gss;
 	}
 }
