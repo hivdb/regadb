@@ -321,8 +321,13 @@ public class CodonAlign {
 				seq2.edit(new Edit(firstNonGap - seq2ORFLead.length(), seq2ORFLead.length(), seq2ORFLead));
 			}
         }
-        if (seq2ORFEnd != null)
-        	seq2.edit(new Edit(lastNonGap + 1, seq2ORFEnd.length(), seq2ORFEnd));
+        if (seq2ORFEnd != null){
+        	if(lastNonGap + 1 > seq2.length()){
+        		        		
+        	} else {
+        		seq2.edit(new Edit(lastNonGap + 1, seq2ORFEnd.length(), seq2ORFEnd));
+        	}
+        }
 
         Map<String, SymbolList> alignment = new HashMap<String, SymbolList>();
         alignment.put("ref", seq1);
