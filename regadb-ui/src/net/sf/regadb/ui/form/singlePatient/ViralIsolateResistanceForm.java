@@ -24,6 +24,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     private ViralIsolateForm viralIsolateForm_;
     
     private ViralIsolateResistanceTable resistanceTable_;
+    private ViralIsolateResistanceTableLegend resistanceTableLegend_;
     private WPushButton refreshButton_;
     private WCheckBox showMutations_;
     
@@ -42,6 +43,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
         
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.getElementAt(1, 0));
+        resistanceTableLegend_ = new ViralIsolateResistanceTableLegend(wrapper.getElementAt(2,0));
         
         refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.getElementAt(0, 0));
         refreshButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()

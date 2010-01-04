@@ -390,6 +390,21 @@ table.datatable-resistance td.resistance-cell span.mutations {
 	font-family:monospace;
 }
 
+/* drug resistance table legend */
+
+table.datatable-resistance-legend {
+	margin: 1em auto 1em auto; 
+}
+	
+table.datatable-resistance-legend td{
+	border:1px solid #bbb;
+	text-align: center;
+}
+
+table.datatable-resistance-legend td.explanation{
+	text-align: left;
+}
+
 /* viral isolate evolution */
 
 table.viral-isolate-table td {
