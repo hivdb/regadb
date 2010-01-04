@@ -64,12 +64,7 @@ public class ViralIsolateFormUtils {
                 return;
         }
         
-        //TODO
-        //is this fixed?
-        //JWT: Possible jwt problem
-        while (cell.getChildren().size() > 0) {
-        	cell.removeWidget(cell.getChildren().get(0));
-        }
+        cell.clear();
         
         final WText toReturn = new WText("");
         final WText mutation = new WText("");
