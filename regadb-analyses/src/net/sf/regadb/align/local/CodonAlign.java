@@ -269,6 +269,17 @@ public class CodonAlign {
 
           return false;
     }
+    
+    private boolean noGapAt(SymbolList nucleotideSequence, int i){
+		if((i - 1) * 3 == nucleotideSequence.length()){
+			return true;
+		}
+		else{
+			return nucleotideSequence.symbolAt((i - 1) * 3 + 1) != nucleotideSequence.getAlphabet().getGapSymbol() &&
+			nucleotideSequence.symbolAt((i - 1) * 3 + 2) != nucleotideSequence.getAlphabet().getGapSymbol() &&
+			nucleotideSequence.symbolAt((i - 1) * 3 + 3) != nucleotideSequence.getAlphabet().getGapSymbol() ;
+		}
+	}
 
     private ScoredAlignment alignLikeAA(SymbolList seq1, SymbolList seq2,
             int ORF, SymbolList seqAA1, SymbolList seqAA2)
@@ -289,11 +300,11 @@ public class CodonAlign {
         int lastNonGap = -1;
 
         for (int i = 1; i <= seqAA1.length(); ++i) {
-            if (seqAA1.symbolAt(i) == seqAA1.getAlphabet().getGapSymbol()) {
+            if (seqAA1.symbolAt(i) == seqAA1.getAlphabet().getGapSymbol() && noGapAt(seq1, i)) {
                 seq1.edit(new Edit((i - 1) * 3 + 1, 0, DNATools.createDNA("---")));
             }
 
-            if (seqAA2.symbolAt(i) == seqAA2.getAlphabet().getGapSymbol()) {
+            if (seqAA2.symbolAt(i) == seqAA2.getAlphabet().getGapSymbol() && noGapAt(seq2, i)) {
                 seq2.edit(new Edit((i - 1) * 3 + 1, 0, DNATools.createDNA("---")));
             } else {
                 if (firstNonGap == -1)
