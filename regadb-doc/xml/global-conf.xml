@@ -102,11 +102,6 @@
         		<score gssCutoff="0.5" string="I"  color="#000" background-color="#ffff00"/>
         		<score gssCutoff="Infinity" string="S"  color="#000" background-color="#00ff00"/>
         	</scores>
-			<scores-assumptions>
-        		<score gssCutoff="0.0" string="R" color="#fff" background-color="#ff0000"/>
-        		<score gssCutoff="0.5" string="I" color="#000" background-color="#ffff00"/>
-        		<score gssCutoff="Infinity" string="S" color="#000" background-color="#00ff00"/>
-        	</scores-assumptions>
         </resistance>
       </form>
       

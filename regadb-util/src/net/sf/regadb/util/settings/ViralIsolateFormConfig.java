@@ -78,7 +78,6 @@ public class ViralIsolateFormConfig extends FormConfig {
     private List<TestItem> tests = new ArrayList<TestItem>();
     private List<String> algorithms;
     private List<ScoreInfo> gss = new ArrayList<ScoreInfo>();
-    private List<ScoreInfo> gssAssumptions = new ArrayList<ScoreInfo>();
     
 	public ViralIsolateFormConfig() {
 		super(NAME);
@@ -111,9 +110,6 @@ public class ViralIsolateFormConfig extends FormConfig {
 	        
 	        eee = ee.getChild("scores");
 	        readScoreInfos(eee, gss);
-	        
-	        eee = ee.getChild("scores-assumptions");
-	        readScoreInfos(eee, gssAssumptions);
         }
 	}
 	
@@ -145,11 +141,6 @@ public class ViralIsolateFormConfig extends FormConfig {
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", 0.0));
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", 0.5));
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S", Double.POSITIVE_INFINITY));
-		
-		gssAssumptions.clear();
-		gssAssumptions.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R*", 0.0));
-		gssAssumptions.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I*", 0.5));
-		gssAssumptions.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S*", Double.POSITIVE_INFINITY));
 	}
 
 	public Element toXml(){
@@ -184,15 +175,8 @@ public class ViralIsolateFormConfig extends FormConfig {
 		return algorithms;
 	}
 	
-	public ScoreInfo getScoreInfo(double score, boolean assumption) {
-		if (assumption) 
-			return getScoreInfo(gssAssumptions, score);
-		else
-			return getScoreInfo(gss, score);
-	}
-	
-	private ScoreInfo getScoreInfo(List<ScoreInfo> scoreInfos, double score) {
-		for (ScoreInfo si : scoreInfos) {
+	public ScoreInfo getScoreInfo(double score) {
+		for (ScoreInfo si : gss) {
 			if (score <= si.getGssCutoff()) {
 				return si;
 			}
