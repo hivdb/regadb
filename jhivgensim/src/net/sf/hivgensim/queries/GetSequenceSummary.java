@@ -30,7 +30,7 @@ public class GetSequenceSummary extends DefaultQueryOutput<Patient> {
 				getOut().println();
 				getOut().println();
 				getOut().println(vi.getSampleId() + "|" + seq.getLabel() + ":\t"+seq.getViralIsolate().getSampleDate());
-				for(Therapy t : TherapyUtils.sortTherapies(p.getTherapies())){
+				for(Therapy t : TherapyUtils.sortTherapiesByStartDate(p.getTherapies())){
 					if(!vi.getSampleDate().after(t.getStartDate())){
 						break;
 					}

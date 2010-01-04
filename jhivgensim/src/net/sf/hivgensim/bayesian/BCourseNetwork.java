@@ -9,50 +9,26 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author kdforc0
  */
 public class BCourseNetwork {
-	class Variable {
-		String name;
-		String[] values;
-		ArrayList parents;
-
-		public Variable(String name) {
-			this.name = name;
-			this.values = null;
-			this.parents = new ArrayList();
-		}
-
-		public void setParents(int[] parents) {
-			this.parents = new ArrayList();
-			for (int i = 0; i < parents.length; ++i)
-				this.parents.add(new Integer(parents[i]));
-		}
-
-		public boolean addParent(int i) {
-			if (! parents.contains(new Integer(i))) {
-				parents.add(new Integer(i));
-				return true;
-			} else
-				return false;
-		}
-
-		public void removeParent(int i) {
-			parents.remove(new Integer(i));
-		}
+	
+	private ArrayList<Variable> variables;
+	
+	public ArrayList<Variable> getVariables() {
+		return variables;
 	}
-	
-	ArrayList variables;
-	
+
 	BCourseNetwork(InputStream strFile, InputStream vdFile) throws IOException {
 		readVariables(vdFile);
 		readStructure(strFile);
 	}
 
-	BCourseNetwork(ArrayList variables) {
-		this.variables = new ArrayList();
+	BCourseNetwork(List<Variable> variables) {
+		this.variables = new ArrayList<Variable>();
 		for (int i = 0; i < variables.size(); ++i) {
 			Variable v = (Variable) variables.get(i);
 			this.variables.add(new Variable(v.name));
@@ -75,13 +51,13 @@ public class BCourseNetwork {
 				parents[i] = Integer.parseInt(l[2+i]);
 			}
 			
-			((Variable) variables.get(v)).setParents(parents);
+			variables.get(v).setParents(parents);
 			++v;
 		}
 	}
 
 	private void readVariables(InputStream vdFile) throws IOException {
-		variables = new ArrayList();
+		variables = new ArrayList<Variable>();
 		LineNumberReader r = new LineNumberReader(new InputStreamReader(vdFile));
 		
 		String line = null;
@@ -109,11 +85,9 @@ public class BCourseNetwork {
 		}
 	}
 
-	private boolean findPath(int j, int i) {
-		Variable v = (Variable) variables.get(i);
-		for (int k = 0; k < v.parents.size(); ++k) {
-			int p = ((Integer) v.parents.get(k)).intValue();
-			if (p == j)
+	public boolean findPath(int j, int i) {
+		for (Integer p : variables.get(i).parents) {
+			if (p.equals(j))
 				return true;
 			if (findPath(j, p))
 				return true;

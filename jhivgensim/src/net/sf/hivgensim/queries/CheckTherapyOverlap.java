@@ -19,7 +19,7 @@ public class CheckTherapyOverlap extends DefaultQueryOutput<Patient> {
 
 	public void process(Patient p) {
 		try{
-			List<Therapy> th = TherapyUtils.sortTherapies(p.getTherapies());
+			List<Therapy> th = TherapyUtils.sortTherapiesByStartDate(p.getTherapies());
 			for(int i = 0 ; i < th.size() - 1 ; i++){
 				Therapy t = th.get(i);
 				Therapy t1 = th.get(i+1);

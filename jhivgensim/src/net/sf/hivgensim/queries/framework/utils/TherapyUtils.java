@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -22,21 +23,16 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class TherapyUtils {
 	
-	public static List<Therapy> sortByStartDate(Set<Therapy> t){
-		List<Therapy> result = new ArrayList<Therapy>(t.size());
-		result.addAll(t);
+	public static long daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
+		int days = 0;
 
-		Comparator<Therapy> c = new Comparator<Therapy>(){
-			public int compare(Therapy o1, Therapy o2) {
-				if(o1.getStartDate().before(o2.getStartDate()))
-					return -1;
-				if(o1.getStartDate().after(o2.getStartDate()))
-					return 1;
-				return 0;
-			}			
-		};
-		Collections.sort(result,c);
-		return result;
+		for(Therapy t : therapies) {
+			if(TherapyUtils.hasClassExperience(drugClass, t)) {
+				days+=DateUtils.millisecondsToDays(t.getStopDate().getTime()-t.getStartDate().getTime());
+			}
+		}
+
+		return days;
 	}
 	
 	public static Set<DrugGeneric> allDrugGenerics(Therapy t){
@@ -110,35 +106,16 @@ public class TherapyUtils {
 		return false;
 	}
 
-	public static List<Therapy> sortTherapies(List<Therapy> therapies){
-		Comparator<Therapy> c = new Comparator<Therapy>(){
-			public int compare(Therapy o1, Therapy o2) {
-				if(o1.getStartDate().before(o2.getStartDate()))
-					return -1;
-				if(o1.getStartDate().after(o2.getStartDate()))
-					return 1;
-				return 0;
-			}			
-		};
-		Collections.sort(therapies,c);
-		return therapies;
-	}
+	public static List<Therapy> sortTherapiesByStartDate(Set<Therapy> therapies){
+		List<Therapy> sortedTherapies = new ArrayList<Therapy>(therapies);
 
-	public static List<Therapy> sortTherapies(Set<Therapy> t){
-		List<Therapy> result = new ArrayList<Therapy>(t.size());
-		result.addAll(t);
-	
-		Comparator<Therapy> c = new Comparator<Therapy>(){
-			public int compare(Therapy o1, Therapy o2) {
-				if(o1.getStartDate().before(o2.getStartDate()))
-					return -1;
-				if(o1.getStartDate().after(o2.getStartDate()))
-					return 1;
-				return 0;
-			}			
-		};
-		Collections.sort(result,c);
-		return result;
+		Collections.sort(sortedTherapies, new Comparator<Therapy>() {
+			public int compare(Therapy t1, Therapy t2) {
+				return t1.getStartDate().compareTo(t2.getStartDate());
+			}
+		});
+
+		return sortedTherapies;
 	}
 
 	public static Set<NtSequence> getLatestSequencesDuringTherapy(Patient p, Therapy t){
@@ -262,6 +239,25 @@ public class TherapyUtils {
 			}
 		}		
 		return result && isGoodPreviousTherapy(t,druggenerics);
+	}
+
+	public static Collection<DrugClass> getClassesBefore(Set<Therapy> therapies, Date testDate) {
+		List<DrugClass> result = new ArrayList<DrugClass>();
+		Set<String> names = new TreeSet<String>();
+		for(Therapy therapy: therapies){
+			if(!therapy.getStartDate().before(testDate)){
+				continue;
+			}
+			for (TherapyGeneric generic : therapy.getTherapyGenerics()) {
+				DrugClass drugClass = generic.getId().getDrugGeneric().getDrugClass();
+				if(names.contains(drugClass.getClassName())) {
+					continue;
+				}
+				result.add(drugClass);
+				names.add(drugClass.getClassName());
+			}
+		}
+		return result;
 	}
 
 }

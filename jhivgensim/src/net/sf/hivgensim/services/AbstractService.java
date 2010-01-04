@@ -8,7 +8,7 @@ import net.sf.wts.client.WtsClient;
 public abstract class AbstractService {
 	
 	private String url = "http://localhost:8080/wts/services/";
-	private String uid = "gbehey0";
+	private String uid = "public";
 	private String passwd = "public";
 	
 	private String serviceName = "";

@@ -200,4 +200,12 @@ public class Utils {
 		}
 		return allMutations;
 	}
+
+	public static Set<String> getAllMutations(SelectionWindow[] windows){
+		Set<String> mutations = new TreeSet<String>();
+		for(SelectionWindow win : windows){
+			mutations.addAll(win.getAllMutations());			
+		}
+		return mutations;
+	}
 }

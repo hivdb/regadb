@@ -1,5 +1,7 @@
 package net.sf.hivgensim.mutationlists;
 
+import java.io.IOException;
+
 /*
  * @author gbehey0
  */
@@ -41,27 +43,34 @@ public class ExcludeResistanceBlock {
 		int start = 0;
 		int stop = 0;
 		StringBuffer buf = new StringBuffer();
-		buf.append("charset resist=");
-		
-		for(ConsensusMutation mut : ConsensusMutationList.getList(getListname())){
-			if(mut.getProteinAbbreviation().equals("PR")){
-				stop = (mut.getPosition()*3)+prStart;				
-			}else if(mut.getProteinAbbreviation().equals("RT")){
-				stop = (mut.getPosition()*3)+rtStart;
-			}else{
-				//no PR or RT
-				continue;
-			}			
-			if(start == stop-2){
-				//different mutation on same position can be skipped
-				continue;
+				
+		try {
+			ConsensusMutationList cml = ConsensusMutationList.retrieveListFromURL("http://cpr.stanford.edu/cpr/components/hiv_prrt/lists/ias-usa-2007_major");
+			buf.append("charset resist=");
+			for(ConsensusMutation mut : cml){
+				if(mut.getProteinAbbreviation().equals("PR")){
+					stop = (mut.getPosition()*3)+prStart;				
+				}else if(mut.getProteinAbbreviation().equals("RT")){
+					stop = (mut.getPosition()*3)+rtStart;
+				}else{
+					//no PR or RT
+					continue;
+				}			
+				if(start == stop-2){
+					//different mutation on same position can be skipped
+					continue;
+				}
+				
+				start = stop-2;
+				buf.append(""+start+"-"+stop+" ");
+				System.out.println(mut.getListName()+" "+mut.getProteinAbbreviation()+" "+mut.getPosition());
 			}
-			
-			start = stop-2;
-			buf.append(""+start+"-"+stop+" ");
-			System.out.println(mut.getListName()+" "+mut.getProteinAbbreviation()+" "+mut.getPosition());
+			buf.append(";\nexclude resist;\n");
+		} catch (IOException e) {
+			System.err.println("IAS list could not be retrieved: ! not excluding known resistance positions !");
+			e.printStackTrace();
 		}
-		buf.append(";\nexclude resist;\n");
+		
 		return buf.toString();
 	}
 

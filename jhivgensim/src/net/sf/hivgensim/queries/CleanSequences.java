@@ -18,6 +18,10 @@ public class CleanSequences extends Query<NtSequence,NtSequence> {
 		super(nextQuery);
 		this.windows = windows;
 	}
+	
+	public CleanSequences(SelectionWindow window, IQuery<NtSequence> nextQuery){
+		this(new SelectionWindow[]{window},nextQuery);
+	}
 
 	@Override
 	public void process(NtSequence seq) {
