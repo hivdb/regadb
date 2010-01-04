@@ -90,6 +90,7 @@ public class CodonAlign {
     public Alignment compute(Sequence ref, Sequence target, int maxFrameShifts)
             throws AlignmentException, IllegalSymbolException {
         try {
+        	target = DNATools.createDNASequence(target.seqString().replace("-",""), "target"); 
             ScoredAlignment ntAlignment = ntNeedleman.pairwiseAlignment(ref, target);
 
             if (ntAlignment.getScore() < minNtScore)
