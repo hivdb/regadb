@@ -21,6 +21,8 @@ public class InstituteConfig implements IConfigParser {
 	
 	private WivConfig wivConfig;
 	
+	private EmailConfig emailConfig;
+
 	private HashMap<String, FormConfig> forms = new HashMap<String, FormConfig>();
 	
 	public String getXmlTag() {
@@ -48,6 +50,12 @@ public class InstituteConfig implements IConfigParser {
 		if(ee != null){
 			wivConfig = new WivConfig();
 			wivConfig.parseXml(settings, ee);
+		}
+		
+		ee = e.getChild("e-mail");
+		if (ee != null) {
+			emailConfig = new EmailConfig();
+			emailConfig.parseXml(settings, ee);
 		}
 		
 		ee = e.getChild("report-date-tolerance");
@@ -246,6 +254,10 @@ public class InstituteConfig implements IConfigParser {
 	}
 	public void setWivConfig(WivConfig wivConfig){
 		this.wivConfig = wivConfig;
+	}
+	
+	public EmailConfig getEmailConfig() {
+		return emailConfig;
 	}
 
 	public void setMinYear(int minYear) {

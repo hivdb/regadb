@@ -20,6 +20,17 @@
 	--> 
     <sample-date-mandatory>true</sample-date-mandatory>
     
+    <!-- Email configuration 
+    	Optional -->
+    <e-mail>
+    	<host>relay.test.org</host>
+    	<from address="admin@test.org" />
+    	<to>
+			<recipient address="pieter.libin@mybiodata.eu" />
+			<recipient address="stijn.imbrechts@kuleuven.ac.be" />
+		</to>
+    </e-mail>
+    
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
     -->

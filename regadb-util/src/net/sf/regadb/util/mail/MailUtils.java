@@ -20,7 +20,7 @@ public class MailUtils {
 	/**
 	 * Send a mail.	
 	 */
-	public static void sendMail(String host, String from, Set<String> recipients, String subject, String message) throws AddressException, MessagingException {
+	public static void sendMail(String host, String from, Set<String> recipients, CharSequence subject, CharSequence message) throws AddressException, MessagingException {
 		Properties props = System.getProperties();
 
 		props.put("mail.smtp.host", host);
@@ -31,8 +31,8 @@ public class MailUtils {
 		mimeMessage.setFrom(new InternetAddress(from));
 		for (String recepient : recipients) 
 			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
-		mimeMessage.setSubject(subject);
-		mimeMessage.setText(message);
+		mimeMessage.setSubject(subject.toString());
+		mimeMessage.setText(message.toString());
 
 		Transport.send(mimeMessage);
 	}
