@@ -207,7 +207,7 @@ public class ComposedAtomicWhereClause extends AtomicWhereClause {
 	}
 
 	@Override
-	protected List<OutputVariable> getExportedOutputVariables() {
+	public List<OutputVariable> getExportedOutputVariables() {
 		if (exportPolicy == ExportPolicy.NONE) {
 			return Collections.emptyList();
 		}
