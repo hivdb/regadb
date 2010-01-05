@@ -1564,6 +1564,12 @@ public class Transaction {
         return (OpenReadingFrame)getOpenReadingFrameQuery.uniqueResult();
     }
     
+    @SuppressWarnings("unchecked")
+	public List<OpenReadingFrame> getOpenReadingFrames(){
+    	Query q = session.createQuery("from OpenReadingFrame orf order by orf.genome.organismName");
+        return q.list();
+    }
+    
     public Protein getProtein(OpenReadingFrame orf, String abbreviation){
         getProteinQuery.setParameter("openReadingFrame", orf);
         getProteinQuery.setParameter("abbreviation", abbreviation);

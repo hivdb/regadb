@@ -8,6 +8,7 @@ import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.query.querytool.buttons.EditButtonPanel;
+import net.sf.regadb.ui.form.query.querytool.fasta.FastaExportContainer;
 import net.sf.regadb.ui.form.query.querytool.select.SelectionListContainer;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorTreeContainer;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryStatusBar;
@@ -28,6 +29,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	private WTabbedPane tabs;
 	private QueryEditorTreeContainer queryTreeTab;
 	private SelectionListContainer selectionTab;
+	private FastaExportContainer fastaExportTab;
 	private InfoContainer infoTab;
 
 	private WGroupBox queryGroup_;
@@ -74,6 +76,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 			queryTreeTab.setToolbar(new EditButtonPanel(queryTreeTab));
 		}
 		selectionTab  =	new SelectionListContainer(this);
+		fastaExportTab = new FastaExportContainer(this);
         infoTab = new InfoContainer(this, this);
         statusbar = new QueryStatusBar(this);
 
@@ -81,6 +84,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         tabs = new WTabbedPane(queryGroup_);
         tabs.addTab(tr("form.query.querytool.group.query"), queryTreeTab);
         tabs.addTab(tr("form.query.querytool.group.fields"), selectionTab);
+        tabs.addTab(tr("form.query.querytool.group.fastaExport"), fastaExportTab);
         tabs.addTab(tr("form.query.querytool.group.info"), infoTab);
         tabs.setStatusBar(statusbar);
         
