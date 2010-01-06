@@ -780,12 +780,19 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     	return RegaDBMain.getApp().createTransaction();
     }
     
-    protected String getArcPatientQuery(String patientIiField){
+    protected String getArcPatientQuery(String patientIdField){
     	AttributeConfig ac = RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getArcPatientFilter();
     	if(ac == null)
     		return "1=1";
     	
-    	String arcPatientQuery = patientIiField +" in (select arc_pav.patient.patientIi from PatientAttributeValue arc_pav where arc_pav.attribute.name = '"+ ac.getName() +"' and arc_pav.attributeNominalValue.value = '"+ ac.getValue() +"')";
+    	String arcPatientQuery = patientIdField +" in (select arc_pav.patient.id from PatientAttributeValue arc_pav where arc_pav.attribute.name = '"+ ac.getName() +"' and arc_pav.attributeNominalValue.value = '"+ ac.getValue() +"')";
     	return arcPatientQuery;
+    }
+    
+    protected String getContactConstraint(String patientIdField){
+    	return patientIdField+" in (select distinct tr.patient.id from TestResult tr" +
+    			" where tr.testDate >= :var_start_date and tr.testDate <= :var_end_date" +
+    			" and tr.test.id in (select t.id from Test t where t.testType.description =" +
+    			" '"+ StandardObjects.getContactTestType().getDescription() +"'))";
     }
 }

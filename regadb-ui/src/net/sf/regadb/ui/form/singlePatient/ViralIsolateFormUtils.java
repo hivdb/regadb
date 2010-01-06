@@ -1,29 +1,62 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.Genome;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig.ScoreInfo;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateFormUtils {
-    public static void putResistanceTableResult(TestResult tr, final WTableCell cell, boolean onlyIfCurrentValueIsNA, final boolean canShowMutations)
+	private final static Map<String,List<String>> proteinAbbrevDrugClass = new HashMap<String,List<String>>();
+	static{
+		List<String> l = new LinkedList<String>();
+		l.add("PI");
+		proteinAbbrevDrugClass.put("PR", l);
+		
+		l = new LinkedList<String>();
+		l.add("NRTI");
+		l.add("NNRTI");
+		proteinAbbrevDrugClass.put("RT", l);
+		
+		l = new LinkedList<String>();
+		l.add("EI");
+		proteinAbbrevDrugClass.put("gp41", l);
+		proteinAbbrevDrugClass.put("gp120", l);
+		
+		l = new LinkedList<String>();
+		l.add("INI");
+		proteinAbbrevDrugClass.put("IN", l);
+	}
+	
+	public static Collection<String> getRelevantDrugClassIds(Collection<String> proteinAbbreviations){
+		List<String> drugClasses = new ArrayList<String>();
+        for(String proteinAbbreviation : proteinAbbreviations){
+        	List<String> iis = proteinAbbrevDrugClass.get(proteinAbbreviation);
+        	if(iis != null)
+        		drugClasses.addAll(iis);
+        }
+        return drugClasses;
+	}
+	
+    public static void putResistanceTableResult(TestResult tr, final WTableCell cell, final ViralIsolateFormConfig config, boolean onlyIfCurrentValueIsNA, final boolean canShowMutations)
     {
         //make sure we do not override a sensible value
         if(onlyIfCurrentValueIsNA) {
@@ -31,12 +64,7 @@ public class ViralIsolateFormUtils {
                 return;
         }
         
-        //TODO
-        //is this fixed?
-        //JWT: Possible jwt problem
-        while (cell.getChildren().size() > 0) {
-        	cell.removeWidget(cell.getChildren().get(0));
-        }
+        cell.clear();
         
         final WText toReturn = new WText("");
         final WText mutation = new WText("");
@@ -44,7 +72,8 @@ public class ViralIsolateFormUtils {
         if(tr==null)
         {
             toReturn.setText("NA");
-            cell.setStyleClass("resistance-NA");
+            cell.getDecorationStyle().setForegroundColor(convert(Color.white));
+            cell.getDecorationStyle().setBackgroundColor(convert(Color.black));
         }
         else
         {
@@ -52,29 +81,17 @@ public class ViralIsolateFormUtils {
                 @Override
                 public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) {
                     mutations = combineMutations(mutations);
-                    if(gss == 0.0)
-                    {
-                        toReturn.setText("R");
-                        cell.setStyleClass("resistance-R");
-                    }
-                    else if(gss == 0.25 || gss == 0.5 || gss == 0.75)
-                    {
-                        toReturn.setText("I");
-                        cell.setStyleClass("resistance-I");
-                    }
-                    else if(gss == 1.0 || gss == 1.5)
-                    {
-                        toReturn.setText("S");
-                        cell.setStyleClass("resistance-S");
-                    }
-                    else 
-                    {
-                        toReturn.setText("Cannot interprete");
-                        cell.setStyleClass("resistance-X");
-                    }
+                    
+                    ScoreInfo si = config.getScoreInfo(gss);
+                    toReturn.setText(si.getStringRepresentation());
+                    cell.getDecorationStyle().setForegroundColor(convert(si.getColor()));
+                    cell.getDecorationStyle().setBackgroundColor(convert(si.getBackgroundColor()));
+                    
                     if(remarks!=null && !remarks.equals("null")) {
                     	cell.setStyleClass(cell.getStyleClass() + " resistance-remarks");
-                        toReturn.setToolTip(remarks);
+                        toReturn.setText(toReturn.getText() + "*");
+                        
+                    	toReturn.setToolTip(remarks);
                         cell.setToolTip(remarks);
                     }
                     if(canShowMutations && mutations.size()>0) {
@@ -105,25 +122,16 @@ public class ViralIsolateFormUtils {
         }
     }
     
+    public static WColor convert(Color c) {
+    	return new WColor(c.getRed(), c.getGreen(), c.getBlue());
+    }
+    
     public static String getFixedGenericId(TestResult tr) {
         String genericId = tr.getDrugGeneric().getGenericId();
         if(genericId.startsWith("APV"))
             return genericId.replace("APV", "FPV");
         else
             return genericId;
-    }
-    
-    public static Genome getGenome(ViralIsolate vi){
-        if(vi != null){
-            Set<NtSequence> ntseqs = vi.getNtSequences();
-            if(ntseqs != null && ntseqs.size() > 0){
-                Set<AaSequence> aaseqs = ntseqs.iterator().next().getAaSequences();
-                if(aaseqs != null && aaseqs.size() > 0){
-                    return aaseqs.iterator().next().getProtein().getOpenReadingFrame().getGenome();
-                }
-            }
-        }
-        return null;
     }
     
     public static ArrayList<String> combineMutations(ArrayList<String> mutations){

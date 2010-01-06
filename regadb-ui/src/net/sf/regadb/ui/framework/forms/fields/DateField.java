@@ -125,7 +125,4 @@ public class DateField extends FormField
     	if(_fieldEdit != null)
     		_fieldEdit.setEnabled(enabled);
     }
-    public boolean isEnabled(){
-    	return _fieldEdit != null && _fieldEdit.isEnabled();
-    }
 }

@@ -2,10 +2,15 @@ package net.sf.regadb.ui.framework;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.servlet.ServletContext;
 
+import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -19,8 +24,13 @@ import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class RegaDBApplication extends WApplication
 {
@@ -49,11 +59,6 @@ public class RegaDBApplication extends WApplication
 	public Tree getTree()
 	{
 		return getWindow().getTree_();
-	}
-	
-	public Header getHeader()
-	{
-		return getWindow().getHeader_();
 	}
 	
 	public FormContainer getFormContainer()
@@ -119,7 +124,7 @@ public class RegaDBApplication extends WApplication
 	}
 	
 	public Patient getSelectedPatient(){
-		return getTree().getTreeContent().patientSelected.getSelectedItem();
+		return getTree().getTreeContent().patientTreeNode.getSelectedItem();
 	}
 	
 	public SettingsUser getSettingsUser(){
@@ -129,8 +134,66 @@ public class RegaDBApplication extends WApplication
 		return RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(getSettingsUser().getRole());
 	}
 	
+	public Privileges getPrivilege(Dataset dataset){
+		Transaction t = getLogin().createTransaction();
+		String uid = t.getSettingsUser().getUid();
+		t.commit();
+		
+		for(DatasetAccess da : dataset.getDatasetAccesses()){
+			if(da.getId().getSettingsUser().getUid().equals(uid))
+				return Privileges.getPrivilege(da.getPermissions());
+		}
+		return Privileges.NONE;
+	}
+	
+	 protected void notify(WEvent event) throws IOException {
+		try {
+			super.notify(event);
+			commitTransaction();
+		} catch (Exception e) {
+			if (isQuited())
+				return;
+			try {
+				setError("Unexpected exception", null, e);
+			} catch (Exception localException2) {
+				localException2.printStackTrace();
+			} finally {
+				e.printStackTrace();
+				quit();
+			}
+		}
+	}
+
+	  private void commitTransaction() {
+		if (this.login_ == null)
+			return;
+		Transaction t = this.login_.getTransaction(false);
+		if (t == null)
+			return;
+		try {
+			t.commit();
+		} catch (Exception e) {
+			setError("Unexpected Database Error", null, e);
+		}
+	}
+
+	  public void setError(String e1, String e2, Exception e) {
+		getRoot().clear();
+		WContainerWidget wc = new WContainerWidget(getRoot());
+		wc.setStyleClass("regadb-error");
+		new WText(tr("regadb.error.title"), wc);
+		new WText(new WString("<p><b>" + e1 + "</b></p>"), wc);
+		if (e2 != null)
+			new WText(new WString(e2), TextFormat.PlainText, wc);
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		new WText(new WString(sw.toString()), TextFormat.PlainText, wc);
+		quit();
+		throw new RuntimeException("Unrecoverable error", e);
+	}
+	
 	@Override
-	public void finalize() {
+	protected void finalize() throws Throwable{
 		if (login_ != null)
 			login_.closeSession();
 

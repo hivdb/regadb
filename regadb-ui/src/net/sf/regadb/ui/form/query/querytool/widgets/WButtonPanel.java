@@ -14,7 +14,6 @@ import eu.webtoolkit.jwt.WPushButton;
 public class WButtonPanel extends WStyledContainerWidget{
 	private Style buttonStyle;
 	
-	private boolean enabled;
 	protected List<WPushButton> buttons;
 	
 	public enum Style {
@@ -46,7 +45,7 @@ public class WButtonPanel extends WStyledContainerWidget{
 	 * update state of the buttons without changing the enabled state
 	 */
 	public void update() {
-		setEnabled(isEnabled());
+//		setEnabled(isEnabled());
 	}
 	
 	/**
@@ -54,19 +53,7 @@ public class WButtonPanel extends WStyledContainerWidget{
 	 * @param enabled
 	 */
 	public void setEnabled(boolean enabled) {
-		for (WPushButton button : buttons) {
-			if (enabled) {
-				button.enable();
-			}
-			else {
-				button.disable();
-			}
-		}
-		this.enabled = enabled;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
+		super.setDisabled(!enabled);
 	}
 	
 	/** 

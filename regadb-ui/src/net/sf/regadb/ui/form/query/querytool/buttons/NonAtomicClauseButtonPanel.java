@@ -30,7 +30,6 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 		addClauseButton_ = new WPushButton(tr("form.query.querytool.pushbutton.addclause"));
 		addClauseButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
-				addClauseButton_.disable();
 				node.selectNewNode();
 			}
 		});
@@ -63,12 +62,7 @@ public class NonAtomicClauseButtonPanel extends WButtonPanel {
 	}
 	
 	public void setEnabled(boolean enabled) {
-		boolean addChild = canAddChild() && enabled;
-		
-		for (WPushButton button : buttons) {
-			button.setEnabled(addChild);
-		}
-		
+		super.setEnabled(enabled && canAddChild());
 	}
 	
 	private boolean canAddChild() {

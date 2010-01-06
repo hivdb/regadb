@@ -2,6 +2,9 @@ package net.sf.regadb.ui.forms.account;
 
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
@@ -26,6 +29,8 @@ import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.encrypt.Encrypt;
+import net.sf.regadb.util.mail.MailUtils;
+import net.sf.regadb.util.settings.EmailConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
 import eu.webtoolkit.jwt.WGroupBox;
@@ -339,6 +344,22 @@ public class AccountForm extends FormWidget
             {
                 Login.createNewAccount(su_);
                 UIUtils.showWarningMessageBox(this, tr("form.account.create.warning"));
+                
+                EmailConfig ec = RegaDBSettings.getInstance().getInstituteConfig().getEmailConfig();
+                if (ec != null) {
+	                try {
+						MailUtils.sendMail(ec.getHost(), ec.getFrom(), ec.getTo(), 
+									tr("form.account.create.email.subject"), 
+									tr("form.account.create.email.message")
+										.arg(su_.getFirstName())
+										.arg(su_.getLastName())
+										.arg(su_.getEmail()));
+					} catch (AddressException e) {
+						e.printStackTrace();
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+                }
             }
             else
             {                

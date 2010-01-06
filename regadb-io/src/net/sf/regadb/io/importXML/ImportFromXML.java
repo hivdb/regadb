@@ -130,11 +130,13 @@ public class ImportFromXML extends ImportFromXMLBase {
     private String fieldAttributeNominalValue_value;
     private String fieldViralIsolate_sampleId;
     private Date fieldViralIsolate_sampleDate;
+    private Genome fieldViralIsolate_genome;
     private Set<NtSequence> fieldViralIsolate_ntSequences;
     private Set<TestResult> fieldViralIsolate_testResults;
     private String fieldNtSequence_label;
     private Date fieldNtSequence_sequenceDate;
     private String fieldNtSequence_nucleotides;
+    private boolean fieldNtSequence_aligned;
     private Set<AaSequence> fieldNtSequence_aaSequences;
     private Set<TestResult> fieldNtSequence_testResults;
     private Protein fieldAaSequence_protein;
@@ -295,6 +297,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             pushState(ParseState.stateViralIsolate);
             fieldViralIsolate_sampleId = nullValueString();
             fieldViralIsolate_sampleDate = nullValueDate();
+            fieldViralIsolate_genome = null;
             fieldViralIsolate_ntSequences = new HashSet<NtSequence>();
             fieldViralIsolate_testResults = new HashSet<TestResult>();
         } else if ("NtSequence".equals(qName)) {
@@ -303,6 +306,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             fieldNtSequence_label = nullValueString();
             fieldNtSequence_sequenceDate = nullValueDate();
             fieldNtSequence_nucleotides = nullValueString();
+            fieldNtSequence_aligned = nullValueboolean();
             fieldNtSequence_aaSequences = new HashSet<AaSequence>();
             fieldNtSequence_testResults = new HashSet<TestResult>();
         } else if ("AaSequence".equals(qName)) {
@@ -1226,6 +1230,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elViralIsolate.setSampleDate(fieldViralIsolate_sampleDate);
                 }
                 {
+                    elViralIsolate.setGenome(fieldViralIsolate_genome);
+                }
+                {
                     elViralIsolate.setNtSequences(fieldViralIsolate_ntSequences);
                     for (NtSequence o : fieldViralIsolate_ntSequences)
                         o.setViralIsolate(elViralIsolate);
@@ -1245,6 +1252,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldViralIsolate_sampleId = parseString(value == null ? null : value.toString());
             } else if ("sampleDate".equals(qName)) {
                 fieldViralIsolate_sampleDate = parseDate(value == null ? null : value.toString());
+            } else if ("genome".equals(qName)) {
+                fieldViralIsolate_genome = resolveGenome(value == null ? null : value.toString());
             } else if ("ntSequences".equals(qName)) {
             } else if ("testResults".equals(qName)) {
             } else {
@@ -1278,6 +1287,9 @@ public class ImportFromXML extends ImportFromXMLBase {
                     elNtSequence.setNucleotides(fieldNtSequence_nucleotides);
                 }
                 {
+                    elNtSequence.setAligned(fieldNtSequence_aligned);
+                }
+                {
                     elNtSequence.setAaSequences(fieldNtSequence_aaSequences);
                     for (AaSequence o : fieldNtSequence_aaSequences)
                         o.setNtSequence(elNtSequence);
@@ -1299,6 +1311,8 @@ public class ImportFromXML extends ImportFromXMLBase {
                 fieldNtSequence_sequenceDate = parseDate(value == null ? null : value.toString());
             } else if ("nucleotides".equals(qName)) {
                 fieldNtSequence_nucleotides = parseString(value == null ? null : value.toString());
+            } else if ("aligned".equals(qName)) {
+                fieldNtSequence_aligned = parseboolean(value == null ? null : value.toString());
             } else if ("aaSequences".equals(qName)) {
             } else if ("testResults".equals(qName)) {
             } else {
@@ -3403,6 +3417,13 @@ public class ImportFromXML extends ImportFromXMLBase {
                 changed = true;
             }
         }
+        if (dbo != null) {
+            if (!equals(dbo.getGenome(), o.getGenome())){                if (!simulate)
+                    dbo.setGenome(o.getGenome());
+                log.append(Describe.describe(o) + ": changed genome\n");
+                changed = true;
+            }
+        }
         for(NtSequence e : o.getNtSequences()) {
             if (dbo == null) {
                 if (syncPair(t, e, (NtSequence)null, syncMode, simulate)) changed = true;
@@ -3512,6 +3533,13 @@ public class ImportFromXML extends ImportFromXMLBase {
             if (!equals(dbo.getNucleotides(), o.getNucleotides())){                if (!simulate)
                     dbo.setNucleotides(o.getNucleotides());
                 log.append(Describe.describe(o) + ": changed nucleotides\n");
+                changed = true;
+            }
+        }
+        if (dbo != null) {
+            if (!equals(dbo.isAligned(), o.isAligned())){                if (!simulate)
+                    dbo.setAligned(o.isAligned());
+                log.append(Describe.describe(o) + ": changed aligned\n");
                 changed = true;
             }
         }

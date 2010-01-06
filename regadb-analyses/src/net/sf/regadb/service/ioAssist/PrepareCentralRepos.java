@@ -19,6 +19,10 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom.Document;
@@ -30,8 +34,20 @@ public class PrepareCentralRepos
 {
     public static void main(String [] args)
     {
-        String outputDir = args[0];
-        
+    	Arguments as = new Arguments();
+    	PositionalArgument output = as.addPositionalArgument("output-dir", true);
+    	ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
+    	if(confDir.isSet())
+    		RegaDBSettings.createInstance(confDir.getValue());
+    	else
+    		RegaDBSettings.createInstance();
+    	
+    	String outputDir = new File(output.getValue()).getAbsolutePath();
+    	
         ExportToXML export = new ExportToXML();
         
         Element attributes = new Element("attributes");
@@ -99,27 +115,21 @@ public class PrepareCentralRepos
         
         //Resistance tests
         Test resTest;
-        resTest = createResistanceTest("ANRSV2006.07.xml", "ANRS 2006.07", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("ANRS-HIV1-2009.07.xml", "ANRS 2009.07", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("HIVDBv4.2.9.xml", "HIVDB 4.2.9", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("HIVDB-HIV1-6.0.5.xml", "HIVDB 6.0.5", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("RegaV6.4.1.xml", "REGA v6.4.1", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("Rega-HIV1-6.4.1.xml", "REGA v6.4.1", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("RegaHIV1V7.1.xml", "REGA v7.1", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("Rega-HIV1-7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("RegaHIV1V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv1Genome());
-        export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("RegaHIV1V8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv1Genome());
-        export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("HIVDBv5.1.3.xml", "HIVDB v5.1.3", StandardObjects.getHiv1Genome());
-        export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("ANRSV2008.17.xml", "ANRS v2008.17", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("Rega-HIV1-8.0.2.xml", "REGA v8.0.2", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
         
-        resTest = createResistanceTest("RegaHIV2V7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2AGenome());
+        resTest = createResistanceTest("Rega-HIV2-7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
         
-        resTest = createResistanceTest("RegaHIV2V8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv2AGenome());
+        resTest = createResistanceTest("Rega-HIV2-8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
         
         export.writeTopTest(RegaDBWtsServer.getSubtypeTest(), tests);
@@ -195,7 +205,8 @@ public class PrepareCentralRepos
         ArrayList<String> typeList = countries.getColumn(3);
         for(int i = 1; i < countryList.size(); i++)
         {
-            if(typeList.get(i).equals("Independent State"))
+            if(typeList.get(i).equals("Independent State")
+            		|| typeList.get(i).equals("Proto Dependency"))
             {
                 AttributeNominalValue anv = new AttributeNominalValue(country, countryList.get(i));
                 country.getAttributeNominalValues().add(anv);

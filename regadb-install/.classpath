@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/catalina-ant.jar"/>
 	<classpathentry kind="lib" path="lib/ant-launcher.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/regadb-build"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-swing"/>
 	<classpathentry kind="lib" path="lib/wizard.jar"/>
 	<classpathentry kind="output" path="bin"/>

@@ -10,11 +10,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.regadb.db.login.DbException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
 import net.sf.regadb.util.settings.Filter;
 
+import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
@@ -106,9 +108,15 @@ public class Transaction {
         session.beginTransaction();
     }
     
-    public void commit() {
-        session.getTransaction().commit();
-    }
+    public void commit() throws DbException {
+		try {
+			this.session.getTransaction().commit();
+		} catch (HibernateException he) {
+			this.session.getTransaction().rollback();
+			this.session.clear();
+			throw new DbException("Could not commit to database: ", he);
+		}
+	}
 
     public void rollback() {
         session.getTransaction().rollback();
@@ -1238,25 +1246,19 @@ public class Transaction {
     public List<SettingsUser> getUsersWhitoutLoggedin(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, String uid)
     {
         String queryString = "from SettingsUser as settingsUser ";
-        
         queryString += "where not settingsUser.uid = :uid";
-        
         if(!filterConstraints.clause_.equals(" "))
         {
             queryString += " and " + filterConstraints.clause_;
         }
-        
-        queryString += " order by " + sortField +", settingsUser ";
+        queryString += " order by " + sortField;
     
         Query q = session.createQuery(queryString);
-        
         q.setParameter("uid", uid);
-        
         for(Pair<String, Object> arg : filterConstraints.arguments_)
         {
             q.setParameter(arg.getKey(), arg.getValue());
         }
-        
         q.setFirstResult(firstResult);
         q.setMaxResults(maxResults);
         
@@ -1324,6 +1326,9 @@ public class Transaction {
     }
 
     public TestType getTestType(TestType t){
+    	if (t == null)
+    		return null;
+    	
         return getTestType(t.getDescription(), (t.getGenome() != null ? t.getGenome().getOrganismName():null));
     }
     public TestType getTestType(String description, String organismName) {
@@ -1700,5 +1705,21 @@ public class Transaction {
     	q.setParameter("sampleId", sampleId);
     	q.setMaxResults(1);
     	return q.list().size() > 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Test> getTests(TestObject to) 
+    {
+        Query q = session.createQuery("from Test test " +
+        		"where test.testType.testObject.description = :testObject " +
+        		"order by test.id");
+
+        q.setParameter("testObject", to.getDescription());
+        
+        return q.list();
+    }
+    
+    public boolean isActive() {
+      return this.session.getTransaction().isActive();
     }
 }

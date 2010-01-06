@@ -1,19 +1,14 @@
 <project name="regadb-querytool" default="all" basedir=".">
-    <description>
-        RegaDB build file for regadb-querytool
-    </description>
+  <description>
+    RegaDB build file for regadb-querytool
+  </description>
+  <import file="../common.xml"/>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
-	<property name="proj.name" value="regadb-querytool"/>
-	<property name="proj.version" value="0.1"/>
-
-	<path id="project.classpath">
-		<fileset dir="lib">
-	      <include name="*.jar"/>
-	    </fileset>
-	</path>
+  <property name="proj.name" value="regadb-querytool"/>
+  <property name="proj.version" value="0.1"/>
 	
   <target name="init" depends="clean">
     <!-- Create the build directory structure used by compile -->
@@ -24,13 +19,15 @@
   <target name="compile" description="compile the source" depends="init" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}">
-  		<classpath refid="project.classpath"/>
+      <classpath refid="project.classpath"/>
     </javac>
   </target>
 
   <target name="dist" description="Make jar file" depends="compile" >
     <!-- Put everything in ${build} into the jar file -->
     <jar jarfile="${dist}/${proj.name}-${proj.version}.jar" basedir="${build}"/>
+    <antcall target="copy-lib-to-libpool" />
+    <antcall target="create-package" />
   </target>
   
   <!-- Clean up -->

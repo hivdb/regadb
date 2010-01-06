@@ -23,7 +23,9 @@ public class WivArcViralLoadForm extends WivIntervalQueryForm {
             "from TestResult tr join tr.patient p, PatientAttributeValue pav " +
             "where pav.patient = p and pav.attribute.name = 'PatCode' "+
             "and tr.test.testType.description = '"+ RegaDBSettings.getInstance().getInstituteConfig().getWivConfig().getViralLoadTestType().getDescription() +"' "+
-            "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date and "+ getArcPatientQuery("pav.patient.patientIi");
+            "and tr.testDate >= :var_start_date and tr.testDate <= :var_end_date "
+            +"and "+ getArcPatientQuery("pav.patient.id") +" "
+            +"and "+ getContactConstraint("pav.patient.id");
         
         setQuery(query);
         

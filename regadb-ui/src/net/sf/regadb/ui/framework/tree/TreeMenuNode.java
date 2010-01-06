@@ -215,16 +215,20 @@ public abstract class TreeMenuNode extends WTreeNode
 		return;	
 		}
 		
-		for(WTreeNode node : getParentNode().getChildNodes())
-		{
-			if(node.isExpanded() && node!=this)
+		if(getParentNode() != null){
+			for(WTreeNode node : getParentNode().getChildNodes())
 			{
-				node.collapse();
+				if(node.isExpanded() && node!=this)
+				{
+					node.collapse();
+				}
 			}
 		}
 	}
 
 	public abstract ITreeAction getFormAction();
 	
-	public abstract boolean isEnabled();
+	public boolean isEnabled(){
+		return !super.isDisabled() && super.isEnabled();
+	}
 }
