@@ -72,6 +72,13 @@
     -->
     <date-format>dd/MM/yyyy</date-format>
     
+    <!-- 
+    	The organism filter can be used to exclude certain organisms from RegaDB.
+    	
+    	This field is optional.
+     -->
+    <organims-filter>HIV*</organims-filter>
+    
     <forms>
       <!--
       	patient select form configuration:
