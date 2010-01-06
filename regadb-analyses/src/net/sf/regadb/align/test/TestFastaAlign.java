@@ -17,6 +17,8 @@ import java.util.TreeSet;
 
 import net.sf.regadb.align.Aligner;
 import net.sf.regadb.align.local.LocalAlignmentService;
+import net.sf.regadb.align.view.UIVisualizeAaSequence;
+import net.sf.regadb.analysis.functions.MutationHelper;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
@@ -116,7 +118,9 @@ public class TestFastaAlign {
                     
                 	for (AaSequence aaseq : result) {
                 		if (ot == OutputType.Ui) {
-                			
+                			System.out.println(new UIVisualizeAaSequence().getAlignmentView(aaseq));
+                			System.out.println(MutationHelper.getSynonymousMutations(aaseq));
+                			System.out.println(MutationHelper.getNonSynonymousMutations(aaseq));
                 		} else {
 	                    	Map<Short, String> aaMutations = new HashMap<Short, String>();
 	                    	System.out.print("protein=" + aaseq.getProtein().getAbbreviation() + ",");
