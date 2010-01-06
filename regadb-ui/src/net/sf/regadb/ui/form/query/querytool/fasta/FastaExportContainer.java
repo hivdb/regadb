@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.form.query.querytool.fasta;
 
-import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
@@ -10,9 +9,10 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WText;
 
 public class FastaExportContainer extends WContainerWidget {
-	private QueryToolApp mainForm;
+	private QueryToolForm mainForm;
 	
 	private WText warning;
+	private FastaExportOptions options;
 	
 	public FastaExportContainer(QueryToolForm mainForm) {
 		super();
@@ -42,7 +42,9 @@ public class FastaExportContainer extends WContainerWidget {
 		if (!hasViralIsolate) {
 			this.addWidget(warning);
 		} else {
-			
+			if (options == null) /*TODO pass FastaExporter object*/
+				options = new FastaExportOptions(mainForm, this, null);
+			this.addWidget(options);
 		}
 	}
 }

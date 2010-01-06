@@ -1,4 +1,4 @@
-package net.sf.regadb.ui.form.query.querytool.select;
+package net.sf.regadb.ui.form.query.querytool.fasta;
 
 import net.sf.regadb.tools.exportFasta.FastaExporter;
 
