@@ -18,7 +18,7 @@ public class CodonTableGenerator {
 //		}
 //		System.err.println("name = name.replace(\"TER\",\"*\");");
 		
-		char[] nucleotides = "ACGTMRWSTYKVHDBN".toCharArray();
+		char[] nucleotides = "ACGTMRWSYKVHDBN".toCharArray();
 		for(char n1 : nucleotides){
 			for(char n2 : nucleotides){
 				for(char n3 : nucleotides){
