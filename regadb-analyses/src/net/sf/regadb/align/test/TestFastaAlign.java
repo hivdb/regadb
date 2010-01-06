@@ -33,20 +33,27 @@ import org.biojava.bio.seq.Sequence;
 import org.biojavax.bio.seq.RichSequenceIterator;
 
 public class TestFastaAlign {
+	public enum OutputType {
+		Aa,
+		Nt,
+		Ui;
+	}
 	public static void main(String [] args) {
 		long start = System.currentTimeMillis();
 
 		RegaDBSettings.createInstance();
 
 		final String output = "--output=";
-		boolean nt = true;
+		OutputType ot = OutputType.Nt;
 		for (String a : args) {
 			if (a.startsWith(output)) {
 				String outputFormat = a.substring(a.indexOf(output) + output.length());
 				if (outputFormat.equals("aa"))
-					nt = false;
+					ot = OutputType.Aa;
 				else if (outputFormat.equals("nt"))
-					nt = true;
+					ot = OutputType.Nt;
+				else if (outputFormat.equals("ui"))
+					ot = OutputType.Ui;
 				else {
 					System.err.println("Wrong output format! Exiting!");
 					System.exit(0);
@@ -108,52 +115,56 @@ public class TestFastaAlign {
                     });
                     
                 	for (AaSequence aaseq : result) {
-                    	Map<Short, String> aaMutations = new HashMap<Short, String>();
-                    	System.out.print("protein=" + aaseq.getProtein().getAbbreviation() + ",");
-                    	System.out.print("start=" + aaseq.getFirstAaPos() + ",");
-                    	System.out.print("end=" + aaseq.getLastAaPos() + ",");
-                    	System.out.print("mutations=");
-                    	for(AaMutation aamut : aaseq.getAaMutations()) {
-                    		String mut;
-                    		if (nt)
-                    			mut = aamut.getNtReferenceCodon().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getNtMutationCodon().toUpperCase();
-                    		else 
-                    			mut = aamut.getAaReference().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getAaMutation().toUpperCase();
-                    		aaMutations.put(aamut.getId().getMutationPosition(), mut);
-                    	}
-                    	
-                    	Map<Short, Map<Short, String>> aaInsertions = new HashMap<Short, Map<Short, String>>();
-                    	for(AaInsertion aains : aaseq.getAaInsertions()) {
-                    		Map<Short, String> insertions = aaInsertions.get(aains.getId().getInsertionPosition());
-                    		if (insertions == null) { 
-                    			insertions = new HashMap<Short, String>();
-                    			aaInsertions.put(aains.getId().getInsertionPosition(), insertions);
-                    		}
-                    		String mut;
-                    		if (nt)
-                    			mut = "---" + aains.getId().getInsertionPosition() + aains.getNtInsertionCodon().toUpperCase();
-                    		else
-                    			mut = "-" + aains.getId().getInsertionPosition() + aains.getAaInsertion().toUpperCase();
-                    		insertions.put(aains.getId().getInsertionOrder(), mut);
-                    	}
-            
-                    	String toPrint = "";
-                    	for (int i = 0; i <= aaseq.getProtein().getStopPosition(); i++) {
-                    		if (aaMutations.get((short)i) != null) {
-                    			toPrint += aaMutations.get((short)i)  + " ";
-                    		}
-                    		Map<Short, String> insertions = aaInsertions.get((short)i);
-                    		if (insertions != null) {
-                    			SortedSet<Short> sortedInsertions = new TreeSet<Short>(insertions.keySet());
-                    			for (Short ins : sortedInsertions) {
-                    				toPrint += insertions.get(ins) + " ";
-                    			}
-                    		}
-                    	}
-                    	if (toPrint.length() > 0) {
-	                    	System.out.print(toPrint.substring(0,toPrint.length() - 1));	                    	
-                    	}
-                    	System.out.print("\n");
+                		if (ot == OutputType.Ui) {
+                			
+                		} else {
+	                    	Map<Short, String> aaMutations = new HashMap<Short, String>();
+	                    	System.out.print("protein=" + aaseq.getProtein().getAbbreviation() + ",");
+	                    	System.out.print("start=" + aaseq.getFirstAaPos() + ",");
+	                    	System.out.print("end=" + aaseq.getLastAaPos() + ",");
+	                    	System.out.print("mutations=");
+	                    	for(AaMutation aamut : aaseq.getAaMutations()) {
+	                    		String mut;
+	                    		if (ot == OutputType.Nt)
+	                    			mut = aamut.getNtReferenceCodon().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getNtMutationCodon().toUpperCase();
+	                    		else 
+	                    			mut = aamut.getAaReference().toUpperCase() + aamut.getId().getMutationPosition() + aamut.getAaMutation().toUpperCase();
+	                    		aaMutations.put(aamut.getId().getMutationPosition(), mut);
+	                    	}
+	                    	
+	                    	Map<Short, Map<Short, String>> aaInsertions = new HashMap<Short, Map<Short, String>>();
+	                    	for(AaInsertion aains : aaseq.getAaInsertions()) {
+	                    		Map<Short, String> insertions = aaInsertions.get(aains.getId().getInsertionPosition());
+	                    		if (insertions == null) { 
+	                    			insertions = new HashMap<Short, String>();
+	                    			aaInsertions.put(aains.getId().getInsertionPosition(), insertions);
+	                    		}
+	                    		String mut;
+	                    		if (ot == OutputType.Nt)
+	                    			mut = "---" + aains.getId().getInsertionPosition() + aains.getNtInsertionCodon().toUpperCase();
+	                    		else
+	                    			mut = "-" + aains.getId().getInsertionPosition() + aains.getAaInsertion().toUpperCase();
+	                    		insertions.put(aains.getId().getInsertionOrder(), mut);
+	                    	}
+	            
+	                    	String toPrint = "";
+	                    	for (int i = 0; i <= aaseq.getProtein().getStopPosition(); i++) {
+	                    		if (aaMutations.get((short)i) != null) {
+	                    			toPrint += aaMutations.get((short)i)  + " ";
+	                    		}
+	                    		Map<Short, String> insertions = aaInsertions.get((short)i);
+	                    		if (insertions != null) {
+	                    			SortedSet<Short> sortedInsertions = new TreeSet<Short>(insertions.keySet());
+	                    			for (Short ins : sortedInsertions) {
+	                    				toPrint += insertions.get(ins) + " ";
+	                    			}
+	                    		}
+	                    	}
+	                    	if (toPrint.length() > 0) {
+		                    	System.out.print(toPrint.substring(0,toPrint.length() - 1));	                    	
+	                    	}
+	                    	System.out.print("\n");
+                		}
                     }
                 }
                 catch (NoSuchElementException e) 
