@@ -1,6 +1,5 @@
 package net.sf.hivgensim.consensus;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,9 +11,9 @@ import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.SampleDateFilter;
 import net.sf.hivgensim.queries.SequenceProteinFilter;
 import net.sf.hivgensim.queries.framework.IQuery;
-import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -27,7 +26,7 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 
 	public AminoAcidDistribution(Date begin, Date end, String drugClass){
 		Protein protein = DrugGenericUtils.getProteinForDrugClass(drugClass);
-		this.reference = SelectionWindow.getWindow(
+		this.reference = new SelectionWindow(
 				protein.getOpenReadingFrame().getGenome().getOrganismName()
 				, protein.getOpenReadingFrame().getName(), protein.getAbbreviation())
 				.getReferenceAaSequence();
@@ -111,12 +110,16 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 	}
 	
 	public static void main(String[] args) {
+		if(args.length != 2){
+			System.err.println("Usage: consensus login password");
+			System.exit(1);
+		}
 		Date end = new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.YEAR, -15);
 		Date begin = cal.getTime();
 		RegaDBSettings.createInstance();
-		new FromSnapshot(new File("/home/tm/labo/small_snapshot"), 
+		new FromDatabase(args[0],args[1], 
 				new AminoAcidDistribution(begin, end, "PI")).run();
 	}
 

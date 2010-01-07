@@ -1,6 +1,5 @@
 package net.sf.hivgensim.consensus;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,10 +8,12 @@ import java.util.TreeMap;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
+import net.sf.hivgensim.queries.SampleDateFilter;
+import net.sf.hivgensim.queries.SequenceProteinFilter;
 import net.sf.hivgensim.queries.framework.IQuery;
-import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -36,11 +37,11 @@ public class MutationTimeLine implements IQuery<Patient> {
 		this.delta = delta;
 		this.windowSize = windowSize;
 		Protein protein = DrugGenericUtils.getProteinForDrugClass(drugClass);
-//		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
-//				new SequenceProteinFilter(protein, 
-//						new SampleDateFilter(begin, end, 
-//								new MutationTimeLineProcessor())));
-		this.reference = SelectionWindow.getWindow(
+		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
+				new SequenceProteinFilter(protein, 
+						new SampleDateFilter(begin, end, 
+								new MutationTimeLineProcessor())));
+		this.reference = new SelectionWindow(
 				protein.getOpenReadingFrame().getGenome().getOrganismName()
 				, protein.getOpenReadingFrame().getName(), protein.getAbbreviation())
 				.getReferenceAaSequence();
@@ -183,8 +184,12 @@ public class MutationTimeLine implements IQuery<Patient> {
 	}
 	
 	public static void main(String[] args) {
+		if(args.length != 2){
+			System.err.println("Usage: consensus login password");
+			System.exit(1);
+		}
 		RegaDBSettings.createInstance();
-		new FromSnapshot(new File("/home/tm/labo/small_snapshot"), 
+		new FromDatabase(args[0],args[1], 
 				new MutationTimeLine("PI")).run();
 	}
 	
