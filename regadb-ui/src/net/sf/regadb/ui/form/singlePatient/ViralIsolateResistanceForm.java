@@ -42,6 +42,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
         
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.getElementAt(1, 0));
+        new ViralIsolateResistanceLegend(this);
         
         refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.getElementAt(0, 0));
         refreshButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()

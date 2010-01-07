@@ -254,7 +254,7 @@ public abstract class WhereClause implements Cloneable, Serializable {
     /**
      * Collects all available output variables that are exported to WhereClauses elsewhere in the tree.
      */
-    protected abstract List<OutputVariable> getExportedOutputVariables();
+    public abstract List<OutputVariable> getExportedOutputVariables();
     
     public Object clone() throws CloneNotSupportedException {
         Map<ConfigurableWord, ConfigurableWord> originalToCloneMap = new HashMap<ConfigurableWord, ConfigurableWord>();

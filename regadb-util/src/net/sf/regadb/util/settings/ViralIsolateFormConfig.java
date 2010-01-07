@@ -2,9 +2,7 @@ package net.sf.regadb.util.settings;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.jdom.Comment;
 import org.jdom.Element;
@@ -28,7 +26,22 @@ public class ViralIsolateFormConfig extends FormConfig {
 		private Color color;
 		private Color backgroundColor;
 		private String stringRepresentation;
+		private String description;
+		private double gssCutoff;
 		
+		public ScoreInfo() {
+			
+		}
+		
+		public ScoreInfo(Color color, Color backgroundColor,
+				String stringRepresentation, String description, double gssCutoff) {
+			this.color = color;
+			this.backgroundColor = backgroundColor;
+			this.stringRepresentation = stringRepresentation;
+			this.description = description;
+			this.gssCutoff = gssCutoff;
+		}
+
 		public Color getColor() {
 			return color;
 		}
@@ -52,14 +65,29 @@ public class ViralIsolateFormConfig extends FormConfig {
 		public void setStringRepresentation(String stringRepresentation) {
 			this.stringRepresentation = stringRepresentation;
 		}
+		
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+		
+		public double getGssCutoff() {
+			return gssCutoff;
+		}
+
+		public void setGssCutoff(double gssCutoff) {
+			this.gssCutoff = gssCutoff;
+		}
 	}
 
     public static final String NAME = "form.viralIsolate";
     
     private List<TestItem> tests = new ArrayList<TestItem>();
     private List<String> algorithms;
-    private Map<Double, ScoreInfo> gss = new HashMap<Double, ScoreInfo>();
-    private Map<Double, ScoreInfo> gssAssumptions = new HashMap<Double, ScoreInfo>();
+    private List<ScoreInfo> gss = new ArrayList<ScoreInfo>();
     
 	public ViralIsolateFormConfig() {
 		super(NAME);
@@ -71,6 +99,7 @@ public class ViralIsolateFormConfig extends FormConfig {
 		
 		Element ee = (Element)e.getChild("tests");
 		
+		if (ee != null) 
         for(Object o : ee.getChildren()){
         	String d = ((Element)o).getAttributeValue("description");
         	String g = ((Element)o).getAttributeValue("organism");
@@ -91,33 +120,39 @@ public class ViralIsolateFormConfig extends FormConfig {
 	        
 	        eee = ee.getChild("scores");
 	        readScoreInfos(eee, gss);
-	        
-	        eee = ee.getChild("scores-assumptions");
-	        readScoreInfos(eee, gssAssumptions);
         }
 	}
 	
-	private void readScoreInfos(Element eee, Map<Double, ScoreInfo> gssInfo) {
+	private void readScoreInfos(Element eee, List<ScoreInfo> gssInfo) {
 		if (eee == null) 
 			return;
 		
+		gssInfo.clear();
 		for (Object o : eee.getChildren()) {
-			String gss = ((Element) o).getAttributeValue("gss");
+			String gssCutoff = ((Element) o).getAttributeValue("gssCutoff");
 			String color = ((Element) o).getAttributeValue("color");
 			String backgroundColor = ((Element) o)
 					.getAttributeValue("background-color");
 			String stringRepresentation = ((Element) o).getAttributeValue("string");
+			String description = ((Element) o).getAttributeValue("description");
 
 			ScoreInfo si = new ScoreInfo();
 			si.setColor(Color.decode(color));
 			si.setBackgroundColor(Color.decode(backgroundColor));
 			si.setStringRepresentation(stringRepresentation);
-			gssInfo.put(Double.parseDouble(gss), si);
+			si.setDescription(description);
+			si.setGssCutoff(Double.parseDouble(gssCutoff));
+			gssInfo.add(si);
 		}
 	}
 
 	public void setDefaults() {
 		tests.clear();
+		
+		gss.clear();
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", "Resistant", 0.0));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", "Intermediate resistant", 0.5));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S", "Susceptible", Double.POSITIVE_INFINITY));
 	}
 
 	public Element toXml(){
@@ -152,10 +187,16 @@ public class ViralIsolateFormConfig extends FormConfig {
 		return algorithms;
 	}
 	
-	public ScoreInfo getScoreInfo(double score, boolean assumption) {
-		if (assumption) 
-			return gssAssumptions.get(score);
-		else
-			return gss.get(score);
+	public ScoreInfo getScoreInfo(double score) {
+		for (ScoreInfo si : gss) {
+			if (score <= si.getGssCutoff()) {
+				return si;
+			}
+		}
+		return null;
+	}
+	
+	public List<ScoreInfo> getScoreInfos() {
+		return gss;
 	}
 }
