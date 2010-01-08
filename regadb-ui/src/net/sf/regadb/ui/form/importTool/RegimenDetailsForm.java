@@ -31,9 +31,10 @@ public class RegimenDetailsForm extends DetailsForm {
 		delimiterL = new Label(tr("form.importTool.details.regimen.delimiter"));
 		delimiterTF = new TextField(rule.getForm().getInteractionState(), null, FieldType.ALFANUMERIC);
 		
-		if (rule.getRule().getRegimenDetails() != null && rule.getRule().getRegimenDetails().getDelimiter() != null)
+		if (rule.getRule().getRegimenDetails() != null && rule.getRule().getRegimenDetails().getDelimiter() != null) {
 			delimiterTF.setText(rule.getRule().getRegimenDetails().getDelimiter());
-		details.setDelimiter(rule.getRule().getRegimenDetails().getDelimiter());
+			details.setDelimiter(rule.getRule().getRegimenDetails().getDelimiter());
+		}
 		
 		WPushButton updateTable = new WPushButton(tr("form.importTool.details.regimen.updateTable"));
 		updateTable.clicked().addListener(updateTable, new Signal1.Listener<WMouseEvent>(){
