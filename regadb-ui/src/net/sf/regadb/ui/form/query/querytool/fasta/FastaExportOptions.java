@@ -92,6 +92,8 @@ public class FastaExportOptions extends FormTable {
 				alignedCB.selectItem(alignedYes.toString());
 			else 
 				alignedCB.selectItem(alignedNo.toString());
+			
+			hideWidgets(modeCB.currentValue());
 		}
 	}
 	

@@ -57,4 +57,11 @@ public class FastaExportContainer extends WContainerWidget {
 		if (options != null)
 			options.updateOutputVars();
 	}
+	
+	public QTFastaExporter getFastaExporter() {
+		if (options != null)
+			return options.getFastaExporter();
+		else 
+			return null;
+	}
 }

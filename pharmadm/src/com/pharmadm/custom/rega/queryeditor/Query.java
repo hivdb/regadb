@@ -57,10 +57,12 @@ public class Query implements Serializable, Cloneable {
     
     private UniqueNameContext uniqueNameContext = new UniqueNameContext();
     
+    private Object fastaExport;
+    
     ///////////////////////////////////////
     // constructor
-    
-    public Query() {
+   
+	public Query() {
     }
     
     public Query(WhereClause whereClause) {
@@ -87,6 +89,14 @@ public class Query implements Serializable, Cloneable {
     public SelectionStatusList getSelectList() {
         return selectList;
     }
+    
+    public Object getFastaExport() {
+		return fastaExport;
+	}
+
+	public void setFastaExport(Object fastaExport) {
+		this.fastaExport = fastaExport;
+	}
     
     /**
      * For XMLdecoder only!

@@ -113,6 +113,9 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 		
 	}
 	
+	public FastaExportContainer getFastaExportTab() {
+		return fastaExportTab;
+	}
 
 	/**
 	 * update controls to reflect editability
