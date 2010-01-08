@@ -40,8 +40,9 @@ public class FastaExportOptions extends FormTable {
 	private CheckBox patientIdChB;
 	private CheckBox sampleIdChB;
 	
-	private Label regionL = new Label(tr("form.query.querytool.fastaExport.region"));
+	private Label orfL = new Label(tr("form.query.querytool.fastaExport.orf"));
 	private ComboBox<OpenReadingFrame> orfCB;
+	private Label proteinsL = new Label(tr("form.query.querytool.fastaExport.proteins"));
 	private WSelectionBox proteinSB;
 	private Label symbolL = new Label(tr("form.query.querytool.fastaExport.symbol"));
 	private ComboBox<FastaExporter.Symbol> symbolCB;
@@ -188,12 +189,8 @@ public class FastaExportOptions extends FormTable {
 		fastaId.addWidget(sampleIdChB);
 		addLineToTable(fastaIdL, fastaId);
 		
-		WContainerWidget region = new WContainerWidget();
-		region.setInline(true);
-		region.addWidget(orfCB);
-		region.addWidget(proteinSB);
-			
-		addLineToTable(regionL, region);
+		addLineToTable(orfL, orfCB);
+		addLineToTable(proteinsL, proteinSB);
 		addLineToTable(symbolL, symbolCB);
 		addLineToTable(alignedL, alignedCB);
 	}
@@ -217,7 +214,8 @@ public class FastaExportOptions extends FormTable {
 		hideRow(outputVarL, mode == null);
 		hideRow(fastaIdL, mode == null);
 		
-		hideRow(regionL, mode != FastaExporter.Mode.BaseOnProteins);
+		hideRow(orfL, mode != FastaExporter.Mode.BaseOnProteins);
+		hideRow(proteinsL, mode != FastaExporter.Mode.BaseOnProteins);
 		hideRow(symbolL, mode != FastaExporter.Mode.BaseOnProteins);
 		hideRow(alignedL, mode != FastaExporter.Mode.BaseOnProteins);
 	}
