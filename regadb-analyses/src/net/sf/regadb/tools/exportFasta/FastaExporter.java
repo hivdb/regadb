@@ -98,12 +98,20 @@ public class FastaExporter {
 	public void setMode(Mode mode) {
 		this.mode = mode;
 	}
+
+	public String getOrf() {
+		return orf;
+	}
+
+	public void setOrf(String orf) {
+		this.orf = orf;
+	}
 	
-	public Set<String> getProtein() {
+	public Set<String> getProteins() {
 		return proteins;
 	}
 	
-	public void setProtein(Set<String> protein) {
+	public void setProteins(Set<String> protein) {
 		this.proteins = protein;
 	}
 	
