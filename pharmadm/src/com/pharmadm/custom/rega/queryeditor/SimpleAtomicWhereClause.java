@@ -55,7 +55,7 @@ public class SimpleAtomicWhereClause extends AtomicWhereClause {
     	}
     } 
     
-    protected List<OutputVariable> getExportedOutputVariables() {
+    public List<OutputVariable> getExportedOutputVariables() {
         return getOutputVariables();
     }    
 
