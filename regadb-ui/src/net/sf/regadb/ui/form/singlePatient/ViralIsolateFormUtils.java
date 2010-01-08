@@ -10,9 +10,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig.ScoreInfo;
@@ -165,5 +170,21 @@ public class ViralIsolateFormUtils {
         for(Map.Entry<String, StringBuilder> pos : positions.entrySet())
             r.add(pos.getValue().toString());
         return r;
+    }
+    
+    public static boolean checkSampleId(String id, ViralIsolate isolate, Set<Dataset> scope, Transaction t){
+        boolean unique=true;
+
+        Integer ii = isolate.getViralIsolateIi();
+        
+        for(Dataset ds : scope){
+            ViralIsolate vi = t.getViralIsolate(ds, id);
+            if(vi != null && !vi.getViralIsolateIi().equals(ii)){
+                unique = false;
+                break;
+            }
+        }
+        
+        return unique;
     }
 }

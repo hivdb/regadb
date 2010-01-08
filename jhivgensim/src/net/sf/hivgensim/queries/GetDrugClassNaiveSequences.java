@@ -1,9 +1,12 @@
 package net.sf.hivgensim.queries;
 
+import java.util.ArrayList;
 import java.util.Date;
 
+import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
+import net.sf.hivgensim.queries.framework.utils.NtSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -12,8 +15,9 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 
-	String[] drugclasses = new String[]{"Unknown","PI","NRTI","NNRTI","INI","EI"};
-
+	private String[] drugclasses = new String[]{"Unknown","PI","NRTI","NNRTI","INI","EI"};
+	private SelectionWindow selectionWindow = null;
+	
 	public GetDrugClassNaiveSequences(IQuery<NtSequence> nextQuery) {
 		super(nextQuery);
 	}
@@ -22,9 +26,14 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 		super(nextQuery);
 		this.drugclasses = drugclasses;
 	}
+	
+	public GetDrugClassNaiveSequences(String[] drugclasses, IQuery<NtSequence> nextQuery, SelectionWindow sw) {
+		this(drugclasses, nextQuery);
+		this.selectionWindow = sw;
+	}
 
-	@Override
 	public void process(Patient p) {
+		ArrayList<NtSequence> allAcceptableNaiveSequences = new ArrayList<NtSequence>();
 		Date sampleDate;
 		for(ViralIsolate vi : p.getViralIsolates()){
 			sampleDate = vi.getSampleDate();
@@ -50,13 +59,14 @@ public class GetDrugClassNaiveSequences extends Query<Patient,NtSequence> {
 						}
 					}
 				}
-				if(seqIsNaive){
-					//how to avoid having seqs from same patient?
-					//not necessary for the moment					
-					getNextQuery().process(seq);
+				if(seqIsNaive && (selectionWindow == null || selectionWindow.isAcceptable(seq))){
+					allAcceptableNaiveSequences.add(seq);
 				}
 			}
 		}
-
-	}	
+		NtSequence latest = NtSequenceUtils.getLatestNtSequence(allAcceptableNaiveSequences);
+		if(latest != null){
+			getNextQuery().process(latest);
+		}
+	}
 }

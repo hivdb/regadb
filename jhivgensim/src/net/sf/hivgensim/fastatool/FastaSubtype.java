@@ -6,53 +6,45 @@ import net.sf.hivgensim.services.SubtypeService;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ServiceException;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class FastaSubtype extends FastaTool {
 
 	private Genome g;
 	private Test t;
 
-	public FastaSubtype(String inputFilename,String outputFilename,String uid, String passwd, String organism) throws FileNotFoundException {
+	public FastaSubtype(String inputFilename,String outputFilename, String organism) throws FileNotFoundException {
 		super(inputFilename,outputFilename);
-		Login l = null;
-		try {
-			l = Login.authenticate(uid, passwd);
-		} catch (WrongUidException e) {
-			e.printStackTrace();
-		} catch (WrongPasswordException e) {
-			e.printStackTrace();
-		} catch (DisabledUserException e) {
-			e.printStackTrace();
+		if(organism.equals("HIV-1")){
+			g = StandardObjects.getHiv1Genome();
+		}else if(organism.equals("HIV-2A")){
+			g = StandardObjects.getHiv2AGenome();
+		}else if(organism.equals("HIV-2B")){
+			g = StandardObjects.getHiv2BGenome();
+		}else{
+			throw new IllegalArgumentException("Organism name must be: HIV-1 or HIV-2A or HIV-2B");
 		}
-		Transaction trans = l.createTransaction();
-		g = trans.getGenome(organism);
-		t = trans.getTest("Rega Subtype Tool");		
+		t = RegaDBWtsServer.getSubtypeTest();				
 	}
 
-	@Override
 	protected void afterProcessing() {
-
+		
 	}
 
-	@Override
 	protected void beforeProcessing() {
 
 	}
 
-	@Override
 	protected void processSequence(FastaSequence fs) {
 		NtSequence ntseq = new NtSequence();
 		ntseq.setNucleotides(fs.getSequence().replaceAll("-",""));
 		try {
 			SubtypeService ss = new SubtypeService(ntseq,t,g);
 			ss.launch();
-			getOut().print(fs.getId().replace(">","").trim() + ",");
+			getOut().print(fs.getId().replace(">","").trim() + ",");			
 			getOut().println(ss.getResult());
 		} catch (ServiceException e) {
 			e.printStackTrace();
@@ -60,14 +52,16 @@ public class FastaSubtype extends FastaTool {
 	}
 
 	public static void main(String args[]) throws FileNotFoundException{
-		if(args.length != 4 && args.length != 5){
-			System.err.println("Usage: FastaSubtype in.fasta out.csv uid passwd [organism]");
+		if(args.length != 2 && args.length != 3){
+			System.err.println("Usage: FastaSubtype in.fasta out.csv [organism]");
 			System.err.println("default organism = HIV-1");
 			System.exit(0);
 		}
-		String organism = args.length == 5 ? args[4] : "HIV-1";
-		FastaSubtype fs = new FastaSubtype(args[0],args[1],args[2],args[3],organism);
-		fs.processFastaFile();
+		RegaDBSettings.createInstance();
+		RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
+		String organism = args.length == 3 ? args[2] : "HIV-1";
+		FastaSubtype fs = new FastaSubtype(args[0],args[1],organism);
+		fs.processFastaFile();		
 	}
 
 }

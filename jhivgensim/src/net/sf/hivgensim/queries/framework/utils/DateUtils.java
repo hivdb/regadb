@@ -4,7 +4,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtils {
+	
+	public static long millisecondsToDays(long millis) {
+		final long MILLISECS_PER_MINUTE = 60*1000;
+		final long MILLISECS_PER_HOUR   = 60*MILLISECS_PER_MINUTE;
+		final long MILLISECS_PER_DAY = 24*MILLISECS_PER_HOUR;
 
+		return (long)(millis/MILLISECS_PER_DAY);
+	}
+	
 	public static boolean betweenInterval(Date d, Date start, Date end) {
 		return d.after(start) && d.before(end);
 	}

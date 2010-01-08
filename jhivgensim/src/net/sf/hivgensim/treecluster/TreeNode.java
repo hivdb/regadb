@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public class TreeNode {
 	
-		
-	
 	private String taxus;
 	private double distance;
 	private TreeNode parent;

@@ -246,8 +246,8 @@ public class Table {
 		return results;
 	}
 
-	public String valueAt(int i, int j) {
-		return rows.get(j).get(i);
+	public String valueAt(int col, int row) {
+		return rows.get(row).get(col);
 	}
 
 	public String valueAt(Index index, int i, int j) {
