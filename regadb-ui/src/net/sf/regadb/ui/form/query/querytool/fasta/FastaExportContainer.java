@@ -19,19 +19,19 @@ public class FastaExportContainer extends WContainerWidget {
 		this.mainForm = mainForm;
 		this.setStyleClass("content");
 		
-		warning = new WText(tr("form.query.querytool.message.noViralIsolate"));
+		warning = new WText(tr("form.query.querytool.fastaExport.noViralIsolate"));
 		warning.setStyleClass("warning");
+		addWidget(warning);
 		
 		mainForm.getEditorModel().getQueryEditor().addSelectionListChangeListener(new SelectionListChangeListener() {
 			public void listChanged() {
 				setWidgets();
+				update();
 			}
 		});
 	}
 	
 	private void setWidgets() {
-		this.clear();
-		
 		boolean hasViralIsolate = false;
 		for (OutputVariable ov : mainForm.getEditorModel().getQueryEditor().getRootClause().getExportedOutputVariables())
 			if (ov.getObject().getTableName().equals("ViralIsolate")) {
@@ -40,11 +40,21 @@ public class FastaExportContainer extends WContainerWidget {
 			}
 		
 		if (!hasViralIsolate) {
-			this.addWidget(warning);
+			warning.setHidden(false);
+			if (options != null)
+				options.setHidden(true);
 		} else {
-			if (options == null) /*TODO pass FastaExporter object*/
-				options = new FastaExportOptions(mainForm, this, null);
-			this.addWidget(options);
+			warning.setHidden(true);
+			if (options == null) {
+				options = new FastaExportOptions(mainForm, this,  (QTFastaExporter)mainForm.getEditorModel().getQueryEditor().getQuery().getFastaExport());
+				addWidget(options);
+			}
+			options.setHidden(false);
 		}
+	}
+	
+	private void update() {
+		if (options != null)
+			options.updateOutputVars();
 	}
 }
