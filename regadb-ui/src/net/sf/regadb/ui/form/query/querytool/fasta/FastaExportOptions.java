@@ -1,11 +1,14 @@
 package net.sf.regadb.ui.form.query.querytool.fasta;
 
-import java.util.List;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.tools.exportFasta.FastaExporter;
+import net.sf.regadb.tools.exportFasta.FastaExporter.FastaId;
 import net.sf.regadb.tools.exportFasta.FastaExporter.Mode;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
@@ -19,10 +22,15 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 
+import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WSelectionBox;
+import eu.webtoolkit.jwt.WString;
 
 public class FastaExportOptions extends FormTable {
+	private QueryToolForm form;
+	
 	private Label modeL = new Label(tr("form.query.querytool.fastaExport.mode"));
 	private ComboBox<FastaExporter.Mode> modeCB;
 	private Label outputVarL = new Label(tr("form.query.querytool.fastaExport.outputvar"));
@@ -34,17 +42,93 @@ public class FastaExportOptions extends FormTable {
 	
 	private Label regionL = new Label(tr("form.query.querytool.fastaExport.region"));
 	private ComboBox<OpenReadingFrame> orfCB;
-	private ComboBox<Protein> proteinCB;
+	private WSelectionBox proteinSB;
 	private Label symbolL = new Label(tr("form.query.querytool.fastaExport.symbol"));
 	private ComboBox<FastaExporter.Symbol> symbolCB;
 	private Label alignedL = new Label(tr("form.query.querytool.fastaExport.aligned"));
 	private ComboBox<Boolean> alignedCB;
 	
+	private static final WString alignedYes = tr("form.query.querytool.fastaExport.aligned.yes");
+	private static final WString alignedNo = tr("form.query.querytool.fastaExport.aligned.no");
+	
 	public FastaExportOptions(QueryToolForm form, WContainerWidget parent, QTFastaExporter exporter) {
 		super(parent);
 		
+		this.form = form;
+		
 		InteractionState is = form.getInteractionState();
 		
+		init(is);
+
+		addWidgets();
+		
+		hideWidgets(modeCB.currentValue());
+		
+		if (exporter != null) {
+			if (exporter.getMode() != null)
+				select(exporter.getMode().getLocalizedMessage(), modeCB);
+			
+			if (exporter.getFastaId() != null) {
+				if (exporter.getFastaId().contains(FastaId.Dataset))
+					datasetChB.setChecked(true);
+				if (exporter.getFastaId().contains(FastaId.PatientId))
+					patientIdChB.setChecked(true);
+				if (exporter.getFastaId().contains(FastaId.SampleId))
+					sampleIdChB.setChecked(true);
+			}
+			
+			if (exporter.getOutput() != null) 
+				outputVarCB.selectItem(exporter.getOutput().getUniqueName());
+			
+			if (exporter.getOrf() != null) { 
+				orfCB.selectItem(exporter.getOrf());
+				loadProteins(exporter.getProteins());
+			}
+				
+			if (exporter.getSymbol() != null)
+				select(exporter.getSymbol().getLocalizedMessage(), symbolCB);
+			
+			if (exporter.isAligned())
+				alignedCB.selectItem(alignedYes.toString());
+			else 
+				alignedCB.selectItem(alignedNo.toString());
+		}
+	}
+	
+	public QTFastaExporter getFastaExporter() {
+		QTFastaExporter exporter = new QTFastaExporter();
+		
+		exporter.setMode(modeCB.currentValue());
+		
+		exporter.setOutput(outputVarCB.currentValue());
+		
+		EnumSet<FastaId> fastaId = EnumSet.noneOf(FastaId.class);
+		if (datasetChB.isChecked())
+			fastaId.add(FastaId.Dataset);
+		if (patientIdChB.isChecked())
+			fastaId.add(FastaId.PatientId);
+		if (sampleIdChB.isChecked())
+			fastaId.add(FastaId.SampleId);
+		exporter.setFastaId(fastaId);
+		
+		exporter.setOrf(orfCB.currentString());
+		Set<String> proteins = new HashSet<String>();
+		for (int i : proteinSB.getSelectedIndexes()) 
+			proteins.add(proteinSB.getItemText(i).toString());
+		exporter.setProteins(proteins);
+		
+		exporter.setSymbol(symbolCB.currentValue());
+		
+		exporter.setAligned(alignedCB.currentValue());
+		
+		return exporter;
+	}
+	
+	private void select(String i18nName, ComboBox combo) {
+		combo.selectItem(tr(i18nName).toString());
+	}
+	
+	private void init(InteractionState is) {
 		modeCB = new ComboBox<FastaExporter.Mode>(is, null);
 		modeCB.addNoSelectionItem();
 		for (FastaExporter.Mode m : FastaExporter.Mode.values()) {
@@ -57,6 +141,7 @@ public class FastaExportOptions extends FormTable {
 		});
 		
 		outputVarCB = new ComboBox<OutputVariable>(is, null);
+		updateOutputVars();
 		
 		datasetChB = new CheckBox(is, null, tr("form.query.querytool.fastaExport.id.dataset"));
 		patientIdChB = new CheckBox(is, null, tr("form.query.querytool.fastaExport.id.patientId"));
@@ -70,11 +155,14 @@ public class FastaExportOptions extends FormTable {
 				orfCB.addItem(new DataComboMessage<OpenReadingFrame>(orf, orf.getGenome().getOrganismName() + " - " + orf.getName()));
 		orfCB.addComboChangeListener(new Signal.Listener(){
 			public void trigger() {
-				loadProteins();
+				loadProteins(null);
 			}
 		});
-		proteinCB = new ComboBox<Protein>(is, null);
-		loadProteins();
+		orfCB.selectIndex(0);
+		proteinSB = new WSelectionBox();
+		proteinSB.setSelectionMode(SelectionMode.ExtendedSelection);
+		proteinSB.setEnabled(is == InteractionState.Editing || is == InteractionState.Adding);
+		loadProteins(null);
 		
 		symbolCB = new ComboBox<FastaExporter.Symbol>(is, null);
 		for (FastaExporter.Symbol s : FastaExporter.Symbol.values()) {
@@ -82,10 +170,11 @@ public class FastaExportOptions extends FormTable {
 		}
 		
 		alignedCB = new ComboBox<Boolean>(is, null);
-		alignedCB.addItem(new DataComboMessage<Boolean>(true, tr("form.query.querytool.fastaExport.aligned.yes").toString()));
-		alignedCB.addItem(new DataComboMessage<Boolean>(false, tr("form.query.querytool.fastaExport.aligned.no").toString()));
+		alignedCB.addItem(new DataComboMessage<Boolean>(true, alignedYes.toString()));
+		alignedCB.addItem(new DataComboMessage<Boolean>(false, alignedNo.toString()));
+	}
 	
-		//add widgets
+	private void addWidgets() {
 		addLineToTable(modeL, modeCB);
 		
 		addLineToTable(outputVarL, outputVarCB);
@@ -100,20 +189,26 @@ public class FastaExportOptions extends FormTable {
 		WContainerWidget region = new WContainerWidget();
 		region.setInline(true);
 		region.addWidget(orfCB);
-		region.addWidget(proteinCB);
+		region.addWidget(proteinSB);
 			
 		addLineToTable(regionL, region);
 		addLineToTable(symbolL, symbolCB);
 		addLineToTable(alignedL, alignedCB);
-		
-		hideWidgets(modeCB.currentValue());
 	}
 	
-	private void loadProteins() {
-		proteinCB.clearItems();
+	private void loadProteins(Set<String> selectedProteins) {
+		proteinSB.clear();
 		
-		for (Protein p : orfCB.currentValue().getProteins()) 
-			proteinCB.addItem(new DataComboMessage<Protein>(p, p.getAbbreviation()));
+		Set<Integer> selectedIndices = new HashSet<Integer>();
+		int index = 0;
+		for (Protein p : orfCB.currentValue().getProteins()) {
+			proteinSB.addItem(p.getAbbreviation());
+			if (selectedProteins !=null && selectedProteins.contains(p.getAbbreviation()))
+				selectedIndices.add(index);
+			++index;
+		}
+		
+		proteinSB.setSelectedIndexes(selectedIndices);
 	}
 	
 	private void hideWidgets(FastaExporter.Mode mode) {
@@ -131,7 +226,15 @@ public class FastaExportOptions extends FormTable {
 				getRowAt(i).setHidden(hidden);
 	}
 	
-	public void updateOutputVars(List<OutputVariable> outputVars) {
-		//TODO
+	public void updateOutputVars() {
+		OutputVariable currentOV = outputVarCB.currentValue();
+		
+		outputVarCB.clearItems();
+		for (OutputVariable ov : form.getEditorModel().getQueryEditor().getRootClause().getExportedOutputVariables())
+			if (ov.getObject().getTableName().equals("ViralIsolate")) 
+				outputVarCB.addItem(new DataComboMessage<OutputVariable>(ov, ov.getUniqueName()));
+		
+		if (currentOV != null)
+			outputVarCB.selectItem(currentOV.getUniqueName());
 	}
 }
