@@ -226,7 +226,7 @@ public class ComboBox<ComboDataType> extends FormField
     {
         if(isMandatory())
         {
-            if(fieldEdit_.getCurrentText()==null)
+            if(fieldEdit_.getCount() == 0 || fieldEdit_.getCurrentText()==null)
                 return false;
             
             return !(UIUtils.keyOrValue(fieldEdit_.getCurrentText()).equals(tr(noSelectionItem).getValue()));
