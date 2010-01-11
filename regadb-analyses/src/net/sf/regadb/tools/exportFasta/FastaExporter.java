@@ -151,11 +151,11 @@ public class FastaExporter {
 			}
 		} else if (mode == Mode.BaseOnProteins) {
 			ExportAaSequence exporter = new ExportAaSequence(symbol);
+			os.write(">" + getFastaId(viralIsolate, datasets) + "\n");
 			for (String protein : proteins) {
 				for (NtSequence ntseq : viralIsolate.getNtSequences())
 					for (AaSequence aaseq : ntseq.getAaSequences())
 						if (aaseq.getProtein().getAbbreviation().equals(protein)) {
-							//TODO header
 							os.write(exporter.getAlignmentView(aaseq));
 							entries++;
 						}
