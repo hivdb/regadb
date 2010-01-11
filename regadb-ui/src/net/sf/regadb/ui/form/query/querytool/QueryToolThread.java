@@ -18,10 +18,10 @@ public class QueryToolThread {
 	private Thread thread_;
 	private String fileName_;
 	
-	public QueryToolThread(final Login copiedLogin, QueryEditor editor)
+	public QueryToolThread(final Login login, QueryEditor editor)
 	{
-		fileName_ = init(copiedLogin);
-		run_ = new QueryToolRunnable(copiedLogin, fileName_, editor);
+		fileName_ = init(login);
+		run_ = new QueryToolRunnable(login, fileName_, editor);
 		thread_ = new Thread(run_);
 	}
 		
