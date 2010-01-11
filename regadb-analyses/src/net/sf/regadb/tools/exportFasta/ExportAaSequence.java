@@ -25,7 +25,7 @@ public class ExportAaSequence extends VisualizeAaSequence {
 		if (symbol == FastaExporter.Symbol.Nucleotides) {
 			sequence.append(codon);
 		} else /*AminoAcids*/ {
-			sequence.append(AaSequenceHelper.getAminoAcid(codon.toString()));
+			sequence.append(AaSequenceHelper.getAminoAcid(codon.toString()).trim());
 		}
 
 		codon.delete(0, 3);
