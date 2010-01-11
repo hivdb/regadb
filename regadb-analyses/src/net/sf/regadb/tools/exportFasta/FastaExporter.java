@@ -139,24 +139,30 @@ public class FastaExporter {
 		this.fastaId = fastaId;
 	}
 	
-	public void export(ViralIsolate viralIsolate, OutputStreamWriter os, Set<Dataset> datasets) throws IOException {
+	public int export(ViralIsolate viralIsolate, OutputStreamWriter os, Set<Dataset> datasets) throws IOException {
+		int entries = 0;
 		if (mode == null) {
-			return;
+			return entries;
 		} else if (mode == Mode.Submitted) {
 			for (NtSequence ntseq : viralIsolate.getNtSequences()) {
 				os.write(">" + getFastaId(viralIsolate, datasets) + "_" + ntseq.getLabel() + "\n");
 				os.write(ntseq.getNucleotides()  + "\n");
+				entries++;
 			}
 		} else if (mode == Mode.BaseOnProteins) {
 			ExportAaSequence exporter = new ExportAaSequence(symbol);
 			for (String protein : proteins) {
 				for (NtSequence ntseq : viralIsolate.getNtSequences())
 					for (AaSequence aaseq : ntseq.getAaSequences())
-						if (aaseq.getProtein().getAbbreviation().equals(protein))
+						if (aaseq.getProtein().getAbbreviation().equals(protein)) {
+							//TODO header
 							os.write(exporter.getAlignmentView(aaseq));
+							entries++;
+						}
 			}
 			os.write("\n");
 		}
+		return entries;
 	}
 	
 	private String getFastaId(ViralIsolate viralIsolate, Set<Dataset> datasets) {
