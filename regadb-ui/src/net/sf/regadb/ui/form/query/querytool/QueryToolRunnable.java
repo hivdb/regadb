@@ -255,7 +255,7 @@ public class QueryToolRunnable implements Runnable {
 		
 		CsvLine line = new CsvLine();
 		
-		for (int j = 0 ; j < array.length ; j++) {		    
+		for (int j = 0 ; j < selections.size() ; j++) {		    
 			if (selections.get(j) instanceof TableSelection) {
 				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 			}
