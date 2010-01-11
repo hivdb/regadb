@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -109,10 +110,9 @@ public class TestFastaAlign {
                     List<AaSequence> result = aligner.align(ntseq, g);
                     
                     Collections.sort(result, new Comparator<AaSequence>(){
-						@Override
-						public int compare(AaSequence a1, AaSequence a2) {
-							return a1.getProtein().getAbbreviation().
-								compareTo(a2.getProtein().getAbbreviation());
+						
+                    	public int compare(AaSequence a1, AaSequence a2) {
+							return a1.getProtein().getAbbreviation().toUpperCase().compareTo(a2.getProtein().getAbbreviation().toUpperCase());
 						}
                     });
                     
