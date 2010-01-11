@@ -745,15 +745,16 @@ public class QueryEditorFrame extends javax.swing.JFrame implements QueryContext
                 runningExecution.close();
             }
             setRunning(true);
-            try {
-                QueryStatement runningStatement = DatabaseManager.getInstance().getDatabaseConnector().createScrollableReadOnlyStatement();
-                runningExecution = new ExecuteQueryRunnable(runningStatement, query);
-                Thread executeQuery = new Thread(runningExecution, "Execute SQL query");
-                executeQuery.start();
-            } catch (SQLException sqle) {
-                resultTable.setModel(new BusyTableModel("Error", "Failure while executing the query"));
-                QueryEditorApp.getInstance().showException(sqle, "SQL Exception");
-            }
+            //TODO
+//            try {
+//                QueryStatement runningStatement = DatabaseManager.getInstance().getDatabaseConnector().createScrollableReadOnlyStatement();
+//                runningExecution = new ExecuteQueryRunnable(runningStatement, query);
+//                Thread executeQuery = new Thread(runningExecution, "Execute SQL query");
+//                executeQuery.start();
+//            } catch (SQLException sqle) {
+//                resultTable.setModel(new BusyTableModel("Error", "Failure while executing the query"));
+//                QueryEditorApp.getInstance().showException(sqle, "SQL Exception");
+//            }
         }
     }
     
