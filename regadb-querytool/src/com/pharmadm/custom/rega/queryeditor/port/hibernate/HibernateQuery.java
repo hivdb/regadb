@@ -52,7 +52,7 @@ public class HibernateQuery extends SqlQuery {
 			q += "\nSELECT\n\t" + select;
 		}
 		if (query.getFastaExport() != null)
-			q += ",\n\t" + query.getFastaExport().getViralIsolate().getUniqueName();
+			q += ",\n\t" + query.getFastaExport().getViralIsolate().acceptWhereClause(this);
 		if (from.length() > 0) {
 			q += "\nFROM\n\t" + from;
 		}
