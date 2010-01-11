@@ -20,6 +20,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
@@ -79,6 +80,7 @@ public class RegaDBApplication extends WApplication
     {
     	login_ = Login.authenticate(uid, pwd);
 		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), false);
+		DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
     }
     
     public void logout()

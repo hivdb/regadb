@@ -43,9 +43,9 @@ public class DatabaseManager {
     	this.connectorFactory = connectorFactory;
     }
     
-    public void fillCatalog(CatalogBuilder catalogBuilder) {
+    public void fillCatalog(CatalogBuilder builder) {
     	DatabaseConnector connector = connectorFactory.createConnector();
-		catalogBuilder.fillCatalog(connector, catalog);
+    	builder.fillCatalog(connector, catalog);
 		tableCatalog.fillCatalog(connector);
 		connectorFactory.closeConnector(connector);
     }

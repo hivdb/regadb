@@ -1,7 +1,6 @@
 package net.sf.regadb.ui.form.query.querytool.widgets;
 
 
-import net.sf.regadb.ui.form.query.querytool.widgets.WProgressbar.ProgressListener;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
@@ -15,7 +14,6 @@ public class WStatusBar extends WStyledContainerWidget {
 	private WTable table;
 	private WButtonPanel buttonPanel;
 	private WText warningText;
-	private WProgressbar progressbar;
 	
 	public WStatusBar() {
 		super();
@@ -64,45 +62,9 @@ public class WStatusBar extends WStyledContainerWidget {
 	}
 	
 	/**
-	 * show a progress bar for the given progress reporter
-	 * a progress bar can only be added if there is no other
-	 * progress bar running
-	 */
-	public void showProgressBar(ProgressReporter rep) {
-		if (progressbar != null && progressbar.isDone()) {
-			getTextContainer().removeWidget(progressbar);
-			progressbar = null;
-		}
-		if (progressbar == null) {
-			progressbar = new WProgressbar(rep);
-			getTextContainer().addWidget(progressbar);
-			initProgressBar(rep);
-		}
-	}
-	
-
-	private void initProgressBar(ProgressReporter rep) {
-		if (!rep.isDone()) {
-			showLoadingBar();
-			progressbar.addProgressChangeListeners(new ProgressListener() {
-				public void progressChanged(ProgressReporter reporter) {
-					if (reporter.isDone()) {
-						loadingComplete();
-					}
-				}
-			});
-			rep.start();
-		}
-		else {
-			hideLoadingBar();
-		}		
-	}	
-	
-	/**
 	 * called when the progress bar is done
 	 */
 	protected void loadingComplete() {
-		hideLoadingBar();
 		update();
 	}
 	
@@ -113,21 +75,5 @@ public class WStatusBar extends WStyledContainerWidget {
 	 */
 	public void update() {
 		
-	}
-	
-	/**
-	 * called when progress bar is initially shown
-	 */
-	private void showLoadingBar() {
-		warningText.hide();
-		progressbar.show();
-	}
-	
-	/**
-	 * called when progress bar gets hidden
-	 */
-	private void hideLoadingBar() {
-		progressbar.hide();
-		warningText.show();
 	}
 }
