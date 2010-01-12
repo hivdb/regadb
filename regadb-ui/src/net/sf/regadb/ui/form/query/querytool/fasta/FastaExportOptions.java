@@ -1,7 +1,11 @@
 package net.sf.regadb.ui.form.query.querytool.fasta;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.db.OpenReadingFrame;
@@ -200,7 +204,13 @@ public class FastaExportOptions extends FormTable {
 		
 		Set<Integer> selectedIndices = new HashSet<Integer>();
 		int index = 0;
-		for (Protein p : orfCB.currentValue().getProteins()) {
+		List<Protein> proteins = new ArrayList<Protein>(orfCB.currentValue().getProteins());
+		Collections.sort(proteins, new Comparator<Protein>(){
+			public int compare(Protein p1, Protein p2) {
+				return (p1.getStartPosition() < p2.getStartPosition() ? -1 : (p1.getStartPosition() == p2.getStartPosition() ? 0 : 1));
+			}
+		});
+		for (Protein p : proteins) {
 			proteinSB.addItem(p.getAbbreviation());
 			if (selectedProteins !=null && selectedProteins.contains(p.getAbbreviation()))
 				selectedIndices.add(index);
