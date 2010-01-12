@@ -152,7 +152,7 @@ public class FastaExporter {
 				entries++;
 			}
 		} else if (mode == Mode.BaseOnProteins) {
-			ExportAaSequence exporter = new ExportAaSequence(symbol);
+			ExportAaSequence exporter = new ExportAaSequence(symbol, aligned);
 			os.write(">" + getFastaId(viralIsolate, datasets) + "\n");
 			for (String protein : proteins) {
 				boolean found = false;
@@ -164,7 +164,7 @@ public class FastaExporter {
 							found = true;
 						}
 				
-				if (!found) {
+				if (!found && aligned) {
 					int size = (proteinMap.get(protein).getStopPosition() - proteinMap.get(protein).getStartPosition());
 					for (int i = 0; i < size; i++)
 						if (this.symbol == Symbol.Nucleotides)

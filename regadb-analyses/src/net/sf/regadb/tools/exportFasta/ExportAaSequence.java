@@ -9,9 +9,11 @@ public class ExportAaSequence extends VisualizeAaSequence {
 	private StringBuffer codon = new StringBuffer();
 	
 	private FastaExporter.Symbol symbol;
+	private boolean aligned;
 	
-	public ExportAaSequence(FastaExporter.Symbol symbol) {
+	public ExportAaSequence(FastaExporter.Symbol symbol, boolean aligned) {
 		this.symbol = symbol;
+		this.aligned = aligned;
 	}
 
 	public void addNt(char reference, char target, int codonIndex) {
@@ -23,20 +25,27 @@ public class ExportAaSequence extends VisualizeAaSequence {
 
 	private void addAa() {
 		if (symbol == FastaExporter.Symbol.Nucleotides) {
-			sequence.append(codon);
+			sequence.append(getCodon());
 		} else /*AminoAcids*/ {
-			sequence.append(AaSequenceHelper.getAminoAcid(codon.toString()).trim());
+			sequence.append(getAminoAcid());
 		}
 
 		codon.delete(0, 3);
 	}
-
-	private void endOfAlignment() {
-
+	
+	private String getCodon() {
+		if (aligned)
+			return codon.toString();
+		else
+			return codon.toString().replace("-", "");
 	}
-
-	private void appendLineToPage(StringBuffer b) {
-
+	
+	private String getAminoAcid() {
+		String aa = AaSequenceHelper.getAminoAcid(codon.toString()).trim();
+		if (aligned)
+			return aa;
+		else 
+			return aa.replace("-", "");
 	}
 
 	public void clear() {
