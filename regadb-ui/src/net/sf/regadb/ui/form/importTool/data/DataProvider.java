@@ -74,7 +74,7 @@ public class DataProvider {
 	}
 	
 	public int getNumberRows() {
-		return sheet.rowCount() - 1;
+		return sheet.rowCount();
 	}
 	
 	public void setScript(ScriptDefinition script) {
