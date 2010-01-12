@@ -151,8 +151,11 @@ public class FastaExportOptions extends FormTable {
 		updateOutputVars();
 		
 		datasetChB = new CheckBox(is, null, tr("form.query.querytool.fastaExport.id.dataset"));
+		datasetChB.setChecked(true);
 		patientIdChB = new CheckBox(is, null, tr("form.query.querytool.fastaExport.id.patientId"));
+		patientIdChB.setChecked(true);
 		sampleIdChB = new CheckBox(is, null, tr("form.query.querytool.fastaExport.id.sampleId"));
+		sampleIdChB.setChecked(true);
 		
 		orfCB = new ComboBox<OpenReadingFrame>(is, null);
 		Transaction tr = RegaDBMain.getApp().createTransaction();
