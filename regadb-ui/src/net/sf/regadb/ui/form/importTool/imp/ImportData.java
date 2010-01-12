@@ -277,7 +277,7 @@ public class ImportData {
 					NtSequence ntseq = new NtSequence();
 					if (r.getSequenceDetails().getRetrievalOptions() == SequenceDetails.SequenceRetrievalOptions.CSV) {
 						ntseq.setNucleotides(Utils.clearNucleotides(value));
-						ntseq.setLabel("Sequence 1");
+						ntseq.setLabel("Sequence " + (getIsolate(r.getNumber(), isolates).getNtSequences().size() + 1));
 					} else {
 						Sequence s = sequences.get(value);
 						if (s == null)
