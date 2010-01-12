@@ -212,7 +212,7 @@ public class ImportRule {
 							getCurrentColumnData(), 
 							getDrugValues(),
 							this));
-		} else if (type.currentValue() == Rule.Type.ViralIsolateSampleSequence1){
+		} else if (type.currentValue() == Rule.Type.ViralIsolateSampleSequence){
 			addDetailsListener(details, 
 					new SequenceDetailsForm(this, this.getRule().getSequenceDetails()));
 		} else if (type.currentValue().isDate()){

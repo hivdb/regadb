@@ -272,12 +272,12 @@ public class ImportData {
 				if (!value.equals("")) {
 					getIsolate(r.getNumber(), isolates).setSampleId(value);
 				}
-			} else if (type == Rule.Type.ViralIsolateSampleSequence1) {
+			} else if (type == Rule.Type.ViralIsolateSampleSequence) {
 				if (!value.equals("")) {
 					NtSequence ntseq = new NtSequence();
 					if (r.getSequenceDetails().getRetrievalOptions() == SequenceDetails.SequenceRetrievalOptions.CSV) {
 						ntseq.setNucleotides(Utils.clearNucleotides(value));
-						ntseq.setLabel("Sequence 1");
+						ntseq.setLabel("Sequence " + (getIsolate(r.getNumber(), isolates).getNtSequences().size() + 1));
 					} else {
 						Sequence s = sequences.get(value);
 						if (s == null)

@@ -44,7 +44,7 @@ public class ValidateRules {
 		
 		TypeError viSampleId = new TypeError(Rule.Type.ViralIsolateSampleId, WString.tr("importTool.validate.vi.nonUniqueSampleId"));
 		TypeError viSampleDate = new TypeError(Rule.Type.ViralIsolateSampleDate, WString.tr("importTool.validate.vi.missingSampleDate"));
-		TypeError viSeq1 = new TypeError(Rule.Type.ViralIsolateSampleSequence1, WString.tr("importTool.validate.vi.missingSequence"));
+		TypeError viSeq1 = new TypeError(Rule.Type.ViralIsolateSampleSequence, WString.tr("importTool.validate.vi.missingSequence"));
 		error = validateMultipleValues(rules, viSampleId, viSampleDate, viSeq1);
 		if (error != null) return error;
 		

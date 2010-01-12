@@ -18,7 +18,7 @@ public class Rule {
 		TherapyComment("Therapy comment"),
 		ViralIsolateSampleId("Viral isolate sample id"),
 		ViralIsolateSampleDate("Viral isolate sample date", true),
-		ViralIsolateSampleSequence1("Viral isolate sequence"),
+		ViralIsolateSampleSequence("Viral isolate sequence"),
 		ViralIsolateSampleManualSubtype("Viral isolate manual subtype");
 		
 		private String name;
