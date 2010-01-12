@@ -272,7 +272,7 @@ public class ImportData {
 				if (!value.equals("")) {
 					getIsolate(r.getNumber(), isolates).setSampleId(value);
 				}
-			} else if (type == Rule.Type.ViralIsolateSampleSequence1) {
+			} else if (type == Rule.Type.ViralIsolateSampleSequence) {
 				if (!value.equals("")) {
 					NtSequence ntseq = new NtSequence();
 					if (r.getSequenceDetails().getRetrievalOptions() == SequenceDetails.SequenceRetrievalOptions.CSV) {
