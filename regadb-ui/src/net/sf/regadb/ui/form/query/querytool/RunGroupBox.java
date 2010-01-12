@@ -16,6 +16,7 @@ import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
 
@@ -76,15 +77,17 @@ public class RunGroupBox extends WGroupContainer {
 				table.getElementAt(runningQueries.size()-i-1, 0).addWidget(lbl);
 	
 				if (qt.isDone()) {
+					WTableCell tc = table.getElementAt(runningQueries.size()-i-1, 1);
 					WFileResource res = qt.getTableDownloadResource();
 					res.suggestFileName("result_"+ (i+1) +".csv");
 					WAnchor link = new WAnchor(res, qt.getStatusText());
-					table.getElementAt(runningQueries.size()-i-1, 1).addWidget(link);
+					tc.addWidget(link);
 					if (qt.getFastaDownloadResource() != null) {
+						tc.addWidget(new WText("   "));
 						res = qt.getFastaDownloadResource();
 						res.suggestFileName("result_"+ (i+1) +".fasta");
 						link = new WAnchor(res, tr("form.query.querytool.label.fasta").arg(qt.getFastaEntries()));
-						table.getElementAt(runningQueries.size()-i-1, 1).addWidget(link);
+						tc.addWidget(link);
 					}
 				}
 				else {
