@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
@@ -188,7 +190,10 @@ public class QueryToolRunnable implements Runnable {
             if(result != null){
         		List<Selection> selections = getFlatSelectionList(newList);
 
-        		Set<Dataset> datasets = new HashSet<Dataset>(login.getTransaction(false).getDatasets());
+        		Set<Dataset> datasets = new HashSet<Dataset>(t.getDatasets());
+        		Map<String, Protein> proteins = new HashMap<String, Protein>();
+        		for (Protein p : t.getProteins()) 
+        			proteins.put(p.getAbbreviation(), p);
         		
 	            FileOutputStream os = new FileOutputStream(csvFile);
 	            ExportToCsv csvExport = new ExportToCsv();
@@ -212,7 +217,7 @@ public class QueryToolRunnable implements Runnable {
 					}
             		if (fastaFile != null) {
             			if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)o[o.length - 1], new HashSet<Dataset>(), accessiblePatients))
-            				numberFastaEntries = ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets);
+            				numberFastaEntries = ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
             		}
             		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
             		//this access solving stuff is horrible and could use a little rewrite, someday

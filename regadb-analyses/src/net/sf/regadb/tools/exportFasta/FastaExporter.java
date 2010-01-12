@@ -3,7 +3,9 @@ package net.sf.regadb.tools.exportFasta;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.AaSequence;
@@ -139,7 +141,7 @@ public class FastaExporter {
 		this.fastaId = fastaId;
 	}
 	
-	public int export(ViralIsolate viralIsolate, OutputStreamWriter os, Set<Dataset> datasets) throws IOException {
+	public int export(ViralIsolate viralIsolate, OutputStreamWriter os, Set<Dataset> datasets, Map<String, Protein> proteinMap) throws IOException {
 		int entries = 0;
 		if (mode == null) {
 			return entries;
@@ -153,13 +155,25 @@ public class FastaExporter {
 			ExportAaSequence exporter = new ExportAaSequence(symbol);
 			os.write(">" + getFastaId(viralIsolate, datasets) + "\n");
 			for (String protein : proteins) {
+				boolean found = false;
+				
 				for (NtSequence ntseq : viralIsolate.getNtSequences())
 					for (AaSequence aaseq : ntseq.getAaSequences())
 						if (aaseq.getProtein().getAbbreviation().equals(protein)) {
 							os.write(exporter.getAlignmentView(aaseq));
-							entries++;
+							found = true;
 						}
+				
+				if (!found) {
+					int size = (proteinMap.get(protein).getStopPosition() - proteinMap.get(protein).getStartPosition());
+					for (int i = 0; i < size; i++)
+						if (this.symbol == Symbol.Nucleotides)
+							os.write("---");
+						else /*AminoAcids*/
+							os.write("-");
+				}
 			}
+			entries++;
 			os.write("\n");
 		}
 		return entries;
