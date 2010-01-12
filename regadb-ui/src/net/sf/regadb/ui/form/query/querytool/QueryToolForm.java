@@ -114,7 +114,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	 * update controls to reflect editability
 	 */
 	public void updateControls() {
-		boolean editable = isQueryEditable() &&  statusbar.isCatalogLoaded() && getSavable().isLoaded();
+		boolean editable = isQueryEditable() && getSavable().isLoaded();
 		if (editable != controlsEnabled) {
 			queryTreeTab.setEditable(editable);
 			controlsEnabled = editable;

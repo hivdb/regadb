@@ -11,6 +11,11 @@
     -->
     <query-result-dir>/etc/rega_institute/regadb/query</query-result-dir>
     
+	<!--  directory for import definition storage, appropriate read/write permissions necessary
+	  this field is required 
+    -->
+    <import-tool-dir>/etc/rega_institute/regadb/import</import-tool-dir>
+
     <!--  image file containing an alternative logo
 	      this field is optional
 	-->  
