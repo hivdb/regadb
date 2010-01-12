@@ -292,8 +292,6 @@ public class ViralIsolateMainForm extends WContainerWidget
        
         setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue());
         
-        setFieldListeners();
-        
         seqComboBox.changed().addListener(this, new Signal.Listener()
             {
                 public void trigger() 
@@ -301,6 +299,16 @@ public class ViralIsolateMainForm extends WContainerWidget
                     setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue());
                 }
             });
+        
+        if(viralIsolateForm_.isEditable()){
+	        seqComboBox.focussed().addListener(this, new Signal.Listener()
+	        {
+	            public void trigger() 
+	            {
+	                confirmSequence();
+	            }
+	        });
+        }
 
         if (viralIsolateForm_.isEditable()) {
 	        addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
@@ -335,6 +343,8 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     private DataComboMessage<NtSequence> addSeqData()
     {
+    	confirmSequence();
+    	
         String label = getUniqueSequenceLabel(viralIsolateForm_.getViralIsolate());
         NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate());
         newSeq.setLabel(label);
@@ -559,36 +569,6 @@ public class ViralIsolateMainForm extends WContainerWidget
         }
     }
 
-    private void setFieldListeners()
-    {
-        seqLabelTF.addChangeListener(new Signal.Listener()
-                    {
-                        public void trigger() 
-                        {
-                            seqComboBox.disable();
-                            addButton.disable();
-                        }
-                    });
-                    
-        seqDateTF.addChangeListener(new Signal.Listener()
-                    {
-                        public void trigger() 
-                        {
-                            seqComboBox.disable();
-                            addButton.disable();
-                        }
-                    });
-                    
-        ntTF.addChangeListener(new Signal.Listener()
-                    {
-                        public void trigger() 
-                        {
-                            seqComboBox.disable();
-                            addButton.disable();
-                        }
-                    });
-    }
-    
     public boolean checkSampleId(){
     	Transaction tr = RegaDBMain.getApp().createTransaction();
     	return ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), 
