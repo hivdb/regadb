@@ -7,23 +7,29 @@ import java.util.Set;
 import net.sf.regadb.db.NtSequence;
 
 public class QC {
+	private static final int MINIMUM_TRUGENE_FRAGMENT_LENGTH = 20;
+
 	public static Set<NtSequence> trugeneQC(NtSequence sequence) {
 		Set<NtSequence> toReturn = new HashSet<NtSequence>();
 		
-		sequence.setNucleotides(sequence.getNucleotides().toLowerCase());
-		
 		String nNucleotides = 
 			"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn";
-		
-		if (sequence.getNucleotides().contains(nNucleotides)) {
-			String pro = sequence.getNucleotides().substring(0, sequence.getNucleotides().indexOf(nNucleotides));
-			String rt = sequence.getNucleotides().substring(sequence.getNucleotides().indexOf(nNucleotides) + nNucleotides.length());
-			NtSequence proSeq = copy(sequence, " (a)");
-			proSeq.setNucleotides(trimNs(pro));
-			toReturn.add(proSeq);
-			NtSequence rtSeq = copy(sequence, " (b)");
-			rtSeq.setNucleotides(trimNs(rt));
-			toReturn.add(rtSeq);
+
+		int endPro = sequence.getNucleotides().toLowerCase().indexOf(nNucleotides);
+
+		if (endPro != -1) {
+			int startRt = endPro + nNucleotides.length();
+
+			String pro = trimNs(sequence.getNucleotides().substring(0, endPro));
+			String rt = trimNs(sequence.getNucleotides().substring(startRt));
+			
+			if (pro.length() < MINIMUM_TRUGENE_FRAGMENT_LENGTH || rt.length() < MINIMUM_TRUGENE_FRAGMENT_LENGTH) {
+				toReturn.add(sequence);
+				return toReturn;
+			}
+			
+			toReturn.add(copy(sequence, " (a)", pro));
+			toReturn.add(copy(sequence, " (b)", rt));
 		} else 
 			toReturn.add(sequence);
 		
@@ -32,28 +38,29 @@ public class QC {
 	
 	private static String trimNs(String seq) {
 		int firstIndex = 0;
-		int lastIndex = seq.length() - 2;
+		int lastIndex = seq.length();
 		
 		for (int i = 0; i < seq.length(); i++) 
-			if (seq.charAt(i) != 'n') {
+			if (Character.toLowerCase(seq.charAt(i)) != 'n') {
 				firstIndex = i;
 				break;
 			}
 
 		for (int i = seq.length() - 1; i >= 0; i--)
-			if (seq.charAt(i) != 'n') {
-				lastIndex = i;
+			if (Character.toLowerCase(seq.charAt(i)) != 'n') {
+				lastIndex = i + 1;
 				break;
 			}
 		
-		return seq.substring(firstIndex, lastIndex + 1);
+		return seq.substring(firstIndex, lastIndex);
 	}
 	
-	private static NtSequence copy(NtSequence seq, String labelSuffix) {
+	private static NtSequence copy(NtSequence seq, String labelSuffix, String sequence) {
 		NtSequence copy = new NtSequence();
 		copy.setAligned(false);
 		copy.setSequenceDate(seq.getSequenceDate());
 		copy.setLabel(seq.getLabel() + labelSuffix);
+		copy.setNucleotides(sequence);
 		return copy;
 	}
 	
