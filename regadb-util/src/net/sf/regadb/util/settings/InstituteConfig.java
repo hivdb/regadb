@@ -19,7 +19,8 @@ public class InstituteConfig implements IConfigParser {
 	private String serviceProviderUrl;
 	private boolean sampleDateMandatory = true;
 	private String logo;
-	
+	private boolean trugeneFix = false;
+
 	private WivConfig wivConfig;
 	
 	private EmailConfig emailConfig;
@@ -50,6 +51,10 @@ public class InstituteConfig implements IConfigParser {
 		ee = e.getChild("import-tool-dir");
 		if(ee != null)
 			importToolDir = new File(ee.getTextTrim());
+		
+		ee = e.getChild("trugene-fix");
+		if (ee != null)
+			trugeneFix = Boolean.parseBoolean(ee.getTextTrim());
 		
 		ee = e.getChild("wiv");
 		if(ee != null){
@@ -303,5 +308,9 @@ public class InstituteConfig implements IConfigParser {
 
 	public String getServiceProviderUrl() {
 		return serviceProviderUrl;
+	}
+	
+	public boolean isTrugeneFix() {
+		return trugeneFix;
 	}
 }
