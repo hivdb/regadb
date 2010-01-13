@@ -11,6 +11,7 @@ import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class SequenceExtractorForAlgorithm {
 
@@ -37,6 +38,7 @@ public class SequenceExtractorForAlgorithm {
 			System.err.println("Usage: SequenceExtractor vi_ids.csv uid passwd");
 			System.exit(1);
 		}
+		RegaDBSettings.createInstance();
 		Table t = Table.readTable(args[0]);
 		new SequenceExtractorForAlgorithm(t.getColumn(0),args[1],args[2]);		
 	}
