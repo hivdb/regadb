@@ -652,7 +652,7 @@ public class Utils {
      	{
          	DrugGeneric genDrug = regaDrugGenerics.get(j);
          	
-         	if(genDrug.getGenericId().equals(drug.toUpperCase()))
+         	if(genDrug.getGenericId().toUpperCase().equals(drug.toUpperCase()))
          	{
          		ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
          		

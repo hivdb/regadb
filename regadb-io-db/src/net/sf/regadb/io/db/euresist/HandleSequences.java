@@ -19,7 +19,7 @@ public class HandleSequences {
 	
 	public void run(Map<String,Patient> patients) {
         try {
-			ResultSet rs = exportDb_.getDb().executeQuery("SELECT * FROM RawSequences");
+			ResultSet rs = exportDb_.getDb().executeQuery("SELECT * FROM rawsequences");
 			
 			while(rs.next()) {
 				int patientId = rs.getInt("patientID");

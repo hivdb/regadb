@@ -21,7 +21,7 @@ public class HandleTests {
         TestResult tr;
         java.util.Date d;
         
-        ResultSet rs = getEdb().getDb().executeQuery("SELECT * FROM Cd4Isolates");
+        ResultSet rs = getEdb().getDb().executeQuery("SELECT * FROM cd4isolates");
         while(rs.next()){
             s = rs.getString("patientID");
             
@@ -41,11 +41,11 @@ public class HandleTests {
         }
         rs.close();
         
-        Map<String,Test> vlMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadTestType(), "Methods", "method", "methodID");
-        Map<String,Test> vlLogMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadLog10TestType(), "Methods", "method", "methodID");
+        Map<String,Test> vlMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadTestType(), "methods", "method", "methodID");
+        Map<String,Test> vlLogMap = getEdb().createTestMap(StandardObjects.getHiv1ViralLoadLog10TestType(), "methods", "method", "methodID");
         char prefix;
         
-        rs = getEdb().getDb().executeQuery("SELECT * FROM ViralLoadIsolates");
+        rs = getEdb().getDb().executeQuery("SELECT * FROM viralloadisolates");
         while(rs.next()){
             s = rs.getString("patientID");
             
