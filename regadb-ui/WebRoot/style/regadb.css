@@ -340,6 +340,17 @@ table.date-field td {
 
 /* drug resistance table */
 
+table.resistance-legend {
+	width: auto;
+	margin-top: 10px;
+}
+
+table.resistance-legend td.item {
+	display:block;
+	text-align:center;
+	padding:0em 0.2em;
+	border:1px solid #bbb;
+}
 
 table.datatable-resistance td.resistance-cell {
 	border:1px solid #bbb;
@@ -354,31 +365,6 @@ table.datatable-resistance td.resistance-cell span {
 	display:block;
 	text-align:center;
 	padding:0em 0.2em;
-}
-
-table.datatable-resistance td.resistance-NA {
-	color:#fff;
-	background-color:#000;	
-}
-
-table.datatable-resistance td.resistance-R {
-	color:#fff;
-	background-color:red;	
-}
-
-table.datatable-resistance td.resistance-I {
-	color:#000;
-	background-color:yellow;	
-}
-
-table.datatable-resistance td.resistance-S {
-	color:#000;
-	background-color:#00ff00;	
-}
-
-table.datatable-resistance td.resistance-X {
-	color:#fff;
-	background-color:#000;	
 }
 
 table.datatable-resistance td.resistance-remarks {
@@ -658,4 +644,9 @@ form.upload-form input{
 table.datatable td.navigation{
 	text-align: right;
 }
+
+.regadb-error {
+        padding: 10px;
+}
+
 

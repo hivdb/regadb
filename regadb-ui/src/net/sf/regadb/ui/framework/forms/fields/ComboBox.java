@@ -88,6 +88,13 @@ public class ComboBox<ComboDataType> extends FormField
             return null;
     }
     
+    public String currentString() {
+        if(currentItem()!=null)
+            return currentItem().toString();
+        else
+            return null;
+    }
+    
     public boolean isNoSelectionItem(DataComboMessage msg)
     {
         return msg.getDataValue()==null;

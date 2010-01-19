@@ -81,7 +81,7 @@ public class QueryToolRunnable implements Runnable {
 	
 	public QueryToolRunnable(Login copiedLogin, String fileName, QueryEditor editor) {
 		this.fileName = fileName;
-		this.login = copiedLogin;
+		this.login = copiedLogin.copyLogin();
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
@@ -223,6 +223,7 @@ public class QueryToolRunnable implements Runnable {
 		}
 		statement.close();
     	t.clearCache();
+    	login.closeSession();
         return success;
     }
     

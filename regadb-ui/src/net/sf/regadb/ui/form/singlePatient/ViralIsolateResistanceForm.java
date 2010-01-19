@@ -42,6 +42,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
         
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.getElementAt(1, 0));
+        new ViralIsolateResistanceLegend(this);
         
         refreshButton_ = new WPushButton(tr("form.viralIsolate.editView.resistance.refreshButton"), wrapper.getElementAt(0, 0));
         refreshButton_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
@@ -74,20 +75,24 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         });
     }
     
-    @SuppressWarnings("unchecked")
 	private void refreshTable() {
         Transaction t = RegaDBMain.getApp().createTransaction();
         t.refresh(viralIsolateForm_.getViralIsolate());
         
-        List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
-        		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
-        		" where nt.viralIsolate.id="+ viralIsolateForm_.getViralIsolate().getViralIsolateIi()).list();
-        Collection<String> drugClasses = ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
+        Genome genome = viralIsolateForm_.getViralIsolate().getGenome();
+        Collection<String> drugClasses = getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi());
         
-        Genome genome = ViralIsolateFormUtils.getGenome(viralIsolateForm_.getViralIsolate());
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
         
         t.commit();
+    }
+    
+    @SuppressWarnings("unchecked")
+	static Collection<String> getRelevantDrugClassIds(Transaction t, int viralIsolateIi){
+        List<String> proteins = t.createQuery("select distinct(p.abbreviation)" +
+        		" from AaSequence aas join aas.protein p join aas.ntSequence nt" +
+        		" where nt.viralIsolate.id="+ viralIsolateIi).list();
+        return ViralIsolateFormUtils.getRelevantDrugClassIds(proteins);
     }
 }

@@ -47,7 +47,7 @@ public class InclusiveOrClause extends ComposedWhereClause implements Serializab
         return true;
     }
     
-    protected List<OutputVariable> getExportedOutputVariables() {
+    public List<OutputVariable> getExportedOutputVariables() {
         return new ArrayList<OutputVariable>(0);
     }
     

@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IllegalFormatException;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -49,7 +48,12 @@ public class MutPos {
 				String region = m.group(1);
 				String position = m.group(2);
 				allPositions.add(region+position);
-				prevalences.put(colName, histogram.get(i).get("y"));
+				Integer prevalence = histogram.get(i).get("y");
+				if(prevalence == null){
+					prevalences.put(colName, 0);
+				}else{
+					prevalences.put(colName, prevalence);
+				}
 			}
 		}
 

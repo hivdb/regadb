@@ -2,6 +2,8 @@ package net.sf.regadb.ui.framework;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.servlet.ServletContext;
 
@@ -18,12 +20,18 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WEvent;
+import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class RegaDBApplication extends WApplication
 {
@@ -54,11 +62,6 @@ public class RegaDBApplication extends WApplication
 		return getWindow().getTree_();
 	}
 	
-	public Header getHeader()
-	{
-		return getWindow().getHeader_();
-	}
-	
 	public FormContainer getFormContainer()
 	{
 		return getWindow().getContainer_();
@@ -76,12 +79,8 @@ public class RegaDBApplication extends WApplication
     public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException
     {
     	login_ = Login.authenticate(uid, pwd);
-		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(false) {
-			@Override
-			public Transaction createTransaction() {
-				return getLogin().createTransaction();
-			}
-		});
+		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), false);
+		DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
     }
     
     public void logout()
@@ -142,6 +141,52 @@ public class RegaDBApplication extends WApplication
 				return Privileges.getPrivilege(da.getPermissions());
 		}
 		return Privileges.NONE;
+	}
+	
+	 protected void notify(WEvent event) throws IOException {
+		try {
+			super.notify(event);
+			commitTransaction();
+		} catch (Exception e) {
+			if (isQuited())
+				return;
+			try {
+				setError("Unexpected exception", null, e);
+			} catch (Exception localException2) {
+				localException2.printStackTrace();
+			} finally {
+				e.printStackTrace();
+				quit();
+			}
+		}
+	}
+
+	  private void commitTransaction() {
+		if (this.login_ == null)
+			return;
+		Transaction t = this.login_.getTransaction(false);
+		if (t == null)
+			return;
+		try {
+			t.commit();
+		} catch (Exception e) {
+			setError("Unexpected Database Error", null, e);
+		}
+	}
+
+	  public void setError(String e1, String e2, Exception e) {
+		getRoot().clear();
+		WContainerWidget wc = new WContainerWidget(getRoot());
+		wc.setStyleClass("regadb-error");
+		new WText(tr("regadb.error.title"), wc);
+		new WText(new WString("<p><b>" + e1 + "</b></p>"), wc);
+		if (e2 != null)
+			new WText(new WString(e2), TextFormat.PlainText, wc);
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		new WText(new WString(sw.toString()), TextFormat.PlainText, wc);
+		quit();
+		throw new RuntimeException("Unrecoverable error", e);
 	}
 	
 	@Override

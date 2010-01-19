@@ -17,18 +17,4 @@
   <table name="aa_insertion" schema="regadbschema">
     <column name="nt_insertion_codon" type="java.lang.String" />
   </table>
-
-  <!--
-  <table name="MESSAGES" schema="PUBLIC" class="Message">
-    <primary-key>
-      <generator class="increment"/>
-      <key-column name="MESSAGE_ID" property="id" type="long"/>
-    </primary-key>
-    <column name="MESSAGE_TEXT" property="text"/>
-    <foreign-key constraint-name="FK_NEXT_MESSAGE">
-      <many-to-one property="nextMessage"/>
-      <set exclude="true"/>
-    </foreign-key>
-  </table>
-  -->
 </hibernate-reverse-engineering>

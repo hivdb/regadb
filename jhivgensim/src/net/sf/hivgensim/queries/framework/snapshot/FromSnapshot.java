@@ -61,7 +61,7 @@ public class FromSnapshot extends QueryInput {
 				if(cacheOn)
 					patientsCache.add(p);
 				i++;
-				if (i % 100 == 0) {
+				if (i % 1000 == 0) {
 					System.err.println(i);
 				}
 			}

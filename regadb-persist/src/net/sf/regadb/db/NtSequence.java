@@ -21,8 +21,10 @@ public class NtSequence implements java.io.Serializable {
     private Date sequenceDate;
 
     private String nucleotides;
+    
+    private boolean aligned;
 
-    private Set<AaSequence> aaSequences = new HashSet<AaSequence>(0);
+	private Set<AaSequence> aaSequences = new HashSet<AaSequence>(0);
 
     private Set<TestResult> testResults = new HashSet<TestResult>(0);
 
@@ -34,12 +36,13 @@ public class NtSequence implements java.io.Serializable {
     }
 
     public NtSequence(ViralIsolate viralIsolate, String label,
-            Date sequenceDate, String nucleotides, Set<AaSequence> aaSequences,
-            Set<TestResult> testResults) {
+            Date sequenceDate, String nucleotides, boolean aligned,
+            Set<AaSequence> aaSequences, Set<TestResult> testResults) {
         this.viralIsolate = viralIsolate;
         this.label = label;
         this.sequenceDate = sequenceDate;
         this.nucleotides = nucleotides;
+        this.aligned = aligned;
         this.aaSequences = aaSequences;
         this.testResults = testResults;
     }
@@ -91,6 +94,14 @@ public class NtSequence implements java.io.Serializable {
     public void setNucleotides(String nucleotides) {
         this.nucleotides = nucleotides;
     }
+    
+    public boolean isAligned() {
+		return aligned;
+	}
+
+	public void setAligned(boolean aligned) {
+		this.aligned = aligned;
+	}
 
     public Set<AaSequence> getAaSequences() {
         return this.aaSequences;

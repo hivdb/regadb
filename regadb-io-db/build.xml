@@ -76,13 +76,21 @@
       </manifest>
     </jar>
   	
+    <jar jarfile="${dist}/regadb-import-fiocruz-htlv.jar" basedir="${build}">
+		<manifest>
+   			<attribute name="Main-Class" value="net.sf.regadb.io.db.fiocruz.htlv.ImportHtlv"/>
+   			<attribute name="Class-Path" value="${jar-dependencies}"/>
+       	</manifest>
+     </jar>
+  	
     <jar jarfile="${dist}/${proj.name}-saturn-change-schema.jar" basedir="${build}">
       <manifest>
   	<attribute name="Main-Class" value="net.sf.regadb.io.db.saturn.ChangeSchema"/>
   	<attribute name="Class-Path" value="${jar-dependencies}"/>
       </manifest>
     </jar>
-    <antcall target="create-package" />
+
+  	<antcall target="create-package" />
   </target>
   
   <!-- Clean up -->

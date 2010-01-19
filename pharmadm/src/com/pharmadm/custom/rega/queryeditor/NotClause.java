@@ -47,7 +47,7 @@ public class NotClause extends ComposedWhereClause implements Serializable {
         return (getChildren().size() < 1);
     }
     
-    protected List<OutputVariable> getExportedOutputVariables() {
+    public List<OutputVariable> getExportedOutputVariables() {
         return new ArrayList<OutputVariable>(0);
     }
     

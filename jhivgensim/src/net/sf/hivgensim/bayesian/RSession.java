@@ -19,6 +19,7 @@ import net.sf.regadb.csv.Table;
  * @author kdforc0
  */
 public class RSession {
+	
 	private final static String RPath = "R";
 	private final static boolean DEBUG = true;
 	protected Table data;
@@ -29,7 +30,7 @@ public class RSession {
 	
 	boolean cached;
 
-	protected RSession(Table data, String dataVar, String tableFileName, String tag) {
+	public RSession(Table data, String dataVar, String tableFileName, String tag) {
 		this.data = data;
 		this.dataVar = dataVar;
 

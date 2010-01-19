@@ -45,6 +45,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         wrapper.getElementAt(0, 0).setStyleClass("navigation");
         wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
         resistanceTable_ = new ViralIsolateResistanceTable(wrapper.getElementAt(1, 0));
+        new ViralIsolateResistanceLegend(wrapper.getElementAt(2, 0));
         showMutations_ = new WCheckBox(tr("form.viralIsolate.cumulatedResistance.showMutationsCB"), wrapper.getElementAt(0, 0));
         showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
@@ -89,7 +90,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
             }
         }
         
-        Genome genome = ViralIsolateFormUtils.getGenome((ViralIsolate)patient_.getViralIsolates().toArray()[0]);
+        Genome genome = ((ViralIsolate)(patient_.getViralIsolates().toArray()[0])).getGenome();
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         
         resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), cumulatedTestResults, gssTestType);

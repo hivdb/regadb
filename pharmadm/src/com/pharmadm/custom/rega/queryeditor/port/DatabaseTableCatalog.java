@@ -29,8 +29,11 @@ public class DatabaseTableCatalog {
     private HashMap<String, Table> tables;
     
     
-    public DatabaseTableCatalog(DatabaseConnector connector) {
+    public DatabaseTableCatalog() {
     	tables = new HashMap<String, Table>();
+    }
+    
+    public void fillCatalog(DatabaseConnector connector) {
     	List<String> tableNames = connector.getTableNames();
 
     	
