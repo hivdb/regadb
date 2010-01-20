@@ -16,6 +16,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class CreateSnapshot {
 
@@ -71,6 +72,7 @@ public class CreateSnapshot {
 			System.err.println("Usage: CreateSnapshot snapshot.output login password");
 			System.exit(0);
 		}
+		RegaDBSettings.createInstance();		
 		long start = System.currentTimeMillis();
 		CreateSnapshot cs = new CreateSnapshot(new ObjectOutputStream(new FileOutputStream(new File(args[0]))));
 		cs.create(args[1],args[2]);

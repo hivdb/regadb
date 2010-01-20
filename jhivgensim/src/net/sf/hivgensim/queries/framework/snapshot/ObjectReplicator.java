@@ -375,7 +375,9 @@ public class ObjectReplicator {
 		nseq.setTestResults(temptrs);
 		Set<AaSequence> tempaaseqs = new HashSet<AaSequence>();
 		for(AaSequence aaseq : seq.getAaSequences()){
-			tempaaseqs.add(copy(aaseq));
+			AaSequence copy = copy(aaseq);
+			copy.setNtSequence(nseq);
+			tempaaseqs.add(copy);
 		}
 		nseq.setAaSequences(tempaaseqs);
 		return nseq;
@@ -392,7 +394,7 @@ public class ObjectReplicator {
 		AaSequence newseq = new AaSequence();
 		newseq.setFirstAaPos(aaseq.getFirstAaPos());
 		newseq.setLastAaPos(aaseq.getLastAaPos());
-		newseq.setProtein(copy(aaseq.getProtein()));
+		newseq.setProtein(copy(aaseq.getProtein()));		
 		HashSet<AaInsertion> insertions = new HashSet<AaInsertion>();
 		for(AaInsertion ins : aaseq.getAaInsertions()){
 			insertions.add(copy(ins));
