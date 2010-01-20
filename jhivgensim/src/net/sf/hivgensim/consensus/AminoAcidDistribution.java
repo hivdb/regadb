@@ -88,7 +88,11 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 			float nSeq = calculator.getAmountOfSequences();
 			Map<Short, Map<Character, Float>> counts = calculator.getCountsIncludingReference();
 			for (int i = 0; i < possibleAA.size(); i++) {
-				if(i!=0) System.out.print(", ");
+				if(i!=0){
+					System.out.print(", ");
+				} else {
+					System.out.print("position, ");
+				}
 				System.out.print(possibleAA.get(i));
 			}
 			System.out.println();
@@ -97,6 +101,8 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 				for (int i = 0; i < possibleAA.size(); i++) {
 					if(i!=0){
 						System.out.print(", ");
+					} else {
+						System.out.print(""+position.getKey()+", ");
 					}
 					Character aa = possibleAA.get(i);
 					if(posMap.containsKey(aa)){

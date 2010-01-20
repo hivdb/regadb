@@ -185,12 +185,11 @@ public class MutationTimeLine implements IQuery<Patient> {
 	
 	public static void main(String[] args) {
 		if(args.length != 2){
-			System.err.println("Usage: consensus login password");
+			System.err.println("Usage: consensus uid passwd");
 			System.exit(1);
 		}
 		RegaDBSettings.createInstance();
-		new FromDatabase(args[0],args[1], 
-				new MutationTimeLine("PI")).run();
+		new FromDatabase(args[0],args[1],new MutationTimeLine("PI")).run();
 	}
 	
 }
