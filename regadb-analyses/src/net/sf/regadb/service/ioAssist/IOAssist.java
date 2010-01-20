@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -33,7 +34,7 @@ public class IOAssist
                 break;
             }
         }
-
+        RegaDBSettings.createInstance();
         run(new File(args[0]), new File(args[1]), wtsUrl);
     }
     
