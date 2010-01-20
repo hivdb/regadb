@@ -1,7 +1,9 @@
 package net.sf.hivgensim.consensus;
 
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,9 +13,9 @@ import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.SampleDateFilter;
 import net.sf.hivgensim.queries.SequenceProteinFilter;
 import net.sf.hivgensim.queries.framework.IQuery;
+import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
-import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -25,12 +27,18 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 	private String reference;
 
 	public AminoAcidDistribution(Date begin, Date end, String drugClass){
-		Protein protein = DrugGenericUtils.getProteinForDrugClass(drugClass);
+		String[] classes;
+		if(drugClass.equals("RTI")){
+			classes = new String[]{"NRTI","NNRTI"};
+		}else{
+			classes = new String[]{drugClass};
+		}
+		Protein protein = DrugGenericUtils.getProteinForDrugClass(classes[0]);
 		this.reference = new SelectionWindow(
 				protein.getOpenReadingFrame().getGenome().getOrganismName()
 				, protein.getOpenReadingFrame().getName(), protein.getAbbreviation())
 				.getReferenceAaSequence();
-		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
+		this.preQuery = new GetDrugClassNaiveSequences(classes,
 				new SequenceProteinFilter(protein, 
 						new SampleDateFilter(begin, end, 
 								new AminoAcidDistributionProcessor())));
@@ -109,18 +117,18 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 		}
 	}
 	
-	public static void main(String[] args) {
-		if(args.length != 2){
-			System.err.println("Usage: consensus login password");
+	public static void main(String[] args) throws ParseException {
+		if(args.length != 1){
+			System.err.println("Usage: consensus snapshot");
 			System.exit(1);
 		}
-		Date end = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.YEAR, -15);
-		Date begin = cal.getTime();
+		String year = "2008";
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		Date begin = sdf.parse("01-01-"+year);
+		Date end = sdf.parse("31-12-"+year);
 		RegaDBSettings.createInstance();
-		new FromDatabase(args[0],args[1], 
-				new AminoAcidDistribution(begin, end, "PI")).run();
+		new FromSnapshot(new File(args[0]),
+				new AminoAcidDistribution(begin, end, "RTI")).run();
 	}
 
 }
