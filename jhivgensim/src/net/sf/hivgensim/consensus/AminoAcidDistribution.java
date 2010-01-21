@@ -125,8 +125,8 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 	}
 	
 	public static void main(String[] args) throws ParseException {
-		if(args.length != 2){
-			System.err.println("Usage: consensus snapshot year");
+		if(args.length != 3){
+			System.err.println("Usage: consensus snapshot year drugclass");
 			System.exit(1);
 		}
 		String year = args[1];
@@ -135,7 +135,7 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 		Date end = sdf.parse("31-12-"+year);
 		RegaDBSettings.createInstance();
 		new FromSnapshot(new File(args[0]),
-				new AminoAcidDistribution(begin, end, "RTI")).run();
+				new AminoAcidDistribution(begin, end, args[2])).run();
 	}
 
 }

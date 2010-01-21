@@ -1,5 +1,6 @@
 package net.sf.hivgensim.consensus;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,9 +12,9 @@ import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
 import net.sf.hivgensim.queries.SampleDateFilter;
 import net.sf.hivgensim.queries.SequenceProteinFilter;
 import net.sf.hivgensim.queries.framework.IQuery;
+import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.AaSequenceUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
-import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Protein;
@@ -31,13 +32,19 @@ public class MutationTimeLine implements IQuery<Patient> {
 	private PrintStream out;
 	
 	public MutationTimeLine(Date begin, Date end, int field, int delta, int windowSize, String drugClass) {
+		String[] classes;
+		if(drugClass.equals("RTI")){
+			classes = new String[]{"NRTI","NNRTI"};
+		}else{
+			classes = new String[]{drugClass};
+		}
 		this.begin = begin;
 		this.end = end;
 		this.deltaField = field;
 		this.delta = delta;
 		this.windowSize = windowSize;
-		Protein protein = DrugGenericUtils.getProteinForDrugClass(drugClass);
-		this.preQuery = new GetDrugClassNaiveSequences(new String[] {drugClass},
+		Protein protein = DrugGenericUtils.getProteinForDrugClass(classes[0]);
+		this.preQuery = new GetDrugClassNaiveSequences(classes,
 				new SequenceProteinFilter(protein, 
 						new SampleDateFilter(begin, end, 
 								new MutationTimeLineProcessor())));
@@ -129,7 +136,7 @@ public class MutationTimeLine implements IQuery<Patient> {
 				String consensus = calculator.getCurrentConsensusSequence();
 				out.println();
 				out.print(printDate(beginCalendar)+"-"+printDate(endCalendar));
-				out.format(" (%4d) : ", calculator.getAmountOfSequences());
+//				out.format(" (%4d) : ", calculator.getAmountOfSequences()); //FIXME
 				out.println(consensus);
 				
 				if(!consensus.equals(previousConsensus)){
@@ -162,7 +169,9 @@ public class MutationTimeLine implements IQuery<Patient> {
 			Date sampleDate = input.getNtSequence().getViralIsolate().getSampleDate();
 			ConsensusWindow window = windows.get(windows.tailMap(sampleDate).firstKey());
 			String subtype = ConsensusCalculator.getSubtypeForConsensus(input);
-			window.addSequence(AaSequenceUtils.toCharSequence(input, reference), subtype);
+			SimpleSequence sequence = new SimpleSequence(input.getFirstAaPos(), 
+					input.getLastAaPos(), AaSequenceUtils.toCharSequence(input, reference));
+			window.addSequence(sequence, subtype);
 		}
 		
 		public void initializeWindows() {
@@ -185,11 +194,11 @@ public class MutationTimeLine implements IQuery<Patient> {
 	
 	public static void main(String[] args) {
 		if(args.length != 2){
-			System.err.println("Usage: consensus uid passwd");
+			System.err.println("Usage: consensus snapshot drugclass");
 			System.exit(1);
 		}
 		RegaDBSettings.createInstance();
-		new FromDatabase(args[0],args[1],new MutationTimeLine("PI")).run();
+		new FromSnapshot(new File(args[0]),new MutationTimeLine(args[1])).run();
 	}
 	
 }
