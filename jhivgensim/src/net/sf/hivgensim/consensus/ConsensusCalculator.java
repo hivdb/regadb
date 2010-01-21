@@ -13,14 +13,14 @@ public class ConsensusCalculator {
 
 	private boolean add;
 	private String refSequence;
+	private Map<Short, Integer> support;
 	private Map<Short, Map<Character, Float>> counts;
-	private int amountOfSequences;
 	
 	public ConsensusCalculator(String ref){
 		this.refSequence = ref;
 		this.add = true;
+		this.support = new HashMap<Short, Integer>();
 		this.counts = new HashMap<Short, Map<Character,Float>>();
-		this.amountOfSequences = 0;
 	}
 	
 	private static final List<String> subtypes = Arrays.asList(new String[] {"HIV-1 Subtype A", "HIV-1 Subtype B", "HIV-1 Subtype C"
@@ -35,9 +35,23 @@ public class ConsensusCalculator {
 		return subtype;
 	}
 	
-	public void process(Map<Short, String> sequence) {
-		amountOfSequences = (this.add ? amountOfSequences+1 : amountOfSequences-1);
-		
+	public int getSupport(short position){
+		return support.containsKey(position) ? support.get(position) : 0;
+	}
+	
+	private void adjustSupport(short position){
+		int newSupport = this.add ? getSupport(position) + 1 : getSupport(position) - 1;  
+		support.put(position, newSupport);			
+	}
+	
+	private void adjustSupport(short start, short end){
+		for(short i = start; i <= end; ++i){
+			adjustSupport(i);
+		}
+	}
+	
+	public void process(Map<Short, String> sequence, short start, short end) {
+		adjustSupport(start,end);
 		for(Entry<Short, String> atPosition : sequence.entrySet()){
 			short position = atPosition.getKey();
 			
@@ -98,20 +112,16 @@ public class ConsensusCalculator {
 			}
 			totalCount += entry.getValue();
 		}
-		float voteForReference = ((float)this.amountOfSequences) - totalCount;
+		float voteForReference = ((float) getSupport(position)) - totalCount;
 		if(max <= voteForReference){
 			max = voteForReference;
 			maxChar = refAA; 
 		}
 		
-		int support = Math.round(max*10 / amountOfSequences);
+		int support = Math.round(max*10 / getSupport(position));
 		System.out.print(support == 10 ? "A" : support);
 		
 		return maxChar;
-	}
-
-	public int getAmountOfSequences() {
-		return this.amountOfSequences;
 	}
 
 	public Map<Short, Map<Character, Float>> getCountsIncludingReference() {
@@ -123,7 +133,7 @@ public class ConsensusCalculator {
 			Character refAA = refSequence.charAt(i-1);
 
 			if(!counts.containsKey(i)){
-				resultPos.put(refAA, (float)amountOfSequences);
+				resultPos.put(refAA, (float) getSupport(i));
 				continue;
 			}
 			
@@ -137,7 +147,7 @@ public class ConsensusCalculator {
 			for(Entry<Character, Float> aa : counts.get(i).entrySet()){
 				total += aa.getValue();
 			}
-			resultPos.put(refAA, amountOfSequences - total);
+			resultPos.put(refAA, getSupport(i) - total);
 		}
 		
 		return result;

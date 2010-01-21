@@ -85,13 +85,12 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 		}
 		
 		public void close() {
-			float nSeq = calculator.getAmountOfSequences();
 			Map<Short, Map<Character, Float>> counts = calculator.getCountsIncludingReference();
 			for (int i = 0; i < possibleAA.size(); i++) {
 				if(i!=0){
 					System.out.print(", ");
 				} else {
-					System.out.print("position, ");
+					System.out.print("position, support, ");
 				}
 				System.out.print(possibleAA.get(i));
 			}
@@ -102,11 +101,11 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 					if(i!=0){
 						System.out.print(", ");
 					} else {
-						System.out.print(""+position.getKey()+", ");
+						System.out.print(""+position.getKey()+","+calculator.getSupport(position.getKey())+",");
 					}
 					Character aa = possibleAA.get(i);
 					if(posMap.containsKey(aa)){
-						System.out.print(posMap.get(aa) / nSeq);
+						System.out.print(posMap.get(aa) / calculator.getSupport(position.getKey()));
 					} else {
 						System.out.print("0");
 					}
@@ -118,17 +117,17 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 		public void process(AaSequence input) {
 			String subtype = ConsensusCalculator.getSubtypeForConsensus(input);
 			if(subtype.equals("HIV-1 Subtype B")){
-				calculator.process(AaSequenceUtils.toCharSequence(input, reference));
+				calculator.process(AaSequenceUtils.toCharSequence(input, reference),input.getFirstAaPos(),input.getLastAaPos());
 			}
 		}
 	}
 	
 	public static void main(String[] args) throws ParseException {
-		if(args.length != 1){
-			System.err.println("Usage: consensus snapshot");
+		if(args.length != 2){
+			System.err.println("Usage: consensus snapshot year");
 			System.exit(1);
 		}
-		String year = "2008";
+		String year = args[1];
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		Date begin = sdf.parse("01-01-"+year);
 		Date end = sdf.parse("31-12-"+year);
