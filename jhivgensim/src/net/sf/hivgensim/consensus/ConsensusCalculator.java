@@ -15,18 +15,18 @@ public class ConsensusCalculator {
 	private String refSequence;
 	private Map<Short, Integer> support;
 	private Map<Short, Map<Character, Float>> counts;
-	
+
 	public ConsensusCalculator(String ref){
 		this.refSequence = ref;
 		this.add = true;
 		this.support = new HashMap<Short, Integer>();
 		this.counts = new HashMap<Short, Map<Character,Float>>();
 	}
-	
+
 	private static final List<String> subtypes = Arrays.asList(new String[] {"HIV-1 Subtype A", "HIV-1 Subtype B", "HIV-1 Subtype C"
 			, "HIV-1 Subtype D", "HIV-1 Subtype F", "HIV-1 Subtype G", "HIV-1 CRF 02_AG", 
 			"HIV-1 CRF 06_CPX", "Other"});
-	
+
 	public static String getSubtypeForConsensus(AaSequence input) {
 		String subtype = NtSequenceUtils.getSubtype(input.getNtSequence());
 		if(!subtypes.contains(subtype)){
@@ -34,52 +34,63 @@ public class ConsensusCalculator {
 		}
 		return subtype;
 	}
-	
+
 	public int getSupport(short position){
 		return support.containsKey(position) ? support.get(position) : 0;
 	}
-	
+
 	private void adjustSupport(short position){
 		int newSupport = this.add ? getSupport(position) + 1 : getSupport(position) - 1;  
 		support.put(position, newSupport);			
 	}
-	
+
 	private void adjustSupport(short start, short end){
 		for(short i = start; i <= end; ++i){
 			adjustSupport(i);
 		}
 	}
-	
+
 	public void process(Map<Short, String> sequence, short start, short end) {
 		adjustSupport(start,end);
 		for(Entry<Short, String> atPosition : sequence.entrySet()){
 			short position = atPosition.getKey();
-			
-			if(!counts.containsKey(position)){
+
+			if(!counts.containsKey(position) && !"-".equals(atPosition.getValue())){
 				counts.put(position, new HashMap<Character, Float>());
 			}
 			Map<Character, Float> map = counts.get(position);
 
 			float increment = 1f / atPosition.getValue().length();
 			for(char m : atPosition.getValue().toCharArray()){
+				if(m == '-'){
+					assert(atPosition.getValue().length() == 1);
+					reverseAdding();
+					adjustSupport(position);	
+					reverseAdding();
+					continue;
+				}
 				if(refSequence.charAt(position-1)==m){
 					continue;
 				}
-				
+
 				if(!map.containsKey(m)){
 					map.put(m, 0f);
 				}
-				
+
 				float oldScore = map.get(m);
 				map.put(m, this.add ? oldScore + increment : oldScore - increment);
 			}
 		}
 	}
-	
+
+	public void reverseAdding(){
+		this.add = this.add ? false : true;
+	}
+
 	public void startAdding(){
 		this.add = true;
 	}
-	
+
 	public void startRemoving(){
 		this.add = false;
 	}
@@ -117,16 +128,16 @@ public class ConsensusCalculator {
 			max = voteForReference;
 			maxChar = refAA; 
 		}
-		
+
 		int support = Math.round(max*10 / getSupport(position));
 		System.out.print(support == 10 ? "A" : support);
-		
+
 		return maxChar;
 	}
 
 	public Map<Short, Map<Character, Float>> getCountsIncludingReference() {
 		Map<Short, Map<Character, Float>> result = new HashMap<Short, Map<Character,Float>>();
-		
+
 		for (short i = 1; i <= refSequence.length(); i++) {
 			HashMap<Character, Float> resultPos = new HashMap<Character, Float>();
 			result.put(i, resultPos);
@@ -136,20 +147,20 @@ public class ConsensusCalculator {
 				resultPos.put(refAA, (float) getSupport(i));
 				continue;
 			}
-			
+
 			if(counts.get(i).containsKey(refAA)){
 				throw new IllegalStateException("refAA should have been filtered out!");
 			}
-			
+
 			resultPos.putAll(counts.get(i));
-			
+
 			float total = 0;
 			for(Entry<Character, Float> aa : counts.get(i).entrySet()){
 				total += aa.getValue();
 			}
 			resultPos.put(refAA, getSupport(i) - total);
 		}
-		
+
 		return result;
 	}
 

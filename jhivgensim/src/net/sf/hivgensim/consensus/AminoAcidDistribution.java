@@ -6,7 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.sf.hivgensim.preprocessing.SelectionWindow;
 import net.sf.hivgensim.queries.GetDrugClassNaiveSequences;
@@ -80,8 +81,7 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 			possibleAA.add(new Character('V'));
 			possibleAA.add(new Character('W'));
 			possibleAA.add(new Character('Y'));
-			possibleAA.add(new Character('*'));
-			possibleAA.add(new Character('-'));
+			possibleAA.add(new Character('*'));			
 		}
 		
 		public void close() {
@@ -95,17 +95,19 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 				System.out.print(possibleAA.get(i));
 			}
 			System.out.println();
-			for (Entry<Short, Map<Character, Float>> position : counts.entrySet()) {
-				Map<Character, Float> posMap = position.getValue();
-				for (int i = 0; i < possibleAA.size(); i++) {
+			SortedSet<Short> sortedCounts = new TreeSet<Short>();
+			sortedCounts.addAll(counts.keySet());
+			for (Short position : sortedCounts) {
+				Map<Character, Float> posMap = counts.get(position);
+				for (short i = 0; i < possibleAA.size(); i++) {
 					if(i!=0){
 						System.out.print(", ");
 					} else {
-						System.out.print(""+position.getKey()+","+calculator.getSupport(position.getKey())+",");
+						System.out.print(""+position+","+calculator.getSupport(position)+",");
 					}
 					Character aa = possibleAA.get(i);
 					if(posMap.containsKey(aa)){
-						System.out.print(posMap.get(aa) / calculator.getSupport(position.getKey()));
+						System.out.print(posMap.get(aa) / calculator.getSupport(position));
 					} else {
 						System.out.print("0");
 					}
