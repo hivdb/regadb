@@ -1747,4 +1747,11 @@ public class Transaction {
     public boolean isActive() {
       return this.session.getTransaction().isActive();
     }
+
+	@SuppressWarnings("unchecked")
+	public List<NtSequence> getOrderedNtSequences(ViralIsolate viralIsolate) {
+		Query q = createQuery("select nt from NtSequence nt where nt.viralIsolate = :vi order by nt.label");
+		q.setParameter("vi", viralIsolate);
+		return (List<NtSequence>)q.list();
+	}
 }

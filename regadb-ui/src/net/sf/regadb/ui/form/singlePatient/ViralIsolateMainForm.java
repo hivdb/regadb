@@ -1,18 +1,12 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.regadb.analysis.functions.FastaHelper;
-import net.sf.regadb.analysis.functions.FastaRead;
-import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
@@ -25,36 +19,29 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
-import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
-import net.sf.regadb.ui.framework.forms.fields.NucleotideField;
 import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig.TestItem;
-import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
-import eu.webtoolkit.jwt.TextFormat;
-import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
-import eu.webtoolkit.jwt.WTable;
-import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateMainForm extends WContainerWidget
 {
-	private ViralIsolateForm viralIsolateForm_;
+	ViralIsolateForm viralIsolateForm_;
+	
+	private Set<NtSequence> removedSequences = new HashSet<NtSequence>();
+	private Set<NtSequence> addedSequences = new HashSet<NtSequence>();
     
-    private ArrayList<NtSequence> removedSequences = new ArrayList<NtSequence>();
     private Set<AaSequence> removedAaSequences = new HashSet<AaSequence>();
     private Set<TestResult> removedTestResults = new HashSet<TestResult>();
 
@@ -66,31 +53,17 @@ public class ViralIsolateMainForm extends WContainerWidget
 	private TextField sampleIdTF;
 
 	// Sequence group
-	private MyComboBox seqComboBox;
+	private WContainerWidget ntSequenceContainer;
 	private WPushButton addButton;
-	private WPushButton deleteButton;
 
-	// NtSeq group
-	private Label seqLabel;
-	private TextField seqLabelTF;
-	private Label seqDateL;
-	private DateField seqDateTF;
-    private Label upLoadL;
-    private FileUpload upload_;
-    private WCheckBox autoFix_;
-    private Label ntL;
-    private NucleotideField ntTF;
     private Label genomeL;
     private TextField genomeTF;
-	private Label subTypeL;
-	private TextField subTypeTF;
-    private Label basePairsL;
-    private TextField basePairsTF;
-	private WText fastaLabel_;
     
     private static final String defaultSequenceLabel_ = "Sequence ";
     
     private List<FormField> testFormFields_ = new ArrayList<FormField>();
+    
+    List<NtSequenceForm> ntSequenceForms = new ArrayList<NtSequenceForm>();
 
 	public ViralIsolateMainForm(ViralIsolateForm viralIsolateForm)
 	{
@@ -138,119 +111,34 @@ public class ViralIsolateMainForm extends WContainerWidget
             testFormFields_.add(testResultField);
         }
 
-	    // Sequence group
-		Label currentSequenceL = new Label(
-				tr("form.viralIsolate.label.currentSequence"));
-		seqComboBox = new MyComboBox();
-		table_.addLineToTable(currentSequenceL, seqComboBox);
-
-		// NtSeq group
-		seqLabel = new Label(tr("form.viralIsolate.editView.seqLabel"));
-		seqLabelTF = new TextField(viralIsolateForm_.getInteractionState(),
-				viralIsolateForm_);
-		seqLabelTF.setMandatory(true);
-		table_.addLineToTable(seqLabel, seqLabelTF);
-		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
-		seqDateTF = new DateField(viralIsolateForm_.getInteractionState(),
-				viralIsolateForm_, RegaDBSettings.getInstance().getDateFormat());
-		table_.addLineToTable(seqDateL, seqDateTF);
 		genomeL = new Label(tr("form.viralIsolate.editView.genome"));
 		genomeTF = new TextField(viralIsolateForm_.getInteractionState(),
 				viralIsolateForm_);
 		table_.addLineToTable(genomeL, genomeTF);
-		subTypeL = new Label(tr("form.viralIsolate.editView.subType"));
-		subTypeTF = new TextField(viralIsolateForm_.getInteractionState(),
-				viralIsolateForm_);
-		table_.addLineToTable(subTypeL, subTypeTF);
-		basePairsL = new Label(tr("form.viralIsolate.editView.basePairs"));
-		basePairsTF = new TextField(viralIsolateForm_.getInteractionState(),
-				viralIsolateForm_);
-		table_.addLineToTable(basePairsL, basePairsTF);
 
 		if (viralIsolateForm_.isEditable()) {
 			genomeL.setHidden(true);
 			genomeTF.setHidden(true);
-			subTypeL.setHidden(true);
-			subTypeTF.setHidden(true);
-			basePairsL.setHidden(true);
-			basePairsTF.setHidden(true);
-			WTable uploadTable = new WTable();
-			upload_ = new FileUpload(viralIsolateForm_.getInteractionState(),
-					viralIsolateForm_);
-			uploadTable.getElementAt(1, 0).addWidget(upload_);
-			autoFix_ = new WCheckBox(
-					tr("formfield.ntfield.checkbox.autofixSequence"),
-					uploadTable.getElementAt(2, 0));
-			fastaLabel_ = new WText(uploadTable.getElementAt(0, 0));
-			fastaLabel_.setStyleClass("viral-isolate-fasta-label");
-			upLoadL = new Label(tr("form.viralIsolate.editView.uploadlabel"));
-			table_.addLineToTable(upLoadL, uploadTable);
-            
-            upload_.getFileUpload().uploaded().addListener(this, new Signal.Listener()
-            {
-                   public void trigger() 
-                   {                
-                	   upload_.setAnchor("", "");
-                       if(upload_.getFileUpload().getSpoolFileName()!=null)
-                       {
-	                	   File fastaFile = new File(upload_.getFileUpload().getSpoolFileName());
-	                            
-	                       FastaRead read = FastaHelper.readFastaFile(fastaFile, autoFix_.isChecked());
-	                            
-	                       fastaFile.delete();
-	                            
-	                       if(read.status_==FastaReadStatus.Invalid)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(ViralIsolateMainForm.this, tr("form.viralIsolate.warning.invalidFastaFile"));
-	                       }
-	                       else if(read.status_==FastaReadStatus.FileNotFound)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(ViralIsolateMainForm.this, tr("form.viralIsolate.warning.fastaFileNotFound"));
-	                       }
-	                       else if(read.status_==FastaReadStatus.MultipleSequences)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(ViralIsolateMainForm.this, tr("form.viralIsolate.warning.multipleSequences"));
-	                       }
-	                       else if (read.status_==FastaReadStatus.ValidButFixed)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(ViralIsolateMainForm.this, tr("form.viralIsolate.warning.autoFixedSequence"));
-	                           ntTF.setText(read.xna_);
-	                           seqComboBox.disable();
-	                           addButton.disable();
-	                           fastaLabel_.setText("["+read.fastaHeader_+"]");
-	                       }
-	                       else
-	                       {
-	                           ntTF.setText(read.xna_);
-	                           seqComboBox.disable();
-	                           addButton.disable();
-	                           fastaLabel_.setText("["+read.fastaHeader_+"]");
-	                       }
-                       }
-                   }
-            });
         }
 		
-        ntL = new Label(tr("form.viralIsolate.editView.nucleotides"));
-        ntTF = new NucleotideField(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-        ntTF.setMandatory(true);
-        ntTF.setTextFormat(TextFormat.XHTMLText);
-        table_.addLineToTable(ntL, ntTF);
-       
         if (viralIsolateForm_.isEditable()) {
             int row = table_.getRowCount();
             int col = 1;
             table_.getElementAt(row, 0).setStyleClass("form-label-area");
             table_.getElementAt(row, col).setStyleClass("navigation");
-           
-            addButton = new WPushButton(tr("form.viralIsolate.addButton"), table_.getElementAt(row, col));
-            deleteButton = new WPushButton(tr("form.viralIsolate.deleteButton"), table_.getElementAt(row, col));
+            
+            ntSequenceContainer = new WContainerWidget(this);
+        	addButton = new WPushButton(tr("form.viralIsolate.addButton"), this);
         }
+        else
+        	ntSequenceContainer = new WContainerWidget(this);
 	}
 	
 	@SuppressWarnings("unchecked")
     public void fillData(ViralIsolate vi)
 	{
+		genomeTF.setText(vi.getGenome() == null ? "" : vi.getGenome().getOrganismName());
+		
 		sampleDateTF.setDate(vi.getSampleDate());
 		sampleIdTF.setText(vi.getSampleId());
 		
@@ -286,206 +174,136 @@ public class ViralIsolateMainForm extends WContainerWidget
 			{
 				ntseq.setLabel(getUniqueSequenceLabel(vi));
             }
-            seqComboBox.addItem(new DataComboMessage<NtSequence>(ntseq, ntseq.getLabel()));
         }
-        seqComboBox.setCurrentIndex(0);
-       
-        setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue());
-        
-        setFieldListeners();
-        
-        seqComboBox.changed().addListener(this, new Signal.Listener()
-            {
-                public void trigger() 
-                {
-                    setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue());
-                }
-            });
 
+        for(NtSequence ntSequence : trans.getOrderedNtSequences(viralIsolateForm_.getViralIsolate())){
+        	addSequenceForm(ntSequence);
+        }
         if (viralIsolateForm_.isEditable()) {
-	        addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
+        	 addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 	                {
 	                    public void trigger(WMouseEvent a) 
 	                    {
-	                        DataComboMessage<NtSequence> msg = addSeqData();
-	
-	                        seqComboBox.setCurrentItem(msg);
-	                        setSequenceData(msg.getDataValue());
-	                    }
-	                });
-	        
-	        deleteButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
-	                {
-	                    public void trigger(WMouseEvent a) 
-	                    {
-	                        if(seqComboBox.getCount()==1)
-	                        {
-	                            UIUtils.showWarningMessageBox(ViralIsolateMainForm.this, tr("form.viralIsolate.warning.minimumOneSequence"));
-	                        }
-	                        else
-	                        {
-	                            deleteSequence();
-	                            seqComboBox.enable();
-	                            addButton.enable();
-	                        }
+	                    	addSequenceForm();
 	                    }
 	                });
         }
+        trans.commit();
 	}
-    
-    private DataComboMessage<NtSequence> addSeqData()
-    {
-        String label = getUniqueSequenceLabel(viralIsolateForm_.getViralIsolate());
-        NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate());
-        newSeq.setLabel(label);
-        viralIsolateForm_.getViralIsolate().getNtSequences().add(newSeq);
-        
-        DataComboMessage<NtSequence> msg = new DataComboMessage<NtSequence>(newSeq, label);
-        seqComboBox.addItem(msg);
-        
-        return msg;
-    }
-    
-    private void setSequenceData(NtSequence seq)
-    {
-        if(seq.getNtSequenceIi()!=null) {
-        	Transaction t = RegaDBMain.getApp().createTransaction();
-        	t.update(seq);
-        	t.commit();
-        }
-        
-        seqLabelTF.setText(seq.getLabel());
-        seqDateTF.setDate(seq.getSequenceDate());
-        ntTF.setText(seq.getNucleotides());
-        
-        if (!viralIsolateForm_.isEditable())
-        	basePairsTF.setText(seq.getNucleotides().length() + "");
-        
-        for(TestResult tr : seq.getTestResults()){
-            if(tr.getTest().getDescription().equals(StandardObjects.getSubtypeTestDescription())
-            		&& tr.getTest().getTestType().getDescription().equals(StandardObjects.getSubtypeTestTypeDescription())){
-                subTypeTF.setText(tr.getValue());
-                break;
-            }
-        }
-        
-        Genome genome = seq.getViralIsolate().getGenome();
-        if(genome != null)
-            genomeTF.setText(genome.getOrganismName());
-    }
     
     private String getUniqueSequenceLabel(ViralIsolate vi)
     {
-        int largestLabel = 0;
-        List<Integer> labelNumbers = new ArrayList<Integer>();
-        int labelNumber = 0;
-        
-        for(NtSequence ntseq : vi.getNtSequences())
-        {
-            String label = ntseq.getLabel();
+    	String label;
+        int n = 1;
+        boolean dupe = true;
 
-            if(label!=null)
-            {
-                if(label.startsWith(defaultSequenceLabel_));
-                {
-                    label = label.substring(label.lastIndexOf(" ")+1, ntseq.getLabel().length());
-                    try
-                    {
-                        labelNumber = Integer.parseInt(label);
-                        labelNumbers.add(labelNumber);
-                    }
-                    catch(NumberFormatException e)
-                    {
-                        //do nothing if it isn't a parsable number
-                    }
-                }
-            }
+        do{
+        	dupe = false;
+        	label = defaultSequenceLabel_+n;
+        	
+	        for(NtSequence ntseq : vi.getNtSequences()){
+	        	if(label.equals(ntseq.getLabel())){
+	        		dupe = true;
+	        		++n;
+	        		break;
+	        	}
+	        }
         }
-        Collections.sort(labelNumbers);
-        largestLabel++;
+        while(dupe);
         
+        return label;
+    }
+    private String getUniqueSequenceLabel(List<NtSequenceForm> ntfs)
+    {
+    	String label;
+        int n = ntfs.size()+1;
+        boolean dupe = true;
+
+        do{
+        	dupe = false;
+        	label = defaultSequenceLabel_+n;
+        	
+	        for(NtSequenceForm ntf : ntfs){
+	        	if(label.equals(ntf.getLabel())){
+	        		dupe = true;
+	        		++n;
+	        		break;
+	        	}
+	        }
+        }
+        while(dupe);
         
-        return defaultSequenceLabel_ + (labelNumbers.size()!=0?(labelNumbers.get(labelNumbers.size()-1) + 1):1);
+        return label;
     }
     
-    @SuppressWarnings("unchecked")
-    private void deleteSequence()
-    {
-        NtSequence currentSequence = ((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue();
-        removedSequences.add(currentSequence);
-        seqComboBox.removeCurrentItem();
-        
-        seqComboBox.setCurrentIndex(seqComboBox.getCount()-1);
-        
-        setSequenceData(((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue());
+    private void addSequenceForm(NtSequence ntSequence){
+    	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence);
+    	ntSequenceForms.add(ntsf);
+    	ntSequenceContainer.addWidget(ntsf);
     }
     
-    void confirmSequence()
-    {
-        if(validateSequenceFields())
-        {
-            NtSequence currentSeq = ((DataComboMessage<NtSequence>)seqComboBox.getCurrentText()).getDataValue();
-            currentSeq.setLabel(seqLabelTF.getFormText());
-            currentSeq.setSequenceDate(seqDateTF.getDate());
-            currentSeq.setNucleotides(ntTF.getFormText());
-            currentSeq.setAligned(false);
-            
-            for(AaSequence aaseq : currentSeq.getAaSequences())
-            {
-                removedAaSequences.add(aaseq);
-            }
-            
-            for(TestResult tr : currentSeq.getTestResults())
-            {
-                if(tr.getTest().getDescription().equals(StandardObjects.getSubtypeTestDescription())
-                		&& tr.getTest().getTestType().getDescription().equals(StandardObjects.getSubtypeTestTypeDescription())){
-                    removedTestResults.add(tr);
-                    break;
-                }
-            }
-        }
+    private void addSequenceForm(){
+	    String label = getUniqueSequenceLabel(ntSequenceForms);
+	    NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate());
+	    newSeq.setLabel(label);
+	    addSequence(newSeq);
+	    
+	    addSequenceForm(newSeq);
+    }
+	
+    private void addSequence(NtSequence ntSequence){
+    	if(!removedSequences.remove(ntSequence))
+    		addedSequences.add(ntSequence);
     }
     
-    private boolean validateSequenceFields()
+    public void delete(NtSequenceForm ntSequenceForm) {
+		if(ntSequenceForms.size()==1)
+            UIUtils.showWarningMessageBox(ViralIsolateMainForm.this, tr("form.viralIsolate.warning.minimumOneSequence"));
+        else{
+            deleteSequence(ntSequenceForm.getNtSequence());
+            ntSequenceForms.remove(ntSequenceForm);
+            ntSequenceContainer.removeWidget(ntSequenceForm);
+            ntSequenceForm.uninit();
+        }		
+	}
+    
+    private void deleteSequence(NtSequence ntSequence)
     {
-        boolean valid = true;
-                
-        if(seqLabelTF.validate())
-        {
-            seqLabelTF.flagValid();
-        }
-        else
-        {
-            seqLabelTF.flagErroneous();
-            valid = false;
-        }
-        
-        if(seqDateTF.validate())
-        {
-            seqDateTF.flagValid();
-        }
-        else
-        {
-            seqDateTF.flagErroneous();
-            valid = false;
-        }
-        
-        if(ntTF.validate())
-        {
-            ntTF.flagValid();
-        }
-        else
-        {
-            ntTF.flagErroneous();
-            valid = false;
-        }
-        
-        return valid;
+    	if(!addedSequences.remove(ntSequence))
+    		removedSequences.add(ntSequence);
+    }
+    
+    public void confirmSequences(){
+    	for(NtSequenceForm ntsf : ntSequenceForms){
+        	ntsf.save();
+        	
+        	NtSequence nt = ntsf.getNtSequence();
+        	ViralIsolate vi = viralIsolateForm_.getViralIsolate();
+        	nt.setViralIsolate(vi);
+        	vi.getNtSequences().add(nt);
+        	
+    		for (AaSequence aaseq : nt.getAaSequences()) {
+    			removedAaSequences.add(aaseq);
+    		}
+
+    		for (TestResult tr : nt.getTestResults()) {
+    			if (tr.getTest().getDescription().equals(
+    					StandardObjects.getSubtypeTestDescription())
+    					&& tr.getTest().getTestType().getDescription().equals(
+    							StandardObjects.getSubtypeTestTypeDescription())) {
+    				removedTestResults.add(tr);
+    				break;
+    			}
+    		}
+        }    	
     }
     
     public void saveData(Transaction t)
     {
-        
+    	for(NtSequence ntseq : addedSequences){
+    		t.save(ntseq);
+    	}
+    	
         for(NtSequence ntseq : removedSequences)
         {
             t.delete(ntseq);
@@ -559,45 +377,11 @@ public class ViralIsolateMainForm extends WContainerWidget
         }
     }
 
-    private void setFieldListeners()
-    {
-        seqLabelTF.addChangeListener(new Signal.Listener()
-                    {
-                        public void trigger() 
-                        {
-                            seqComboBox.disable();
-                            addButton.disable();
-                        }
-                    });
-                    
-        seqDateTF.addChangeListener(new Signal.Listener()
-                    {
-                        public void trigger() 
-                        {
-                            seqComboBox.disable();
-                            addButton.disable();
-                        }
-                    });
-                    
-        ntTF.addChangeListener(new Signal.Listener()
-                    {
-                        public void trigger() 
-                        {
-                            seqComboBox.disable();
-                            addButton.disable();
-                        }
-                    });
-    }
-    
     public boolean checkSampleId(){
     	Transaction tr = RegaDBMain.getApp().createTransaction();
     	return ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), 
     			viralIsolateForm_.getViralIsolate(),
     			RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem().getDatasets(), tr);
-    }
-    
-    public MyComboBox getSeqComboBox(){
-        return seqComboBox;
     }
     
     public void setSampleId(String sampleId){
