@@ -10,13 +10,13 @@ import java.util.Map;
 
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
-import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.DateUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
 import net.sf.hivgensim.queries.framework.utils.PatientUtils;
 import net.sf.hivgensim.queries.framework.utils.TestUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.hivgensim.queries.framework.utils.ViralIsolateUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Genome;
@@ -24,7 +24,6 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.util.Utils;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -70,20 +69,20 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(dateOutputFormat.format(vi.getSampleDate()));
 
 		addColumn(ViralIsolateUtils.getConcatenatedNucleotideSequence(vi));
-		addColumn(ViralIsolateUtils.extractSubtype(vi));
-		for(TestResult tr : vi.getTestResults()) {
-			TestType tt = tr.getTest().getTestType();
-			if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
-				resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
-			}
-		}
-
-		for(Test rt : resistanceTests) {
-			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA"))					
-				for(DrugGeneric dg : resistanceGenericDrugs) {
-					addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
-				}
-		}
+//		addColumn(ViralIsolateUtils.extractSubtype(vi));
+//		for(TestResult tr : vi.getTestResults()) {
+//			TestType tt = tr.getTest().getTestType();
+//			if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
+//				resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
+//			}
+//		}
+//
+//		for(Test rt : resistanceTests) {
+//			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA"))					
+//				for(DrugGeneric dg : resistanceGenericDrugs) {
+//					addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
+//				}
+//		}
 
 		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
 		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
@@ -128,14 +127,14 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn("vi id");
 		addColumn("vi date");
 		addColumn("nt sequences");
-		addColumn("subtype");
-		for(Test rt : resistanceTests) {
-			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA")){					
-				for(DrugGeneric dg : resistanceGenericDrugs) {
-					addColumn(rt.getDescription().replace('.', '_') + "_" + dg.getGenericId());
-				}
-			}
-		}
+//		addColumn("subtype");
+//		for(Test rt : resistanceTests) {
+//			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA")){					
+//				for(DrugGeneric dg : resistanceGenericDrugs) {
+//					addColumn(rt.getDescription().replace('.', '_') + "_" + dg.getGenericId());
+//				}
+//			}
+//		}
 
 		addColumn("# days of NRTI experience");
 		addColumn("# days of NNRTI experience");
@@ -187,12 +186,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 
 	public static void main(String [] args) {
-		if(args.length != 3){
-			System.err.println("Usage: TCEQueryOutput input.snapshot output.table organism");
+		if(args.length != 4){
+			System.err.println("Usage: TCEQueryOutput uid passwd output.table organism");
 			System.exit(1);
 		}
 		RegaDBSettings.createInstance();
-		QueryInput input = new FromSnapshot(new File(args[0]),new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV, args[2])));
+		QueryInput input = new FromDatabase(args[0],args[1],new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV, args[2])));
 		input.run();
 	}
 
