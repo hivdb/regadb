@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
+import net.sf.regadb.service.qc.QC;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
@@ -236,19 +238,21 @@ public class ViralIsolateMainForm extends WContainerWidget
         return label;
     }
     
-    private void addSequenceForm(NtSequence ntSequence){
+    private NtSequenceForm addSequenceForm(NtSequence ntSequence){
     	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence);
     	ntSequenceForms.add(ntsf);
     	ntSequenceContainer.addWidget(ntsf);
+    	
+    	return ntsf;
     }
     
-    private void addSequenceForm(){
+    private NtSequenceForm addSequenceForm(){
 	    String label = getUniqueSequenceLabel(ntSequenceForms);
 	    NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate());
 	    newSeq.setLabel(label);
 	    addSequence(newSeq);
 	    
-	    addSequenceForm(newSeq);
+	    return addSequenceForm(newSeq);
     }
 	
     private void addSequence(NtSequence ntSequence){
@@ -274,6 +278,20 @@ public class ViralIsolateMainForm extends WContainerWidget
     }
     
     public void confirmSequences(){
+    	Set<String> trugeneAdded = new HashSet<String>();
+    	for(NtSequenceForm ntsf : ntSequenceForms) {
+        	Set<String> seqs = QC.trugeneQC(ntsf.getNucleotides());
+        	if (seqs.size() == 2) {
+        		Iterator<String> i = seqs.iterator();
+        		ntsf.setNucleotides(i.next());
+        		trugeneAdded.add(i.next());
+        	}
+    	}
+    	
+    	for (String ntSeq : trugeneAdded) {
+    		addSequenceForm().setNucleotides(ntSeq);
+    	}
+    	
     	for(NtSequenceForm ntsf : ntSequenceForms){
         	ntsf.save();
         	
