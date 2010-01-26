@@ -279,13 +279,15 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     public void confirmSequences(){
     	Set<String> trugeneAdded = new HashSet<String>();
-    	for(NtSequenceForm ntsf : ntSequenceForms) {
-        	Set<String> seqs = QC.trugeneQC(ntsf.getNucleotides());
-        	if (seqs.size() == 2) {
-        		Iterator<String> i = seqs.iterator();
-        		ntsf.setNucleotides(i.next());
-        		trugeneAdded.add(i.next());
-        	}
+    	if (RegaDBSettings.getInstance().getInstituteConfig().isTrugeneFix()) {
+	    	for(NtSequenceForm ntsf : ntSequenceForms) {
+	        	Set<String> seqs = QC.trugeneQC(ntsf.getNucleotides());
+	        	if (seqs.size() == 2) {
+	        		Iterator<String> i = seqs.iterator();
+	        		ntsf.setNucleotides(i.next());
+	        		trugeneAdded.add(i.next());
+	        	}
+	    	}
     	}
     	
     	for (String ntSeq : trugeneAdded) {
