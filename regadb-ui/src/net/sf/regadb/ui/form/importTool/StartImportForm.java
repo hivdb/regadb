@@ -118,21 +118,23 @@ public class StartImportForm extends WDialog {
 						app.attachThread();
 						
 						final Login workerLogin = RegaDBMain.getApp().getLogin().copyLogin();
-						final Transaction tr = workerLogin.getTransaction(true);
-
-						ImportData importData = 
-							new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
-									new File(xlsFile.getFileUpload().getSpoolFileName()),
-									new File(fastaFile.getFileUpload().getSpoolFileName()),
-									dataset.currentValue());
-						List<WString> errors = importData.doImport(tr, true);
-						if (errors.size() == 0) {
-							importData.doImport(tr, false);
+						try {
+							final Transaction tr = workerLogin.getTransaction(true);
+	
+							ImportData importData = 
+								new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
+										new File(xlsFile.getFileUpload().getSpoolFileName()),
+										new File(fastaFile.getFileUpload().getSpoolFileName()),
+										dataset.currentValue());
+							List<WString> errors = importData.doImport(tr, true);
+							if (errors.size() == 0) {
+								importData.doImport(tr, false);
+							}
+							
+							StartImportForm.this.errors = errors;
+						} finally {
+							workerLogin.closeSession();
 						}
-						
-						workerLogin.closeSession();
-						
-						StartImportForm.this.errors = errors;
 					}
 				});
 				t.start();
