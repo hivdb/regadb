@@ -36,6 +36,10 @@
 		</to>
     </e-mail>
     
+    <!-- General properties -->
+    <!--  Automatically split trugene sequences with > 100 n symbols (Optional)-->
+    <trugene-fix>true</trugene-fix>
+    
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
     -->

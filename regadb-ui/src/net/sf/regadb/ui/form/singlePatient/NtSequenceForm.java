@@ -220,6 +220,14 @@ public class NtSequenceForm extends WContainerWidget{
 		}
 		return null;
 	}
+	
+	public String getNucleotides() {
+		return ntF.text();
+	}
+	
+	public void setNucleotides(String nucleotides) {
+		ntF.setText(nucleotides);
+	}
 
 	void setNtSequence(NtSequence ntSequence) {
 		this.ntSequence = ntSequence;

@@ -12,14 +12,14 @@ import com.thoughtworks.xstream.XStream;
 
 public class QueryLoader implements Savable {
 
-	private QueryToolApp mainForm;
+	private QueryToolForm mainForm;
 	private InfoContainer infoContainer;
 	private QueryEditorComponent comp;
 	
 	// is query loaded
 	private boolean queryLoaded;
 	
-	public QueryLoader(QueryToolApp form, InfoContainer infoContainer, QueryEditorComponent editor) {
+	public QueryLoader(QueryToolForm form, InfoContainer infoContainer, QueryEditorComponent editor) {
 		this.infoContainer = infoContainer;
 		mainForm = form;
 		this.comp = editor;
@@ -48,6 +48,7 @@ public class QueryLoader implements Savable {
     	definition.setName(infoContainer.getName());
     	definition.setDescription(infoContainer.getDescription());
     	if (mainForm.getSavable().isLoaded()) {
+    		mainForm.getEditorModel().getQueryEditor().getQuery().setFastaExport(mainForm.getFastaExportTab().getFastaExporter());
     		definition.setQuery(new XStream().toXML(mainForm.getEditorModel().getQueryEditor().getQuery()));
     	}
 	}
