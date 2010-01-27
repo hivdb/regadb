@@ -32,6 +32,7 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ImportUNIBS 
 {
@@ -77,7 +78,8 @@ public class ImportUNIBS
     	try
     	{
     		ImportUNIBS imp = new  ImportUNIBS();
-        
+    		RegaDBSettings.createInstance();
+		     RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
     		imp.getData(new File(args[0]), args[1], args[2]);
     	}
     	catch(Exception e)
@@ -746,7 +748,7 @@ public class ImportUNIBS
     	{
         	genDrug = regaDrugGenerics.get(j);
         	
-        	if(genDrug.getGenericId().equals(drug.toUpperCase()))
+        	if(genDrug.getGenericId().toUpperCase().equals(drug.toUpperCase()))
         	{
         		foundDrug = true;
         		
@@ -766,7 +768,7 @@ public class ImportUNIBS
              	{
             		genDrug = regaDrugGenerics.get(i);
             		
-            		if(genDrug.getGenericId().toUpperCase().equals(mapping))
+            		if(genDrug.getGenericId().toUpperCase().equals(mapping.toUpperCase()))
                 	{
             			gDrugs.add(genDrug);
             			

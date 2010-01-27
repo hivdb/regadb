@@ -45,7 +45,10 @@ import com.pharmadm.util.work.Work;
  * </p>
  */
 public class Query implements Serializable, Cloneable {
-    
+    public interface FastaExport {
+    	public OutputVariable getViralIsolate();
+    }
+	
     ///////////////////////////////////////
     // associations
     
@@ -57,10 +60,12 @@ public class Query implements Serializable, Cloneable {
     
     private UniqueNameContext uniqueNameContext = new UniqueNameContext();
     
+    private FastaExport fastaExport;
+    
     ///////////////////////////////////////
     // constructor
-    
-    public Query() {
+   
+	public Query() {
     }
     
     public Query(WhereClause whereClause) {
@@ -87,6 +92,14 @@ public class Query implements Serializable, Cloneable {
     public SelectionStatusList getSelectList() {
         return selectList;
     }
+    
+    public FastaExport getFastaExport() {
+		return fastaExport;
+	}
+
+	public void setFastaExport(FastaExport fastaExport) {
+		this.fastaExport = fastaExport;
+	}
     
     /**
      * For XMLdecoder only!
@@ -198,6 +211,7 @@ public class Query implements Serializable, Cloneable {
 		Query q = new Query();
 		q.setRootClause((WhereClause) rootClause);
 		q.setSelectList(selectList);
+		q.setFastaExport(fastaExport);
 		q.setUniqueNameContext(uniqueNameContext);
 		q.preparedConstantMap = preparedConstantMap;
 		return q;

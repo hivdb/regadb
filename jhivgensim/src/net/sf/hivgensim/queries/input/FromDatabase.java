@@ -29,10 +29,15 @@ public class FromDatabase extends QueryInput {
 	}
 
 	public void run() {
-		if (patientsCache == null) {
+		if (patientsCache != null) {
+			for (Patient p : patientsCache) {
+				getNextQuery().process(p);
+			}
+
+		} else {
 			if(cacheOn)
 				patientsCache = new ArrayList<Patient>();
-			
+
 			Login login = null;
 			try {
 				login = Login.authenticate(loginname, passwd);
@@ -43,31 +48,36 @@ public class FromDatabase extends QueryInput {
 			} catch (DisabledUserException e) {
 				e.printStackTrace();
 			}
-			Transaction t = login.createTransaction();
-			ScrollableResults patients = t.getPatientsScrollable();
+
+			int maxResults = 100;
 			int i = 0;
-			while (patients.next()) {
-				if (i % 100 == 0) {
-					System.out.print(".");
-					if (i % 8000 == 0) {
-						System.out.print("\n");
-					}
+			boolean patientsAvailable = true;
+			
+			while(patientsAvailable){
+				Transaction t = login.createTransaction();
+				ScrollableResults patients = t.getPatientsScrollable(i, maxResults);
+				boolean foundPatient = false;
+				while(patients.next()){
+					foundPatient = true;
+					Object[] patient = patients.get();
+					getNextQuery().process((Patient) patient[0]);
+					if(cacheOn)
+						patientsCache.add((Patient) patient[0]);
+					
+					i++;
 				}
-				i++;
-				Object[] os = patients.get();
-				getNextQuery().process((Patient) os[0]);
-				
-				if(cacheOn)
-					patientsCache.add((Patient) os[0]);
-			}
-			getNextQuery().close();
-		} else {
-			for (Patient p : patientsCache) {
-				getNextQuery().process(p);
+				if((i%maxResults) != 0 || !foundPatient){
+					patientsAvailable = false;
+				}
+				System.err.print(".");
+				t.commit();
+				t.clearCache();
 			}
 		}
+
+		getNextQuery().close();
 	}
-	
+
 	public boolean isCacheOn() {
 		return cacheOn;
 	}

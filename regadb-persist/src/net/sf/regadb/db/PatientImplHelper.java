@@ -8,6 +8,10 @@ public class PatientImplHelper {
         return canAccesPI(vi.getPatient(), datasets, accessiblePatients);
     }
     
+    public static Patient getPatient(ViralIsolate vi, Set<Dataset> datasets) {
+    	return castPatientImplToPatient(vi.getPatient(), datasets);
+    }
+    
     public static boolean canAccessPatient(Patient p, Set<Dataset> datasets, Set<Integer> accessiblePatients) {
         return canAccesPI(p.getPatient(), datasets, accessiblePatients);
     }

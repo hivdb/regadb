@@ -32,9 +32,12 @@ import net.sf.regadb.io.db.util.Mappings;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.db.util.db2csv.AccessConnectionProvider;
+import net.sf.regadb.io.db.util.db2csv.DBToCsv;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ImportUcsc 
 {
@@ -87,7 +90,8 @@ public class ImportUcsc
 				System.err.println("Usage: ImportUcsc workingDirectory database.mdb mappingBasePath");
 				System.exit(0);
 			}
-
+			RegaDBSettings.createInstance();
+		     RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
 			ImportUcsc imp = new  ImportUcsc();
 
 			imp.getData(new File(args[0]), args[1], args[2]);
@@ -107,21 +111,21 @@ public class ImportUcsc
 		{
 			mappings = Mappings.getInstance(mappingBasePath);
 
-			//    		ConsoleLogger.getInstance().logInfo("Creating CSV files...");
-			//    		tableSelections.put(patientTableName, "SELECT * FROM `"+patientTableName+"`");
-			//    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE " +
-			//    				"t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR " +
-			//    				"t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' OR " +
-			//    				"t_analisi.[desc_risultato] LIKE 'CD3%' OR t_analisi.[desc_risultato] LIKE 'Toxo%' OR " +
-			//    				"t_analisi.[desc_risultato] LIKE 'HAV%' OR t_analisi.[desc_risultato] LIKE 'HB%' OR " +
-			//    				"t_analisi.[desc_laboratorio] = 'FARMACOLOGIA' "+
-			//    				"ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
-			//    		tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
-			//    		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
-			//    		tableSelections.put(adeTableName, "SELECT * FROM `"+adeTableName+"`");
-			//    		
-			//    		DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(databaseFile)));
-			//            a2c.createCsv(workingDirectory, tableSelections);
+			    		ConsoleLogger.getInstance().logInfo("Creating CSV files...");
+			    /*		tableSelections.put(patientTableName, "SELECT * FROM `"+patientTableName+"`");
+			    		tableSelections.put(analysisTableName, "SELECT * FROM `"+analysisTableName+"` WHERE " +
+			    				"t_analisi.[desc_risultato] = 'HIV-RNA' OR t_analisi.[desc_risultato] = 'cutoff' OR " +
+			    				"t_analisi.[desc_risultato] LIKE 'CD8%' OR t_analisi.[desc_risultato] LIKE 'CD4%' OR " +
+			    				"t_analisi.[desc_risultato] LIKE 'CD3%' OR t_analisi.[desc_risultato] LIKE 'Toxo%' OR " +
+			    				"t_analisi.[desc_risultato] LIKE 'HAV%' OR t_analisi.[desc_risultato] LIKE 'HB%' OR " +
+			    				"t_analisi.[desc_laboratorio] = 'FARMACOLOGIA' "+
+			    				"ORDER BY t_analisi.[cartella_ucsc], t_analisi.[data_analisi]");
+			    		tableSelections.put(hivTherapyTableName, "SELECT * FROM `"+hivTherapyTableName+"`");
+			    		tableSelections.put(sequencesTableName, "SELECT * FROM `"+sequencesTableName+"`");
+			    		tableSelections.put(adeTableName, "SELECT * FROM `"+adeTableName+"`");
+			    		
+			    		DBToCsv a2c = new DBToCsv(new AccessConnectionProvider(new File(databaseFile)));
+			            a2c.createCsv(workingDirectory, tableSelections);*/
 
 			ConsoleLogger.getInstance().logInfo("Reading CSV files...");
 			//Filling DB tables
@@ -614,11 +618,7 @@ public class ImportUcsc
 				Date stopDate = null;
 				if(Utils.checkColumnValueForEmptiness("start date of therapy", hivStartTherapy, i, hivPatientID))
 				{
-					try {
-						startDate = Utils.parse(hivStartTherapy,"MM/dd/yy 00:00:00");
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
+					startDate = Utils.parseUcscSeqDate(hivStartTherapy);
 				}
 
 				for(int j = ChivCommercialDrug+1; j < this.hivTherapyTable.numColumns()-1; j++) 
@@ -639,11 +639,7 @@ public class ImportUcsc
 				{
 					if(Utils.checkColumnValueForEmptiness("stop date of therapy", hivStopTherapy, i, hivPatientID))
 					{	
-						try {
-							stopDate = Utils.parse(hivStopTherapy,"MM/dd/yy 00:00:00");
-						} catch (ParseException e) {
-							e.printStackTrace();
-						}
+						stopDate = Utils.parseUcscSeqDate(hivStopTherapy);
 					}
 
 				}
@@ -699,7 +695,7 @@ public class ImportUcsc
 		{
 			genDrug = regaDrugGenerics.get(j);
 
-			if(genDrug.getGenericId().equals(drug.toUpperCase()))
+			if(genDrug.getGenericId().toUpperCase().equals(drug.toUpperCase()))
 			{
 				foundDrug = true;
 
@@ -719,7 +715,7 @@ public class ImportUcsc
 				{
 					genDrug = regaDrugGenerics.get(i);
 
-					if(genDrug.getGenericId().toUpperCase().equals(mapping))
+					if(genDrug.getGenericId().toUpperCase().equals(mapping.toUpperCase()))
 					{
 						gDrugs.add(genDrug);
 					}
@@ -882,11 +878,7 @@ public class ImportUcsc
 				{
 					
 					Date  date = null;
-					try {
-						date = Utils.parse(sequenceDate,"MM/dd/yy 00:00:00");
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
+					date = Utils.parseUcscSeqDate(sequenceDate);
 
 					if(date != null)
 					{

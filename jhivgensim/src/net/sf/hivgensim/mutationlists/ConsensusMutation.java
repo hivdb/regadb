@@ -66,14 +66,15 @@ public class ConsensusMutation {
 	}
 	
 	public String toString(){
-		char delimiter = '\t';
-		return 	getListName() + delimiter + 
-				getVersion() + delimiter +
-				getProteinAbbreviation() + delimiter +
-				getReferenceAminoAcid() + delimiter +
-				getPosition() + delimiter +
-				getMutationAminoAcid() + delimiter +
-				getDrugClassId();
+		return getProteinAbbreviation()+","+getPosition()+","+getMutationAminoAcid();
+//		char delimiter = '\t';
+//		return 	getListName() + delimiter + 
+//				getVersion() + delimiter +
+//				getProteinAbbreviation() + delimiter +
+//				getReferenceAminoAcid() + delimiter +
+//				getPosition() + delimiter +
+//				getMutationAminoAcid() + delimiter +
+//				getDrugClassId();
 	}
 	
 }

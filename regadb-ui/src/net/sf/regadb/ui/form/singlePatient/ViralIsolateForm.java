@@ -90,7 +90,7 @@ public class ViralIsolateForm extends FormWidget
 		{
 			Transaction t;
 			t = RegaDBMain.getApp().createTransaction();
-	        t.attach(viralIsolate_);
+	        t.refresh(viralIsolate_);
 	        t.commit();
 		}
 
@@ -110,10 +110,11 @@ public class ViralIsolateForm extends FormWidget
 	public void saveData()
 	{                
         Transaction t = RegaDBMain.getApp().createTransaction();
-        t.attach(viralIsolate_);
+        t.refresh(viralIsolate_);
         
-        _mainForm.confirmSequence();
-        Genome genome = blast();
+        _mainForm.confirmSequences();
+        
+        Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
         if(genome == null)
             return;
         
@@ -144,10 +145,9 @@ public class ViralIsolateForm extends FormWidget
         		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
 	}
 	
-	private Genome blast(){
+	private Genome blast(NtSequence ntseq){
 	    Genome genome = null;
 	    //TODO check ALL sequences?
-	    NtSequence ntseq = ((DataComboMessage<NtSequence>)_mainForm.getSeqComboBox().getCurrentText()).getDataValue();
 	    
         if(ntseq != null){
             BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, RegaDBMain.getApp().getLogin().getUid());

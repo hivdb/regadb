@@ -11,6 +11,7 @@ public class InstituteConfig implements IConfigParser {
 	private Filter organismFilter = null;
 	private File logDir;
 	private File queryResultDir;
+	private File importToolDir;
 	private int reportDateTolerance;
 	private String dateFormat;
 	private int minYear;
@@ -18,7 +19,8 @@ public class InstituteConfig implements IConfigParser {
 	private String serviceProviderUrl;
 	private boolean sampleDateMandatory = true;
 	private String logo;
-	
+	private boolean trugeneFix = false;
+
 	private WivConfig wivConfig;
 	
 	private EmailConfig emailConfig;
@@ -45,6 +47,14 @@ public class InstituteConfig implements IConfigParser {
 		ee = e.getChild("query-result-dir");
 		if(ee != null)
 			queryResultDir = new File(ee.getTextTrim());
+		
+		ee = e.getChild("import-tool-dir");
+		if(ee != null)
+			importToolDir = new File(ee.getTextTrim());
+		
+		ee = e.getChild("trugene-fix");
+		if (ee != null)
+			trugeneFix = Boolean.parseBoolean(ee.getTextTrim());
 		
 		ee = e.getChild("wiv");
 		if(ee != null){
@@ -144,6 +154,10 @@ public class InstituteConfig implements IConfigParser {
 		r.addContent(new Comment("Directory for temporary query results, read/write permissions needed."));
 		e = new Element("query-result-dir");
 		e.setText(getQueryResultDir().getAbsolutePath());
+		r.addContent(e);
+		
+		e = new Element("import-tool-dir");
+		e.setText(getImportToolDir().getAbsolutePath());
 		r.addContent(e);
 		
 		if(wivConfig != null)
@@ -275,6 +289,14 @@ public class InstituteConfig implements IConfigParser {
 	public int getMaxDaysFuture() {
 		return maxDaysFuture;
 	}
+	
+	public File getImportToolDir() {
+		return importToolDir;
+	}
+
+	public void setImportToolDir(File importToolDir) {
+		this.importToolDir = importToolDir;
+	}
 
 	public void setServiceProviderUrl(String serviceProviderUrl) {
 		if(!serviceProviderUrl.endsWith("/"))
@@ -286,5 +308,9 @@ public class InstituteConfig implements IConfigParser {
 
 	public String getServiceProviderUrl() {
 		return serviceProviderUrl;
+	}
+	
+	public boolean isTrugeneFix() {
+		return trugeneFix;
 	}
 }

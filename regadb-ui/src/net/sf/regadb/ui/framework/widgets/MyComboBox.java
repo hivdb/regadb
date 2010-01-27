@@ -20,7 +20,7 @@ public class MyComboBox extends WComboBox {
 
 	public void setCurrentItem(CharSequence lt) {
 		for(int i = 0; i<this.getCount(); i++) {
-			if(getItemText(i).getValue().equals(lt))
+			if(getItemText(i).getValue().equals(lt.toString()))
 				this.setCurrentIndex(i);
 		}
 	}

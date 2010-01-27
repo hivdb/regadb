@@ -347,6 +347,13 @@ public class Transaction {
         
         return q.list();
     }
+    
+    @SuppressWarnings("unchecked")
+    public TherapyMotivation getTherapyMotivation(String value) {
+        Query q = session.createQuery("from TherapyMotivation tm where tm.value = :value order by tm.id");
+        q.setParameter("value", value);
+        return (TherapyMotivation)q.uniqueResult();
+    }
 
     @SuppressWarnings("unchecked")
 	public List<TestType> getUsedTestsTypes(){
@@ -561,6 +568,18 @@ public class Transaction {
                 getPatientsQuery() + 
                 "group by patient order by patient");
         q.setParameter("uid", login.getUid());
+
+        return q.scroll();
+    }
+    
+    public ScrollableResults getPatientsScrollable(int offset, int maxResults) {
+        Query q = session.createQuery(
+                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
+                getPatientsQuery() + 
+                "group by patient order by patient");
+        q.setParameter("uid", login.getUid());
+        q.setFirstResult(offset);
+        q.setMaxResults(maxResults);
 
         return q.scroll();
     }
@@ -1564,6 +1583,12 @@ public class Transaction {
         return (OpenReadingFrame)getOpenReadingFrameQuery.uniqueResult();
     }
     
+    @SuppressWarnings("unchecked")
+	public List<OpenReadingFrame> getOpenReadingFrames(){
+    	Query q = session.createQuery("from OpenReadingFrame orf order by orf.genome.organismName");
+        return q.list();
+    }
+    
     public Protein getProtein(OpenReadingFrame orf, String abbreviation){
         getProteinQuery.setParameter("openReadingFrame", orf);
         getProteinQuery.setParameter("abbreviation", abbreviation);
@@ -1722,4 +1747,11 @@ public class Transaction {
     public boolean isActive() {
       return this.session.getTransaction().isActive();
     }
+
+	@SuppressWarnings("unchecked")
+	public List<NtSequence> getOrderedNtSequences(ViralIsolate viralIsolate) {
+		Query q = createQuery("select nt from NtSequence nt where nt.viralIsolate = :vi order by nt.label");
+		q.setParameter("vi", viralIsolate);
+		return (List<NtSequence>)q.list();
+	}
 }

@@ -52,7 +52,8 @@ public class FileUpload extends WContainerWidget implements IFormField{
         	uploadButton.setHidden(true);
         }
         
-		form.addFormField(this);
+        if (form != null)
+        	form.addFormField(this);
 	}
 	
 	public WFileUpload getFileUpload() {

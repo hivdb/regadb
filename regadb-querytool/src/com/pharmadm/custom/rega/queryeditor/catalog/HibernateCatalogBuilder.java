@@ -40,7 +40,7 @@ import com.pharmadm.custom.rega.queryeditor.catalog.DbObject.ValueType;
 import com.pharmadm.custom.rega.queryeditor.constant.Constant;
 import com.pharmadm.custom.rega.queryeditor.constant.MutationConstant;
 import com.pharmadm.custom.rega.queryeditor.port.CatalogBuilder;
-import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
+import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 
 public class HibernateCatalogBuilder implements CatalogBuilder{
@@ -49,7 +49,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 	AWCPrototypeBuilder builder;
 	
 	
-	public void fillCatalog(AWCPrototypeCatalog catalog) {
+	public void fillCatalog(DatabaseConnector connector, AWCPrototypeCatalog catalog) {
 		this.catalog = catalog;
 		builder = new AWCPrototypeBuilder(catalog);
 		
@@ -57,7 +57,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
 			catalog.setTotalSize(320);
 			catalog.setStatus(Status.BUSY);
 	        addVariableNames();	    
-	        addAllTableClauses();
+	        addAllTableClauses(connector);
 	        catalog.addAll(getNumberClauses());
 	        catalog.addAll(getStringClauses());
 	        catalog.addAll(getBooleanClauses());
@@ -1456,7 +1456,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	catalog.addRelation(getRelation(foreignTable, fTo, inputTable, iTo, invert, description2));
     }
     
-    private void addAllTableClauses() throws SQLException {
+    private void addAllTableClauses(DatabaseConnector connector) throws SQLException {
     	catalog.addAll(getObjectClauses(catalog.getObject("PatientImpl", "patientId")));
     	catalog.addAll(getObjectClauses(catalog.getObject("Therapy")));
     	catalog.addAll(getObjectClauses(catalog.getObject("TherapyGeneric")));
@@ -1482,7 +1482,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     	catalog.addAll(getPropertyComparisonClauses("PatientEventValue", "startDate"));
         catalog.addAll(getPropertyComparisonClauses("PatientEventValue", "endDate"));
         
-    	QueryResult result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from net.sf.regadb.db.Event");
+    	QueryResult result = connector.executeQuery("from net.sf.regadb.db.Event");
     	for (int i = 0 ; i < result.size() ; i++) {
     		Event event = (Event) result.get(i, 0);
     		catalog.addAll(getCustomPropertyComparisonClauses(event.getEventIi(), event.getName(), event.getValueType().getDescription(), catalog.getObject("Event"), catalog.getObject("EventNominalValue"), catalog.getObject("PatientEventValue"), "event", "eventNominalValue", "event", catalog.getObject("PatientEventValue"), null, "eventIi"));
@@ -1499,7 +1499,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getPropertyComparisonClauses(catalog.getRelation("PatientImpl", "Dataset"), catalog.getObject("Dataset", "description")));
 
         // patient custom attributes
-    	result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from Attribute");
+    	result = connector.executeQuery("from Attribute");
     	for (int i = 0 ; i < result.size() ; i++) {
     		Attribute attribute = (Attribute) result.get(i, 0);
     		catalog.addAll(getCustomPropertyComparisonClauses(attribute.getAttributeIi(), attribute.getName(), attribute.getValueType().getDescription(), catalog.getObject("Attribute"), catalog.getObject("AttributeNominalValue"), catalog.getObject("PatientAttributeValue"), "attribute", "attributeNominalValue", "attribute", catalog.getObject("PatientImpl"), "patient", "attributeIi"));
@@ -1724,7 +1724,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         catalog.addAll(getRelationClauses("NtSequence", "TestResult"));
         
         // test result value
-    	result = DatabaseManager.getInstance().getDatabaseConnector().executeQuery("from TestType");
+    	result = connector.executeQuery("from TestType");
     	for (int i = 0 ; i < result.size() ; i++) {
     		TestType type = (TestType) result.get(i, 0);
     		String description = type.getDescription();

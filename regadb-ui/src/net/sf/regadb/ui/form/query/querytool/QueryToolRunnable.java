@@ -3,17 +3,23 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
+import net.sf.regadb.ui.form.query.querytool.fasta.QTFastaExporter;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.exception.SQLGrammarException;
@@ -42,6 +48,8 @@ public class QueryToolRunnable implements Runnable {
 	private String fileName;
 	private Status status;
 	private File csvFile;
+	private File fastaFile;
+	private int numberFastaEntries;
 	private String statusMsg = "";
 	private QueryStatement statement;
 	private Object mutex = new Object();
@@ -81,7 +89,7 @@ public class QueryToolRunnable implements Runnable {
 	
 	public QueryToolRunnable(Login copiedLogin, String fileName, QueryEditor editor) {
 		this.fileName = fileName;
-		this.login = copiedLogin;
+		this.login = copiedLogin.copyLogin();
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
@@ -139,17 +147,27 @@ public class QueryToolRunnable implements Runnable {
     private File getOutputFile() {
         File queryDir = getResultDir();
         return new File(queryDir.getAbsolutePath()  + File.separator + fileName);
-    }  
+    }
 	
-    public WFileResource getDownloadResource(){
+    public WFileResource getTableDownloadResource(){
     	if (isDone()) {
     		return new WFileResource("application/csv", csvFile.getAbsolutePath());
     	}
     	return null;
-    }		
+    }
+    
+    public WFileResource getFastaDownloadResource() {
+    	if (isDone() && fastaFile != null) {
+    		return new WFileResource("application/fasta", fastaFile.getAbsolutePath());
+    	}
+    	return null;
+    }
 	
     private boolean process(File csvFile){
     	boolean success = false;
+    	
+    	fastaFile = null;
+    	numberFastaEntries = 0;
         
     	Transaction t = login.createTransaction();
     	statement = new HibernateStatement(t);
@@ -172,9 +190,21 @@ public class QueryToolRunnable implements Runnable {
             if(result != null){
         		List<Selection> selections = getFlatSelectionList(newList);
 
+        		Set<Dataset> datasets = new HashSet<Dataset>(t.getDatasets());
+        		Map<String, Protein> proteins = new HashMap<String, Protein>();
+        		for (Protein p : t.getProteins()) 
+        			proteins.put(p.getAbbreviation(), p);
+        		
 	            FileOutputStream os = new FileOutputStream(csvFile);
 	            ExportToCsv csvExport = new ExportToCsv();
 				Set<Integer> accessiblePatients = getAccessiblePatients(t);
+				
+				OutputStreamWriter fastaOS = null;
+				if (newEditor.getQuery().getFastaExport() != null  
+						&& ((QTFastaExporter)newEditor.getQuery().getFastaExport()).getMode() != null) {
+					fastaFile = new File(getResultDir().getAbsolutePath()  + File.separator + fileName + ".fasta");
+					fastaOS = new OutputStreamWriter(new FileOutputStream(fastaFile));
+				}
 	          
 	            os.write(getHeaderLine(selections, newList.getSelectedColumnNames()).getBytes());
 	          
@@ -185,6 +215,10 @@ public class QueryToolRunnable implements Runnable {
             		synchronized (mutex) {
                 		o = result.get();
 					}
+            		if (fastaFile != null) {
+            			if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)o[o.length - 1], new HashSet<Dataset>(), accessiblePatients))
+            				numberFastaEntries = ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
+            		}
             		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
             		//this access solving stuff is horrible and could use a little rewrite, someday
             		writtenLines+= (processLine(o, t, os, csvExport, selections, new HashSet<Dataset>(), accessiblePatients)?1:0);
@@ -192,6 +226,8 @@ public class QueryToolRunnable implements Runnable {
             		statusMsg = " (" + writtenLines + ")";
             	}
 	            
+            	if (fastaFile != null)
+            		fastaOS.close();
 	            os.close();
         		statusMsg = " (" + writtenLines + ")";
 	            success = true;
@@ -223,6 +259,7 @@ public class QueryToolRunnable implements Runnable {
 		}
 		statement.close();
     	t.clearCache();
+    	login.closeSession();
         return success;
     }
     
@@ -254,7 +291,7 @@ public class QueryToolRunnable implements Runnable {
 		
 		CsvLine line = new CsvLine();
 		
-		for (int j = 0 ; j < array.length ; j++) {		    
+		for (int j = 0 ; j < selections.size() ; j++) {		    
 			if (selections.get(j) instanceof TableSelection) {
 				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 			}
@@ -394,5 +431,9 @@ public class QueryToolRunnable implements Runnable {
 
 	public boolean isRunning() {
 		return status == Status.RUNNING;
+	}
+
+	public int getFastaEntries() {
+		return numberFastaEntries;
 	}
 }
