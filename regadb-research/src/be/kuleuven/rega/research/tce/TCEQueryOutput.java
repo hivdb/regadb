@@ -4,9 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
@@ -19,35 +17,31 @@ import net.sf.hivgensim.queries.framework.utils.ViralIsolateUtils;
 import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Genome;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.util.Utils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
-	private Genome genome = StandardObjects.getHiv1Genome();
+//	private Genome genome = StandardObjects.getHiv1Genome();
 	private TestType cd4tt = StandardObjects.getCd4TestType();
 	private TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
 
-
 	private List<DrugGeneric> genericDrugs = DrugGenericUtils.prepareRegaDrugGenerics();
-	private List<Test> resistanceTests = Utils.getResistanceTests();
-	private List<DrugGeneric> resistanceGenericDrugs = DrugGenericUtils.getDrugsSortedOnResistanceRanking(genericDrugs, true);
+//	private List<Test> resistanceTests = Utils.getResistanceTests();
+//	private List<DrugGeneric> resistanceGenericDrugs = DrugGenericUtils.getDrugsSortedOnResistanceRanking(genericDrugs, true);
 
 	private SimpleDateFormat dateOutputFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private boolean first = true;
 
-	private String organism;
+//	private String organism;
 
 	public TCEQueryOutput(Table out, File file, TableOutputType type, String organism) {
 		super(out, file, type);
-		this.organism = organism;		
+//		this.organism = organism;		
 	}
 
 	public void process(TCE tce) {
@@ -59,7 +53,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			return;
 		}
 
-		Map<String, String> resistanceResults = new HashMap<String, String>();
+//		Map<String, String> resistanceResults = new HashMap<String, String>();
 
 		addColumn(dateOutputFormat.format(tce.getStartDate()));
 		addColumn(PatientUtils.getDatasource(tce.getPatient()).getDescription());
@@ -83,7 +77,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 //					addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
 //				}
 //		}
-
+		
 		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
 		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
 		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "PI")+"");
@@ -105,6 +99,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		//8 weeks
 		addTestResultBetweenInterval(DateUtils.addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, cd4tt);
 		addTestResultBetweenInterval(DateUtils.addDaysToDate(tce.getStartDate(),8*7), -30, 30, tce, vltt);
+		//12 weeks
+		addTestResultBetweenInterval(DateUtils.addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, cd4tt);
+		addTestResultBetweenInterval(DateUtils.addDaysToDate(tce.getStartDate(),12*7), -30, 30, tce, vltt);
 		//24 weeks
 		addTestResultBetweenInterval(DateUtils.addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, cd4tt);
 		addTestResultBetweenInterval(DateUtils.addDaysToDate(tce.getStartDate(),24*7), -30, 30, tce, vltt);
@@ -145,7 +142,8 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		}
 
 		addCD4VLHeader("baseline");
-		addCD4VLHeader("8 weeks");		
+		addCD4VLHeader("8 weeks");
+		addCD4VLHeader("12 weeks");
 		addCD4VLHeader("24 weeks");
 
 		addColumn("birthdate");
