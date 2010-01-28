@@ -20,7 +20,7 @@ public class ViralIsolateUtils {
 		for(NtSequence sequence : vi.getNtSequences()){
 			seq+="+"+sequence.getNucleotides();
 		}
-		return seq;
+		return seq.substring(1);
 	}
 
 	public static String extractSubtype(ViralIsolate vi) {

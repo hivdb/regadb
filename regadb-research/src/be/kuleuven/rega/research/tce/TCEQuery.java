@@ -1,12 +1,14 @@
 package be.kuleuven.rega.research.tce;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.sf.hivgensim.queries.framework.IQuery;
 import net.sf.hivgensim.queries.framework.Query;
 import net.sf.hivgensim.queries.framework.utils.PatientUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 
@@ -42,14 +44,25 @@ public class TCEQuery extends Query<Patient,TCE> {
 			tce.getTherapiesBefore().addAll(formerTherapies);
 			tce.getDrugs().addAll(TherapyUtils.getGenericDrugs(t));
 			tce.setPatient(p);
-
-			getNextQuery().process(tce);
+			if(!containsIgnoredDrugs(tce)){
+				getNextQuery().process(tce);
+			}
 
 			formerTherapies.add(t);
 		}
 		formerTherapies.clear();
 
-	}	
+	}
+	
+	public boolean containsIgnoredDrugs(TCE tce){
+		List<String> ignored = Arrays.asList("PI","NRTI","NNRTI","Unknown","ADV","aAPA","R82913","CPV","MVC");
+		for(DrugGeneric dg : tce.getDrugs()){
+			if(ignored.contains(dg.getGenericId())){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	
 
