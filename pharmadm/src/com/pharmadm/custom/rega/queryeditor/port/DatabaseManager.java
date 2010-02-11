@@ -43,7 +43,7 @@ public class DatabaseManager {
     	this.connectorFactory = connectorFactory;
     }
     
-    public void fillCatalog(CatalogBuilder builder) {
+    private void fillCatalog(CatalogBuilder builder) {
     	DatabaseConnector connector = connectorFactory.createConnector();
 		tableCatalog.fillCatalog(connector);
     	builder.fillCatalog(connector, catalog);
@@ -54,9 +54,10 @@ public class DatabaseManager {
     	return instance;
     }
     
-    public static DatabaseManager initInstance(DatabaseConnectorProvider connectorFactory, QueryVisitor queryBuilder, boolean isTableSelectionAllowed) {
+    public static DatabaseManager initInstance(DatabaseConnectorProvider connectorFactory, QueryVisitor queryBuilder, CatalogBuilder catalogBuilder, boolean isTableSelectionAllowed) {
     	if (instance == null) {
     		instance = new DatabaseManager(connectorFactory, queryBuilder, isTableSelectionAllowed);
+    		instance.fillCatalog(catalogBuilder);
     	}
     	return instance;
     }

@@ -49,8 +49,7 @@ public class IntegratedRegaDBApplication extends RegaDBApplication{
 
 	public void login(String uid){
 		setLogin(Login.getLogin(uid));
-		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), false);
-		DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
+		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), new HibernateCatalogBuilder(), false);
 	}
 	
 	public String getPatientId(){

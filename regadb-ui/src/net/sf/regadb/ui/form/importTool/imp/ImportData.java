@@ -68,26 +68,28 @@ public class ImportData {
 		this.dataset = dataset;
 		this.definition = definition;
 		
-        RichSequenceIterator xna = null;
-        
-        try {
-            xna = org.biojavax.bio.seq.RichSequence.IOTools.readFastaDNA(new BufferedReader(new FileReader(fastaFile)), null);
-        } catch (NoSuchElementException ex) {
-        	ex.printStackTrace();
-        } catch (FileNotFoundException ex) {
-        	ex.printStackTrace();
-        }
-        
-        if(xna!=null) { 
-            while(xna.hasNext()) {
-                try {
-                	Sequence s = xna.nextRichSequence();
-                	sequences.put(s.getName(), s);
-                } catch (Exception e) {
-                	e.printStackTrace();
-                }
-            }
-        }
+		if (fastaFile.exists()) {
+	        RichSequenceIterator xna = null;
+	        
+	        try {
+	            xna = org.biojavax.bio.seq.RichSequence.IOTools.readFastaDNA(new BufferedReader(new FileReader(fastaFile)), null);
+	        } catch (NoSuchElementException ex) {
+	        	ex.printStackTrace();
+	        } catch (FileNotFoundException ex) {
+	        	ex.printStackTrace();
+	        }
+	        
+	        if(xna!=null) { 
+	            while(xna.hasNext()) {
+	                try {
+	                	Sequence s = xna.nextRichSequence();
+	                	sequences.put(s.getName(), s);
+	                } catch (Exception e) {
+	                	e.printStackTrace();
+	                }
+	            }
+	        }
+		}
 	}
 	
 	/**
