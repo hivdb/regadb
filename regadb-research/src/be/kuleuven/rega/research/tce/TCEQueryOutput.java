@@ -5,9 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
+import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.DateUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
 import net.sf.hivgensim.queries.framework.utils.PatientUtils;
@@ -38,6 +40,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private boolean first = true;
 
 //	private String organism;
+	
+	private TreeSet<String> alreadyIncludedViralIsolates = new TreeSet<String>();
+	
 
 	public TCEQueryOutput(Table out, File file, TableOutputType type, String organism) {
 		super(out, file, type);
@@ -52,6 +57,13 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		if(vi==null || !DateUtils.betweenInterval(vi.getSampleDate(), DateUtils.addDaysToDate(tce.getStartDate(),-90), DateUtils.addDaysToDate(tce.getStartDate(),7))) {
 			return;
 		}
+		if(alreadyIncludedViralIsolates.contains(vi.getSampleId())){
+			return;
+		}
+		if(vi.getSampleId().equals("35606")){
+			return;
+		}
+		alreadyIncludedViralIsolates.add(vi.getSampleId());
 
 //		Map<String, String> resistanceResults = new HashMap<String, String>();
 
@@ -63,7 +75,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn(dateOutputFormat.format(vi.getSampleDate()));
 
 		addColumn(ViralIsolateUtils.getConcatenatedNucleotideSequence(vi));
-//		addColumn(ViralIsolateUtils.extractSubtype(vi));
+		addColumn(ViralIsolateUtils.extractSubtype(vi));
 //		for(TestResult tr : vi.getTestResults()) {
 //			TestType tt = tr.getTest().getTestType();
 //			if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
@@ -124,7 +136,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn("vi id");
 		addColumn("vi date");
 		addColumn("nt sequences");
-//		addColumn("subtype");
+		addColumn("subtype");
 //		for(Test rt : resistanceTests) {
 //			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA")){					
 //				for(DrugGeneric dg : resistanceGenericDrugs) {
@@ -184,12 +196,17 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 
 	public static void main(String [] args) {
-		if(args.length != 4){
-			System.err.println("Usage: TCEQueryOutput uid passwd output.table organism");
+		if(args.length != 3 && args.length != 4){
+			System.err.println("Usage: TCEQueryOutput [snapshot | uid passwd] output.table organism");
 			System.exit(1);
 		}
 		RegaDBSettings.createInstance();
-		QueryInput input = new FromDatabase(args[0],args[1],new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV, args[2])));
+		QueryInput input;
+		if(args.length == 3){
+			input = new FromSnapshot(new File(args[0]),new TCEQuery(new TCEQueryOutput(new Table(), new File(args[1]), TableOutputType.CSV, args[2])));
+		} else {
+			input = new FromDatabase(args[0],args[1],new TCEQuery(new TCEQueryOutput(new Table(), new File(args[2]), TableOutputType.CSV, args[3])));
+		}
 		input.run();
 	}
 

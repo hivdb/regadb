@@ -55,7 +55,7 @@ public class TCEQuery extends Query<Patient,TCE> {
 	}
 	
 	public boolean containsIgnoredDrugs(TCE tce){
-		List<String> ignored = Arrays.asList("PI","NRTI","NNRTI","Unknown","ADV","aAPA","R82913","CPV","MVC");
+		List<String> ignored = Arrays.asList("PI","NRTI","NNRTI","Unknown","ADV","aAPA","R82913","CPV","MVC","RTG","T20");
 		for(DrugGeneric dg : tce.getDrugs()){
 			if(ignored.contains(dg.getGenericId())){
 				return true;
