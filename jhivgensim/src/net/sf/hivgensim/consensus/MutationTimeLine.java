@@ -132,11 +132,12 @@ public class MutationTimeLine implements IQuery<Patient> {
 			
 			String previousConsensus = reference;
 			while(end.before(windows.lastKey())){
-				out.print("                         ");
+				
+				out.print(printDate(beginCalendar)+"-"+printDate(endCalendar));
+				out.format(" (%4d) : ", calculator.getMaxSupport());
 				String consensus = calculator.getCurrentConsensusSequence();
 				out.println();
-				out.print(printDate(beginCalendar)+"-"+printDate(endCalendar));
-//				out.format(" (%4d) : ", calculator.getAmountOfSequences()); //FIXME
+				out.print("                         ");
 				out.println(consensus);
 				
 				if(!consensus.equals(previousConsensus)){

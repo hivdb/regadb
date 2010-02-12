@@ -164,4 +164,13 @@ public class ConsensusCalculator {
 		return result;
 	}
 
+	public int getMaxSupport(){
+		int max = 0;
+		for(Entry<Short,Integer> e : support.entrySet()){
+			if(e.getValue() > max){
+				max = e.getValue();
+			}
+		}
+		return max;
+	}
 }
