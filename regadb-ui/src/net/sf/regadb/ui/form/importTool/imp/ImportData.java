@@ -325,6 +325,11 @@ public class ImportData {
 				if (!value.equals("")) {
 					getIsolate(r.getNumber(), isolates).setSampleId(value);
 				}
+			} else if (type == Rule.Type.ViralIsolateSampleManualSubtype) {
+				if (!value.equals("")) {
+					TestResult tr = createTestResult(getIsolate(r.getNumber(), isolates), t.getTest(r.getTypeName()));
+					tr.setValue(value);
+				}
 			} else if (type == Rule.Type.ViralIsolateSampleSequence) {
 				if (!value.equals("")) {
 					NtSequence ntseq = new NtSequence();
@@ -398,6 +403,17 @@ public class ImportData {
 		
 		return null;
 	}
+	
+    public TestResult createTestResult(ViralIsolate vi, Test t) {
+		TestResult tr = new TestResult();
+		tr.setTest(t);
+		tr.setViralIsolate(vi);
+		
+		tr.setPatient(vi.getPatient());
+		vi.getTestResults().add(tr);
+		
+		return tr;
+    }
 	
 	private Set<Dataset> getDatasets() {
 		Set<Dataset> datasets = new HashSet<Dataset>();
