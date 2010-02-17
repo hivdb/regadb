@@ -1,11 +1,13 @@
 package net.sf.regadb.ui.form.datasetSettings;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.DatasetAccessId;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
@@ -15,10 +17,17 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WMessageBox;
+import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.Signal1.Listener;
 
 public class DatasetForm extends FormWidget 
 {
@@ -65,6 +74,30 @@ public class DatasetForm extends FormWidget
 			mainGroupTable_.addLineToTable(revisionL, revisionTF);
 		}
 		
+        WPushButton deletePatients = new WPushButton(tr("form.dataset.editView.deletePatientsButton"));
+        deletePatients.setHidden(getInteractionState() != InteractionState.Deleting);
+        deletePatients.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
+			@Override
+			public void trigger(WMouseEvent me) {
+				final WMessageBox box = UIUtils.createYesNoMessageBox(DatasetForm.this, tr("form.dataset.editView.deletePatients"));
+				box.show();
+				box.buttonClicked().addListener(DatasetForm.this, new Signal1.Listener<StandardButton>(){
+					public void trigger(StandardButton sb) {
+						if (sb == StandardButton.Yes) {
+							Transaction t = RegaDBMain.getApp().createTransaction();
+							List<Patient> patients = t.getPatients(dataset_);
+							for (Patient p : patients) {
+								t.delete(p);
+							}
+							t.commit();
+						}
+						
+						box.hide();
+					}
+				});
+			}
+        });
+        getExtraButtons().add(deletePatients);
 	    addControlButtons();
     }
     
@@ -139,6 +172,11 @@ public class DatasetForm extends FormWidget
     	
     	if (datasetAccess.size() <= 1) {
     		Transaction t = RegaDBMain.getApp().createTransaction();
+    		
+    		final List<Patient> patients = t.getPatients(dataset_);
+    		if (patients.size() > 0) {
+    			return tr("form.delete.dataset.containsPatients");
+    		}
     		
     	    try
     	    {
