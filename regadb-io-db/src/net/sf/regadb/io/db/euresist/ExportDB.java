@@ -20,6 +20,7 @@ import net.sf.regadb.io.db.util.MysqlDatabase;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ExportDB {
     private MysqlDatabase db;
@@ -30,8 +31,8 @@ public class ExportDB {
     private String outputPath=null;
     
     public static void main(String[] args){
-        /*System.setProperty("http.proxyHost", "www-proxy");
-        System.setProperty("http.proxyPort", "3128");*/
+        RegaDBSettings.createInstance();
+        RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
         ExportDB edb = new ExportDB(args[0], args[1], args[2], args[3], args[4]);
         edb.run();
     }
@@ -94,11 +95,11 @@ public class ExportDB {
         gooiAttr.setValueType(StandardObjects.getNominalValueType());
         gooiAttr.setName("Geographic origin of infection");
         
-        Map<String,AttributeNominalValue> tgMap =  createMap("Transmission group", "transmission_group.mapping", "RiskGroups", "risk_name", "riskID");
-        Map<String,AttributeNominalValue> genMap = createMap("Gender", "gender.mapping", "Genders", "name", "genderID");
-        Map<String,AttributeNominalValue> cooMap = createMap("Country of origin", "country_of_origin.mapping", "Countries", "iso_name_en", "countryID");
-        Map<String,AttributeNominalValue> goMap =  createMap("Geographic origin", "geographic_origin.mapping", "Countries", "iso_name_en", "countryID");
-        Map<String,AttributeNominalValue> ethMap = createMap("Ethnicity", "ethnicity.mapping", "EthnicGroups", "ethnic_group", "ethnicID");
+        Map<String,AttributeNominalValue> tgMap =  createMap("Transmission group", "transmission_group.mapping", "riskgroups", "risk_name", "riskID");
+        Map<String,AttributeNominalValue> genMap = createMap("Gender", "gender.mapping", "genders", "name", "genderID");
+        Map<String,AttributeNominalValue> cooMap = createMap("Country of origin", "country_of_origin.mapping", "countries", "iso_name_en", "countryID");
+        Map<String,AttributeNominalValue> goMap =  createMap("Geographic origin", "geographic_origin.mapping", "countries", "iso_name_en", "countryID");
+        Map<String,AttributeNominalValue> ethMap = createMap("Ethnicity", "ethnicity.mapping", "ethnicgroups", "ethnic_group", "ethnicID");
         Map<String,AttributeNominalValue> coiMap = copyNominals(cooMap,coiAttr);
         Map<String,AttributeNominalValue> gooiMap = copyNominals(goMap,gooiAttr);
         
@@ -204,7 +205,7 @@ public class ExportDB {
     public Map<String,Dataset> createDatasetMap() throws Exception{
         Map<String, Dataset> map = new HashMap<String,Dataset>();
         
-        ResultSet rs = getDb().executeQuery("select * from DataSources");
+        ResultSet rs = getDb().executeQuery("select * from datasources");
         
         Dataset ds;
         

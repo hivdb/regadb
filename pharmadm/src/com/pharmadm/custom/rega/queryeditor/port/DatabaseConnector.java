@@ -5,7 +5,6 @@ import java.util.List;
 
 
 public interface DatabaseConnector {
-	public boolean isTableSelectionAllowed();
     public List<String> getTableNames();
     public List<String> getPrimaryKeys(String tableName);
     public List<String> getPrimitiveColumnNames(String tableName);
@@ -24,4 +23,6 @@ public interface DatabaseConnector {
     
     public String getCommentForTable(String tableName);
     public String getCommentForColumn(String tableName, String columnName);
+    
+    public void close();
 }

@@ -5,12 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class RunSqlCommand {
     Connection conn = null;
+    boolean silent = false;
 
     public static void main(String[] args) {
         if(args.length < 1){
@@ -24,6 +27,17 @@ public class RunSqlCommand {
 
     public RunSqlCommand(){
 
+    }
+    
+    public RunSqlCommand(boolean silent){
+    	setSilent(silent);
+    }
+    
+    public boolean isSilent(){
+    	return silent;
+    }
+    public void setSilent(boolean silent){
+    	this.silent = silent;
     }
     
     public Connection getConnection(){
@@ -64,18 +78,20 @@ public class RunSqlCommand {
             
     }
     
-    public void executeQuery(String query){
+    public ResultSet executeQuery(String query){
+    	ResultSet rs = null;
         try{
             Statement s = getConnection().createStatement();
             logInfo("Executing: "+ query);
             s.execute(query);
-            s.close();
+            rs = s.getResultSet();
             logInfo("Success.");
         }
         catch(Exception e){
             logError("Fail.");
             //e.printStackTrace();
         }
+        return rs;
     }
     
     public String getDriver(){
@@ -92,9 +108,21 @@ public class RunSqlCommand {
     }
     
     public void logInfo(String s){
-        System.out.println(s);
+    	if(!isSilent())
+    		System.out.println(s);
     }
     public void logError(String s){
-        System.err.println(s);
+    	if(!isSilent())
+    		System.err.println(s);
     }
+
+	public void close() {
+		if(conn != null){
+			try{
+				conn.close();
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+		}
+	}
 }

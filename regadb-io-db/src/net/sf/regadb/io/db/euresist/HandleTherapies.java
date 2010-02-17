@@ -38,7 +38,7 @@ public class HandleTherapies {
         	Map<Integer, DrugGeneric> drugMapping = new HashMap<Integer, DrugGeneric>();
         	int rtvb = getGenericDrugs(drugMapping);
         	
-        	ResultSet rs = exportDb_.getDb().executeQuery("SELECT * FROM Therapies");
+        	ResultSet rs = exportDb_.getDb().executeQuery("SELECT * FROM therapies");
         	while(rs.next()) {
         		int therapyID = rs.getInt("therapyID");
         		int patientID = rs.getInt("patientID");
@@ -48,7 +48,7 @@ public class HandleTherapies {
         		
         		Patient p = patients.get(patientID+"");
         		if(p!=null) {
-        			ResultSet rs_compounds = exportDb_.getDb().executeQuery("SELECT * FROM TherapyCompounds WHERE therapyID="+therapyID);
+        			ResultSet rs_compounds = exportDb_.getDb().executeQuery("SELECT * FROM therapycompounds WHERE therapyID="+therapyID);
         			List<DrugGeneric> medicineList = new ArrayList<DrugGeneric>();
         			boolean rtvb_b = false;
         			while(rs_compounds.next()) {
@@ -64,6 +64,7 @@ public class HandleTherapies {
         			}
         			if(medicineList.size()>0)
         				storeTherapy(p, start, end, medicineList, rtvb_b, getTherapyMotivation(therapyID, stopCause));
+        			System.err.println("................................................................");
         		} else {
                     ConsoleLogger.getInstance().logWarning(
                             "No patient with id " + patientID + " for therapy with id " + therapyID);
@@ -77,7 +78,7 @@ public class HandleTherapies {
 	
 	private String getTherapyMotivation(int therapyID, int stopID) throws SQLException {
 		if(stopID==0) {
-			ResultSet rs_compounds = exportDb_.getDb().executeQuery("SELECT * FROM TherapyCompounds WHERE therapyID="+therapyID);
+			ResultSet rs_compounds = exportDb_.getDb().executeQuery("SELECT * FROM therapycompounds WHERE therapyID="+therapyID);
 			Set<Integer> causes = new HashSet<Integer>();
 			
 			while(rs_compounds.next()) {
@@ -126,7 +127,7 @@ public class HandleTherapies {
 	}
 
 	private int getGenericDrugs(Map<Integer, DrugGeneric> drugMapping) throws SQLException {
-		ResultSet rs = exportDb_.getDb().executeQuery("SELECT * FROM Compounds");
+		ResultSet rs = exportDb_.getDb().executeQuery("SELECT * FROM compounds");
 		int rtvb = -1;
 		while(rs.next()) {
 			int compoundId = rs.getInt("compoundID");

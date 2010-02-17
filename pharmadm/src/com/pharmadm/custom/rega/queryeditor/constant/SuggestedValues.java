@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
 
 public class SuggestedValues implements Serializable {
 	private ArrayList<SuggestedValuesOption> options;
@@ -40,13 +39,7 @@ public class SuggestedValues implements Serializable {
 
 		if (query != null) {
 			try {
-				QueryResult rs = DatabaseManager.getInstance().getDatabaseConnector().executeQuery(query);
-	    		for (int i = 0 ; i < rs.size() ; i++) {
-	    			if (rs.get(i, 0) != null) {
-	    				result.add(new SuggestedValuesOption(rs.get(i,0)));
-	    			}
-	    		}
-	    		rs.close();
+				result.addAll(DatabaseManager.getInstance().getSuggestedValues(query));
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
