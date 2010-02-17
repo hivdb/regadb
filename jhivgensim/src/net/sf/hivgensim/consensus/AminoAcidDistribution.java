@@ -42,7 +42,8 @@ public class AminoAcidDistribution implements IQuery<Patient>  {
 		this.preQuery = new GetDrugClassNaiveSequences(classes,
 				new SequenceProteinFilter(protein, 
 						new SampleDateFilter(begin, end, 
-								new AminoAcidDistributionProcessor())));
+								new SdrmChecker(
+								new AminoAcidDistributionProcessor()))));
 	}
 	
 	public void close() {

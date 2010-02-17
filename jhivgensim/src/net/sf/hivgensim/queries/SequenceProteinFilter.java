@@ -19,6 +19,8 @@ public class SequenceProteinFilter extends Query<NtSequence, AaSequence> {
 	@Override
 	public void process(NtSequence input) {
 		for(AaSequence aaseq : input.getAaSequences()){
+			aaseq.setNtSequence(input);
+			
 			if(AaSequenceUtils.coversRegion(aaseq, 
 					protein.getOpenReadingFrame().getGenome().getOrganismName(), 
 					protein.getAbbreviation())){

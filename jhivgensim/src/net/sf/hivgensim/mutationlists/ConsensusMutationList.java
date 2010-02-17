@@ -78,6 +78,17 @@ public class ConsensusMutationList implements Iterable<ConsensusMutation>{
 		return null;
 	}
 	
+	public boolean containsMutation(String protein, int pos, String aas) {
+		for(ConsensusMutation cm : subList(protein)){
+			if(cm.getPosition() == pos){
+				if(aas != null && aas.contains(""+cm.getMutationAminoAcid())){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	
 	public ConsensusMutationList subList(String protein){
 		ArrayList<ConsensusMutation> list = new ArrayList<ConsensusMutation>();
