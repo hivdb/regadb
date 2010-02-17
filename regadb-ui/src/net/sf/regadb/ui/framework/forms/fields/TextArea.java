@@ -2,6 +2,7 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import eu.webtoolkit.jwt.JSlot;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WCssDecorationStyle;
 import eu.webtoolkit.jwt.WFormWidget;
@@ -30,6 +31,13 @@ public class TextArea extends FormField
         {
             form.addFormField(this);
         }
+    }
+    
+    public void setSize(int cols, int rows) {
+    	if (_fieldEdit != null) {
+    		_fieldEdit.setColumns(cols);
+    		_fieldEdit.setRows(rows);
+    	}
     }
     
     public WFormWidget getFormWidget()

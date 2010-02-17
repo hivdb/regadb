@@ -19,12 +19,16 @@ public class RunButtonPanel extends WButtonPanel {
 		WPushButton runButton = new WPushButton(tr("form.query.querytool.pushbutton.run"));
 		runButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent a) {
-				mainForm.runQuery();
+				runQuery(mainForm);
 			}
         });  
 		addButton(runButton);
 		getStyleClasses().addStyle("runbutton");
 		
 	}
-
+	
+	private void runQuery(QueryToolForm mainForm) {
+		mainForm.getEditorModel().getQueryEditor().getQuery().setFastaExport(mainForm.getFastaExportTab().getFastaExporter());
+		mainForm.runQuery();
+	}
 }

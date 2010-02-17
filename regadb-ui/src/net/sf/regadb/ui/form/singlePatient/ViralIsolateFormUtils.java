@@ -10,9 +10,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig.ScoreInfo;
@@ -64,12 +69,7 @@ public class ViralIsolateFormUtils {
                 return;
         }
         
-        //TODO
-        //is this fixed?
-        //JWT: Possible jwt problem
-        while (cell.getChildren().size() > 0) {
-        	cell.removeWidget(cell.getChildren().get(0));
-        }
+        cell.clear();
         
         final WText toReturn = new WText("");
         final WText mutation = new WText("");
@@ -77,7 +77,8 @@ public class ViralIsolateFormUtils {
         if(tr==null)
         {
             toReturn.setText("NA");
-            cell.setStyleClass("resistance-NA");
+            cell.getDecorationStyle().setForegroundColor(convert(Color.white));
+            cell.getDecorationStyle().setBackgroundColor(convert(Color.black));
         }
         else
         {
@@ -85,28 +86,15 @@ public class ViralIsolateFormUtils {
                 @Override
                 public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) {
                     mutations = combineMutations(mutations);
-                    ScoreInfo si = config.getScoreInfo(gss, remarks != null && !remarks.equals("null"));
-                    if (si != null) {
-                    	toReturn.setText(si.getStringRepresentation());
-                    	cell.getDecorationStyle().setForegroundColor(convert(si.getColor()));
-                    	cell.getDecorationStyle().setBackgroundColor(convert(si.getBackgroundColor()));
-                    } else if(gss == 0.0) {
-                    	toReturn.setText("R");
-                    	cell.setStyleClass("resistance-R");
-                    } else if(gss == 0.25 || gss == 0.5 || gss == 0.75) {
-                    	toReturn.setText("I");
-                    	cell.setStyleClass("resistance-I");
-                    } else if(gss == 1.0 || gss == 1.5) {
-                    	toReturn.setText("S");
-                    	cell.setStyleClass("resistance-S");
-                    } else {
-                        toReturn.setText("Cannot interprete");
-                        cell.setStyleClass("resistance-X");
-                    }
+                    
+                    ScoreInfo si = config.getScoreInfo(gss);
+                    toReturn.setText(si.getStringRepresentation());
+                    cell.getDecorationStyle().setForegroundColor(convert(si.getColor()));
+                    cell.getDecorationStyle().setBackgroundColor(convert(si.getBackgroundColor()));
                     
                     if(remarks!=null && !remarks.equals("null")) {
-                        if (si == null) 
-                        	cell.setStyleClass(cell.getStyleClass() + " resistance-remarks");
+                    	cell.setStyleClass(cell.getStyleClass() + " resistance-remarks");
+                        toReturn.setText(toReturn.getText() + "*");
                         
                     	toReturn.setToolTip(remarks);
                         cell.setToolTip(remarks);
@@ -139,7 +127,7 @@ public class ViralIsolateFormUtils {
         }
     }
     
-    private static WColor convert(Color c) {
+    public static WColor convert(Color c) {
     	return new WColor(c.getRed(), c.getGreen(), c.getBlue());
     }
     
@@ -182,5 +170,21 @@ public class ViralIsolateFormUtils {
         for(Map.Entry<String, StringBuilder> pos : positions.entrySet())
             r.add(pos.getValue().toString());
         return r;
+    }
+    
+    public static boolean checkSampleId(String id, ViralIsolate isolate, Set<Dataset> scope, Transaction t){
+        boolean unique=true;
+
+        Integer ii = isolate.getViralIsolateIi();
+        
+        for(Dataset ds : scope){
+            ViralIsolate vi = t.getViralIsolate(ds, id);
+            if(vi != null && !vi.getViralIsolateIi().equals(ii)){
+                unique = false;
+                break;
+            }
+        }
+        
+        return unique;
     }
 }

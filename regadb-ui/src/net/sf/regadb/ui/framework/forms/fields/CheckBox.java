@@ -14,9 +14,10 @@ public class CheckBox extends WContainerWidget implements IFormField
     private WCheckBox checkBox_ = new WCheckBox();
     private IForm form;
     
-    public CheckBox(InteractionState state, IForm form)
+    public CheckBox(InteractionState state, IForm form, CharSequence text)
     {
         super();
+        checkBox_.setText(text);
         addWidget(checkBox_);
         checkBox_.setEnabled(state == InteractionState.Adding || state == InteractionState.Editing);
         
@@ -31,6 +32,10 @@ public class CheckBox extends WContainerWidget implements IFormField
         {
             form.addFormField(this);
         }
+    }
+    
+    public CheckBox(InteractionState state, IForm form) {
+    	this(state, form, "");
     }
     
     public void flagErroneous() 

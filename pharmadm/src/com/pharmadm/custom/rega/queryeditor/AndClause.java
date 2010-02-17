@@ -53,7 +53,7 @@ public class AndClause extends ComposedWhereClause implements Serializable {
         return visitor.visitWhereClauseAndClause(this);
     }
     
-    protected List<OutputVariable> getExportedOutputVariables() {
+    public List<OutputVariable> getExportedOutputVariables() {
     	List<OutputVariable> exportedOutputVariables = new ArrayList<OutputVariable>();
         Iterator<WhereClause> iterCh = iterateChildren();
         while (iterCh.hasNext()) {

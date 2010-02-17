@@ -58,6 +58,11 @@ public class TextField extends FormField
         this(state, form, FieldType.ALFANUMERIC);
     }
 	
+    public void setTextSize(int chars) {
+    	if(_fieldEdit!=null)
+    		_fieldEdit.setTextSize(chars);
+    }
+    
 	public void setEchomode(WLineEdit.EchoMode mode)
 	{
 		echoMode_ = mode;
