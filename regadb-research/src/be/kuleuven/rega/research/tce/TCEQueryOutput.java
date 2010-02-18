@@ -41,9 +41,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
 //	private String organism;
 	
-	private TreeSet<String> alreadyIncludedViralIsolates = new TreeSet<String>();
-	
-
 	public TCEQueryOutput(Table out, File file, TableOutputType type, String organism) {
 		super(out, file, type);
 //		this.organism = organism;		
@@ -54,16 +51,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addHeader();
 
 		ViralIsolate vi = ViralIsolateUtils.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
-		if(vi==null || !DateUtils.betweenInterval(vi.getSampleDate(), DateUtils.addDaysToDate(tce.getStartDate(),-90), DateUtils.addDaysToDate(tce.getStartDate(),7))) {
-			return;
-		}
-		if(alreadyIncludedViralIsolates.contains(vi.getSampleId())){
-			return;
-		}
-		if(vi.getSampleId().equals("35606")){
-			return;
-		}
-		alreadyIncludedViralIsolates.add(vi.getSampleId());
 
 //		Map<String, String> resistanceResults = new HashMap<String, String>();
 
@@ -174,16 +161,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	}
 
 	private void addTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TCE tce, TestType testType) {
-		List<TestResult> trs = TestUtils.filterTestResults(tce.getPatient().getTestResults(), testType);
-		List<TestResult> trs_interval = new ArrayList<TestResult>();
-		for(TestResult tr_i : trs) {
-			if(DateUtils.betweenInterval(tr_i.getTestDate(), DateUtils.addDaysToDate(d, daysBefore), DateUtils.addDaysToDate(d, daysAfter))) {
-				trs_interval.add(tr_i);
-			}
-		}
-
-		TestResult tr = TestUtils.closestToDate(tce.getStartDate(), trs_interval);
-
+		TestResult tr = tce.getTestResultBetweenInterval(d, daysBefore, daysAfter, testType);
 		//TODO
 		//betweenOrEquals ???
 		if(tr!=null) {
