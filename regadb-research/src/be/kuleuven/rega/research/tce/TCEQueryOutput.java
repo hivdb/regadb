@@ -3,6 +3,7 @@ package be.kuleuven.rega.research.tce;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
@@ -32,6 +33,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
 
 	private List<DrugGeneric> genericDrugs = DrugGenericUtils.prepareRegaDrugGenerics();
+	private List<String> NRTIdrugs = Arrays.asList(new String[]{"ABC","DDI","FTC","3TC","D4T","TDF","AZT","DDC"});
+	private List<String> NNRTIdrugs = Arrays.asList(new String[]{"DLV","EFV","NVP","ETV"});
+	private List<String> PIdrugs = Arrays.asList(new String[]{"LPV/r","SQV/r","SQV","IDV/r","IDV","APV/r","APV","DRV/r","DRV","FPV/r","FPV","ATV/r","ATV","TPV/r","TPV","NFV"});
 //	private List<Test> resistanceTests = Utils.getResistanceTests();
 //	private List<DrugGeneric> resistanceGenericDrugs = DrugGenericUtils.getDrugsSortedOnResistanceRanking(genericDrugs, true);
 
@@ -77,9 +81,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 //				}
 //		}
 		
-		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NRTI")+"");
-		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "NNRTI")+"");
-		addColumn(TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), "PI")+"");
+		boolean NRTIexp = addExperience(tce, "NRTI") > 0;
+		boolean NNRTIexp = addExperience(tce, "NNRTI") > 0;
+		boolean PIexp = addExperience(tce, "PI") > 0;
+		addTherapyBasedOn(tce,NRTIexp,NRTIdrugs);
+		addTherapyBasedOn(tce,NNRTIexp,NNRTIdrugs);
+		addTherapyBasedOn(tce,PIexp,PIdrugs);
 		//TODO is this correct?
 		addColumn((tce.getTherapiesBefore().size()+1)+"");
 		for(DrugGeneric dg : genericDrugs) {
@@ -91,7 +98,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			}
 			addColumn(found?"yes":"no");
 		}
-
+		
 		//baseline
 		addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, cd4tt);
 		addTestResultBetweenInterval(tce.getStartDate(), -90, 7, tce, vltt);
@@ -135,6 +142,9 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn("# days of NRTI experience");
 		addColumn("# days of NNRTI experience");
 		addColumn("# days of PI experience");
+		addColumn("NRTI_based_therapy");
+		addColumn("NNRTI_based_therapy");
+		addColumn("PI_based_therapy");
 		addColumn("# previous therapy switches");
 		for(DrugGeneric dg : genericDrugs) {
 			addColumn(dg.getGenericId());
@@ -151,6 +161,29 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn("ethnicity");
 		addColumn("country of origin", true);
 		first = false;
+	}
+	
+	private void addTherapyBasedOn(TCE tce, boolean exp, List<String> drugs) {
+		if(exp){
+			for(DrugGeneric dg : tce.getDrugs()){
+				if(drugs.contains(dg.getGenericId())){
+					addColumn("y");
+					return;
+				}
+			}
+		}
+		addColumn("n");
+		return;
+	}
+	
+	private int addExperience(TCE tce, String drugClass) {
+		int nbDaysExp = TherapyUtils.daysExperienceWithDrugClass(tce.getTherapiesBefore(), drugClass);
+		if( nbDaysExp >= 365 ){
+			addColumn("y");
+		} else {
+			addColumn("n");
+		}
+		return nbDaysExp;
 	}
 
 	private void addCD4VLHeader(String timePoint) {

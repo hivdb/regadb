@@ -23,7 +23,7 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class TherapyUtils {
 	
-	public static long daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
+	public static int daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
 		int days = 0;
 
 		for(Therapy t : therapies) {
