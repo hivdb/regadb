@@ -12,39 +12,38 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.SubtypeAnalysis;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import eu.webtoolkit.jwt.WString;
 
 public class BatchTestRunningTest extends Thread {
 	private Test test;
 	private BatchTestStatus status;
-	private Transaction t;
+	private Login login;
 	
 	private int processedTests = 0;
 	private int testsToProcess = 0;
 	
-	public BatchTestRunningTest(Test test) {
+	public BatchTestRunningTest(Login copiedLogin, Test test) {
 		this.test = test;
-        t = RegaDBMain.getApp().createTransaction();
+		this.login = copiedLogin;
 	}
 	
 	public void run() {
-		Login copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
-		
 		status = BatchTestStatus.RUNNING;
 		
 		String testObject = test.getTestType().getTestObject().getDescription().toLowerCase();
 		
 		try {
 			if ( testObject.equals("resistance test") ) {
+				Transaction t = login.createTransaction();
 				List<ViralIsolate> list = t.getViralIsolates();
 				t.commit();
-				new ResistanceBatchRun(list, copiedLogin).run();
+				new ResistanceBatchRun(list, login).run();
 			} 
 			else if ( testObject.equals("sequence analysis") ) {
+				Transaction t = login.createTransaction();
 				List<NtSequence> list = t.getSequences();
 				t.commit();
-				new SequenceBatchRun(list, copiedLogin).run();
+				new SequenceBatchRun(list, login).run();
 			}
 			else if ( testObject.equals("viral isolate analysis")) {
 				//TODO
@@ -62,7 +61,7 @@ public class BatchTestRunningTest extends Thread {
 			e.printStackTrace();
 			status = BatchTestStatus.FAILED;
 		} finally {
-			copiedLogin.closeSession();
+			login.closeSession();
 		}
 	}
 	
