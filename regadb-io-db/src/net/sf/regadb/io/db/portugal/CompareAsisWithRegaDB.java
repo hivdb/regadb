@@ -3,6 +3,7 @@ package net.sf.regadb.io.db.portugal;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,7 +23,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 
-public class ImportAsis {
+public class CompareAsisWithRegaDB {
 	private Login login;
 	private List<Patient> patients;
 
@@ -31,30 +32,33 @@ public class ImportAsis {
 	Map<String, String> samplePatient = new HashMap<String, String>();
 	Map<String, Date> sampleDate = new HashMap<String, Date>();
 	Map<String, String> sampleValue = new HashMap<String, String>();
+	
+	private File errorReportDir;
 
-	public void run(String userName, String password, File asisExportDir)
+	public void run(String userName, String password, File asisExportDir, File errorReportDir)
 			throws IOException, WrongUidException, WrongPasswordException,
 			DisabledUserException {
 		login = Login.authenticate(userName, password);
 
 		Transaction t = login.createTransaction();
 		patients = t.getPatients();
-
+		
+		this.errorReportDir = errorReportDir;
+		
 		for (File f : asisExportDir.listFiles()) {
 			if (f.isFile())
 				processAsisFile(f);
 		}
 
 		for (String c : codes) {
-			//System.err.println(c);
+			writeToFile("test_codes.txt", c);
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date twothousandnine = null;
 		try {
-			twothousandnine = sdf.parse("15/08/2008");
+			twothousandnine = sdf.parse("");
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -72,34 +76,38 @@ public class ImportAsis {
 
 			for (TestResult tr : p.getTestResults()) {
 				if (tr.getTestDate() == null) {
-					// System.err.println("test date null: " + tr.getSampleId()
-					// + " " + p.getPatientId());
+					writeToFile("noTestDate.txt", "test date null: " + tr.getSampleId() + " " + p.getPatientId());
 				} else if (!tr.getTestDate().after(twothousandnine) && tr.getTest().getDescription().contains("Viral Load")) {
 					String patientId = samplePatient.get(tr.getSampleId());
 					if (patientId == null) {
-						// System.err.println(tr.getSampleId() + ";" +
-						// tr.getTestDate() + ";" + p.getPatientId());
+						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
+								 tr.getTestDate() + ";" + p.getPatientId());
 					} else if (!patientId.equals(patientIdDB)) {
-						// System.err.println(patientId+";" + patientIdDB + ";"
-						// +tr.getSampleId() + ";" + tr.getTestDate());
+						writeToFile("patientIdProblems.csv", patientId+";" + patientIdDB + ";"
+								 +tr.getSampleId() + ";" + tr.getTestDate());
 					} else {
 						String [] tr_d = sdf.format(tr.getTestDate()).split("\\/");
 						String [] asis_d = sdf.format(this.sampleDate.get(tr.getSampleId())).split("\\/");
 						
+						//only compare month and year
 						if(!(tr_d[1]+"/"+tr_d[2]).equals(asis_d[1]+"/"+asis_d[2])) {
 							idDates.add(tr.getSampleId() + ";" + sdf.format(tr.getTestDate()) + ";" + sdf.format(sampleDate.get(tr.getSampleId())));
 						}
 						
+						//TODO check these rules
+						
+						//this is too strict, the former rule should take care of most important differences						
 						//if(!sdf.format(tr.getTestDate()).equals(sdf.format(this.sampleDate.get(tr.getSampleId())))) {
 						//	idDates.add(tr.getSampleId() + " " + sdf.format(tr.getTestDate()) + " " + sdf.format(this.sampleDate.get(tr.getSampleId())));
 						//}
-//						if(this.sampleValue.get(tr.getSampleId())==null) {
-//							
-//						} else if(tr.getValue()==null) {
-//							idDates.add(tr.getSampleId() + ";" + tr.getValue() + ";" + this.sampleValue.get(tr.getSampleId()));
-//						} else if(!tr.getValue().substring(1).equals(this.sampleValue.get(tr.getSampleId()))) {
-//							idDates.add(tr.getSampleId() + ";" + tr.getValue() + ";" + this.sampleValue.get(tr.getSampleId()));
-//						}
+						
+						if(this.sampleValue.get(tr.getSampleId())==null) {
+							
+						} else if(tr.getValue()==null) {
+							writeToFile("regadbAsisValuesDiffer.csv", tr.getSampleId() + ";" + tr.getValue() + ";" + this.sampleValue.get(tr.getSampleId()));
+						} else if(!tr.getValue().substring(1).equals(this.sampleValue.get(tr.getSampleId()))) {
+							writeToFile("regadbAsisValuesDiffer.csv", tr.getSampleId() + ";" + tr.getValue() + ";" + this.sampleValue.get(tr.getSampleId()));
+						}
 					}
 				}
 			}
@@ -108,10 +116,20 @@ public class ImportAsis {
 		System.err.println("size=" + idDates.size());
 		
 		for(String d : idDates) {
-			System.err.println(d);
+			writeToFile("regadbAsisDatesDiffer.csv", d);
 		}
 	}
 
+	private void writeToFile(String fileName, String message) {
+		try {
+			FileWriter fw = new FileWriter(errorReportDir.getAbsolutePath() + File.separatorChar + fileName);
+			fw.write(message + '\n');
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void processAsisFile(File asisFile) throws IOException {
 		String patientId;
 		String sampleId;
@@ -154,9 +172,8 @@ public class ImportAsis {
 
 	public static void main(String[] args) throws IOException,
 			WrongUidException, WrongPasswordException, DisabledUserException {
-		ImportAsis importAsis = new ImportAsis();
-		importAsis.run("admin", "resist", new File(
-				"/home/plibin0/import/pt/asis/"));
+		CompareAsisWithRegaDB importAsis = new CompareAsisWithRegaDB();
+		importAsis.run(args[0], args[1], new File(args[2]), new File(args[3]));
 	}
 	
 	public static boolean isHiv1ViralLoadTest(String test) {
