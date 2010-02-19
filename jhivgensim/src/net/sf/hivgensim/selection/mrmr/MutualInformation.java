@@ -38,6 +38,16 @@ public class MutualInformation {
 		setResult();
 	}
 	
+	public MutualInformation(List<String> first, List<String> second){
+		this.first = new String[first.size()];
+		first.toArray(this.first);
+		this.second = new String[second.size()];
+		second.toArray(this.second);
+		setValues();
+		setProbabilities();
+		setResult();
+	}
+	
 	public String[] getFirst() {
 		return first;
 	}
