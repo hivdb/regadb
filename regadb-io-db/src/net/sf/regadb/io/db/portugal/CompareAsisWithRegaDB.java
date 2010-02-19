@@ -125,7 +125,7 @@ public class CompareAsisWithRegaDB {
 
 	private void writeToFile(String fileName, String message) {
 		try {
-			FileWriter fw = new FileWriter(errorReportDir.getAbsolutePath() + File.separatorChar + fileName);
+			FileWriter fw = new FileWriter(errorReportDir.getAbsolutePath() + File.separatorChar + fileName, true);
 			fw.write(message + '\n');
 			fw.close();
 		} catch (IOException e) {
