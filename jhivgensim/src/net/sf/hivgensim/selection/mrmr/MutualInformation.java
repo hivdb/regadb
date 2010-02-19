@@ -1,6 +1,7 @@
 package net.sf.hivgensim.selection.mrmr;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MutualInformation {
 	
