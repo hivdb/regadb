@@ -67,6 +67,8 @@ public class CompareAsisWithRegaDB {
 		
 		Set<String> idDates = new HashSet<String>();
 
+		System.err.println("patients.size()=" + patients.size());
+		
 		for (Patient p : patients) {
 			String patientIdDB = "";
 			patientIdDB = p.getPatientId();
