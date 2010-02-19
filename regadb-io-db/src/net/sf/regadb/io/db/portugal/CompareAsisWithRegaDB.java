@@ -22,6 +22,7 @@ import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class CompareAsisWithRegaDB {
 	private Login login;
@@ -38,6 +39,8 @@ public class CompareAsisWithRegaDB {
 	public void run(String userName, String password, File asisExportDir, File errorReportDir)
 			throws IOException, WrongUidException, WrongPasswordException,
 			DisabledUserException {
+		RegaDBSettings.createInstance();
+		
 		login = Login.authenticate(userName, password);
 
 		Transaction t = login.createTransaction();
@@ -57,7 +60,7 @@ public class CompareAsisWithRegaDB {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date twothousandnine = null;
 		try {
-			twothousandnine = sdf.parse("");
+			twothousandnine = sdf.parse("15/08/2008");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
