@@ -7,6 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +26,8 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.settings.RegaDBSettings;
+
+import org.apache.commons.io.FileUtils;
 
 public class CompareAsisWithRegaDB {
 	private Login login;
@@ -127,8 +132,22 @@ public class CompareAsisWithRegaDB {
 
 	private void writeToFile(String fileName, String message) {
 		try {
-			FileWriter fw = new FileWriter(errorReportDir.getAbsolutePath() + File.separatorChar + fileName, true);
-			fw.write(message + '\n');
+			String file = errorReportDir.getAbsolutePath() + File.separatorChar + fileName;
+			
+			List<String> text;
+			if (new File(file).exists())
+				text = FileUtils.readLines(new File(file));
+			else 
+				text = new ArrayList<String>();
+			
+			text.add(message);
+			
+			Collections.sort(text);
+			
+			FileWriter fw = new FileWriter(file);
+			for (String t : text) {
+				fw.write(t + '\n');
+			}
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
