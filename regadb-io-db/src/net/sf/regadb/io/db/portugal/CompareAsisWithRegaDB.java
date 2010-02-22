@@ -144,9 +144,11 @@ public class CompareAsisWithRegaDB {
 			
 			Collections.sort(text);
 			
+			Set<String> dups = new HashSet<String>();
 			FileWriter fw = new FileWriter(file);
 			for (String t : text) {
-				fw.write(t + '\n');
+				if(dups.add(t))
+					fw.write(t + '\n');
 			}
 			fw.close();
 		} catch (IOException e) {
