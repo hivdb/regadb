@@ -355,7 +355,6 @@ public class ViralIsolateMainForm extends WContainerWidget
             t.delete(tr);
         }
         
-		Transaction trans = RegaDBMain.getApp().createTransaction();
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
         if (config != null)
 		for(int i = 0; i < config.getTests().size(); i++) {
@@ -368,13 +367,13 @@ public class ViralIsolateMainForm extends WContainerWidget
             if(f instanceof ComboBox) {
                 if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
                 	if (tr == null)
-                		tr = createTestResult(trans.getTest(config.getTests().get(i).description));
+                		tr = createTestResult(t.getTest(config.getTests().get(i).description));
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
                 	if (tr == null)
-                		tr = createTestResult(trans.getTest(config.getTests().get(i).description));
+                		tr = createTestResult(t.getTest(config.getTests().get(i).description));
                     tr.setData(f.text().getBytes());
                 }
             }
