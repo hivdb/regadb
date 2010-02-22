@@ -43,22 +43,17 @@ public class ViralIsolateForm extends FormWidget
 		super(formName, interactionState);
 		viralIsolate_ = viralIsolate;
         
-        Transaction t = RegaDBMain.getApp().createTransaction();
         if(getInteractionState()==InteractionState.Adding)
         {
-            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
-            t.attach(p);
-            viralIsolate_ = p.createViralIsolate();
+            viralIsolate_ = new ViralIsolate();
             viralIsolate_.getNtSequences().add(new NtSequence(viralIsolate_));
         }
         else
         {
-            t.refresh(viralIsolate_);
+        	RegaDBMain.getApp().createTransaction().refresh(viralIsolate_);
         }
-        t.commit();
 
-		init();
-		
+		init();	
 	}
 
 	public void init()
@@ -88,10 +83,7 @@ public class ViralIsolateForm extends FormWidget
 	{
 		if(getInteractionState()!=InteractionState.Adding)
 		{
-			Transaction t;
-			t = RegaDBMain.getApp().createTransaction();
-	        t.refresh(viralIsolate_);
-	        t.commit();
+			RegaDBMain.getApp().createTransaction().refresh(viralIsolate_);
 		}
 
         if(proteinForm_!=null)
@@ -110,7 +102,6 @@ public class ViralIsolateForm extends FormWidget
 	public void saveData()
 	{                
         Transaction t = RegaDBMain.getApp().createTransaction();
-        t.refresh(viralIsolate_);
         
         _mainForm.confirmSequences();
         
@@ -132,6 +123,12 @@ public class ViralIsolateForm extends FormWidget
 		}
         
 		viralIsolate_.setGenome(t.getGenome(genome.getOrganismName()));
+		
+		if (getInteractionState()==InteractionState.Adding) {
+			Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
+			t.attach(p);
+			p.addViralIsolate(viralIsolate_);
+		}
 		
         update(viralIsolate_, t);
         t.commit();
@@ -173,8 +170,6 @@ public class ViralIsolateForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
-        	deleteObject();
-        	
             redirectToSelect(
             		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode(),
             		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectActionItem());
