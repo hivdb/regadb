@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.tree.items.custom;
 
+import net.sf.regadb.ui.form.singlePatient.custom.GridForm;
 import net.sf.regadb.ui.form.singlePatient.custom.MultipleTestResultForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -10,6 +11,7 @@ import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 public class ContactItem extends ActionItem {
     public ActionItem lastContact;
     public ActionItem addContact;
+    public ActionItem grid;
     
     public ContactItem(ActionItem root) {
         super(tr("menu.patient.custom.contact"), root);
@@ -31,6 +33,13 @@ public class ContactItem extends ActionItem {
                                                     InteractionState.Adding,
                                                     lastContact)
                         );
+            }   
+        });
+        
+        grid = new ActionItem(tr("menu.patient.custom.contact.grid"), this, new ITreeAction() {
+            public void performAction(TreeMenuNode node) {
+                RegaDBMain.getApp().getFormContainer().setForm(
+                        new GridForm(InteractionState.Adding, lastContact));
             }   
         });
     }
