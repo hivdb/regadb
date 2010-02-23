@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.portugal;
+package net.sf.regadb.io.db.portugal.asis;
 
 import java.io.BufferedReader;
 import java.io.File;
