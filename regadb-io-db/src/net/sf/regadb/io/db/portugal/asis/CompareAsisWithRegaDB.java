@@ -95,6 +95,10 @@ public class CompareAsisWithRegaDB {
 				} else if (!tr.getTestDate().after(dateUntill) && isRegaDBViralLoad(tr)) {
 					String patientId = samplePatient.get(tr.getSampleId());
 					if (patientId == null) {
+						if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
+							if (!patientIdDB.equals(patientId))
+								continue;
+						}
 						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
 								 tr.getTestDate() + ";" + p.getPatientId());
 					} else if (!patientId.equals(patientIdDB)) {
