@@ -40,6 +40,16 @@ public class CompareAsisWithRegaDB {
 	Map<String, String> sampleValue = new HashMap<String, String>();
 	
 	private File errorReportDir;
+	
+	public static Date dateUntill = null;
+	
+	static {
+		try {
+			dateUntill = new SimpleDateFormat("dd/MM/yyyy").parse("15/08/2008");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void run(String userName, String password, File asisExportDir, File errorReportDir)
 			throws IOException, WrongUidException, WrongPasswordException,
@@ -63,12 +73,6 @@ public class CompareAsisWithRegaDB {
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		Date twothousandnine = null;
-		try {
-			twothousandnine = sdf.parse("15/08/2008");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 		
 		Set<String> idDates = new HashSet<String>();
 
@@ -88,7 +92,7 @@ public class CompareAsisWithRegaDB {
 			for (TestResult tr : p.getTestResults()) {
 				if (tr.getTestDate() == null) {
 					writeToFile("noTestDate.txt", "test date null: " + tr.getSampleId() + " " + p.getPatientId());
-				} else if (!tr.getTestDate().after(twothousandnine) && isRegaDBViralLoad(tr)) {
+				} else if (!tr.getTestDate().after(dateUntill) && isRegaDBViralLoad(tr)) {
 					String patientId = samplePatient.get(tr.getSampleId());
 					if (patientId == null) {
 						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
