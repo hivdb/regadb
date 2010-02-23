@@ -83,19 +83,12 @@ public class CompareAsisWithRegaDB {
 		writeToFile("regadbAsisDatesDiffer.csv", "regadb sampleId" + ";" + "regadb test date" + ";" + "asis sample date");
 		
 		for (Patient p : patients) {
-			String patientIdDB = "";
-			patientIdDB = p.getPatientId();
-
-			for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
-				if (pav.getAttribute().getName().equals("old_id")) {
-					patientIdDB = pav.getValue();
-				}
-			}
+			String patientIdDB = getPatientId(p);
 
 			for (TestResult tr : p.getTestResults()) {
 				if (tr.getTestDate() == null) {
 					writeToFile("noTestDate.txt", "test date null: " + tr.getSampleId() + " " + p.getPatientId());
-				} else if (!tr.getTestDate().after(twothousandnine) && tr.getTest().getDescription().contains("Viral Load")) {
+				} else if (!tr.getTestDate().after(twothousandnine) && isRegaDBViralLoad(tr)) {
 					String patientId = samplePatient.get(tr.getSampleId());
 					if (patientId == null) {
 						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
@@ -217,5 +210,21 @@ public class CompareAsisWithRegaDB {
 		} else {
 			return false;
 		}
+	}
+	
+	public static boolean isRegaDBViralLoad(TestResult tr) {
+		return tr.getTest().getDescription().contains("Viral Load");
+	}
+	
+	public static String getPatientId(Patient p) {
+		String patientIdDB = p.getPatientId();
+
+		for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
+			if (pav.getAttribute().getName().equals("old_id")) {
+				patientIdDB = pav.getValue();
+			}
+		}
+		
+		return patientIdDB;
 	}
 }
