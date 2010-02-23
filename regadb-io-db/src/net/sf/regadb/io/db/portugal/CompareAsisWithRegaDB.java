@@ -73,6 +73,14 @@ public class CompareAsisWithRegaDB {
 		Set<String> idDates = new HashSet<String>();
 
 		System.err.println("patients.size()=" + patients.size());
+
+		//headers
+		writeToFile("patientIdProblems.csv", "asisPatientId"+";" + "regadbPatientIdDB" + ";"
+				 +"regadb SampleId" + ";" + "regadb testDate");
+		writeToFile("sampleIdCannotBeFoundInAsis.csv", " regadb sampleId" + ";" +
+				 " regadb testDate" + ";" + "regadb patientId");
+		writeToFile("regadbAsisValuesDiffer.csv", "regadb sampleId" + ";" + "regadb value" + ";" + " asis value");
+		writeToFile("regadbAsisDatesDiffer.csv", "regadb sampleId" + ";" + "regadb test date" + ";" + "asis sample date");
 		
 		for (Patient p : patients) {
 			String patientIdDB = "";
@@ -143,10 +151,13 @@ public class CompareAsisWithRegaDB {
 			text.add(message);
 			
 			Collections.sort(text);
+			Collections.reverse(text);
 			
+			Set<String> dups = new HashSet<String>();
 			FileWriter fw = new FileWriter(file);
 			for (String t : text) {
-				fw.write(t + '\n');
+				if(dups.add(t))
+					fw.write(t + '\n');
 			}
 			fw.close();
 		} catch (IOException e) {
