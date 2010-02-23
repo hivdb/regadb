@@ -35,6 +35,7 @@ public class CompareAsisWithRegaDB {
 
 	private Set<String> codes = new HashSet<String>();
 
+	List<String> asisPatientsIds = new ArrayList<String>();
 	Map<String, String> samplePatient = new HashMap<String, String>();
 	Map<String, Date> sampleDate = new HashMap<String, Date>();
 	Map<String, String> sampleValue = new HashMap<String, String>();
@@ -96,7 +97,7 @@ public class CompareAsisWithRegaDB {
 					String patientId = samplePatient.get(tr.getSampleId());
 					if (patientId == null) {
 						if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
-							if (!patientIdDB.equals(patientId))
+							if (!asisPatientsIds.contains(patientIdDB))
 								continue;
 						}
 						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
@@ -189,6 +190,8 @@ public class CompareAsisWithRegaDB {
 			testCode = words[3].trim();
 			testValue = words[4].trim();
 
+			asisPatientsIds.add(patientId);
+			
 			samplePatient.put(sampleId, patientId);
 			try {
 				this.sampleDate.put(sampleId, sdf.parse(sampleDate));
