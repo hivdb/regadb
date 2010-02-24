@@ -5,14 +5,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
@@ -38,8 +39,9 @@ public class ImportAsis {
 		BufferedReader input = new BufferedReader(new FileReader(args[2]));
 		
 		Map<String, Patient> patients = getPatients(t);
+
+		HashSet<String> sampleIdNull = new HashSet<String>();
 		
-		Set<String> patientsNotFound = new HashSet<String>();
 		while ((line = input.readLine()) != null) {
 			String [] words = line.split("\\|");
 			patientId = words[0].trim();
@@ -52,12 +54,59 @@ public class ImportAsis {
 					sampleDate.after(CompareAsisWithRegaDB.dateUntill))
 				continue;
 			
-			if (patients.get(patientId) == null) { 
-				patientsNotFound.add(patientId);
+			Patient p = patients.get(patientId);
+			if (p != null) { 
+				//check if the pt has test results (only viral load!) which have sample id == null
+				for (TestResult tr : getViralLoads(p)) {
+					if (tr.getSampleId() == null) {
+						sampleIdNull.add(p.getPatientId() + "," + tr.getTestDate());
+					}
+				}
+				
+				//if sample id already in regadb -> skip
+				boolean alreadyIn = false;
+				for (TestResult tr : getViralLoads(p)) {
+					if (tr.getSampleId() != null && tr.getSampleId().trim().equals(sampleId))
+						alreadyIn=true;
+				}
+				if (alreadyIn)
+					continue;
+				
+				//check if the patient has viral loads on the same date (MM/yyyy)
+				for (TestResult tr : getViralLoads(p)) {
+					if (getMonth(tr.getTestDate()) == getMonth(sampleDate) && 
+							getYear(tr.getTestDate()) == getYear(sampleDate)) {
+						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < 604800000L) {
+							System.err.println("~same date:"+
+									patientId+","+tr.getSampleId()+","+sdf.format(tr.getTestDate())
+									+","+sampleId+","+sdf.format(sampleDate));
+						}
+					}
+				}
+				
+				
 			}
 		}
 		
-		System.err.println("patient not found " + patientsNotFound.size());
+		System.err.println("sampleIdNull" + sampleIdNull.size());
+	}
+	
+	public static int getMonth(Date d) {
+		return Integer.parseInt(new SimpleDateFormat("MM").format(d));
+	}
+	
+	public static int getYear(Date d) {
+		return Integer.parseInt(new SimpleDateFormat("yyyy").format(d));
+	}
+	
+	public static List<TestResult> getViralLoads(Patient p) {
+		List<TestResult> vl = new ArrayList<TestResult>();
+		
+		for (TestResult tr : p.getTestResults())
+			if (CompareAsisWithRegaDB.isRegaDBViralLoad(tr))
+				vl.add(tr);
+		
+		return vl;
 	}
 	
 	public static Map<String, Patient> getPatients(Transaction t) {
