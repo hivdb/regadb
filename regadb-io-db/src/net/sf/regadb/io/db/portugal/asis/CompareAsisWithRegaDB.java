@@ -97,7 +97,6 @@ public class CompareAsisWithRegaDB {
 					String patientId = samplePatient.get(tr.getSampleId());
 					if (patientId == null) {
 						if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
-							if (!asisPatientsIds.contains(patientIdDB))
 								continue;
 						}
 						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
