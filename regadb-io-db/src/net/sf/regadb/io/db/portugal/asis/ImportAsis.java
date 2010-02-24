@@ -41,7 +41,6 @@ public class ImportAsis {
 		Map<String, Patient> patients = getPatients(t);
 
 		HashSet<String> sampleIdNull = new HashSet<String>();
-		
 		while ((line = input.readLine()) != null) {
 			String [] words = line.split("\\|");
 			patientId = words[0].trim();
@@ -72,16 +71,14 @@ public class ImportAsis {
 				if (alreadyIn)
 					continue;
 				
+				final int dayInMS = 1000 * 60 * 60 * 24;
 				//check if the patient has viral loads on the same date (MM/yyyy)
 				for (TestResult tr : getViralLoads(p)) {
-					if (getMonth(tr.getTestDate()) == getMonth(sampleDate) && 
-							getYear(tr.getTestDate()) == getYear(sampleDate)) {
-						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < 604800000L) {
+						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < (dayInMS*7)) {
 							System.err.println("~same date:"+
 									patientId+","+tr.getSampleId()+","+sdf.format(tr.getTestDate())
-									+","+sampleId+","+sdf.format(sampleDate));
+									+","+sampleId+","+sdf.format(sampleDate));							
 						}
-					}
 				}
 			}
 		}
