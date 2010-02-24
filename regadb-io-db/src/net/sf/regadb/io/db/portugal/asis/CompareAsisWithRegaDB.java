@@ -103,8 +103,11 @@ public class CompareAsisWithRegaDB {
 						writeToFile("sampleIdCannotBeFoundInAsis.csv", tr.getSampleId() + ";" +
 								 tr.getTestDate() + ";" + p.getPatientId());
 					} else if (!patientId.equals(patientIdDB)) {
-						writeToFile("patientIdProblems.csv", patientId+";" + patientIdDB + ";"
-								 +tr.getSampleId() + ";" + tr.getTestDate());
+						String asisId = getAsisId(p);
+						if (asisId == null) {
+							writeToFile("patientIdProblems.csv", patientId+";" + patientIdDB + ";"
+									+tr.getSampleId() + ";" + tr.getTestDate());
+						}
 					} else {
 						String [] tr_d = sdf.format(tr.getTestDate()).split("\\/");
 						String [] asis_d = sdf.format(this.sampleDate.get(tr.getSampleId())).split("\\/");
@@ -232,6 +235,18 @@ public class CompareAsisWithRegaDB {
 
 		for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
 			if (pav.getAttribute().getName().equals("old_id")) {
+				patientIdDB = pav.getValue();
+			}
+		}
+		
+		return patientIdDB;
+	}
+	
+	public static String getAsisId(Patient p) {
+		String patientIdDB = null;
+
+		for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
+			if (pav.getAttribute().getName().equals("ASIS ID")) {
 				patientIdDB = pav.getValue();
 			}
 		}
