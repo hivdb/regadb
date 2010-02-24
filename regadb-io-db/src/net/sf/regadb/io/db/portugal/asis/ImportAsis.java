@@ -6,22 +6,34 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ImportAsis {
+	public static class TestResultComparator implements Comparator<TestResult>{
+		@Override
+		public int compare(TestResult o1, TestResult o2) {
+			return o1.getTestDate().compareTo(o2.getTestDate());
+		}
+	}
+	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
 	public static void main(String [] args) throws IOException, ParseException, WrongUidException, WrongPasswordException, DisabledUserException {
@@ -38,7 +50,15 @@ public class ImportAsis {
 		String line;
 		BufferedReader input = new BufferedReader(new FileReader(args[2]));
 		
+		Map<String, TreeSet<TestResult>> patientAsisTestResults = new HashMap<String, TreeSet<TestResult>>();
 		Map<String, Patient> patients = getPatients(t);
+		
+		Test viralLoadTest = t.getTest(
+				StandardObjects.getGenericHiv1ViralLoadTest().getDescription(),
+				StandardObjects.getHiv1ViralLoadTestType().getDescription(),
+				StandardObjects.getHiv1Genome().getOrganismName());
+		
+		TestResultComparator testResultComparator = new TestResultComparator();
 
 		HashSet<String> sampleIdNull = new HashSet<String>();
 		
@@ -84,7 +104,51 @@ public class ImportAsis {
 					}
 				}
 				
+				if(testValue.equals("500000"))
+					testValue = '>'+ testValue;
+				else if(testValue.equals("50") || testValue.equals("40"))
+					testValue = '<'+ testValue;
+				else if(testValue.equals("999999"))
+					testValue = ">10000000";
+				else{
+					long l = 0;
+					try{
+						l = Long.parseLong(testValue);
+					}catch(Exception e){
+					}
+					
+					if(l < 40 || l > 999999)
+						System.err.println("suspicious value: "+ patientId +","+ sampleId +","+ testValue);
+					
+					testValue = "="+ testValue;
+				}
 				
+				TestResult asisTestResult = new TestResult(viralLoadTest);
+				asisTestResult.setSampleId(sampleId);
+				asisTestResult.setTestDate(sampleDate);
+				asisTestResult.setValue(testValue);
+				
+				TreeSet<TestResult> asisTestResults = patientAsisTestResults.get(patientId);
+				if(asisTestResults == null){
+					asisTestResults = new TreeSet<TestResult>(testResultComparator);
+					patientAsisTestResults.put(patientId, asisTestResults);
+				}
+				asisTestResults.add(asisTestResult);
+			}
+		}
+		
+		for(Map.Entry<String, TreeSet<TestResult>> me : patientAsisTestResults.entrySet()){
+			Set<String> sampleIds = new HashSet<String>();
+			TestResult lastTr = null;
+			for(TestResult tr : me.getValue()){
+				if(!sampleIds.add(tr.getSampleId()))
+					System.err.println("duplicate sample id: "+ tr.getSampleId() +" patient: "+ me.getKey());
+				
+				if(lastTr != null){
+					if(Math.abs(tr.getTestDate().getTime() - lastTr.getTestDate().getTime()) < 864000000L)
+						System.err.println("dates less than 10 days appart: "+ lastTr.getTestDate() +" "+ tr.getTestDate() +" patient: "+ me.getKey());
+				}
+				lastTr = tr;
 			}
 		}
 		
