@@ -50,7 +50,7 @@ public class ImportAsis {
 		String line;
 		BufferedReader input = new BufferedReader(new FileReader(args[2]));
 		
-		Map<String, TreeSet<TestResult>> patientAsisTestResults = new HashMap<String, TreeSet<TestResult>>();
+		Map<Patient, TreeSet<TestResult>> patientAsisTestResults = new HashMap<Patient, TreeSet<TestResult>>();
 		Map<String, Patient> patients = getPatients(t);
 		
 		Test viralLoadTest = t.getTest(
@@ -61,7 +61,6 @@ public class ImportAsis {
 		TestResultComparator testResultComparator = new TestResultComparator();
 
 		HashSet<String> sampleIdNull = new HashSet<String>();
-		
 		while ((line = input.readLine()) != null) {
 			String [] words = line.split("\\|");
 			patientId = words[0].trim();
@@ -78,8 +77,8 @@ public class ImportAsis {
 			if (p != null) { 
 				//check if the pt has test results (only viral load!) which have sample id == null
 				for (TestResult tr : getViralLoads(p)) {
-					if (tr.getSampleId() == null) {
-						sampleIdNull.add(p.getPatientId() + "," + tr.getTestDate());
+					if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
+						System.err.println(p.getPatientId() + "," + tr.getTestDate());
 					}
 				}
 				
@@ -92,16 +91,14 @@ public class ImportAsis {
 				if (alreadyIn)
 					continue;
 				
+				final int dayInMS = 1000 * 60 * 60 * 24;
 				//check if the patient has viral loads on the same date (MM/yyyy)
 				for (TestResult tr : getViralLoads(p)) {
-					if (getMonth(tr.getTestDate()) == getMonth(sampleDate) && 
-							getYear(tr.getTestDate()) == getYear(sampleDate)) {
-						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < 604800000L) {
+						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < (dayInMS*7)) {
 							System.err.println("~same date:"+
 									patientId+","+tr.getSampleId()+","+sdf.format(tr.getTestDate())
-									+","+sampleId+","+sdf.format(sampleDate));
+									+","+sampleId+","+sdf.format(sampleDate));							
 						}
-					}
 				}
 				
 				if(testValue.equals("500000"))
@@ -131,22 +128,22 @@ public class ImportAsis {
 				TreeSet<TestResult> asisTestResults = patientAsisTestResults.get(patientId);
 				if(asisTestResults == null){
 					asisTestResults = new TreeSet<TestResult>(testResultComparator);
-					patientAsisTestResults.put(patientId, asisTestResults);
+					patientAsisTestResults.put(p, asisTestResults);
 				}
 				asisTestResults.add(asisTestResult);
 			}
 		}
 		
-		for(Map.Entry<String, TreeSet<TestResult>> me : patientAsisTestResults.entrySet()){
+		for(Map.Entry<Patient, TreeSet<TestResult>> me : patientAsisTestResults.entrySet()){
 			Set<String> sampleIds = new HashSet<String>();
 			TestResult lastTr = null;
 			for(TestResult tr : me.getValue()){
 				if(!sampleIds.add(tr.getSampleId()))
-					System.err.println("duplicate sample id: "+ tr.getSampleId() +" patient: "+ me.getKey());
+					System.err.println("duplicate sample id: "+ tr.getSampleId() +" patient: "+ me.getKey().getPatientId());
 				
 				if(lastTr != null){
 					if(Math.abs(tr.getTestDate().getTime() - lastTr.getTestDate().getTime()) < 864000000L)
-						System.err.println("dates less than 10 days appart: "+ lastTr.getTestDate() +" "+ tr.getTestDate() +" patient: "+ me.getKey());
+						System.err.println("dates less than 10 days appart: "+ lastTr.getTestDate() +" "+ tr.getTestDate() +" patient: "+ me.getKey().getPatientId());
 				}
 				lastTr = tr;
 			}
