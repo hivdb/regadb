@@ -38,6 +38,7 @@ public class ImportAsis {
 		String line;
 		BufferedReader input = new BufferedReader(new FileReader(args[2]));
 		
+		Map<Patient, TestResult> asisViralLoads = new HashMap<Patient, TestResult>();
 		Map<String, Patient> patients = getPatients(t);
 
 		HashSet<String> sampleIdNull = new HashSet<String>();
@@ -57,8 +58,8 @@ public class ImportAsis {
 			if (p != null) { 
 				//check if the pt has test results (only viral load!) which have sample id == null
 				for (TestResult tr : getViralLoads(p)) {
-					if (tr.getSampleId() == null) {
-						sampleIdNull.add(p.getPatientId() + "," + tr.getTestDate());
+					if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
+						System.err.println(p.getPatientId() + "," + tr.getTestDate());
 					}
 				}
 				
