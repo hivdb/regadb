@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import net.sf.regadb.align.local.CodonAlign;
+import net.sf.regadb.align.local.NeedlemanWunsch;
+import net.sf.regadb.align.local.ScoredAlignment;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -23,6 +26,11 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
 import net.sf.regadb.util.settings.RegaDBSettings;
+
+import org.biojava.bio.seq.DNATools;
+import org.biojava.bio.seq.Sequence;
+import org.biojava.bio.symbol.IllegalSymbolException;
+import org.biojava.bio.symbol.SymbolList;
 
 public class CheckSequences {
 	private static class SampleException extends Exception{
@@ -252,7 +260,23 @@ public class CheckSequences {
 					throw new SampleDatesDifferException(sampleId, vi.getSampleDate(), sampleDate);
 			}
 		
-		if(!found)
-			throw new NucleotidesDifferException(sampleId, dbNucleotides, nucleotides);		
+		if(!found) {
+			align(dbNucleotides, nucleotides);
+			throw new NucleotidesDifferException(sampleId, dbNucleotides, nucleotides);
+		}
+	}
+	
+	private void align(String s1, String s2) {
+		try {
+			Sequence seq1 = DNATools.createDNASequence(s1, "s1");
+			Sequence seq2 = DNATools.createDNASequence(s2, "s2");
+
+			NeedlemanWunsch nm = new NeedlemanWunsch(-10, -3.3, CodonAlign.nuc4_4matrix);
+			//ScoredAlignment sa = nm.pairwiseAlignment(seq1, seq2);
+		
+			//System.err.println(CodonAlign.toString(sa.getAlignment()));
+		} catch (IllegalSymbolException e) {
+			e.printStackTrace();
+		}
 	}
 }
