@@ -8,7 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.sf.regadb.db.NtSequence;
@@ -98,13 +100,17 @@ public class CheckSequences {
 		}
 	}
 	
-	private Login login;
 	private PrintStream notFoundOut, nucsDifferOut, datesDifferOut, skippedOut;
 	private int seqOk, seqNotFound, seqNucsDiffer, seqDatesDiffer, skipped;
 	private int pathOffset;
+	Map<String, ViralIsolate> isolates = new HashMap<String, ViralIsolate>();
 	
 	public CheckSequences(String user, String pass) throws WrongUidException, WrongPasswordException, DisabledUserException{
-		login = Login.authenticate(user, pass);
+		Transaction t = Login.authenticate(user, pass).createTransaction();
+		List<Object[]> result = t.createQuery("select vi.sampleId, vi from ViralIsolate as vi").list();
+		for (Object[] r : result) {
+			isolates.put((String)r[0], (ViralIsolate)r[1]);
+		}
 	}
 	
 	public void run(File fastaDir, File outputDir){
@@ -228,15 +234,12 @@ public class CheckSequences {
 	
 	protected void checkSequence(String sampleId, Date sampleDate, String nucleotides)
 			throws SampleIdNotFoundException, SampleDatesDifferException, NucleotidesDifferException{
-		Transaction t = login.createTransaction();
-		
-		List<ViralIsolate> vis = t.getViralIsolate(sampleId);
-		if(vis.size() < 1)
+		ViralIsolate vi = isolates.get(sampleId);
+		if(vi == null)
 			throw new SampleIdNotFoundException(sampleId);
 		
 		boolean found = false;
 		String dbNucleotides = null;
-		for(ViralIsolate vi : vis){
 			for(NtSequence nt : vi.getNtSequences()){
 				dbNucleotides = nt.getNucleotides().trim().toLowerCase();
 				if(dbNucleotides.equals(nucleotides)){
@@ -247,14 +250,9 @@ public class CheckSequences {
 			if(found){
 				if(sampleDate != null && !sampleDate.equals(vi.getSampleDate()))
 					throw new SampleDatesDifferException(sampleId, vi.getSampleDate(), sampleDate);
-				
-				break;
 			}
-		}
 		
 		if(!found)
-			throw new NucleotidesDifferException(sampleId, dbNucleotides, nucleotides);
-		
-		t.commit();
+			throw new NucleotidesDifferException(sampleId, dbNucleotides, nucleotides);		
 	}
 }
