@@ -27,13 +27,6 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ImportAsis {
-	public static class TestResultComparator implements Comparator<TestResult>{
-		@Override
-		public int compare(TestResult o1, TestResult o2) {
-			return o1.getTestDate().compareTo(o2.getTestDate());
-		}
-	}
-	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
 	public static void main(String [] args) throws IOException, ParseException, WrongUidException, WrongPasswordException, DisabledUserException {
@@ -58,8 +51,6 @@ public class ImportAsis {
 				StandardObjects.getGenericHiv1ViralLoadTest().getDescription(),
 				StandardObjects.getHiv1ViralLoadTestType().getDescription(),
 				StandardObjects.getHiv1Genome().getOrganismName());
-		
-		TestResultComparator testResultComparator = new TestResultComparator();
 
 		HashSet<String> sampleIdNull = new HashSet<String>();
 		while ((line = input.readLine()) != null) {
@@ -96,16 +87,6 @@ public class ImportAsis {
 				if (alreadyIn)
 					continue;
 				
-				final int dayInMS = 1000 * 60 * 60 * 24;
-				//check if the patient has viral loads on the same date (MM/yyyy)
-				for (TestResult tr : getViralLoads(p)) {
-						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < (dayInMS * 7)) {
-							System.err.println("~same date:"+
-									patientId+","+tr.getSampleId()+","+sdf.format(tr.getTestDate())
-									+","+sampleId+","+sdf.format(sampleDate));
-						}
-				}
-				
 				if(testValue.equals("500000"))
 					testValue = '>'+ testValue;
 				else if(testValue.equals("50") || testValue.equals("40"))
@@ -133,7 +114,7 @@ public class ImportAsis {
 				
 				TreeSet<TestResult> asisTestResults = patientAsisTestResults.get(patientId);
 				if(asisTestResults == null){
-					asisTestResults = new TreeSet<TestResult>(testResultComparator);
+					asisTestResults = new TreeSet<TestResult>();
 					patientAsisTestResults.put(p, asisTestResults);
 				}
 				asisTestResults.add(asisTestResult);
