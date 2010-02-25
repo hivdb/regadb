@@ -89,6 +89,13 @@
   	<attribute name="Class-Path" value="${jar-dependencies}"/>
       </manifest>
     </jar>
+  	
+  	<jar jarfile="${dist}/${proj.name}-pt-asis-import.jar" basedir="${build}">
+		<manifest>
+   			<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.asis.ImportAsis"/>
+   			<attribute name="Class-Path" value="${jar-dependencies}"/>
+       	</manifest>
+	</jar>
 
   	<antcall target="create-package" />
   </target>
