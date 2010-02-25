@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
@@ -52,6 +52,7 @@ public class ImportAsis {
 		
 		Map<Patient, TreeSet<TestResult>> patientAsisTestResults = new HashMap<Patient, TreeSet<TestResult>>();
 		Map<String, Patient> patients = getPatients(t);
+		Map<String, Patient> asisPatients = getAsisPatientId(t);
 		
 		Test viralLoadTest = t.getTest(
 				StandardObjects.getGenericHiv1ViralLoadTest().getDescription(),
@@ -74,11 +75,15 @@ public class ImportAsis {
 				continue;
 			
 			Patient p = patients.get(patientId);
+			if (p == null) {
+				p = asisPatients.get(patientId);
+			}
+			
 			if (p != null) { 
 				//check if the pt has test results (only viral load!) which have sample id == null
 				for (TestResult tr : getViralLoads(p)) {
 					if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
-						System.err.println(p.getPatientId() + "," + tr.getTestDate());
+						sampleIdNull.add("test result with sample id null," + p.getPatientId() + "," + tr.getTestDate());
 					}
 				}
 				
@@ -94,10 +99,10 @@ public class ImportAsis {
 				final int dayInMS = 1000 * 60 * 60 * 24;
 				//check if the patient has viral loads on the same date (MM/yyyy)
 				for (TestResult tr : getViralLoads(p)) {
-						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < (dayInMS*7)) {
+						if (Math.abs(tr.getTestDate().getTime() - sampleDate.getTime()) < (dayInMS * 7)) {
 							System.err.println("~same date:"+
 									patientId+","+tr.getSampleId()+","+sdf.format(tr.getTestDate())
-									+","+sampleId+","+sdf.format(sampleDate));							
+									+","+sampleId+","+sdf.format(sampleDate));
 						}
 				}
 				
@@ -112,9 +117,10 @@ public class ImportAsis {
 					try{
 						l = Long.parseLong(testValue);
 					}catch(Exception e){
+						e.printStackTrace();
 					}
 					
-					if(l < 40 || l > 999999)
+					if(l < 40 || l > 500000)
 						System.err.println("suspicious value: "+ patientId +","+ sampleId +","+ testValue);
 					
 					testValue = "="+ testValue;
@@ -134,22 +140,11 @@ public class ImportAsis {
 			}
 		}
 		
-		for(Map.Entry<Patient, TreeSet<TestResult>> me : patientAsisTestResults.entrySet()){
-			Set<String> sampleIds = new HashSet<String>();
-			TestResult lastTr = null;
-			for(TestResult tr : me.getValue()){
-				if(!sampleIds.add(tr.getSampleId()))
-					System.err.println("duplicate sample id: "+ tr.getSampleId() +" patient: "+ me.getKey().getPatientId());
-				
-				if(lastTr != null){
-					if(Math.abs(tr.getTestDate().getTime() - lastTr.getTestDate().getTime()) < 864000000L)
-						System.err.println("dates less than 10 days appart: "+ lastTr.getTestDate() +" "+ tr.getTestDate() +" patient: "+ me.getKey().getPatientId());
-				}
-				lastTr = tr;
-			}
+		for (String s : sampleIdNull) {
+			System.err.println(s);
 		}
 		
-		System.err.println("sampleIdNull" + sampleIdNull.size());
+		System.err.println(patientAsisTestResults.size());
 	}
 	
 	public static int getMonth(Date d) {
@@ -175,6 +170,20 @@ public class ImportAsis {
 
 		for(Patient p : t.getPatients()) {
 			patients.put(CompareAsisWithRegaDB.getPatientId(p), p);
+		}
+		
+		return patients;
+	}
+	
+	public static Map<String, Patient> getAsisPatientId(Transaction t) {
+		Map<String, Patient> patients = new HashMap<String, Patient>();
+		
+		for(Patient p : t.getPatients()) {
+			for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
+				if (pav.getAttribute().getName().equals("ASIS ID")) {
+					patients.put(pav.getValue(), p);
+				}
+			}
 		}
 		
 		return patients;
