@@ -128,14 +128,6 @@ public class ImportAsis {
 		System.err.println(patientAsisTestResults.size());
 	}
 	
-	public static int getMonth(Date d) {
-		return Integer.parseInt(new SimpleDateFormat("MM").format(d));
-	}
-	
-	public static int getYear(Date d) {
-		return Integer.parseInt(new SimpleDateFormat("yyyy").format(d));
-	}
-	
 	public static List<TestResult> getViralLoads(Patient p) {
 		List<TestResult> vl = new ArrayList<TestResult>();
 		
