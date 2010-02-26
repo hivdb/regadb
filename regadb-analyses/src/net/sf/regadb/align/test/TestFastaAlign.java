@@ -112,7 +112,7 @@ public class TestFastaAlign {
                     Collections.sort(result, new Comparator<AaSequence>(){
 						
                     	public int compare(AaSequence a1, AaSequence a2) {
-							return a1.getProtein().getAbbreviation().toUpperCase().compareTo(a2.getProtein().getAbbreviation().toUpperCase());
+							return a1.getProtein().getAbbreviation().compareTo(a2.getProtein().getAbbreviation());
 						}
                     });
                     
