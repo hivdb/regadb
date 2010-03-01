@@ -17,11 +17,11 @@ public class ScoredAlignment {
         this.score = score;
     }
 
-    Alignment getAlignment() {
+    public Alignment getAlignment() {
         return alignment;
     }
 
-    double getScore() {
+    public double getScore() {
         return score;
     }
 }
