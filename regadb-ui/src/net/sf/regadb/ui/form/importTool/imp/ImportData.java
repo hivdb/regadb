@@ -340,7 +340,7 @@ public class ImportData {
 						Sequence s = sequences.get(value);
 						if (s == null)
 							return WString.tr("importTool.import.sequenceNotFound").arg(value).arg(row).arg(header);
-						ntseq.setNucleotides(s.seqString());
+						ntseq.setNucleotides(Utils.clearNucleotides(s.seqString()));
 						ntseq.setLabel(value);
 					}
 					ntseq.setViralIsolate(getIsolate(r.getNumber(), isolates));
