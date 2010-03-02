@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,7 +69,7 @@ public class ImportAsis {
 				p = asisPatients.get(patientId);
 			}
 			
-			if (p != null) { 
+			if (p != null && !p.getPatientId().equals("596455")) { 
 				//check if the pt has test results (only viral load!) which have sample id == null
 				for (TestResult tr : getViralLoads(p)) {
 					if (tr.getSampleId() == null || tr.getSampleId().trim().equals("")) {
@@ -91,20 +90,22 @@ public class ImportAsis {
 					testValue = '>'+ testValue;
 				else if(testValue.equals("50") || testValue.equals("40"))
 					testValue = '<'+ testValue;
-				else if(testValue.equals("999999"))
+				else if(testValue.equals("9999999") || testValue.equals("999999"))
 					testValue = ">10000000";
 				else{
-					long l = 0;
+					double d = 0;
 					try{
-						l = Long.parseLong(testValue);
+						d = Double.parseDouble(testValue);
 					}catch(Exception e){
 						e.printStackTrace();
 					}
 					
-					if(l < 40 || l > 500000)
-						System.err.println("suspicious value: "+ patientId +","+ sampleId +","+ testValue);
-					
-					testValue = "="+ testValue;
+					if(d < 40)
+						testValue = "<40";
+					else if (d > 9999999)
+						testValue = ">10000000";
+					else
+						testValue = "="+ Math.round(d);
 				}
 				
 				TestResult asisTestResult = new TestResult(viralLoadTest);
@@ -118,6 +119,8 @@ public class ImportAsis {
 					patientAsisTestResults.put(p, asisTestResults);
 				}
 				asisTestResults.add(asisTestResult);
+				
+				p.addTestResult(asisTestResult);
 			}
 		}
 		
@@ -126,6 +129,8 @@ public class ImportAsis {
 		}
 		
 		System.err.println(patientAsisTestResults.size());
+		
+		t.commit();
 	}
 	
 	public static List<TestResult> getViralLoads(Patient p) {
