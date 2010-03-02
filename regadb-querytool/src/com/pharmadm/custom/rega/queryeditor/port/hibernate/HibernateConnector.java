@@ -180,7 +180,6 @@ public class HibernateConnector implements DatabaseConnector {
 		return list;
 	}
 
-	@Override
 	public void close() {
 		login.closeSession();
 	}
