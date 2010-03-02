@@ -2,11 +2,9 @@ package be.kuleuven.rega.research.tce;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.TreeSet;
 
 import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.TableQueryOutput;
@@ -14,7 +12,6 @@ import net.sf.hivgensim.queries.framework.snapshot.FromSnapshot;
 import net.sf.hivgensim.queries.framework.utils.DateUtils;
 import net.sf.hivgensim.queries.framework.utils.DrugGenericUtils;
 import net.sf.hivgensim.queries.framework.utils.PatientUtils;
-import net.sf.hivgensim.queries.framework.utils.TestUtils;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
 import net.sf.hivgensim.queries.framework.utils.ViralIsolateUtils;
 import net.sf.hivgensim.queries.input.FromDatabase;
@@ -28,7 +25,6 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
-//	private Genome genome = StandardObjects.getHiv1Genome();
 	private TestType cd4tt = StandardObjects.getCd4TestType();
 	private TestType vltt = StandardObjects.getHiv1ViralLoadTestType();
 
@@ -36,18 +32,12 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 	private List<String> NRTIdrugs = Arrays.asList(new String[]{"ABC","DDI","FTC","3TC","D4T","TDF","AZT","DDC"});
 	private List<String> NNRTIdrugs = Arrays.asList(new String[]{"DLV","EFV","NVP","ETV"});
 	private List<String> PIdrugs = Arrays.asList(new String[]{"LPV/r","SQV/r","SQV","IDV/r","IDV","APV/r","APV","DRV/r","DRV","FPV/r","FPV","ATV/r","ATV","TPV/r","TPV","NFV"});
-//	private List<Test> resistanceTests = Utils.getResistanceTests();
-//	private List<DrugGeneric> resistanceGenericDrugs = DrugGenericUtils.getDrugsSortedOnResistanceRanking(genericDrugs, true);
 
 	private SimpleDateFormat dateOutputFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 	private boolean first = true;
-
-//	private String organism;
 	
 	public TCEQueryOutput(Table out, File file, TableOutputType type, String organism) {
 		super(out, file, type);
-//		this.organism = organism;		
 	}
 
 	public void process(TCE tce) {
@@ -55,8 +45,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			addHeader();
 
 		ViralIsolate vi = ViralIsolateUtils.closestToDate(tce.getPatient().getViralIsolates(), tce.getStartDate());
-
-//		Map<String, String> resistanceResults = new HashMap<String, String>();
 
 		addColumn(dateOutputFormat.format(tce.getStartDate()));
 		addColumn(PatientUtils.getDatasource(tce.getPatient()).getDescription());
@@ -67,19 +55,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 
 		addColumn(ViralIsolateUtils.getConcatenatedNucleotideSequence(vi));
 		addColumn(ViralIsolateUtils.extractSubtype(vi));
-//		for(TestResult tr : vi.getTestResults()) {
-//			TestType tt = tr.getTest().getTestType();
-//			if(Equals.isSameTestType(tt, StandardObjects.getGssTestType(genome))) {
-//				resistanceResults.put(tr.getTest().getDescription()+"_"+tr.getDrugGeneric().getGenericId(), tr.getValue());
-//			}
-//		}
-//
-//		for(Test rt : resistanceTests) {
-//			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA"))					
-//				for(DrugGeneric dg : resistanceGenericDrugs) {
-//					addColumn(resistanceResults.get(rt.getDescription() + "_" + dg.getGenericId()));
-//				}
-//		}
 		
 		boolean NRTIexp = addExperience(tce, "NRTI") > 0;
 		boolean NNRTIexp = addExperience(tce, "NNRTI") > 0;
@@ -131,14 +106,6 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		addColumn("vi date");
 		addColumn("nt sequences");
 		addColumn("subtype");
-//		for(Test rt : resistanceTests) {
-//			if(rt.getTestType().getGenome().getOrganismName().equals(organism) && rt.getDescription().startsWith("REGA")){					
-//				for(DrugGeneric dg : resistanceGenericDrugs) {
-//					addColumn(rt.getDescription().replace('.', '_') + "_" + dg.getGenericId());
-//				}
-//			}
-//		}
-
 		addColumn("# days of NRTI experience");
 		addColumn("# days of NNRTI experience");
 		addColumn("# days of PI experience");
@@ -220,6 +187,5 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 		}
 		input.run();
 	}
-
 
 }
