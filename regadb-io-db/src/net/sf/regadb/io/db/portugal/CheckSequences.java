@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 
 import net.sf.regadb.align.local.CodonAlign;
 import net.sf.regadb.align.local.NeedlemanWunsch;
-import net.sf.regadb.align.local.ScoredAlignment;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -30,9 +29,9 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.seq.Sequence;
 import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SymbolList;
 
 public class CheckSequences {
+	@SuppressWarnings("serial")
 	private static class SampleException extends Exception{
 		private String sampleId;
 		
@@ -113,11 +112,12 @@ public class CheckSequences {
 	private int pathOffset;
 	Map<String, ViralIsolate> isolates = new HashMap<String, ViralIsolate>();
 	
+	@SuppressWarnings("unchecked")
 	public CheckSequences(String user, String pass) throws WrongUidException, WrongPasswordException, DisabledUserException{
 		Transaction t = Login.authenticate(user, pass).createTransaction();
 		List<Object[]> result = t.createQuery("select vi.sampleId, vi from ViralIsolate as vi").list();
 		for (Object[] r : result) {
-			isolates.put((String)r[0], (ViralIsolate)r[1]);
+			isolates.put(((String)r[0]).toLowerCase(), (ViralIsolate)r[1]);
 		}
 	}
 	
@@ -126,12 +126,14 @@ public class CheckSequences {
 			notFoundOut = new PrintStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separatorChar + "not_found.csv"));
 			nucsDifferOut = new PrintStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separatorChar + "nucs_differ.csv"));
 			datesDifferOut = new PrintStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separatorChar + "dates_differ.csv"));
+			skippedOut = new PrintStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separatorChar + "skipped.csv"));
 			
 			seqOk = seqNotFound = seqNucsDiffer = seqDatesDiffer = skipped = 0;
 			
 			notFoundOut.println("file;sampleId");
 			nucsDifferOut.println("file;sampleId;nucleotides_regadb;nucleotides_fasta");
 			datesDifferOut.println("file;sampleId;date_regadb;date_fasta");
+			skippedOut.println("file");
 			
 			pathOffset = fastaDir.getAbsolutePath().length()+1;
 			findFastas(fastaDir);
@@ -139,6 +141,7 @@ public class CheckSequences {
 			notFoundOut.close();
 			nucsDifferOut.close();
 			datesDifferOut.close();
+			skippedOut.close();
 			
 			System.out.println("Ok: "+ seqOk 
 					+" Not found: "+ seqNotFound 
@@ -154,7 +157,7 @@ public class CheckSequences {
 	private void findFastas(File dir){
 		for(File f : dir.listFiles()){
 			if(skip(f)){
-				System.err.println("skipped: "+ f.getAbsolutePath().substring(pathOffset));
+				skippedOut.println(f.getAbsolutePath().substring(pathOffset));
 				++skipped;
 				continue;
 			}
@@ -242,7 +245,7 @@ public class CheckSequences {
 	
 	protected void checkSequence(String sampleId, Date sampleDate, String nucleotides)
 			throws SampleIdNotFoundException, SampleDatesDifferException, NucleotidesDifferException{
-		ViralIsolate vi = isolates.get(sampleId);
+		ViralIsolate vi = isolates.get(sampleId.toLowerCase());
 		if(vi == null)
 			throw new SampleIdNotFoundException(sampleId);
 		
