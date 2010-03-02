@@ -30,7 +30,7 @@ public class FastaClean extends FastaTool{
 	@Override
 	protected void processSequence(FastaSequence fs) {
 		boolean seqIsClean = true;
-		if(fs.getSequence().substring(startNt,stopNt).contains("-")){				
+		if(fs.getSequence().substring(27,95*3).contains("-") || fs.getSequence().substring(143*3, 300*3).contains("-")){				
 				seqIsClean = false;					
 		}				
 		if(seqIsClean){
