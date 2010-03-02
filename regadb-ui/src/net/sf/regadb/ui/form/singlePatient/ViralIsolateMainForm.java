@@ -114,6 +114,7 @@ public class ViralIsolateMainForm extends WContainerWidget
             table_.addLineToTable(l, testResultField);
             testFormFields_.add(testResultField);
         }
+        tr.commit();
 
 		genomeL = new Label(tr("form.viralIsolate.editView.genome"));
 		genomeTF = new TextField(viralIsolateForm_.getInteractionState(),
