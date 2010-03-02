@@ -15,12 +15,13 @@ public class AnalysisThread extends Thread
         {
             public void run() 
             {
+            	Login copiedLogin = login.copyLogin();
                 try {
-                	Login copiedLogin = login.copyLogin();
                     analysis.launch(copiedLogin);
-                    copiedLogin.closeSession();
                 } catch (ServiceException e) {
                     e.printStackTrace();
+                } finally {
+                    copiedLogin.closeSession();
                 }
             }
         });
