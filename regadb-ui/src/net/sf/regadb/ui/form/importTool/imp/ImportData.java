@@ -184,7 +184,12 @@ public class ImportData {
 		
 		for (Rule r : definition.getRules()) {
 			String header = r.getColumn();
-			String value = headerValueMap.get(header).trim();
+			
+			String value = headerValueMap.get(header);
+			if (value == null)
+				return WString.tr("importTool.import.cannotFindColumn").arg(header);
+			value = value.trim();
+			
 			Rule.Type type = r.getType();
 			
 			if (type == Rule.Type.PatientId) {
