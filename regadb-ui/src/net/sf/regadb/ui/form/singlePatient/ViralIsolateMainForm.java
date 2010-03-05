@@ -331,10 +331,6 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     public void saveData(Transaction t)
     {
-    	for(NtSequence ntseq : addedSequences){
-    		t.save(ntseq);
-    	}
-    	
         for(NtSequence ntseq : removedSequences)
         {
             t.delete(ntseq);
