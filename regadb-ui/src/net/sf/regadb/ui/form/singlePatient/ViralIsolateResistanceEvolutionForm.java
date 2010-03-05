@@ -111,7 +111,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 		asiCombo_.setCurrentIndex(0);
 
 		UserAttribute ua = t.getUserAttribute(t.getSettingsUser(), "chart.mutation");
-		if(ua!=null)
+		if(ua!=null && ua.getValue()!=null)
 			asiCombo_.setCurrentItem(ua.getValue());
 
 		t.commit();
