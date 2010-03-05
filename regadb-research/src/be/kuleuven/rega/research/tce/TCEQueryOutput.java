@@ -69,6 +69,7 @@ public class TCEQueryOutput extends TableQueryOutput<TCE> {
 			for(DrugGeneric dg_tce : tce.getDrugs()) {
 				if(dg_tce.getGenericId().equals(dg.getGenericId())) {
 					found = true;
+					break;
 				}
 			}
 			addColumn(found?"yes":"no");

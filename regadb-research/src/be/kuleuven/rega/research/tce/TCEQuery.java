@@ -52,7 +52,7 @@ public class TCEQuery extends Query<Patient,TCE> {
 			
 			if(precheck(tce)){
 				getNextQuery().process(tce);
-				return;
+//				return;
 			}
 			
 
