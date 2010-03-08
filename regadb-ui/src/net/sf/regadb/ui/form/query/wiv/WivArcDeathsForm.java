@@ -23,7 +23,7 @@ public class WivArcDeathsForm extends WivIntervalQueryForm {
         String query = "select pc, dd from PatientImpl as p inner join p.patientAttributeValues pc inner join p.patientAttributeValues dd where "
         	+ getArcPatientQuery("p.patientIi") +" and "
         	+"pc.attribute.name = 'PatCode' and dd.attribute.name = 'Death date'"
-        	+" and cast(dd.value as long) >= :var_start_date and cast(dd.value as long) <= :var_end_date order by dd.value desc";
+        	+" and case when dd.attribute.name = 'Death date' then cast(dd.value as long) else 0 end between :var_start_date and :var_end_date order by dd.value desc";
         setQuery(query);
         
         setStartDate(DateUtils.getDateOffset(getEndDate(), Calendar.YEAR, -1));
