@@ -385,7 +385,7 @@ public class ImportData {
 		for (Map.Entry<Integer, Therapy> e : therapies.entrySet()) {
 			if (e.getValue().getTherapyCommercials().size() > 0 || e.getValue().getTherapyGenerics().size() > 0) {
 				if (e.getValue().getStartDate() == null)
-					return WString.tr("importTool.import.therapyMissingStartDate").arg(row);
+					return WString.tr("importTool.import.therapyMissingStartDate").arg(e.getKey()).arg(row);
 				else if (!isStartBeforeEnd(e.getValue().getStartDate(), e.getValue().getStopDate()))
 					return WString.tr("importTool.import.therapyEndBeforeStartDate").arg(e.getKey()).arg(row);
 				else
