@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,7 +108,14 @@ public class TestFastaAlign {
                     }
                     
                     System.out.println("sequence=" + seq.getName());
-                    List<AaSequence> result = aligner.align(ntseq, g);
+                    List<AaSequence> tmpResult = aligner.align(ntseq, g);
+
+                    //remove the AaSequences where startpos == endpos
+                    List<AaSequence> result = new ArrayList<AaSequence>();
+                    for (AaSequence aaseq : tmpResult) {
+                    	if (aaseq.getFirstAaPos() != aaseq.getLastAaPos())
+                    		result.add(aaseq);
+                    }
                     
                     Collections.sort(result, new Comparator<AaSequence>(){
 						
