@@ -284,5 +284,14 @@ public class TherapyUtils {
 		}
 		return false;
 	}
+	
+	public static boolean containsDrugGeneric(Therapy t, String drug){
+		for(DrugGeneric dg : allDrugGenerics(t)){
+			if(dg.getGenericId().equals(drug)){
+				return true;
+			}			
+		}
+		return false;
+	}
 
 }

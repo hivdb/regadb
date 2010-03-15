@@ -35,6 +35,7 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 
@@ -64,6 +65,7 @@ public class ObjectReplicator {
 	private HashMap<Integer,TestType> testTypes = new HashMap<Integer, TestType>();
 	private HashMap<Integer,TestObject> testObjects = new HashMap<Integer, TestObject>();
 	private HashMap<Integer,TestNominalValue> testNominalValues = new HashMap<Integer, TestNominalValue>();
+	private HashMap<Integer,TherapyMotivation> therapyMotivations = new HashMap<Integer, TherapyMotivation>();
 	
 	//per patient
 	private HashMap<Integer,TestResult> trs = new HashMap<Integer, TestResult>();
@@ -218,8 +220,23 @@ public class ObjectReplicator {
 		for(TherapyGeneric tg : t.getTherapyGenerics()){
 			generics.add(copy(tg));
 		}
+		nt.setTherapyMotivation(copy(t.getTherapyMotivation()));
 		nt.setTherapyGenerics(generics);
 		return nt;
+	}
+	
+	private TherapyMotivation copy(TherapyMotivation tm){
+		if(tm == null){
+			return null;
+		}
+		TherapyMotivation ntm = therapyMotivations.get(tm.getTherapyMotivationIi());
+		if(ntm == null){
+			ntm = new TherapyMotivation();
+			ntm.setTherapyMotivationIi(tm.getTherapyMotivationIi());
+			ntm.setValue(tm.getValue());
+			therapyMotivations.put(ntm.getTherapyMotivationIi(), ntm);
+		}
+		return ntm;		
 	}
 	
 	private TherapyGeneric copy(TherapyGeneric tg) {
