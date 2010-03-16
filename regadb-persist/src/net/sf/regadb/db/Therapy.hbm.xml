@@ -25,7 +25,7 @@
       <column name="stop_date" length="13" />
     </property>
     <property name="comment" type="string">
-      <column name="comment" length="50" />
+      <column name="comment" length="200" />
     </property>
     <set name="therapyCommercials" inverse="true" cascade="all">
       <key>
