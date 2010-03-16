@@ -733,7 +733,7 @@ public class Utils {
         		  if(pev.getStartDate() == null){
         			  return null;
         		  }
-        		  if(pev.getEventNominalValue().equals(env) && pev.getStartDate().equals(startDate)){
+        		  if(env.equals(pev.getEventNominalValue()) && pev.getStartDate().equals(startDate)){
         			  ConsoleLogger.getInstance().logWarning("Duplicate ade event for patient "+ p.getPatientId() +"(" + env.getValue() +" "+ startDate +" )");
         			  return null;
         		  }
