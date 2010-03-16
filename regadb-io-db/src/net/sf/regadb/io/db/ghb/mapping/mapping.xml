@@ -7,42 +7,338 @@
 <!--		</test>-->
 
 <!-- Lymphocytes -->
-		<test testtype="CD4 Count (cells/ul)" description="CD4 Count (generic)">
-			<match var="elementNaam" type="contains">CD4+ Abs.w.</match>
-			<values>
-				<value var="reeel">
-					<match var="eenheden" type="equals">per mm3</match>
-				</value>
-				<value var="reeel*1000">
-					<match var="eenheden" type="equals">10**9/L</match>
-				</value>
-			</values>
+
+		<test testtype="Absolute lymfocytose (bloed)" description="Absolute lymfocytose (bloed) (cells/ul)">
+			<match var="elementNaam" type="contains">Abs. lymf.</match>
+			<values var="reeel*1000"/>
 		</test>
-		<test testtype="CD4 Count (%)" description="CD4 Count % (generic)">
-			<match var="elementNaam" type="contains">CD4+ %</match>
+		<test testtype="Absolute lymfocytose (bloed)" description="Absolute lymfocytose (bloed) (cells/mm3)">
+			<match var="elementNaam" type="contains">Absol. Lymf.</match>
 			<values var="reeel"/>
 		</test>
-		
-		<test testtype="CD8 Count" description="CD8 Count (generic)">
-			<match var="elementNaam" type="contains">CD8+ Abs.w.</match>
-			<values>
-				<value var="reeel">
-					<match var="eenheden" type="equals">per mm3</match>
-				</value>
-				<value var="reeel*1000">
-					<match var="eenheden" type="equals">10**9/L</match>
-				</value>
-			</values>
-		</test>
-		<test testtype="CD8 Count (%)" description="CD8 Count % (generic)">
-			<match var="elementNaam" type="contains">CD8+ %</match>
+
+
+<!--  CD4 % -->		
+
+		<test testtype="CD4 Count (%)" description="CD3/CD4-plot (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">4</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">CD3/CD4-plot (bloed) OUD</match>
+			</match>
 			<values var="reeel"/>
 		</test>
+		<test testtype="CD4 Count (%)" description="CD4(+) T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">4</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">CD4(+) T cellen (bloed)</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD4 Count (%)" description="T lymfocyten subpopulaties (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">4</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">T lymfocyten subpopulaties (bloed) OUD</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD4 Count (%)" description="CD4 en CD8 T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">4</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">CD4 en CD8 T cellen (bloed) oude code</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+
+<!--  CD4 cells/ul -->
+
+		<test testtype="CD4 Count (cells/ul)" description="Absolute T4-lymfocytose (bloed)">
+			<match var="elementNaam" type="contains">abs T4</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD4 Count (cells/ul)" description="Absolute T4-lymfocytose (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD4+ Abs.w.</match>
+				<match var="aanvraagTestNaam" type="equals">Absolute T4-lymfocytose (bloed)oude code</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD4 Count (cells/ul)" description="CD3/CD4-plot (bloed)">
+			<match type="and">
+				<match type="or">
+					<match var="elementNaam" type="equals">CD4+ mm3-ber</match>
+					<match var="elementNaam" type="equals">CD4+ Abs.w.</match>
+				</match>
+				<match var="aanvraagTestNaam" type="equals">CD3/CD4-plot (bloed) OUD</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD4 Count (cells/ul)" description="CD4 en CD8 T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="equals">CD4+ Abs.w.</match>
+				<match var="aanvraagTestNaam" type="equals">CD4 en CD8 T cellen (bloed) oude code</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD4 Count (cells/ul)" description="CD4(+) T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="equals">CD4+ Abs.w.</match>
+				<match var="aanvraagTestNaam" type="equals">CD4(+) T cellen (bloed)</match>
+			</match>
+			<values var="reeel*1000"/>
+		</test>
+
+<!-- CD4/CD8 -->		
 		
-<!--  Viral Loads -->		
+		<test testtype="CD4/CD8 (ratio)" description="CD4/CD8 (ratio)">
+			<match var="elementNaam" type="contains">CD4/CD8</match>
+			<values var="reeel"/>
+		</test>
+
+<!--  CD8 % -->
+
+		<test testtype="CD8 Count (%)" description="CD3/CD8-plot (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">CD3/CD8-plot (bloed) OUD</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD8 Count (%)" description="CD8(+) T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">CD8(+) T cellen (bloed)</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD8 Count (%)" description="T lymfocyten subpopulaties (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">T lymfocyten subpopulaties (bloed) OUD</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD8 Count (%)" description="CD4 en CD8 T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="equals">%</match>
+				<match var="aanvraagTestNaam" type="equals">CD4 en CD8 T cellen (bloed) oude code</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+
+<!--  CD8 cells/ul -->
+
+		<test testtype="CD8 Count" description="CD4 en CD8 T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="contains">mm3</match>
+				<match var="aanvraagTestNaam" type="equals">CD4 en CD8 T cellen (bloed) oude code</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD8 Count" description="CD3/CD8-plot (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="contains">mm3</match>
+				<match var="aanvraagTestNaam" type="equals">CD3/CD8-plot (bloed) OUD</match>
+			</match>
+			<values var="reeel"/>
+		</test>
+		<test testtype="CD8 Count" description="CD8(+) T cellen (bloed)">
+			<match type="and">
+				<match var="elementNaam" type="contains">CD8</match>
+				<match var="eenheden" type="contains">10**9/L</match>
+				<match var="aanvraagTestNaam" type="equals">CD8(+) T cellen (bloed)</match>
+			</match>
+			<values var="reeel*1000"/>
+		</test>
+
+<!-- HBV -->
+
+		<test testtype="HBcAb (qualitative)" description="Hepatitis B core antistoffen">
+			<match var="aanvraagTestNaam" type="equals">Hepatitis B core antistoffen (aHBc) oud</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="equals" var="resultaat">positief (zwak)</match></value>
+			</values>
+		</test>
+		<test testtype="HBcAb (qualitative)" description="Hepatitis B core antistoffen (Architect)">
+			<match var="aanvraagTestNaam" type="equals">Hepatitis B core As (Architect)</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="equals" var="resultaat">positief (zwak)</match></value>
+			</values>
+		</test>
+		<test testtype="HBc IgM (qualitative)" description="Hepatitis B core IgM">
+			<match var="elementNaam" type="equals">aHBc IgM</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+
+		
+		<test testtype="HBsAb (IU/L)" description="Hepatitis B surface antistoffen (IU/L)">
+			<match var="aanvraagTestNaam" type="equals">Hepatitis B surface antistoffen (aHBs)</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test testtype="HBsAb (IU/L)" description="Hepatitis B surface antistoffen (Architect) (IU/L)">
+			<match var="aanvraagTestNaam" type="equals">Hepatitis B surface As (Architect)</match>
+			<values var="relatie+reeel"/>
+		</test>
+
+<!--  HIV 1 & 2 -->
+		<test testtype="HIV Ab/Ag (qualitative)" description="Anti HIV-1/2 Plus (qualitative)">
+			<match type="and">
+				<match var="elementNaam" type="contains">Anti-HIV</match>
+				<match var="soort" type="equals">S</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="contains" var="resultaat">zwak</match></value>
+				<value const="Positive (possibly false)"><match type="contains" var="resultaat">vals</match></value>
+				<value const="Limit"><match type="equals" var="resultaat">limietwaarde</match></value>
+			</values>
+		</test>
+		<test testtype="HIV Ab/Ag (qualitative)" description="Enzygnost HIV Integral II (qualitative)">
+			<match type="and">
+				<match var="labotestNaam" type="equals">Enzygnost HIV Integral II</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="contains" var="resultaat">zwak</match></value>
+				<value const="Positive (possibly false)"><match type="contains" var="resultaat">vals</match></value>
+				<value const="Limit"><match type="equals" var="resultaat">limietwaarde</match></value>
+			</values>
+		</test>
+		<test testtype="HIV Ab/Ag (qualitative)" description="Enzygnost HIV Integral (qualitative)">
+			<match type="and">
+				<match var="elementNaam" type="equals">Enz.HIV 1&amp;2</match>
+				<match var="soort" type="equals">S</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="contains" var="resultaat">zwak</match></value>
+				<value const="Positive (possibly false)"><match type="contains" var="resultaat">vals</match></value>
+				<value const="Limit"><match type="equals" var="resultaat">limietwaarde</match></value>
+			</values>
+		</test>
+		<test testtype="HIV Ab/Ag (qualitative)" description="HIV Ab/Ag (Architect) (qualitative)">
+			<match type="and">
+				<match var="labotestNaam" type="equals">HIV Ag/Ab (Architect)</match>
+				<match var="soort" type="equals">S</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="contains" var="resultaat">zwak</match></value>
+				<value const="Positive (possibly false)"><match type="contains" var="resultaat">vals</match></value>
+				<value const="Limit"><match type="equals" var="resultaat">limietwaarde</match></value>
+			</values>
+		</test>
+			<test testtype="HIV Ab/Ag (qualitative)" description="HIV Ab/Ag (generic) (qualitative)">
+			<match type="and">
+				<match type="or">
+					<match var="elementNaam" type="equals">HIV-1/HIV-2</match>
+					<match var="elementNaam" type="equals">HIV Ag/Ab</match>
+				</match>
+				<match var="soort" type="equals">S</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+				<value const="Positive (weak)"><match type="contains" var="resultaat">zwak</match></value>
+				<value const="Positive (possibly false)"><match type="contains" var="resultaat">vals</match></value>
+				<value const="Limit"><match type="equals" var="resultaat">limietwaarde</match></value>
+			</values>
+		</test>
+		
+		<test testtype="HIV Ab/Ag (S/CO)" description="Anti HIV-1/2 (S/CO)">
+			<match type="and">
+				<match var="elementNaam" type="contains">Anti-HIV</match>
+				<match var="eenheden" type="equals">S/CO</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test testtype="HIV Ab/Ag (S/CO)" description="Enzygnost HIV Integral (S/CO)">
+			<match type="and">
+				<match var="elementNaam" type="equals">Enz.HIV 1&amp;2</match>
+				<match var="eenheden" type="equals">S/CO</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test testtype="HIV Ab/Ag (S/CO)" description="HIV Ab/Ag (generic) (S/CO)">
+			<match type="and">
+				<match type="or">
+					<match var="elementNaam" type="equals">HIV-1/HIV-2</match>
+					<match var="elementNaam" type="equals">HIV Ag/As</match>
+				</match>
+				<match var="eenheden" type="equals">S/CO</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+		<test testtype="HIV Ab/Ag (OD/cutoff)" description="Enzygnost HIV Integral II (OD/cutoff)">
+			<match type="and">
+				<match var="elementNaam" type="equals">Enz.HIV 1&amp;2</match>
+				<match var="eenheden" type="equals">OD/cutoff</match>
+			</match>
+			<values var="relatie+reeel"/>
+		</test>
+		
+		
+
+<!-- CMV IgG -->
+		<test testtype="CMV IgG (qualitative)" description="CMV IgG (Architect) (qualitative)">
+			<match type="and">
+				<match var="aanvraagTestNaam" type="equals">CMV IgG (Architect)</match>
+				<match var="elementNaam" type="equals">CMV IgG</match>
+			</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+		<test testtype="CMV IgG (qualitative)" description="CMV IgG (qualitative)">
+			<match var="elementNaam" type="equals">CMV IgG</match>
+			<values>
+				<value const="Positive"><match type="equals" var="resultaat">positief</match></value>
+				<value const="Negative"><match type="equals" var="resultaat">negatief</match></value>
+			</values>
+		</test>
+
+
+<!--  OLD -->		
+<!--  Viral Loads -->
+		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Abbott RealTime (copies/ml)">
+			<match type="and">
+				<match var="labotestNaam" type="contains">Abbott</match>
+				<match var="elementNaam" type="equals">HIV-1 VL</match>
+			</match>
+			<values var="relatie+geheel"/>
+		</test>
 		<test organism="HIV-1" testtype="Viral Load (copies/ml)" description="Viral Load (copies/ml) (generic)">
 			<match var="elementNaam" type="equals">HIV-1 VL</match>
 			<values var="relatie+geheel"/>
+		</test>
+		<test organism="HIV-1" testtype="Viral Load (log10)" description="Abbott RealTime (log10)">
+			<match type="and">
+				<match var="labotestNaam" type="contains">Abbott</match>
+				<match var="elementNaam" type="equals">HIV-1 VL log</match>
+				<match var="eenheden" type="equals">log copies/mL</match>
+			</match>
+			<values var="relatie+reeel"/>
 		</test>
 		<test organism="HIV-1" testtype="Viral Load (log10)" description="Viral Load (log10) (generic)">
 			<match type="and">
@@ -79,7 +375,8 @@
 			<values var="relatie+reeel"/>
 		</test>
 
-<!-- Antibodies/gens -->		
+<!-- Antibodies/gens -->
+<!-- 
 		<test testtype="HBsAb" description="HBsAb (generic)">
 			<match type="and">
 				<match var="elementNaam" type="iequals">aHBs</match>
@@ -150,7 +447,9 @@
 				<value const="Negative"><match var="resultaat" type="equals">negatief</match></value>
 			</values>
 		</test>
+-->
 	</tests>
+
 	
 <!-- Attributes -->
 	<attributes>
