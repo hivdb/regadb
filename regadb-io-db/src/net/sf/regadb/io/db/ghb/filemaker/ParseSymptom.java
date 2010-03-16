@@ -8,11 +8,11 @@ import java.util.Map;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
-import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.io.db.ghb.GhbUtils;
 import net.sf.regadb.io.db.util.NominalEvent;
 import net.sf.regadb.io.db.util.Utils;
@@ -42,6 +42,8 @@ public class ParseSymptom {
         Table adiMapTable = Utils.readTable(mapping.getAbsolutePath());
         
         NominalEvent aidsDefiningIllness    = new NominalEvent("Aids defining illness", adiMapTable, Utils.selectEvent("Aids defining illness", regadbEvents));
+        Event symptomen = new Event("Symptomen");
+        symptomen.setValueType(StandardObjects.getStringValueType());
         
         Attribute symptomClassAttribute = new Attribute();
         symptomClassAttribute.setName("CDC Class");
@@ -81,6 +83,10 @@ public class ParseSymptom {
                 if(startDate != null){
                     
                     Utils.handlePatientEventValue(aidsDefiningIllness, SName, startDate, null, p);
+                    PatientEventValue pev = p.createPatientEventValue(symptomen);
+                    pev.setStartDate(startDate);
+                    pev.setValue(SName);
+                    
                     //pevs.add(pev);
                    
                     if(!isEmpty(SSKlasse)){
