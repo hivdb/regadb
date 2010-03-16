@@ -165,7 +165,6 @@ create index event_nominal_value_event_ii_idx on regadbschema.event_nominal_valu
 create index event_value_type_ii_idx on regadbschema.event (value_type_ii);
 create index nt_sequence_viral_isolate_ii_idx on regadbschema.nt_sequence (viral_isolate_ii);
 create index open_reading_frame_genome_ii_idx on regadbschema.open_reading_frame (genome_ii);
-create index open_reading_frame_genome_ii_idx on regadbschema.viral_isolate (genome_ii);
 create index patient_attribute_value_attribute_ii_idx on regadbschema.patient_attribute_value (attribute_ii);
 create index patient_attribute_value_nominal_value_ii_idx on regadbschema.patient_attribute_value (nominal_value_ii);
 create index patient_attribute_value_patient_ii_idx on regadbschema.patient_attribute_value (patient_ii);
@@ -199,4 +198,5 @@ create index therapy_patient_ii_idx on regadbschema.therapy (patient_ii);
 create index therapy_therapy_motivation_ii_idx on regadbschema.therapy (therapy_motivation_ii);
 create index user_attribute_uid_idx on regadbschema.user_attribute (uid);
 create index user_attribute_value_type_ii_idx on regadbschema.user_attribute (value_type_ii);
+create index viral_isolate_genome_ii_idx on regadbschema.viral_isolate (genome_ii);
 create index viral_isolate_patient_ii_idx on regadbschema.viral_isolate (patient_ii);
