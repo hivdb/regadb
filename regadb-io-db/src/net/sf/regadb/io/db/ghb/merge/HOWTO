@@ -9,7 +9,7 @@ NAME: ghb-new
 	admin
 	-dont-add Therapy,TestResult,ViralIsolate
 	-dont-update Therapy,TestResult,ViralIsolate
-	-dont-delete Therapy,TestResult,ViralIsolate
+	-dont-delete Therapy,TestResult,ViralIsolate,PatientEventValue
 
 NAME: ghb-new-u
 
@@ -35,3 +35,10 @@ Repeat this for every period of manual changes between db updates:
 ghb0901-upgraded - last export
 
 NAME: ghb-new-um
+
+Finally:
+- run AutoImport once again, cause some new patients could've been added during the merging process,
+  who weren't there during the first AutoImport 
+- import PatCodes
+- check if Patients have been deleted, this process doesn't account for this
+- merge test results
