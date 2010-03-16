@@ -207,7 +207,7 @@ public class Table {
 			sout.flush();
 	}
 
-	private ArrayList<String> splitHandleQuotes(String s, char delimiter, char quoteChar, char escapeChar) {
+	public static ArrayList<String> splitHandleQuotes(String s, char delimiter, char quoteChar, char escapeChar) {
 		ArrayList<String> results = new ArrayList<String>();
 
 		StringBuffer current = new StringBuffer("");
