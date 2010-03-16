@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ContainsMatcher extends VariableMatcher{
     
-    public boolean matchesCondition(Map<String,String> variables) {
-        return variables.get(getVariable()).contains(getString());
+    public boolean matchesCondition(Map<String,String> variables) throws MatcherException{
+        return getValue(variables).contains(getString());
     }
 }

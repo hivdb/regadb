@@ -7,12 +7,19 @@ import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
 import org.jdom.Element;
 
 public abstract class Matcher {
+	@SuppressWarnings("serial")
+	public static class MatcherException extends Exception{
+		public MatcherException(String msg){
+			super(msg);
+		}
+	}
+	
     private boolean inverse=false;
 
-    public final boolean matches(Map<String,String> variables){
+    public final boolean matches(Map<String,String> variables) throws MatcherException{
         return inverse ? !matchesCondition(variables) : matchesCondition(variables);
     }
-    protected abstract boolean matchesCondition(Map<String,String> variables);
+    protected abstract boolean matchesCondition(Map<String,String> variables) throws MatcherException;
     
     public void parse(Element e) throws MapperParseException {
         setInverse("true".equals(e.getAttributeValue("inverse")));

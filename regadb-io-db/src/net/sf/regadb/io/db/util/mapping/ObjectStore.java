@@ -16,6 +16,9 @@ import net.sf.regadb.db.ValueType;
 
 public abstract class ObjectStore {
     public abstract TestType getTestType(String description, String organismName);
+    public TestType getTestType(TestType tt){
+    	return getTestType(tt.getDescription(),tt.getGenome() == null ? null : tt.getGenome().getOrganismName());
+    }
     public TestType createTestType(String description, TestObject testObject, Genome genome, ValueType valueType){
     	TestType tt = new TestType();
     	tt.setValueType(valueType);
@@ -26,6 +29,10 @@ public abstract class ObjectStore {
     }
     
     public abstract Test getTest(String description, String testTypeDescription, String organismName);
+    public Test getTest(Test t){
+    	return getTest(t.getDescription(), t.getTestType().getDescription(),
+    			t.getTestType().getGenome() == null ? null : t.getTestType().getGenome().getOrganismName());
+    }
     public Test createTest(TestType testType, String description){
     	Test t = new Test(testType, description);
         return t;
