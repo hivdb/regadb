@@ -23,10 +23,9 @@ public class ConsensusWindow {
 		sequencesPerSubtype.get(subtype).add(sequence);
 	}
 	
-	private void processSequences(ConsensusCalculator calculator,
-			List<SimpleSequence> sequences) {
+	private void processSequences(ConsensusCalculator calculator, List<SimpleSequence> sequences) {
 		for (SimpleSequence sequence : sequences) {
-			calculator.process(sequence.getMutations(), sequence.getStart(), sequence.getStop());
+			calculator.process(sequence);
 		}
 	}
 	
@@ -72,4 +71,5 @@ public class ConsensusWindow {
 		}
 		return sequencesPerSubtype.get(subtype).size();
 	}
+	
 }

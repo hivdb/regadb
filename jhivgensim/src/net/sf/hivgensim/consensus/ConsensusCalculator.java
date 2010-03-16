@@ -10,7 +10,8 @@ import net.sf.hivgensim.queries.framework.utils.NtSequenceUtils;
 import net.sf.regadb.db.AaSequence;
 
 public class ConsensusCalculator {
-
+	
+	private Map<String, Integer> supportPerDataset = new HashMap<String,Integer>();
 	private boolean add;
 	private String refSequence;
 	private Map<Short, Integer> support;
@@ -92,6 +93,7 @@ public class ConsensusCalculator {
 	}
 
 	public void startRemoving(){
+		supportPerDataset.clear();
 		this.add = false;
 	}
 
@@ -173,4 +175,22 @@ public class ConsensusCalculator {
 		}
 		return max;
 	}
+
+	public void process(SimpleSequence sequence) {
+		if(supportPerDataset.containsKey(sequence.getDataset())){
+			supportPerDataset.put(sequence.getDataset(),supportPerDataset.get(sequence.getDataset()) + 1);
+		} else {
+			supportPerDataset.put(sequence.getDataset(), 1);
+		}
+		process(sequence.getMutations(),sequence.getStart(),sequence.getStop());		
+	}
+
+	public void printDatasetCounts() {
+		System.out.println();
+		for(Entry<String, Integer> e : supportPerDataset.entrySet()){
+			System.out.println(e.getKey()+" "+e.getValue());
+		}
+		System.out.println();
+	}
+	
 }

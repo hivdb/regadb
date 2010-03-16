@@ -23,12 +23,13 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class MutationTimeLine implements IQuery<Patient> {
 
+	private String currentDataset;
 	private Date begin;
 	private Date end;
 	private int deltaField;
 	private int delta;
 	private int windowSize;
-	private GetDrugClassNaiveSequences preQuery;
+	private IQuery<Patient> preQuery;
 	private String reference;
 	private PrintStream out;
 
@@ -102,11 +103,12 @@ public class MutationTimeLine implements IQuery<Patient> {
 	}
 
 	public void process(Patient input) {
+		currentDataset = input.getDatasets().iterator().next().getDescription();
 		preQuery.process(input);
 	}
 
 	private class MutationTimeLineProcessor implements IQuery<AaSequence> {
-
+		
 		private SortedMap<Date, ConsensusWindow> windows;
 		private static final String subB = "HIV-1 Subtype B";
 
@@ -126,7 +128,7 @@ public class MutationTimeLine implements IQuery<Patient> {
 			Date current = begin;
 			calendar.setTime(begin);
 			while (current.before(end)) {
-				windows.get(current).beginConsensusFor(subB, calculator);
+				windows.get(current).beginConsensusFor(subB, calculator);				
 				calendar.add(deltaField, delta);
 				current = calendar.getTime();
 			}
@@ -176,7 +178,8 @@ public class MutationTimeLine implements IQuery<Patient> {
 
 		private void printAllMutations(Date end, ConsensusCalculator calculator, Calendar beginCalendar, Calendar endCalendar, String previousConsensus) {
 			Date begin;
-			while (end.before(windows.lastKey())) {
+			while (end.before(windows.lastKey())) {	
+				calculator.printDatasetCounts();
 				out.print("                         ");
 				String consensus = calculator.getCurrentConsensusSequence();
 				out.println();
@@ -214,9 +217,9 @@ public class MutationTimeLine implements IQuery<Patient> {
 		public void process(AaSequence input) {
 			Date sampleDate = input.getNtSequence().getViralIsolate().getSampleDate();
 			ConsensusWindow window = windows.get(windows.tailMap(sampleDate).firstKey());
-			String subtype = ConsensusCalculator.getSubtypeForConsensus(input);
-			SimpleSequence sequence = new SimpleSequence(input.getFirstAaPos(), input.getLastAaPos(), AaSequenceUtils.toCharSequence(input, reference));
-			window.addSequence(sequence, subtype);
+			String subtype = ConsensusCalculator.getSubtypeForConsensus(input);			
+			SimpleSequence sequence = new SimpleSequence(input.getFirstAaPos(), input.getLastAaPos(), AaSequenceUtils.toCharSequence(input, reference), currentDataset);			
+			window.addSequence(sequence, subtype);			
 		}
 
 		public void initializeWindows() {
@@ -235,6 +238,7 @@ public class MutationTimeLine implements IQuery<Patient> {
 			this.windows.put(currentThreshold, new ConsensusWindow());
 
 		}
+		
 	}
 
 	public static void main(String[] args) {
