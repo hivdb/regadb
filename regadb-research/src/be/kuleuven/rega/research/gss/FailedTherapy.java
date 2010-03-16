@@ -57,6 +57,15 @@ public class FailedTherapy {
 		return TherapyUtils.getGenericDrugs(getTherapy());
 	}
 	
+	public List<String> getDrugNames() {
+		List<String> names = new ArrayList<String>();
+		for(DrugGeneric dg : getDrugs()) {
+			if(!dg.getGenericId().equals("RTV"))
+				names.add(dg.getGenericId().replace("APV", "FPV"));			
+		}
+		return names;
+	}
+	
 	public boolean boosted() {
 		for(DrugGeneric dg : getDrugs()) {
 			if(dg.getGenericId().endsWith("/r") || dg.getGenericId().equals("RTV")){
