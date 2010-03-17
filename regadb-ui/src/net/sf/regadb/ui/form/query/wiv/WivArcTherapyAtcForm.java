@@ -24,7 +24,7 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 import org.hibernate.Query;
 
 public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
-    private String therapyDateConstraint = " not ((tp.startDate > :var_date and not cast(:var_date as date) is null) or ( not tp.stopDate is null and tp.stopDate < :var_date )) ";
+    private String therapyDateConstraint = " not ((tp.startDate > :var_date and not cast(:var_date as date) is null) or ( not tp.stopDate is null and tp.stopDate <= :var_date )) ";
     
     private DateField dateField;
 
