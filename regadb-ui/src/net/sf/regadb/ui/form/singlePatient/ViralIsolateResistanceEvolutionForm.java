@@ -88,15 +88,21 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 
 	private void loadCombo() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
+		
+    	ViralIsolateFormConfig config = 
+    		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
 
 		Set<String> tests = new HashSet<String>();
-		//        for(TestResult tr : patient_.getTestResults()) {
 		for(ViralIsolate iso : patient_.getViralIsolates()){
 			for(TestResult tr: iso.getTestResults()){
 				Test test = tr.getTest();
 				if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())){
-					if(tests.add(test.getDescription()))
+					if(tests.add(test.getDescription())) {
+						if (config != null && config.getAlgorithms() != null && !config.getAlgorithms().contains(test.getDescription()))
+							continue;
+						
 						asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
+					}
 				}
 			}
 		}
@@ -105,7 +111,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 		asiCombo_.setCurrentIndex(0);
 
 		UserAttribute ua = t.getUserAttribute(t.getSettingsUser(), "chart.mutation");
-		if(ua!=null)
+		if(ua!=null && ua.getValue()!=null)
 			asiCombo_.setCurrentItem(ua.getValue());
 
 		t.commit();

@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -112,6 +114,7 @@ public class ViralIsolateMainForm extends WContainerWidget
             table_.addLineToTable(l, testResultField);
             testFormFields_.add(testResultField);
         }
+        tr.commit();
 
 		genomeL = new Label(tr("form.viralIsolate.editView.genome"));
 		genomeTF = new TextField(viralIsolateForm_.getInteractionState(),
@@ -178,9 +181,17 @@ public class ViralIsolateMainForm extends WContainerWidget
             }
         }
 
-        for(NtSequence ntSequence : trans.getOrderedNtSequences(viralIsolateForm_.getViralIsolate())){
+        List<NtSequence> sortedSeqs = new ArrayList<NtSequence>(viralIsolateForm_.getViralIsolate().getNtSequences());
+        Collections.sort(sortedSeqs, new Comparator<NtSequence>() {
+			public int compare(NtSequence seq1, NtSequence seq2) {
+				return seq1.getLabel().compareTo(seq2.getLabel());
+			}
+		});
+
+        for(NtSequence ntSequence : sortedSeqs){
         	addSequenceForm(ntSequence);
         }
+        
         if (viralIsolateForm_.isEditable()) {
         	 addButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
 	                {
@@ -320,10 +331,6 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     public void saveData(Transaction t)
     {
-    	for(NtSequence ntseq : addedSequences){
-    		t.save(ntseq);
-    	}
-    	
         for(NtSequence ntseq : removedSequences)
         {
             t.delete(ntseq);
@@ -345,7 +352,6 @@ public class ViralIsolateMainForm extends WContainerWidget
             t.delete(tr);
         }
         
-		Transaction trans = RegaDBMain.getApp().createTransaction();
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
         if (config != null)
 		for(int i = 0; i < config.getTests().size(); i++) {
@@ -358,13 +364,13 @@ public class ViralIsolateMainForm extends WContainerWidget
             if(f instanceof ComboBox) {
                 if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
                 	if (tr == null)
-                		tr = createTestResult(trans.getTest(config.getTests().get(i).description));
+                		tr = createTestResult(t.getTest(config.getTests().get(i).description));
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
                 	if (tr == null)
-                		tr = createTestResult(trans.getTest(config.getTests().get(i).description));
+                		tr = createTestResult(t.getTest(config.getTests().get(i).description));
                     tr.setData(f.text().getBytes());
                 }
             }

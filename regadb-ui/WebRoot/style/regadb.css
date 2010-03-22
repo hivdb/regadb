@@ -649,4 +649,8 @@ table.datatable td.navigation{
         padding: 10px;
 }
 
-
+table.form-custom-grid > tbody > tr > td {
+	border-top: 1px solid #bbb;
+	border-right: 1px dashed #bbb;
+	padding: 0.5em;
+}

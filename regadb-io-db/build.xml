@@ -18,7 +18,7 @@
 
   <target name="compile" description="compile the source" depends="init" >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}">
+    <javac target="1.5" debug="on" srcdir="${src}" destdir="${build}">
   		<classpath refid="project.classpath"/>
     </javac>
   </target>
@@ -89,6 +89,13 @@
   	<attribute name="Class-Path" value="${jar-dependencies}"/>
       </manifest>
     </jar>
+  	
+  	<jar jarfile="${dist}/${proj.name}-pt-asis-import.jar" basedir="${build}">
+		<manifest>
+   			<attribute name="Main-Class" value="net.sf.regadb.io.db.portugal.asis.ImportAsis"/>
+   			<attribute name="Class-Path" value="${jar-dependencies}"/>
+       	</manifest>
+	</jar>
 
   	<antcall target="create-package" />
   </target>

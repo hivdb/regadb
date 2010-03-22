@@ -44,7 +44,7 @@ import eu.webtoolkit.jwt.WString;
 
 public class QueryToolRunnable implements Runnable {
 	private QueryEditor editor;
-	private Login login;
+	private Login originalLogin;
 	private String fileName;
 	private Status status;
 	private File csvFile;
@@ -87,9 +87,9 @@ public class QueryToolRunnable implements Runnable {
 	    }
 	}
 	
-	public QueryToolRunnable(Login copiedLogin, String fileName, QueryEditor editor) {
+	public QueryToolRunnable(Login login, String fileName, QueryEditor editor) {
 		this.fileName = fileName;
-		this.login = copiedLogin.copyLogin();
+		this.originalLogin = login;
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
@@ -169,10 +169,12 @@ public class QueryToolRunnable implements Runnable {
     	fastaFile = null;
     	numberFastaEntries = 0;
         
-    	Transaction t = login.createTransaction();
-    	statement = new HibernateStatement(t);
-    	
+    	Login copiedLogin = originalLogin.copyLogin();
+
         try{
+        	Transaction t = copiedLogin.createTransaction();
+        	statement = new HibernateStatement(t);
+        	
         	// create a copy of the query editor so the user can work on
         	// his query while this thread is running
         	QueryEditor newEditor = (QueryEditor) editor.clone();
@@ -217,7 +219,7 @@ public class QueryToolRunnable implements Runnable {
 					}
             		if (fastaFile != null) {
             			if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)o[o.length - 1], new HashSet<Dataset>(), accessiblePatients))
-            				numberFastaEntries = ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
+            				numberFastaEntries += ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
             		}
             		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
             		//this access solving stuff is horrible and could use a little rewrite, someday
@@ -232,6 +234,9 @@ public class QueryToolRunnable implements Runnable {
         		statusMsg = " (" + writtenLines + ")";
 	            success = true;
             }
+            
+			statement.close();
+            t.clearCache();
         }
         catch(IOException e){
         	statusMsg = ": " + errors.get("write_error");
@@ -256,10 +261,9 @@ public class QueryToolRunnable implements Runnable {
 		catch (Exception e) {
 			statusMsg = ": " + e.getMessage();
 			e.printStackTrace();
+		} finally {
+			copiedLogin.closeSession();
 		}
-		statement.close();
-    	t.clearCache();
-    	login.closeSession();
         return success;
     }
     
@@ -267,8 +271,8 @@ public class QueryToolRunnable implements Runnable {
     private Set<Integer> getAccessiblePatients(Transaction t) {
 		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery(
 				"select pd.id.patient.patientIi from PatientDataset pd where " +
-				"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ login.getUid() +"') "+
-				"or pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + login.getUid() + "')", null);
+				"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ originalLogin.getUid() +"') "+
+				"or pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + originalLogin.getUid() + "')", null);
 		Set<Integer> results = new HashSet<Integer>();
 		while (!result.isLast()) {
 			results.add((Integer) result.get()[0]);

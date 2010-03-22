@@ -22,6 +22,7 @@ import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.util.settings.Filter;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
@@ -159,15 +160,19 @@ public class FastaExportOptions extends FormTable {
 		
 		orfCB = new ComboBox<OpenReadingFrame>(is, null);
 		Transaction tr = RegaDBMain.getApp().createTransaction();
-		//TODO filter on organism filter
-		for (OpenReadingFrame orf : tr.getOpenReadingFrames()) 
-			if (RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter().compareRegexp(orf.getGenome().getOrganismName())) 
+
+		Filter filter = RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter();
+		for (OpenReadingFrame orf : tr.getOpenReadingFrames()) {
+			if (filter == null || filter.compareRegexp(orf.getGenome().getOrganismName())) 
 				orfCB.addItem(new DataComboMessage<OpenReadingFrame>(orf, orf.getGenome().getOrganismName() + " - " + orf.getName()));
+		}
+		
 		orfCB.addComboChangeListener(new Signal.Listener(){
 			public void trigger() {
 				loadProteins(null);
 			}
 		});
+		
 		orfCB.selectIndex(0);
 		proteinSB = new WSelectionBox();
 		proteinSB.setSelectionMode(SelectionMode.ExtendedSelection);

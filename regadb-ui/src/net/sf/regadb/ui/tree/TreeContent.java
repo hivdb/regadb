@@ -22,6 +22,8 @@ import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
@@ -1018,21 +1020,21 @@ public class TreeContent
                 }
             });
             
-//            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
-//            
-//            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
-//                public void performAction(TreeMenuNode node) 
-//                {
-//                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
-//                }
-//            });
-//
-//            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
-//                public void performAction(TreeMenuNode node) 
-//                {
-//                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
-//                }
-//            });
+            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
+            
+            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
+                }
+            });
+
+            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
+                }
+            });
             
             
             log = new ActionItem(WResource.tr("menu.log"),administratorMain);

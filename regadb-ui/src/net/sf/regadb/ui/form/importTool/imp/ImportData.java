@@ -184,7 +184,12 @@ public class ImportData {
 		
 		for (Rule r : definition.getRules()) {
 			String header = r.getColumn();
-			String value = headerValueMap.get(header).trim();
+			
+			String value = headerValueMap.get(header);
+			if (value == null)
+				return WString.tr("importTool.import.cannotFindColumn").arg(header);
+			value = value.trim();
+			
 			Rule.Type type = r.getType();
 			
 			if (type == Rule.Type.PatientId) {
@@ -340,7 +345,7 @@ public class ImportData {
 						Sequence s = sequences.get(value);
 						if (s == null)
 							return WString.tr("importTool.import.sequenceNotFound").arg(value).arg(row).arg(header);
-						ntseq.setNucleotides(s.seqString());
+						ntseq.setNucleotides(Utils.clearNucleotides(s.seqString()));
 						ntseq.setLabel(value);
 					}
 					ntseq.setViralIsolate(getIsolate(r.getNumber(), isolates));
@@ -380,7 +385,7 @@ public class ImportData {
 		for (Map.Entry<Integer, Therapy> e : therapies.entrySet()) {
 			if (e.getValue().getTherapyCommercials().size() > 0 || e.getValue().getTherapyGenerics().size() > 0) {
 				if (e.getValue().getStartDate() == null)
-					return WString.tr("importTool.import.therapyMissingStartDate").arg(row);
+					return WString.tr("importTool.import.therapyMissingStartDate").arg(e.getKey()).arg(row);
 				else if (!isStartBeforeEnd(e.getValue().getStartDate(), e.getValue().getStopDate()))
 					return WString.tr("importTool.import.therapyEndBeforeStartDate").arg(e.getKey()).arg(row);
 				else

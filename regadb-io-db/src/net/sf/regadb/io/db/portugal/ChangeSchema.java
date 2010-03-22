@@ -19,10 +19,12 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.db.tools.RunSqlCommand;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ChangeSchema {
 	public static void main(String[] args) throws WrongUidException,
 			WrongPasswordException, DisabledUserException, SQLException {
+		RegaDBSettings.createInstance();
 		RunSqlCommand runsqlcommmand = new RunSqlCommand();
 		Connection c = runsqlcommmand.getConnection();
 		Statement s = c.createStatement();
