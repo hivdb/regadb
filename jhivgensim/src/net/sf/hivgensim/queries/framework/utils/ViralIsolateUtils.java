@@ -3,12 +3,33 @@ package net.sf.hivgensim.queries.framework.utils;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
 
 public class ViralIsolateUtils {
+	
+	public static String resistance(ViralIsolate vi, String algo, String drug){
+		String dat = new String(fullResistanceRecord(vi, algo, drug));
+		Pattern p = Pattern.compile(".*<sir>(.)</sir>.*");
+		Matcher m = p.matcher(dat);
+		if(m.matches()){
+			return m.group(1);
+		}
+		return "";
+	}
+	
+	public static byte[] fullResistanceRecord(ViralIsolate vi, String algo, String drug){
+		for(TestResult tr : vi.getTestResults()){
+			if(tr.getTest().getDescription().equals(algo) && tr.getDrugGeneric().getGenericId().equalsIgnoreCase(drug)){
+				return tr.getData();				
+			}
+		}
+		return null;
+	}
 
 	public static String getConcatenatedNucleotideSequence(ViralIsolate vi){
 		if(vi.getNtSequences().size() == 0)
