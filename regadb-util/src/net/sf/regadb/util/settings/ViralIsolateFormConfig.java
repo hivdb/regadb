@@ -151,7 +151,9 @@ public class ViralIsolateFormConfig extends FormConfig {
 		
 		gss.clear();
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", "Resistant", 0.0));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", "Intermediate resistant", 0.25));
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", "Intermediate resistant", 0.5));
+		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FFFF00"), "I", "Intermediate resistant", 0.75));
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S", "Susceptible", Double.POSITIVE_INFINITY));
 	}
 
