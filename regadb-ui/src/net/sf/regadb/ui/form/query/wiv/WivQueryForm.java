@@ -256,11 +256,15 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     }
     
     public String getCsvLineSwitchNoComma(Object o, ExportToCsv csvExport, Set<Dataset> datasets) {
-        String temp = csvExport.getCsvLineSwitch(o, datasets, null);
-        if(temp==null)
-            return temp;
-        temp = temp.substring(0, temp.length()-1);
-        return temp;
+		try {
+			String temp = csvExport.getCsvLineSwitch(o, datasets, null);
+	        if(temp==null)
+	            return temp;
+	        temp = temp.substring(0, temp.length()-1);
+	        return temp;
+		} catch (IllegalAccessException e) {
+			return "";
+		}
     }
     
     public String getCsvHeaderSwitchNoComma(Object o, ExportToCsv csvExport) {

@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientImplHelper;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -295,21 +297,26 @@ public class QueryToolRunnable implements Runnable {
 		
 		CsvLine line = new CsvLine();
 		
-		for (int j = 0 ; j < selections.size() ; j++) {		    
-			if (selections.get(j) instanceof TableSelection) {
-				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
-			}
-			else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
-				// if the first element is an outputselection selection list
-				// changes made earlier guarantee that it is a static value
-				// so it can be outputted regardless of access
-				if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
-					line.addField(array[j].toString());
+		try{
+			for (int j = 0 ; j < selections.size() ; j++) {
+				if (selections.get(j) instanceof TableSelection) {
+					lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 				}
-				else {
-					line.addField(null);
+				else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
+					// if the first element is an outputselection selection list
+					// changes made earlier guarantee that it is a static value
+					// so it can be outputted regardless of access
+					if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
+						line.addField(array[j].toString());
+					}
+					else {
+						line.addField(null);
+					}
 				}
 			}
+		}
+		catch(IllegalAccessException e){
+			return "";
 		}
 		return line.toString() +"\n";
     }
