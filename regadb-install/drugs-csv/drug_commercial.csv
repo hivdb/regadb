@@ -7,7 +7,7 @@ commercial_ii,name,atc_code
 6,Crixivan 200 mg (IDV),
 7,Crixivan 333 mg (IDV),
 8,Crixivan 400 mg (IDV),
-9,Kaletra 133.3+33.3 mg (LPV+RTV),J05AE03
+9,Kaletra 133.3+33.3 mg (LPV+RTV),
 10,Viracept 250 mg (NFV),
 11,Viracept 625 mg (NFV),
 12,Norvir 100 mg (RTV),
@@ -64,7 +64,7 @@ commercial_ii,name,atc_code
 65,Retrovir 500 mg (AZT),
 66,Zerit 10 mg (D4T),
 67,Ziagen 600 mg (ABC),
-68,Kaletra 200 mg (LPV+RTV),J05AE03
+68,Kaletra 200 mg (LPV+RTV),
 69,Kivexa 600+300 mg (ABC+3TC),J05AR02
 29,Truvada 200+300 mg (FTC+TDF),J05AR03
 70,Isentress (RTG),
@@ -73,7 +73,7 @@ commercial_ii,name,atc_code
 73,Agenerase (APV),
 74,Lexiva (f-APV),
 75,Crixivan (IDV),
-76,Kaletra (LPV+RTV),J05AE03
+76,Kaletra (LPV+RTV),
 77,Viracept (NFV),
 78,Norvir (RTV),
 79,Invirase (SQV),
@@ -103,11 +103,11 @@ commercial_ii,name,atc_code
 103,Truvada (FTC+TDF),J05AR03
 104,Prezista 300 mg (DRV),
 105,Aptivus 250 mg (TPV),
-106,Triomune 30+150+200 mg (D4T+3TC+NVP),
-107,Triomune 40+150+200 mg (D4T+3TC+NVP),
+106,Triomune 30+150+200 mg (D4T+3TC+NVP),J05AR07
+107,Triomune 40+150+200 mg (D4T+3TC+NVP),J05AR07
 108,Prezista (DRV),
 109,Aptivus (TPV),
-110,Triomune (D4T+3TC+NVP),
+110,Triomune (D4T+3TC+NVP),J05AR07
 111,Reyataz 300 mg (ATV),
 112,Atripla 600+200+300 mg (EFV+FTC+TDF),J05AR06
 113,Intelence (ETV),
