@@ -54,7 +54,8 @@ public class ViralIsolateUtils {
 				}
 			}
 		}
-
+		subtypes.remove("Check the report");
+		subtypes.remove("Check the bootscan");
 		StringBuilder b = new StringBuilder();
 		for(String s : subtypes) {
 			b.append(s);
