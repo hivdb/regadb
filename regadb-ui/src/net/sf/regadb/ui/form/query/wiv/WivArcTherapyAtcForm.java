@@ -98,8 +98,12 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         			"select tp.patient from Therapy tp where " +
         				therapyDateConstraint +
         			") " +
-        		"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("pav.patient.patientIi"));
+        		"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("pav.patient.patientIi")
+        		+" and "+ getContactConstraint("pav.patient.id"));
         q.setDate("var_date", dateField.getDate());
+        q.setDate("var_start_date", getStartDate());
+        q.setDate("var_end_date", getEndDate());
+        
         List<PatientAttributeValue> pavs = q.list();
         
         for(PatientAttributeValue pav : pavs){
