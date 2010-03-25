@@ -335,11 +335,29 @@ public class ParseAll {
     			"CMV IgG (qualitative)",
     			"CMV IgG (Architect) (qualitative)");
     	
+    	tt = createNominalTestType(oos, "Syphilis serology (qualitative)",
+    			"Positive",
+    			"Negative");
+    	createTests(oos, tt,
+    			"Syphilis serology FTA (qualitative)",
+    			"Syphilis serology RPR (qualitative)",
+    			"Syphilis serology RPR (CSV) (qualitative)",
+    			"Syphilis serology TPHA (qualitative)",
+    			"Syphilis serology VDRL (CSV) (qualitative)",
+    			"Syphilis serology VDRL (qualitative)");
+    	
+    	tt = createNumberTestType(oos, "Syphilis serology (titer)");
+    	createTests(oos,tt,
+    			"Syphilis serology TPHA (titer)",
+    			"Syphilis serology RPR (titer)",
+    			"Syphilis serology VDRL (CSV) (titer)",
+    			"Syphilis serology VDRL (titer)");
+    	
+    	
     	tt = oos.getTestType(StandardObjects.getHiv1ViralLoadTestType());
     	createTests(oos, tt, "Abbott RealTime (copies/ml)");
     	
     	tt = oos.getTestType(StandardObjects.getHiv1ViralLoadLog10TestType());
     	createTests(oos, tt, "Abbott RealTime (log10)");
-    	
     }
 }
