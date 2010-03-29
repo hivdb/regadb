@@ -433,6 +433,11 @@ public class Table {
 		}		
 		return result;
 	}
+	
+	public ArrayList<String> getColumn(String name) {
+		int i = findColumn(name);
+		return i == -1 ? null : getColumn(i);
+	}
 
 	public ArrayList<String> getRow(int r){
 		return rows.get(r);
@@ -473,7 +478,6 @@ public class Table {
 
 	public int findInRow(int i, String s) {
 		ArrayList<String> row = rows.get(i);
-
 		return row.indexOf(s);
 	}
 
@@ -823,6 +827,7 @@ public class Table {
 		int column = this.findInRow(0, name);
 		return column;
 	}
+	
 	public int findColumn(int offset, String name) {
 		int column = this.findInRow(0, offset, name);
 

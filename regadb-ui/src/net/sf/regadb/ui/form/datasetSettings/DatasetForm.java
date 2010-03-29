@@ -77,7 +77,7 @@ public class DatasetForm extends FormWidget
         WPushButton deletePatients = new WPushButton(tr("form.dataset.editView.deletePatientsButton"));
         deletePatients.setHidden(getInteractionState() != InteractionState.Deleting);
         deletePatients.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
-			@Override
+			
 			public void trigger(WMouseEvent me) {
 				final WMessageBox box = UIUtils.createYesNoMessageBox(DatasetForm.this, tr("form.dataset.editView.deletePatients"));
 				box.show();

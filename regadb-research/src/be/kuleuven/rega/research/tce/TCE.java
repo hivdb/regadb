@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.hivgensim.queries.framework.utils.DateUtils;
+import net.sf.hivgensim.queries.framework.utils.TestUtils;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 
 /**
@@ -54,5 +58,21 @@ public class TCE {
 
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+	}
+	
+	public TestResult getTestResultBetweenInterval(Date d, int daysBefore, int daysAfter, TestType testType) {
+		List<TestResult> trs = TestUtils.filterTestResults(getPatient().getTestResults(), testType);
+		List<TestResult> trs_interval = new ArrayList<TestResult>();
+		for(TestResult tr_i : trs) {
+			if(DateUtils.betweenInterval(tr_i.getTestDate(), DateUtils.addDaysToDate(d, daysBefore), DateUtils.addDaysToDate(d, daysAfter))) {
+				trs_interval.add(tr_i);
+			}
+		}
+
+		return TestUtils.closestToDate(getStartDate(), trs_interval);
+	}
+	
+	public TestResult getTestResultBetweenInterval(int daysBefore, int daysAfter, TestType testType) {
+		return getTestResultBetweenInterval(getStartDate(), daysBefore, daysAfter, testType);
 	}
 }

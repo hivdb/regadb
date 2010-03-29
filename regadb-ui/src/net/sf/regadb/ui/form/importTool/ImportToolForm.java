@@ -116,7 +116,7 @@ public class ImportToolForm extends FormWidget {
 				getInteractionState() == InteractionState.Adding) {
 			addRuleButton = new WPushButton(tr("form.importTool.addRuleButton"), this);
 			addRuleButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
-				@Override
+				
 				public void trigger(WMouseEvent arg) {
 					boolean canAdd = false;
 					if (dataProvider != null) {
