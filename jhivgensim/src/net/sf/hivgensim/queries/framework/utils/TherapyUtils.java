@@ -46,6 +46,20 @@ public class TherapyUtils {
 		return dgs;
 	}
 
+	public static String getDrugClassesString(Collection<DrugClass> classes){
+		if (classes.size() == 0) 
+			return "";
+		
+		String delimiter = " + ";
+		StringBuffer result = new StringBuffer();
+		for(DrugClass dc : classes){
+			result.append(delimiter);
+			result.append(dc.getClassId());
+		}
+
+		return result.toString().substring(delimiter.length());
+	}
+	
 	public static String getDrugsString(Collection<Therapy> therapies){
 		SortedSet<DrugGeneric> drugs = new TreeSet<DrugGeneric>(new Comparator<DrugGeneric>(){
 			public int compare(DrugGeneric o1, DrugGeneric o2) {
