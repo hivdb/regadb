@@ -24,11 +24,11 @@ public class CsvWriteCodeGen {
     }
     
     public void methodSig(String id, Class classToWrite) {
-        String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + " " + classToWrite.getSimpleName()+"var) {\n";
+        String sig = "public String getCsvContentLine(" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + " " + classToWrite.getSimpleName()+"var) throws IllegalAccessException {\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         contentMethod.put(id, sig);
         
-        sig = "public String getCsvHeaderLine" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + "() {\n";
+        sig = "public String getCsvHeaderLine" + classToWrite.getSimpleName().replace("PatientImpl", "Patient") + "(){\n";
         sig += "String " +classToWrite.getSimpleName() + "Line = \"\";\n";
         headerMethod.put(id, sig);
         
@@ -36,7 +36,7 @@ public class CsvWriteCodeGen {
         contentCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
         contentCallMethod += "if(DatasetAccessSolver.getInstance().canAccess"+classToWrite.getSimpleName()+"(("+classToWrite.getSimpleName()+")object, datasets, accessiblePatients"+")){\n";
         contentCallMethod += "return getCsvContentLine((" + classToWrite.getSimpleName() + ")object);\n}\n";
-        contentCallMethod += "else {\n return null;\n}\n}\n";
+        contentCallMethod += "else {\n throw new IllegalAccessException(\""+ classToWrite.getSimpleName() +"\");\n}\n}\n";
         
         
         headerCallMethod += "else if(object instanceof " + classToWrite.getSimpleName() + ") {\n";
@@ -53,7 +53,7 @@ public class CsvWriteCodeGen {
             "return getCsvContentLine(p_casted);\n" +
             "}\n" +
             "else {\n" +
-             "return null;\n" +
+             "throw new IllegalAccessException(\"Patient\");\n" +
             "}\n" +
         "}\n";
         
@@ -187,7 +187,7 @@ public class CsvWriteCodeGen {
             total += e.getValue() + "\n";
         }
         
-        total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets, Set<Integer> accessiblePatients) {\n" + contentCallMethod + "\n return null;\n}\n";
+        total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets, Set<Integer> accessiblePatients) throws IllegalAccessException {\n" + contentCallMethod + "\n return null;\n}\n";
 
         total += "public String getCsvHeaderSwitch(Object object) {\n" + headerCallMethod + "\n return null;\n}\n";
         

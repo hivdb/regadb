@@ -8,8 +8,8 @@ public class NumberMatcher extends VariableMatcher{
     private char comp = '=';
     private double number;
 
-    public boolean matchesCondition(Map<String,String> variables) {
-        String s = variables.get(getVariable());
+    public boolean matchesCondition(Map<String,String> variables) throws MatcherException {
+        String s = getValue(variables);
         try{
             double n = Double.parseDouble(s);
             

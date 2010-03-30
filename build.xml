@@ -42,6 +42,9 @@
     <ant antfile="build.xml" 
 	 dir="jhivgensim"
 	 target="dist"/>
+    <ant antfile="build.xml"
+	 dir="regadb-research"
+	 target="dist"/>
     <ant antfile="build.xml" 
 	 dir="regadb-ui" 
 	 target="dist"/>
@@ -88,6 +91,9 @@
 	 target="clean"/>
     <ant antfile="build.xml" 
 	 dir="jhivgensim"
+	 target="clean"/>
+    <ant antfile="build.xml"
+	 dir="regadb-research"
 	 target="clean"/>
     <ant antfile="build.xml" 
 	 dir="regadb-ui" 

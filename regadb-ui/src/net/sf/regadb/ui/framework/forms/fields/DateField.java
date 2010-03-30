@@ -20,6 +20,10 @@ public class DateField extends FormField
 	private WLineEdit _fieldEdit;
 	private WImage calendarIcon_ = new WImage("pics/calendar.png");
 	
+	public DateField(InteractionState state, IForm form){
+		this(state, form, RegaDBSettings.getInstance().getInstituteConfig().getDateFormat());
+	}
+	
 	public DateField(InteractionState state, IForm form, String dateFormat)
 	{
 		super(form);

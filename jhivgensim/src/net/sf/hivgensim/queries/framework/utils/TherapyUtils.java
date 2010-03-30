@@ -23,7 +23,7 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class TherapyUtils {
 	
-	public static long daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
+	public static int daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
 		int days = 0;
 
 		for(Therapy t : therapies) {
@@ -46,6 +46,20 @@ public class TherapyUtils {
 		return dgs;
 	}
 
+	public static String getDrugClassesString(Collection<DrugClass> classes){
+		if (classes.size() == 0) 
+			return "";
+		
+		String delimiter = " + ";
+		StringBuffer result = new StringBuffer();
+		for(DrugClass dc : classes){
+			result.append(delimiter);
+			result.append(dc.getClassId());
+		}
+
+		return result.toString().substring(delimiter.length());
+	}
+	
 	public static String getDrugsString(Collection<Therapy> therapies){
 		SortedSet<DrugGeneric> drugs = new TreeSet<DrugGeneric>(new Comparator<DrugGeneric>(){
 			public int compare(DrugGeneric o1, DrugGeneric o2) {
@@ -258,6 +272,40 @@ public class TherapyUtils {
 			}
 		}
 		return result;
+	}
+	
+	public static boolean containsAdditionalDrugs(Therapy t, List<DrugGeneric> drugs){
+		for(DrugGeneric dg : allDrugGenerics(t)){
+			boolean found = false;
+			for(DrugGeneric dgg : drugs){
+				if(dg.getGenericId().equals(dgg.getGenericId())){
+					found = true;
+					break;
+				}
+			}
+			if(!found){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean containsDrugGeneric(Therapy t, DrugGeneric drug){
+		for(DrugGeneric dg : allDrugGenerics(t)){
+			if(dg.getGenericId().equals(drug.getGenericId())){
+				return true;
+			}			
+		}
+		return false;
+	}
+	
+	public static boolean containsDrugGeneric(Therapy t, String drug){
+		for(DrugGeneric dg : allDrugGenerics(t)){
+			if(dg.getGenericId().equals(drug)){
+				return true;
+			}			
+		}
+		return false;
 	}
 
 }

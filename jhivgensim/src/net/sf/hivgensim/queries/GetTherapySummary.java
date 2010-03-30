@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import net.sf.hivgensim.queries.framework.DefaultQueryOutput;
+import net.sf.hivgensim.queries.framework.QueryInput;
 import net.sf.hivgensim.queries.framework.utils.TherapyUtils;
+import net.sf.hivgensim.queries.input.FromDatabase;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
-
+import net.sf.regadb.util.settings.RegaDBSettings;
 /**
  * This query returns of summary of the types of therapies used and their frequencies.
  * 
@@ -57,5 +59,15 @@ public class GetTherapySummary extends DefaultQueryOutput<Patient> {
 		}
 		getOut().flush();
 		getOut().close();
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		if(args.length != 3){
+			System.err.println("Usage: GetTherapySummary output_file uid passwd");
+			System.exit(1);
+		}
+        RegaDBSettings.createInstance();
+		QueryInput qi = new FromDatabase(args[1], args[2], new GetTherapySummary(new File(args[0])));
+		qi.run();
 	}
 }

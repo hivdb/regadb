@@ -43,20 +43,24 @@ public class DatabaseManager {
     	this.connectorFactory = connectorFactory;
     }
     
-    public void fillCatalog(CatalogBuilder builder) {
+    private void fillCatalog(CatalogBuilder builder) {
     	DatabaseConnector connector = connectorFactory.createConnector();
-		tableCatalog.fillCatalog(connector);
-    	builder.fillCatalog(connector, catalog);
-		connectorFactory.closeConnector(connector);
+    	try {
+    		tableCatalog.fillCatalog(connector);
+    		builder.fillCatalog(connector, catalog);
+    	} finally {
+    		connectorFactory.closeConnector(connector);
+    	}
     }
     
     public static DatabaseManager getInstance() {
     	return instance;
     }
     
-    public static DatabaseManager initInstance(DatabaseConnectorProvider connectorFactory, QueryVisitor queryBuilder, boolean isTableSelectionAllowed) {
+    public static DatabaseManager initInstance(DatabaseConnectorProvider connectorFactory, QueryVisitor queryBuilder, CatalogBuilder catalogBuilder, boolean isTableSelectionAllowed) {
     	if (instance == null) {
     		instance = new DatabaseManager(connectorFactory, queryBuilder, isTableSelectionAllowed);
+    		instance.fillCatalog(catalogBuilder);
     	}
     	return instance;
     }
@@ -79,15 +83,21 @@ public class DatabaseManager {
     
     public List<SuggestedValuesOption> getSuggestedValues(String query) throws SQLException {
     	DatabaseConnector connector = connectorFactory.createConnector();
-		QueryResult rs = connector.executeQuery(query);
-		List<SuggestedValuesOption> values = new ArrayList<SuggestedValuesOption>();
-		for (int i = 0 ; i < rs.size() ; i++) {
-			if (rs.get(i, 0) != null) {
-				values.add(new SuggestedValuesOption(rs.get(i,0)));
+    	
+    	try {
+    		List<SuggestedValuesOption> values = new ArrayList<SuggestedValuesOption>();
+			QueryResult rs = connector.executeQuery(query);
+			
+			for (int i = 0 ; i < rs.size() ; i++) {
+				if (rs.get(i, 0) != null) {
+					values.add(new SuggestedValuesOption(rs.get(i,0)));
+				}
 			}
-		}
-		rs.close();
-		connectorFactory.closeConnector(connector);
-		return values;
+			rs.close();
+			
+			return values;
+    	} finally {
+    		connectorFactory.closeConnector(connector);
+    	}
     }
 }

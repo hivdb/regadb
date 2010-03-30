@@ -112,7 +112,7 @@ public class IncrementalBootstrap {
 					connectedToDrug.add(variable);
 				}
 			}
-			
+
 			List<Variable> notConnected = new ArrayList<Variable>();
 			for(Variable variable : network.getVariables()){
 				if(!connectedToDrug.contains(variable)){
@@ -123,14 +123,15 @@ public class IncrementalBootstrap {
 				break;
 			}
 			Variable remove = notConnected.get(new Random().nextInt(notConnected.size()));
-			this.currentVariables.remove(remove);
-			
+			int index = this.currentVariables.indexOf(remove);
+			this.currentVariables.remove(index);
+			this.currentValues.remove(index);
 			boots++;
 		}
-		
+
 		network.save(new PrintStream("result.str"));
 	}
-	
+
 	private void writeVdFile(int boots) throws IOException {
 		String filename = boots+".vd";
 		FileWriter fw = new FileWriter(filename);

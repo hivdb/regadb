@@ -18,7 +18,7 @@ import net.sf.regadb.io.db.util.Parser;
 import net.sf.regadb.io.db.util.Utils;
 
 public class ParseSequences extends Parser{
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
     
     public static void main(String [] args) {
         ParseSequences ps = new ParseSequences();

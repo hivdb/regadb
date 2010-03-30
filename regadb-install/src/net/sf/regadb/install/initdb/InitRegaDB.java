@@ -13,6 +13,7 @@ import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -25,6 +26,7 @@ public class InitRegaDB
 	
     public static void main(String [] args)
     {
+    	RegaDBSettings.createInstance();
         InitRegaDB init = new InitRegaDB();
         init.run();
     }

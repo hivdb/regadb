@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.util.mapper.matcher.Matcher.MatcherException;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -93,11 +95,11 @@ public class XmlMapper {
         }
     }
     
-    public TestMapping getTest(Map<String,String> variables){
+    public TestMapping getTest(Map<String,String> variables) throws MatcherException{
         return testMapper.get(variables);
     }
     
-    public ValueMapping getTestResult(Map<String,String> variables){
+    public ValueMapping getTestResult(Map<String,String> variables) throws MatcherException{
         TestMapping tm = getTest(variables);
         if(tm != null)
             return tm.get(variables);
@@ -107,7 +109,7 @@ public class XmlMapper {
     public AttributeMapping getAttribute(Map<String,String> variables){
         return attributeMapper.get(variables.get("name"));
     }
-    public ValueMapping getAttributeValue(Map<String,String> variables){
+    public ValueMapping getAttributeValue(Map<String,String> variables) throws MatcherException{
         AttributeMapping am = getAttribute(variables);
         if(am != null)
             return am.get(variables);
@@ -139,7 +141,9 @@ public class XmlMapper {
 
         } catch (MapperParseException e) {
             e.printStackTrace();
-        }
+        } catch (MatcherException e) {
+			e.printStackTrace();
+		}
         
     }
 }

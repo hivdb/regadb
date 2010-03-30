@@ -709,7 +709,7 @@
     <optional>
       <element name="comment">
         <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-          <param name="maxLength">50</param>
+          <param name="maxLength">200</param>
         </data>
       </element>
     </optional>

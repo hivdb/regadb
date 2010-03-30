@@ -86,7 +86,7 @@
     	
     	This field is optional.
      -->
-    <organims-filter>HIV*</organims-filter>
+    <organism-filter>HIV*</organism-filter>
     
     <forms>
       <!--

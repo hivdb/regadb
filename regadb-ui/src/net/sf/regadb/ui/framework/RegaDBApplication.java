@@ -79,8 +79,7 @@ public class RegaDBApplication extends WApplication
     public void login(String uid, String pwd) throws WrongUidException, WrongPasswordException, DisabledUserException
     {
     	login_ = Login.authenticate(uid, pwd);
-		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), false);
-		DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
+		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), new HibernateCatalogBuilder(), false);
     }
     
     public void logout()

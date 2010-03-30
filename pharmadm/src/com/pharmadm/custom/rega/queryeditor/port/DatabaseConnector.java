@@ -19,7 +19,6 @@ public interface DatabaseConnector {
      */
     public int getColumnType(String tableName, String columnName);   
     public QueryResult executeQuery(String query) throws SQLException;
-    public QueryStatement createScrollableReadOnlyStatement() throws SQLException;
     
     public String getCommentForTable(String tableName);
     public String getCommentForColumn(String tableName, String columnName);

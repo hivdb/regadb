@@ -81,7 +81,8 @@ public class ParseEadEmd {
             String emdKWSValue = parseId(eadEmd.valueAt(1, i));
             String eadKWSValue = parseId(eadEmd.valueAt(0, i));
             
-            if(eadKWSValue == null || eadKWSValue.trim().length() == 0)
+            if(eadKWSValue == null || eadKWSValue.trim().length() == 0
+            		|| emdKWSValue == null || emdKWSValue.trim().length() == 0)
             	continue;
             
             for(int j = 1; j<patientFilemakerTable.numRows(); j++) {

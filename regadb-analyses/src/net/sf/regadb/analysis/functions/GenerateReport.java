@@ -65,10 +65,8 @@ public class GenerateReport
         replace("$ART_EXPERIENCE", getARTExperience(patient));
         
         TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericHiv1ViralLoadTest(), dateTolerance);
-        if(viralLoad!=null)
-            replace("$VIRAL_LOAD RNA", viralLoad.getValue());
-        else
-            replace("$VIRAL_LOAD RNA", "- ");
+        String viralLoadValue = viralLoad==null?"- ":viralLoad.getValue();
+        replace("$VIRAL_LOAD_RNA", viralLoadValue);
         
         TestResult cd4Count = getTestResult(vi, patient, StandardObjects.getGenericCD4Test(), dateTolerance);
         if(cd4Count!=null)
@@ -76,7 +74,7 @@ public class GenerateReport
         else
             replace("$CD4_COUNT", "- ");
         
-        replace("$TYPE", getOrganismName(vi));
+        replace("$ORGANISM", getOrganismName(vi));
         replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
         
         if (algorithms != null && algorithms.size() > 0) {

@@ -113,6 +113,7 @@ public class MultipleTestResultForm extends FormWidget {
                     ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
                 }
                 ((ComboBox)testResultField).sort();
+                ((ComboBox)testResultField).addNoSelectionItem();
             } else {
                 testResultField = getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
             }
@@ -164,6 +165,7 @@ public class MultipleTestResultForm extends FormWidget {
 	                    ((ComboBox)eventValueField).addItem(new DataComboMessage<EventNominalValue>(env, env.getValue()));
 	                }
 	                ((ComboBox)eventValueField).sort();
+	                ((ComboBox)eventValueField).addNoSelectionItem();
 	            } else {
 	                eventValueField = getTextField(ValueTypes.getValueType(e.getValueType()));
 	            }
@@ -323,14 +325,18 @@ public class MultipleTestResultForm extends FormWidget {
             TestResult tr = null;
             FormField f = testFormFields_.get(i);
             if(f instanceof ComboBox) {
-                if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
+            	DataComboMessage<TestNominalValue> currentItem = (DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem();
+                if(currentItem != null && currentItem.getValue()!=null) {
                     tr = p.createTestResult(tests_.get(i));
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
                     tr = p.createTestResult(tests_.get(i));
-                    tr.setValue(f.text());
+                    if(f instanceof DateField)
+                		tr.setValue(((DateField)f).getDate().getTime() +"");
+                    else
+                    	tr.setValue(f.text());
                 }
             }
             if(tr!=null) {
@@ -345,14 +351,18 @@ public class MultipleTestResultForm extends FormWidget {
             PatientEventValue pev = null;
             FormField f = eventFormFields_.get(i);
             if(f instanceof ComboBox) {
-                if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
+            	DataComboMessage<EventNominalValue> currentItem = ((DataComboMessage<EventNominalValue>)((ComboBox)f).currentItem());
+                if(currentItem != null && currentItem.getValue()!=null) {
                     pev = p.createPatientEventValue(events_.get(i));
                     pev.setEventNominalValue(((DataComboMessage<EventNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
                     pev = p.createPatientEventValue(events_.get(i));
-                    pev.setValue(f.text());
+                    if(f instanceof DateField)
+                		pev.setValue(((DateField)f).getDate().getTime() +"");
+                    else
+                    	pev.setValue(f.text());
                 }
             }
             if(pev!=null) {

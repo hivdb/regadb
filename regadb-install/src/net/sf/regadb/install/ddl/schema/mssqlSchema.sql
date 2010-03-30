@@ -39,7 +39,7 @@ create table regadbschema.test_nominal_value (nominal_value_ii int identity not 
 create table regadbschema.test_object (test_object_ii int identity not null, version int not null, description varchar(50) not null, test_object_id int null, primary key (test_object_ii));
 create table regadbschema.test_result (test_result_ii int identity not null, version int not null, test_ii int not null, generic_ii int null, viral_isolate_ii int null, nominal_value_ii int null, patient_ii int null, nt_sequence_ii int null, value varchar(50) null, test_date datetime null, sample_id varchar(50) null, data varbinary(MAX) null, primary key (test_result_ii));
 create table regadbschema.test_type (test_type_ii int identity not null, version int not null, value_type_ii int null, genome_ii int null, test_object_ii int not null, description varchar(50) not null, primary key (test_type_ii));
-create table regadbschema.therapy (therapy_ii int identity not null, version int not null, therapy_motivation_ii int null, patient_ii int not null, start_date datetime not null, stop_date datetime null, comment varchar(50) null, primary key (therapy_ii));
+create table regadbschema.therapy (therapy_ii int identity not null, version int not null, therapy_motivation_ii int null, patient_ii int not null, start_date datetime not null, stop_date datetime null, comment varchar(200) null, primary key (therapy_ii));
 create table regadbschema.therapy_commercial (therapy_ii int not null, commercial_ii int not null, version int not null, day_dosage_units double precision null, placebo tinyint not null, blind tinyint not null, frequency numeric(19,0) null, primary key (therapy_ii, commercial_ii));
 create table regadbschema.therapy_generic (therapy_ii int not null, generic_ii int not null, version int not null, day_dosage_mg double precision null, placebo tinyint not null, blind tinyint not null, frequency numeric(19,0) null, primary key (therapy_ii, generic_ii));
 create table regadbschema.therapy_motivation (therapy_motivation_ii int identity not null, version int not null, value varchar(50) not null, primary key (therapy_motivation_ii));
@@ -125,7 +125,6 @@ create index event_nominal_value_event_ii_idx on regadbschema.event_nominal_valu
 create index event_value_type_ii_idx on regadbschema.event (value_type_ii);
 create index nt_sequence_viral_isolate_ii_idx on regadbschema.nt_sequence (viral_isolate_ii);
 create index open_reading_frame_genome_ii_idx on regadbschema.open_reading_frame (genome_ii);
-create index open_reading_frame_genome_ii_idx on regadbschema.viral_isolate (genome_ii);
 create index patient_attribute_value_attribute_ii_idx on regadbschema.patient_attribute_value (attribute_ii);
 create index patient_attribute_value_nominal_value_ii_idx on regadbschema.patient_attribute_value (nominal_value_ii);
 create index patient_attribute_value_patient_ii_idx on regadbschema.patient_attribute_value (patient_ii);
@@ -159,4 +158,5 @@ create index therapy_patient_ii_idx on regadbschema.therapy (patient_ii);
 create index therapy_therapy_motivation_ii_idx on regadbschema.therapy (therapy_motivation_ii);
 create index user_attribute_uid_idx on regadbschema.user_attribute (uid);
 create index user_attribute_value_type_ii_idx on regadbschema.user_attribute (value_type_ii);
+create index viral_isolate_genome_ii_idx on regadbschema.viral_isolate (genome_ii);
 create index viral_isolate_patient_ii_idx on regadbschema.viral_isolate (patient_ii);

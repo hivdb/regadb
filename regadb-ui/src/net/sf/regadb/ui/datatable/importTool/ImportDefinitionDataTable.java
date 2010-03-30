@@ -25,17 +25,14 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
     private static int[] colWidths = {100};
     private static boolean [] sortable = {false};
     
-	@Override
 	public CharSequence[] getColNames() {
 		return colNames;
 	}
 
-	@Override
 	public int[] getColumnWidths() {
 		return colWidths;
 	}
 
-	@Override
 	public List<ImportDefinition> getDataBlock(Transaction t, int startIndex,
 			int amountOfRows, int sortIndex, boolean isAscending) {
 		File importDir = RegaDBSettings.getInstance().getInstituteConfig().getImportToolDir();
@@ -65,41 +62,34 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
 		return definitions;
 	}
 
-	@Override
 	public long getDataSetSize(Transaction t) {
 		File importDir = RegaDBSettings.getInstance().getInstituteConfig().getImportToolDir();
 		String [] files = importDir.list();
 		return files.length;
 	}
 
-	@Override
 	public String[] getFieldNames() {
 		return null;
 	}
 
-	@Override
 	public IFilter[] getFilters() {
 		return null;
 	}
 
-	@Override
 	public String[] getRowData(ImportDefinition type) {
 		String [] cols = new String [1];
 		cols[0] = type.getDescription();
 		return cols;
 	}
 
-	@Override
 	public String[] getRowTooltips(ImportDefinition type) {
 		return null;
 	}
 
-	@Override
 	public void init(Transaction t) {
 
 	}
 
-	@Override
 	public void selectAction(ImportDefinition selectedItem) {
         RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.expand();
@@ -107,7 +97,6 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
         RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView.selectNode();
 	}
 
-	@Override
 	public boolean[] sortableFields() {
 		return sortable;
 	}

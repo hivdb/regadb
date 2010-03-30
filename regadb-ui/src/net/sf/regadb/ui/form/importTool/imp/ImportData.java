@@ -22,6 +22,7 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -37,12 +38,21 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.service.IAnalysis;
+import net.sf.regadb.service.wts.BlastAnalysis;
+import net.sf.regadb.service.wts.FullAnalysis;
+import net.sf.regadb.service.wts.ServiceException;
+import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
+import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.SequenceDetails;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
+import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.util.xls.ExcelTable;
 
 import org.biojava.bio.seq.Sequence;
@@ -68,26 +78,28 @@ public class ImportData {
 		this.dataset = dataset;
 		this.definition = definition;
 		
-        RichSequenceIterator xna = null;
-        
-        try {
-            xna = org.biojavax.bio.seq.RichSequence.IOTools.readFastaDNA(new BufferedReader(new FileReader(fastaFile)), null);
-        } catch (NoSuchElementException ex) {
-        	ex.printStackTrace();
-        } catch (FileNotFoundException ex) {
-        	ex.printStackTrace();
-        }
-        
-        if(xna!=null) { 
-            while(xna.hasNext()) {
-                try {
-                	Sequence s = xna.nextRichSequence();
-                	sequences.put(s.getName(), s);
-                } catch (Exception e) {
-                	e.printStackTrace();
-                }
-            }
-        }
+		if (fastaFile.exists()) {
+	        RichSequenceIterator xna = null;
+	        
+	        try {
+	            xna = org.biojavax.bio.seq.RichSequence.IOTools.readFastaDNA(new BufferedReader(new FileReader(fastaFile)), null);
+	        } catch (NoSuchElementException ex) {
+	        	ex.printStackTrace();
+	        } catch (FileNotFoundException ex) {
+	        	ex.printStackTrace();
+	        }
+	        
+	        if(xna!=null) { 
+	            while(xna.hasNext()) {
+	                try {
+	                	Sequence s = xna.nextRichSequence();
+	                	sequences.put(s.getName(), s);
+	                } catch (Exception e) {
+	                	e.printStackTrace();
+	                }
+	            }
+	        }
+		}
 	}
 	
 	/**
@@ -113,12 +125,53 @@ public class ImportData {
 		else {
 			if (!simulate) {
 				for (Patient p : patients) {
+					for (ViralIsolate vi : p.getViralIsolates()) {
+						Genome genome = blast(vi.getNtSequences().iterator().next());
+						vi.setGenome(tr.getGenome(genome.getOrganismName()));
+					}
 					tr.save(p);
 				}
 				tr.commit();
+				
+				for (Patient p : patients) {
+					for (ViralIsolate vi : p.getViralIsolates()) {
+						Login copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
+						try {
+						NonThreadedFullAnalysis analysis = new NonThreadedFullAnalysis(vi, vi.getGenome());
+						analysis.launch(copiedLogin);
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							copiedLogin.closeSession();
+						}
+					}
+				}
 			}
 			return errors;
 		}
+	}
+	
+	private Genome blast(NtSequence ntseq){
+	    Genome genome = null;
+	    //TODO check ALL sequences?
+	    
+        if(ntseq != null){
+            BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, RegaDBMain.getApp().getLogin().getUid());
+            try{
+                blastAnalysis.launch();
+                genome = blastAnalysis.getGenome();
+            }
+            catch(UnsupportedGenomeException e){
+                return null;
+            }
+            catch(ServiceUnavailableException e){
+                return null;
+            }
+            catch(ServiceException e){
+                e.printStackTrace();
+            }            
+        }
+        return genome;
 	}
 	
 	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t, Map<String, Test> testsMap, List<Patient> patients) {
@@ -131,7 +184,12 @@ public class ImportData {
 		
 		for (Rule r : definition.getRules()) {
 			String header = r.getColumn();
-			String value = headerValueMap.get(header).trim();
+			
+			String value = headerValueMap.get(header);
+			if (value == null)
+				return WString.tr("importTool.import.cannotFindColumn").arg(header);
+			value = value.trim();
+			
 			Rule.Type type = r.getType();
 			
 			if (type == Rule.Type.PatientId) {
@@ -272,6 +330,11 @@ public class ImportData {
 				if (!value.equals("")) {
 					getIsolate(r.getNumber(), isolates).setSampleId(value);
 				}
+			} else if (type == Rule.Type.ViralIsolateSampleManualSubtype) {
+				if (!value.equals("")) {
+					TestResult tr = createTestResult(getIsolate(r.getNumber(), isolates), t.getTest(r.getTypeName()));
+					tr.setValue(value);
+				}
 			} else if (type == Rule.Type.ViralIsolateSampleSequence) {
 				if (!value.equals("")) {
 					NtSequence ntseq = new NtSequence();
@@ -282,7 +345,7 @@ public class ImportData {
 						Sequence s = sequences.get(value);
 						if (s == null)
 							return WString.tr("importTool.import.sequenceNotFound").arg(value).arg(row).arg(header);
-						ntseq.setNucleotides(s.seqString());
+						ntseq.setNucleotides(Utils.clearNucleotides(s.seqString()));
 						ntseq.setLabel(value);
 					}
 					ntseq.setViralIsolate(getIsolate(r.getNumber(), isolates));
@@ -322,7 +385,7 @@ public class ImportData {
 		for (Map.Entry<Integer, Therapy> e : therapies.entrySet()) {
 			if (e.getValue().getTherapyCommercials().size() > 0 || e.getValue().getTherapyGenerics().size() > 0) {
 				if (e.getValue().getStartDate() == null)
-					return WString.tr("importTool.import.therapyMissingStartDate").arg(row);
+					return WString.tr("importTool.import.therapyMissingStartDate").arg(e.getKey()).arg(row);
 				else if (!isStartBeforeEnd(e.getValue().getStartDate(), e.getValue().getStopDate()))
 					return WString.tr("importTool.import.therapyEndBeforeStartDate").arg(e.getKey()).arg(row);
 				else
@@ -345,6 +408,17 @@ public class ImportData {
 		
 		return null;
 	}
+	
+    public TestResult createTestResult(ViralIsolate vi, Test t) {
+		TestResult tr = new TestResult();
+		tr.setTest(t);
+		tr.setViralIsolate(vi);
+		
+		tr.setPatient(vi.getPatient());
+		vi.getTestResults().add(tr);
+		
+		return tr;
+    }
 	
 	private Set<Dataset> getDatasets() {
 		Set<Dataset> datasets = new HashSet<Dataset>();

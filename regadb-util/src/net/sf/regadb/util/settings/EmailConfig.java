@@ -1,7 +1,6 @@
 package net.sf.regadb.util.settings;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.jdom.Element;
@@ -15,7 +14,6 @@ public class EmailConfig implements IConfigParser {
 		return "e-mail";
 	}
 
-	@Override
 	public void parseXml(RegaDBSettings settings, Element e) {
 		host = e.getChildText("host").trim();
 		from = e.getChild("from").getAttributeValue("address").trim();

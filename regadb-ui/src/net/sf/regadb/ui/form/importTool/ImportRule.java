@@ -141,11 +141,16 @@ public class ImportRule {
 			for (Event e : events) {
 				name.addItem(new DataComboMessage<Serializable>(e, e.getName()));
 			}
-		} else if (type.currentValue() == Rule.Type.TestValue || 
-				type.currentValue() == Rule.Type.ViralIsolateSampleManualSubtype) {
+		} else if (type.currentValue() == Rule.Type.TestValue) {
 			List<Test> tests = tr.getTests();
 			for (Test t : tests) {
 				name.addItem(new DataComboMessage<Serializable>(t, Rule.getTestName(t)));
+			}
+		} else if (type.currentValue() == Rule.Type.ViralIsolateSampleManualSubtype) {
+			List<Test> tests = tr.getTests();
+			for (Test t : tests) {
+				if (t.getAnalysis() == null && t.getTestType().getTestObject().getDescription().equals("Viral Isolate analysis"))
+					name.addItem(new DataComboMessage<Serializable>(t, Rule.getTestName(t)));
 			}
 		} else {
 			name.setHidden(true);

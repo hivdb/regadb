@@ -36,6 +36,8 @@ public class ContactFormConfig extends FormConfig {
     private List<EventItem> events = new ArrayList<EventItem>();
     
     private boolean useContactDate = false;
+    
+    private int gridRowCount = 2;
 
 	public ContactFormConfig() {
 		super(NAME);
@@ -45,6 +47,10 @@ public class ContactFormConfig extends FormConfig {
 	public void parseXml(RegaDBSettings settings, Element e) {
 		tests.clear();
 		events.clear();
+		
+		String s = e.getAttributeValue("gridRowCount");
+		if(s != null)
+			gridRowCount = Math.abs(Integer.parseInt(s));
 		
 		Element ee = (Element)e.getChild("tests");
 		
@@ -57,7 +63,7 @@ public class ContactFormConfig extends FormConfig {
         
         ee = (Element)e.getChild("events");
         if(ee != null){
-        	String s = ee.getAttributeValue("useContactDate");
+        	s = ee.getAttributeValue("useContactDate");
         	setUseContactDate(s != null && s.equals("true"));
         	
             for(Object o : ee.getChildren()){
@@ -81,6 +87,7 @@ public class ContactFormConfig extends FormConfig {
 		Element r = super.toXml();
 		Element e;
 		
+		r.setAttribute("gridRowCount", gridRowCount+"");
 		r.addContent(new Comment("Custom contact form configuration."));
 		
 		if(tests.size() > 0){
@@ -128,5 +135,8 @@ public class ContactFormConfig extends FormConfig {
 	}
 	public List<EventItem> getEvents(){
 		return events;
+	}
+	public int getGridRowCount(){
+		return gridRowCount;
 	}
 }

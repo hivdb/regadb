@@ -73,8 +73,8 @@ public class CodonAlign {
             + "D  -1  -1  -1  -4  -3  -1  -1  -3  -1  -3  -2  -2  -2  -1  -1\n"
             + "N  -2  -2  -2  -2  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1\n";
 
-    static SubstitutionMatrix nuc4_4matrix = null;
-    static SubstitutionMatrix blosum30matrix = null;
+    public static SubstitutionMatrix nuc4_4matrix = null;
+    public static SubstitutionMatrix blosum30matrix = null;
     private int minNtScore;
         
     private NeedlemanWunsch aaNeedleman;
@@ -321,6 +321,7 @@ public class CodonAlign {
         return new ScoredAlignment(new SimpleAlignment(alignment), ntNeedleman.computeScore(seq1, seq2));
     }
 
+    static
     {
         try {
             nuc4_4matrix =         

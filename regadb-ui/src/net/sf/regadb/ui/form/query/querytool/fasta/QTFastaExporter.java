@@ -20,7 +20,6 @@ public class QTFastaExporter extends FastaExporter implements FastaExport {
 		this.output = output;
 	}
 
-	@Override
 	public OutputVariable getViralIsolate() {
 		return output;
 	}

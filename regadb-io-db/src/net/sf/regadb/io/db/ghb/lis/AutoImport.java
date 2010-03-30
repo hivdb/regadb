@@ -13,7 +13,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import net.sf.regadb.db.Attribute;
@@ -26,9 +28,9 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.ghb.GhbUtils;
-import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.mapping.DbObjectStore;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper;
 import net.sf.regadb.io.db.util.mapping.ObjectStore;
@@ -81,7 +83,6 @@ public class AutoImport {
     }
     
     private FileLogger errLog, importLog, infoLog;
-    private Date earliestDate = new Date(System.currentTimeMillis());
     
     public Date firstCd4 = new Date();
     public Date firstCd8 = new Date();
@@ -95,6 +96,8 @@ public class AutoImport {
     private ObjectStore objectStore;
     
     private String datasetDescription = null;
+    
+    private Set<String> patientsNotFound = new HashSet<String>();
     
     public static void main(String [] args) {
     	Arguments as = new Arguments();
@@ -196,7 +199,7 @@ public class AutoImport {
     public void batchProcess(File dir) throws FileNotFoundException {
         File[] files = dir.listFiles();
         for(final File f : files) {
-            if(f.getAbsolutePath().endsWith(".txt") && f.getName().startsWith("GHB")){
+            if(f.getAbsolutePath().toLowerCase().endsWith(".xls") && f.getName().toLowerCase().startsWith("regadb")){
                 process(f);
             }
         }
@@ -259,11 +262,14 @@ public class AutoImport {
         } catch (ParseException e) {
            e.printStackTrace();
         }
-        char sex = line[headers.get("geslacht")].toUpperCase().charAt(0);
         
         Patient p = getPatient(ead);
         if(p==null){
-            p = createPatient(ead);
+        	if(patientsNotFound.add(ead)){
+        		logError(lineNumber, "Patient not found: '"+ ead +"'");
+        	}
+        	logNotImported(toString(line));
+        	return null;
         }
         
         Attribute emdAttribute = objectStore.getAttribute("EMD Number", StandardObjects.getClinicalAttributeGroup().getGroupName());
@@ -273,20 +279,11 @@ public class AutoImport {
         												"EMD Number");
         }
         
-        Attribute genderAttribute = objectStore.getAttribute(
-                StandardObjects.getGenderAttribute().getName(),
-                StandardObjects.getGenderAttribute().getAttributeGroup().getGroupName());
         Attribute birthDateAttribute = objectStore.getAttribute("Birth date","Personal");
 
         if(!containsAttribute(emdAttribute, p))
             p.createPatientAttributeValue(emdAttribute).setValue(emd);
-        if(!containsAttribute(genderAttribute, p)){
-            try {
-                handleNominalAttributeValue(p, genderAttribute.getName(), sex + "");
-            } catch (MappingException e) {
-                e.printStackTrace();
-            }
-        }
+
         if(!containsAttribute(birthDateAttribute, p))
             p.createPatientAttributeValue(birthDateAttribute).setValue(birthDate.getTime()+"");
         
@@ -304,36 +301,30 @@ public class AutoImport {
     }
     
     private void handleTest(Patient p, Map<String,Integer> headers, String[] line, int lineNumber) {
-        String correctId = getCorrectSampleId(headers, line);
         Date sampleDate = null;
-        String aanvraagTestNaam = line[headers.get("aanvraagTestNaam")];
+        String testId = line[headers.get("aanvraagTestNaam")] +", "+ line[headers.get("elementNaam")];
         
         try {
             sampleDate = GhbUtils.LISDateFormat.parse(line[headers.get("afname")]);
             if(!GhbUtils.isValidDate(sampleDate))
             	throw new Exception("invalid test date: "+ sampleDate);
             
-            if(sampleDate.before(earliestDate)) {
-                earliestDate = sampleDate;
-            }
-            if(!lisTests.containsKey(aanvraagTestNaam))
-                lisTests.put(aanvraagTestNaam,new ErrorTypes());
+            if(!lisTests.containsKey(testId))
+                lisTests.put(testId,new ErrorTypes());
             
             String reeel = line[headers.get("reeel")];
             String resultaat = line[headers.get("resultaat")];
             
-            //work with a mapping files
+            //work with a mapping file
             if((reeel != null && reeel.length() > 0)
                     || (resultaat != null && resultaat.length() > 0)) {
-                
+            	
+                String correctId = getCorrectSampleId(headers, line);
+            	
                 Map<String,String> variables = new HashMap<String,String>();
-                
-                variables.put("reeel", reeel);
-                variables.put("resultaat",resultaat);
-                variables.put("elementNaam", line[headers.get("elementNaam")]);
-                variables.put("aanvraagTestNaam", aanvraagTestNaam);
-                variables.put("relatie", line[headers.get("relatie")]);
-                variables.put("eenheden", line[headers.get("eenheden")]);
+                for(Map.Entry<String, Integer> header : headers.entrySet()){
+                	variables.put(header.getKey(),line[header.getValue()].trim());
+                }
                 variables.put("relatie+reeel", line[headers.get("relatie")]+reeel);
                 
                 long ul = 0;
@@ -355,7 +346,7 @@ public class AutoImport {
                 tr.setSampleId(correctId);
                 tr.setTestDate(sampleDate);
                 
-                if(duplicateTestResult(p, tr)){
+                if(duplicateTestResult(p, tr) != null){
                     logError(lineNumber, "Duplicate test result ignored");
                     return;
                 }
@@ -371,17 +362,17 @@ public class AutoImport {
         } 
         catch(MappingDoesNotExistException e){
             logError(lineNumber, e.getMessage());
-            lisTests.get(aanvraagTestNaam).mapping = true;
+            lisTests.get(testId).mapping = true;
             logNotImported(toString(line));
         }
         catch(ObjectDoesNotExistException e){
             logError(lineNumber, e.getMessage());
-            lisTests.get(aanvraagTestNaam).object = true;
+            lisTests.get(testId).object = true;
             logNotImported(toString(line));
         }
         catch(InvalidValueException e){
             logError(lineNumber, e.getMessage());
-            lisTests.get(aanvraagTestNaam).value = true;
+            lisTests.get(testId).value = true;
             logNotImported(toString(line));
         }
         catch (MappingException e) {
@@ -399,7 +390,80 @@ public class AutoImport {
         }
     }
        
-    private void setFirstTestDate(TestResult tr) {
+//    private void handleHiv1ViralLoad(
+//    		Patient p, Date sampleDate, String sampleId, String aanvraagTestNaam, String labotestNaam,
+//    		String berekeningNaam, String listestNaam, String elementNaam,String eenheden, String relatie,
+//    		String reeel, String resultaat) throws Exception {
+//
+//    	if(!elementNaam.endsWith("sym") && reeel.length() != 0){
+//    		String description;
+//    		Test t;
+//	    	if(elementNaam.equals("HIV-1 VL")){
+//	    		if(labotestNaam.startsWith("Abbott"))
+//	    			description = "Abbott Realtime";
+//	    		else
+//	    			description = StandardObjects.getGenericHiv1ViralLoadTest().getDescription();
+//	    		
+//	    		t = objectStore.getTest(description,
+//	    				StandardObjects.getHiv1ViralLoadTestType().getDescription(),
+//	    				StandardObjects.getHiv1Genome().getOrganismName());
+//	    	}
+//	    	else if(elementNaam.equals("HIV-1 VL log")){
+//	    		if(labotestNaam.startsWith("Abbott"))
+//	    			description = "Abbott Realtime (log10)";
+//	    		else
+//	    			description = StandardObjects.getGenericHiv1ViralLoadLog10Test().getDescription();
+//	    		
+//	    		t = objectStore.getTest(description,
+//	    				StandardObjects.getHiv1ViralLoadTestType().getDescription(),
+//	    				StandardObjects.getHiv1Genome().getOrganismName());
+//	    		
+//	    	}
+//	    	else{
+//	    		throw new Exception("Unknown viral load element name.");
+//	    	}
+//	    	
+//	    	TestResult tr = new TestResult(t);
+//    		tr.setSampleId(sampleId);
+//    		tr.setTestDate(sampleDate);
+//    		tr.setValue(relatie + reeel);
+//    		
+//    		if(duplicateTestResult(p, tr) == null){
+//    			p.addTestResult(tr);
+//    		}
+//    		else{
+//    			throw new Exception("Duplicate viral load.");
+//    		}
+//    	}
+//    	else{
+//    		String copies=null,log=null;
+//    		if(resultaat.contains("<40") || resultaat.contains("< 40")){
+//    			copies="<40";
+//    			log="<1.6";
+//    		}
+//    		else if(resultaat.contains("<50")){
+//    			copies="<50";
+//    			log="<1.7";
+//    		}
+//    		else if(resultaat.contains("> 10000000")){
+//    			copies=">10000000";
+//    			log=">7";
+//    		}
+//    		
+//    		for(TestResult tr : p.getTestResults()){
+//    			if(tr.getTestDate().equals(sampleDate)){
+//    				if(Equals.isSameTestType(tr.getTest().getTestType(), StandardObjects.getHiv1ViralLoadTestType())){
+//    					tr.setValue(copies);
+//    				}
+//    				else if(Equals.isSameTestType(tr.getTest().getTestType(), StandardObjects.getHiv1ViralLoadLog10TestType())){
+//    					tr.setValue(log);
+//    				}
+//    			}
+//    		}
+//    	}
+//	}
+
+	private void setFirstTestDate(TestResult tr) {
     	String description = tr.getTest().getTestType().getDescription(); 
     	if(description.equals(StandardObjects.getCd4TestType().getDescription()) && tr.getTestDate().before(firstCd4))
     		firstCd4 = tr.getTestDate();
@@ -423,36 +487,50 @@ public class AutoImport {
            id = line[headers.get("berekeningId")];
         }
 
-        return id;
+        id = id.trim();
+        return id.length() == 0 ? null : id;
     }
     
-    private void handleNominalAttributeValue(Patient p, String name, String nominalValue) throws MappingException {
-        try {
-            Map<String,String> variables = new HashMap<String,String>();
-            variables.put("name", name);
-            variables.put("value", nominalValue);
-            PatientAttributeValue pav = objectMapper.getAttributeValue(variables);
-            p.addPatientAttributeValue(pav);
-
-        } catch (ObjectDoesNotExistException e) {
-            ConsoleLogger.getInstance().logWarning("Unsupported attribute value" + name + ": "+nominalValue);
-        }
-    }
+//    private void handleNominalAttributeValue(Patient p, String name, String nominalValue) throws MappingException {
+//        try {
+//            Map<String,String> variables = new HashMap<String,String>();
+//            variables.put("name", name);
+//            variables.put("value", nominalValue);
+//            PatientAttributeValue pav = objectMapper.getAttributeValue(variables);
+//            p.addPatientAttributeValue(pav);
+//
+//        } catch (ObjectDoesNotExistException e) {
+//            ConsoleLogger.getInstance().logWarning("Unsupported attribute value" + name + ": "+nominalValue);
+//        } catch (MatcherException e) {
+//			e.printStackTrace();
+//		}
+//    }
     
     private String[] tokenizeTab(String line) {
-        return line.split("\t");
+        return line.split("\t",-1);
     }
     
-    private boolean duplicateTestResult(Patient p, TestResult result) {
+    private TestResult duplicateTestResult(Patient p, TestResult result) {
         for(TestResult tr : p.getTestResults()) {
-            if(tr.getTest().getDescription().equals(result.getTest().getDescription()) &&
-                    DateUtils.equals(tr.getTestDate(),result.getTestDate()) &&
+            if(Equals.isSameTest(tr.getTest(),result.getTest()) &&
+                    DateUtils.equals(tr.getTestDate(),result.getTestDate()) && 
                     equals(tr.getSampleId(),result.getSampleId())) {
-            	return true;
+            	return tr;
             }
         }
-        return false;
+        return null;
     }
+    
+//    private TestResult dublicateTestTypeResult(Patient p, TestResult result) {
+//        for(TestResult tr : p.getTestResults()) {
+//            if(Equals.isSameTestType(tr.getTest().getTestType(),result.getTest().getTestType()) &&
+//                    DateUtils.equals(tr.getTestDate(),result.getTestDate()) && 
+//                    equals(tr.getSampleId(),result.getSampleId())) {
+//            	return tr;
+//            }
+//        }
+//        return null;
+//    }
     
     private boolean equals(String s1, String s2){
     	if(s1 == s2)
@@ -466,10 +544,10 @@ public class AutoImport {
         Dataset dataset = objectStore.getDataset(datasetDescription);
         return objectStore.getPatient(dataset, ead);
     }
-    private Patient createPatient(String ead){
-        Dataset dataset = objectStore.getDataset(datasetDescription);
-        return objectStore.createPatient(dataset, ead);
-    }
+//    private Patient createPatient(String ead){
+//        Dataset dataset = objectStore.getDataset(datasetDescription);
+//        return objectStore.createPatient(dataset, ead);
+//    }
     
     private void logNotImported(String msg){
         importLog.println(msg);

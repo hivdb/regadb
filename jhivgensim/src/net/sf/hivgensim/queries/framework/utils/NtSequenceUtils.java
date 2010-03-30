@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
@@ -17,18 +15,11 @@ import net.sf.regadb.io.util.StandardObjects;
 
 public class NtSequenceUtils {
 	
-	public static String resistance(NtSequence seq, String drug){
-		for(TestResult tr : seq.getViralIsolate().getTestResults()){
-			if(tr.getDrugGeneric().getGenericId().equalsIgnoreCase(drug)){
-				String dat = new String(tr.getData());
-				Pattern p = Pattern.compile(".*<sir>(.)</sir>.*");
-				Matcher m = p.matcher(dat);
-				if(m.matches()){
-					return m.group(1);
-				}				
-			}
-		}
-		return "";
+	public static String resistance(NtSequence seq, String drug) {
+		return resistance(seq, "Rega v8.0.2", drug);
+	}
+	public static String resistance(NtSequence seq, String algorithm, String drug){
+		return ViralIsolateUtils.resistance(seq.getViralIsolate(), algorithm, drug);
 	}
 	
 	public static List<NtSequence> sort(Set<NtSequence> sequences){

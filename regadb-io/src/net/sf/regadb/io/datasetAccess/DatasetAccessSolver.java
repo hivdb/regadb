@@ -36,6 +36,13 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
 
 public class DatasetAccessSolver implements IDatasetAccess {
+	@SuppressWarnings("serial")
+	public static class IllegalAccessException extends Exception{
+		public IllegalAccessException(String s){
+			super("Illegal access to '"+ s +"'");
+		}
+	}
+	
     private static DatasetAccessSolver das;
     private DatasetAccessSolver() {
         

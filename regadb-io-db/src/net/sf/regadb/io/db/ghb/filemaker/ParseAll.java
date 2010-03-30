@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jxl.read.biff.BiffException;
-
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestObject;
@@ -70,8 +69,6 @@ public class ParseAll {
         PositionalArgument workspaceDir = as.addPositionalArgument("workspace-dir", true);
         PositionalArgument datasetDescription = as.addPositionalArgument("dataset", false);
         datasetDescription.setValue("KUL");
-        ValueArgument kwsContactenFileName = as.addValueArgument("t", "kws-contacten-filename", false);
-        kwsContactenFileName.setValue("Contacten_2008.xls");
         
         if(!as.handle(args))
         	return;
@@ -85,8 +82,6 @@ public class ParseAll {
         String filemakerDir = importDir.getValue() + File.separatorChar + "filemaker" + File.separatorChar;
         String seqDir = importDir.getValue() + File.separatorChar + "sequences" + File.separatorChar;
         
-        kwsContactenFile			= importDir.getValue() + File.separatorChar + kwsContactenFileName.getValue();
-        	
         eadNrEmdNrFile              = filemakerDir + "eadnr_emdnr.MER";
         patientenFile               = filemakerDir + "patienten.MER";
         symptomenFile               = filemakerDir + "symptomen.MER";
@@ -124,7 +119,11 @@ public class ParseAll {
         try{
         	try {
         		ImportKwsContacts ikc = new ImportKwsContacts(oos, datasetDescription.getValue());
-				ikc.run(new File(kwsContactenFile));
+        		for(File f : new File(importDir.getValue()).listFiles()){
+        			if(f.getName().toLowerCase().endsWith(".xls")
+        					&& f.getName().toLowerCase().startsWith("contacten"))
+        				ikc.run(f);
+        		}
 			} catch (BiffException e1) {
 				e1.printStackTrace();
 			}
@@ -132,10 +131,6 @@ public class ParseAll {
         	AutoImport ai = new AutoImport(new File(lisMappingFile), new File(lisNationMappingFile), oos, datasetDescription.getValue());
 			ai.run(new File(lisDir));
         
-	        GetViralIsolates gvi = new GetViralIsolates();
-	        gvi.eadPatients = eadPatients;
-	        gvi.run(stalenLeuvenFile,spreadStalenFile,seqsToIgnoreFile,macFastaFile,pcFastaFile);
-	        
 	        ParsePatient parsePatient = new ParsePatient();
 	        parsePatient.parse( new File(patientenFile),
 	                            new File(filemakerMappingPath + "country_of_origin.mapping"),
@@ -161,6 +156,10 @@ public class ParseAll {
 	                System.err.println("invalid patient id: " + e.getKey());
 	            }
 	        }
+	        
+	        GetViralIsolates gvi = new GetViralIsolates();
+	        gvi.eadPatients = eadPatients;
+	        gvi.run(stalenLeuvenFile,spreadStalenFile,seqsToIgnoreFile,macFastaFile,pcFastaFile);
 	        
 	        IOUtils.exportPatientsXML(eadPatients.values(), outputPath + File.separatorChar + "patients.xml", ConsoleLogger.getInstance());
 	        IOUtils.exportNTXMLFromPatients(eadPatients.values(), outputPath + File.separatorChar + "viralisolates.xml", ConsoleLogger.getInstance());
@@ -189,27 +188,176 @@ public class ParseAll {
         return delimiter;
     }
     
-    private static void createNonStandardObjects(OfflineObjectStore oos){
-    	createBooleanTest(oos,"Syphilis","Syphilis (generic)");
-    	
-    	Test hcvab = createBooleanTest(oos,"HCVAb (presence)","HCVAb (presence) (generic)");
-    	oos.createTest(hcvab.getTestType(),"HCVAb (presence) (Monolisa)");
-    	
-    	createBooleanTest(oos,"HBcAb (presence)","HBcAb (presence) (generic)");
-    	createBooleanTest(oos,"HBsAg (presence)","HBsAg (presence) (generic)");
-    	createBooleanTest(oos,"HAVAb (presence)","HAVAb (presence) (generic)");
-    	
-    	oos.createTest(oos.getTestType(StandardObjects.getContactTestType().getDescription(), null), "Consultation");
-    	oos.createTest(oos.getTestType(StandardObjects.getContactTestType().getDescription(), null), "Hospitalisation");
-    }
-    
-    private static Test createBooleanTest(OfflineObjectStore oos, String testTypeDescr, String testDescr){
+    private static TestType createNominalTestType(OfflineObjectStore oos, String testTypeDescr, String... values){
     	TestObject patient = oos.getTestObject(StandardObjects.getPatientTestObject().getDescription());
     	ValueType nominal = oos.getValueType(StandardObjects.getNominalValueType().getDescription());
-
     	TestType tt = oos.createTestType(testTypeDescr, patient, null, nominal);
-    	oos.createTestNominalValue(tt, "Positive");
-    	oos.createTestNominalValue(tt, "Negative");
+    	
+    	for(String value : values)
+    		oos.createTestNominalValue(tt,value);
+    	return tt;
+    }
+    
+    private static TestType createLimitedNumberTestType(OfflineObjectStore oos, String testTypeDescr){
+    	TestObject patient = oos.getTestObject(StandardObjects.getPatientTestObject().getDescription());
+    	ValueType nominal = oos.getValueType(StandardObjects.getLimitedNumberValueType().getDescription());
+    	TestType tt = oos.createTestType(testTypeDescr, patient, null, nominal);    	
+    	return tt;
+    }
+
+    private static TestType createNumberTestType(OfflineObjectStore oos, String testTypeDescr){
+    	TestObject patient = oos.getTestObject(StandardObjects.getPatientTestObject().getDescription());
+    	ValueType nominal = oos.getValueType(StandardObjects.getNumberValueType().getDescription());
+    	TestType tt = oos.createTestType(testTypeDescr, patient, null, nominal);    	
+    	return tt;
+    }
+
+    private static Test createNominalTest(OfflineObjectStore oos, String testTypeDescr, String testDescr, String... values){
+    	TestType tt = createNominalTestType(oos, testTypeDescr, values);
     	return oos.createTest(tt, testDescr);
+    }
+
+    private static Test createBooleanTest(OfflineObjectStore oos, String testTypeDescr, String testDescr){
+    	TestType tt = createNominalTestType(oos, testTypeDescr, new String[]{"Positive","Negative"});
+    	return oos.createTest(tt, testDescr);
+    }
+
+    private static Test createLimitedNumberTest(OfflineObjectStore oos, String testTypeDescr, String testDescr){
+    	TestType tt = createLimitedNumberTestType(oos, testTypeDescr);
+    	return oos.createTest(tt, testDescr);
+    }
+    
+    private static Test createNumberTest(OfflineObjectStore oos, String testTypeDescr, String testDescr){
+    	TestType tt = createNumberTestType(oos, testTypeDescr);
+    	return oos.createTest(tt, testDescr);
+    }
+    
+    private static void createTests(OfflineObjectStore oos, TestType tt, String... testDescrs){
+    	for(String testDescr : testDescrs){
+    		oos.createTest(tt, testDescr);
+    	}
+    }
+    
+    private static void createNonStandardObjects(OfflineObjectStore oos){
+    	TestType tt;
+
+//    	createBooleanTest(oos,"Syphilis","Syphilis (generic)");
+//    	
+//    	Test hcvab = createBooleanTest(oos,"HCVAb (presence)","HCVAb (presence) (generic)");
+//    	oos.createTest(hcvab.getTestType(),"HCVAb (presence) (Monolisa)");
+//    	
+//    	createBooleanTest(oos,"HBcAb (presence)","HBcAb (presence) (generic)");
+//    	createBooleanTest(oos,"HBsAg (presence)","HBsAg (presence) (generic)");
+//    	createBooleanTest(oos,"HAVAb (presence)","HAVAb (presence) (generic)");
+    	
+    	tt = oos.getTestType(StandardObjects.getContactTestType());
+    	createTests(oos, tt,
+    			"Consultation",
+    			"Hospitalisation");
+    	
+    	tt = createNumberTestType(oos, "Absolute lymfocytose (bloed)");
+    	createTests(oos, tt,
+    			"Absolute lymfocytose (bloed) (cells/ul)",
+    			"Absolute lymfocytose (bloed) (cells/mm3)");
+    	
+    	tt = oos.getTestType(StandardObjects.getCd4PercentageTestType());
+    	createTests(oos, tt,
+    			"CD3/CD4-plot (bloed)",
+    			"CD4(+) T cellen (bloed)",
+    			"T lymfocyten subpopulaties (bloed)",
+    			"CD4 en CD8 T cellen (bloed)");
+    	
+    	tt = oos.getTestType(StandardObjects.getCd4TestType());
+    	createTests(oos, tt,
+    			"Absolute T4-lymfocytose (bloed)",
+    			"CD3/CD4-plot (bloed)",
+    			"CD4 en CD8 T cellen (bloed)",
+    			"CD4(+) T cellen (bloed)");
+    	
+    	createNumberTest(oos, "CD4/CD8 (ratio)", "CD4/CD8 (ratio)");
+    	
+    	tt = oos.getTestType(StandardObjects.getCd8PercentageTestType());
+    	createTests(oos, tt,
+    			"CD3/CD8-plot (bloed)",
+    			"CD8(+) T cellen (bloed)",
+    			"T lymfocyten subpopulaties (bloed)",
+    			"CD4 en CD8 T cellen (bloed)");
+    	
+    	tt = oos.getTestType(StandardObjects.getCd8TestType());
+    	createTests(oos, tt,
+    			"CD4 en CD8 T cellen (bloed)",
+    			"CD3/CD8-plot (bloed)",
+    			"CD8(+) T cellen (bloed)");
+    	
+    	tt = createNominalTestType(oos, "HBcAb (qualitative)",
+    			"Positive",
+    			"Negative",
+    			"Positive (weak)");
+    	createTests(oos, tt,
+    			"Hepatitis B core antistoffen",
+    			"Hepatitis B core antistoffen (Architect)");
+    	
+    	createNominalTest(oos, "HBc IgM (qualitative)", "Hepatitis B core IgM",
+    			"Positive",
+    			"Negative");
+    	
+    	tt = createLimitedNumberTestType(oos, "HBsAb (IU/L)");
+    	createTests(oos, tt,
+    			"Hepatitis B surface antistoffen (IU/L)",
+    			"Hepatitis B surface antistoffen (Architect) (IU/L)");
+    	
+    	tt = createNominalTestType(oos, "HIV Ab/Ag (qualitative)",
+    			"Positive",
+    			"Negative",
+    			"Positive (weak)",
+    			"Positive (possibly false)",
+    			"Limit");
+    	createTests(oos, tt,
+    			"Anti HIV-1/2 Plus (qualitative)",
+    			"Enzygnost HIV Integral II (qualitative)",
+    			"Enzygnost HIV Integral (qualitative)",
+    			"HIV Ab/Ag (Architect) (qualitative)",
+    			"HIV Ab/Ag (generic) (qualitative)");
+    	
+    	tt = createLimitedNumberTestType(oos, "HIV Ab/Ag (S/CO)");
+    	createTests(oos, tt,
+    			"Anti HIV-1/2 (S/CO)",
+    			"Enzygnost HIV Integral (S/CO)",
+    			"HIV Ab/Ag (generic) (S/CO)");
+    	
+    	tt = createLimitedNumberTestType(oos, "HIV Ab/Ag (OD/cutoff)");
+    	createTests(oos, tt, "Enzygnost HIV Integral II (OD/cutoff)");
+    	
+    	tt = createNominalTestType(oos, "CMV IgG (qualitative)",
+    			"Positive",
+    			"Negative");
+    	createTests(oos, tt,
+    			"CMV IgG (qualitative)",
+    			"CMV IgG (Architect) (qualitative)");
+    	
+    	tt = createNominalTestType(oos, "Syphilis serology (qualitative)",
+    			"Positive",
+    			"Negative");
+    	createTests(oos, tt,
+    			"Syphilis serology FTA (qualitative)",
+    			"Syphilis serology RPR (qualitative)",
+    			"Syphilis serology RPR (CSV) (qualitative)",
+    			"Syphilis serology TPHA (qualitative)",
+    			"Syphilis serology VDRL (CSV) (qualitative)",
+    			"Syphilis serology VDRL (qualitative)");
+    	
+    	tt = createNumberTestType(oos, "Syphilis serology (titer)");
+    	createTests(oos,tt,
+    			"Syphilis serology TPHA (titer)",
+    			"Syphilis serology RPR (titer)",
+    			"Syphilis serology VDRL (CSV) (titer)",
+    			"Syphilis serology VDRL (titer)");
+    	
+    	
+    	tt = oos.getTestType(StandardObjects.getHiv1ViralLoadTestType());
+    	createTests(oos, tt, "Abbott RealTime (copies/ml)");
+    	
+    	tt = oos.getTestType(StandardObjects.getHiv1ViralLoadLog10TestType());
+    	createTests(oos, tt, "Abbott RealTime (log10)");
     }
 }

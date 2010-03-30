@@ -13,12 +13,10 @@ public class RegaDBConnectorProvider implements DatabaseConnectorProvider {
 		this.login = login;
 	}
 	
-	@Override
 	public void closeConnector(DatabaseConnector connector) {
 		connector.close();
 	}
 
-	@Override
 	public DatabaseConnector createConnector() {
 		return new HibernateConnector(login);
 	}

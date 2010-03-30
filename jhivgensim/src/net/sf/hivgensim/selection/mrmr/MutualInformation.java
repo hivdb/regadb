@@ -1,6 +1,7 @@
 package net.sf.hivgensim.selection.mrmr;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MutualInformation {
 	
@@ -33,6 +34,16 @@ public class MutualInformation {
 	public MutualInformation(String[] first, String[] second){
 		setFirst(first);
 		setSecond(second);
+		setValues();
+		setProbabilities();
+		setResult();
+	}
+	
+	public MutualInformation(List<String> first, List<String> second){
+		this.first = new String[first.size()];
+		first.toArray(this.first);
+		this.second = new String[second.size()];
+		second.toArray(this.second);
 		setValues();
 		setProbabilities();
 		setResult();

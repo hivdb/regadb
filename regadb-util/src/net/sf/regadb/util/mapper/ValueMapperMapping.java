@@ -3,6 +3,7 @@ package net.sf.regadb.util.mapper;
 import java.util.Map;
 
 import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
+import net.sf.regadb.util.mapper.matcher.Matcher.MatcherException;
 
 import org.jdom.Element;
 
@@ -28,11 +29,11 @@ public class ValueMapperMapping extends Mapping implements Mapper<ValueMapping>{
         }
     }
 
-    public ValueMapping get(Map<String, String> variables) {
+    public ValueMapping get(Map<String, String> variables) throws MatcherException {
         return valueMapper.get(variables);
     }
     
-    public String getValue(Map<String, String> variables){
+    public String getValue(Map<String, String> variables) throws MatcherException{
         ValueMapping vm = get(variables);
         
         if(vm != null)

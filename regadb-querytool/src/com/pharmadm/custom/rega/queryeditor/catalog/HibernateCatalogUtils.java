@@ -133,7 +133,10 @@ public class HibernateCatalogUtils {
 		constant.addSuggestedValue(new SuggestedValuesOption("<>", " is not on"));
 		if (!exact) {
 	       	constant.addSuggestedValue(new SuggestedValuesOption("<", "is before"));
-	    	constant.addSuggestedValue(new SuggestedValuesOption(">", "is after"));
+	       	constant.addSuggestedValue(new SuggestedValuesOption("<=", "is before or on"));
+	    	
+	       	constant.addSuggestedValue(new SuggestedValuesOption(">", "is after"));
+	       	constant.addSuggestedValue(new SuggestedValuesOption(">=", "is after or on"));
 		}
 		constant.setSuggestedValuesMandatory(true);
 		return constant;

@@ -17,7 +17,6 @@ import org.hibernate.type.Type;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
-import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 
 public class HibernateConnector implements DatabaseConnector {
 	private Login login;
@@ -25,21 +24,12 @@ public class HibernateConnector implements DatabaseConnector {
 	public HibernateConnector(Login login) {
 		this.login = login.copyLogin();
 	}
-	
-	public QueryStatement createScrollableReadOnlyStatement() throws SQLException {
-		Transaction t = createTransaction();
-		return new HibernateStatement(t);
-	}
 
 	public QueryResult executeQuery(String query) throws SQLException {
-		Transaction transaction = createTransaction();
+		Transaction transaction = login.createTransaction();
 		Query q = transaction.createQuery(query);
 		QueryResult result = new HibernateResult(q.scroll(), q.getReturnAliases(), q.getReturnTypes());
 		return result;
-	}
-	
-	public Transaction createTransaction() {
-		return login.createTransaction();
 	}
 
 	public List<String> getPrimitiveColumnNames(String tableName) {
@@ -180,7 +170,6 @@ public class HibernateConnector implements DatabaseConnector {
 		return list;
 	}
 
-	@Override
 	public void close() {
 		login.closeSession();
 	}

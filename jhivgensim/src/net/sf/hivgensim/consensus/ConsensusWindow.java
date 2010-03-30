@@ -7,26 +7,25 @@ import java.util.Map;
 
 public class ConsensusWindow {
 
-	private List<Map<Short, String>> sequences;
-	private Map<String, List<Map<Short, String>>> sequencesPerSubtype;
+	private List<SimpleSequence> sequences;
+	private Map<String, List<SimpleSequence>> sequencesPerSubtype;
 	
 	public ConsensusWindow(){
-		this.sequences = new ArrayList<Map<Short,String>>();
-		this.sequencesPerSubtype = new HashMap<String, List<Map<Short,String>>>();
+		this.sequences = new ArrayList<SimpleSequence>();
+		this.sequencesPerSubtype = new HashMap<String, List<SimpleSequence>>();
 	}
 	
-	public void addSequence(Map<Short, String> mutations, String subtype) {
-		sequences.add(mutations);
+	public void addSequence(SimpleSequence sequence, String subtype) {
+		sequences.add(sequence);
 		if(!sequencesPerSubtype.containsKey(subtype)){
-			sequencesPerSubtype.put(subtype, new ArrayList<Map<Short,String>>());
+			sequencesPerSubtype.put(subtype, new ArrayList<SimpleSequence>());
 		}
-		sequencesPerSubtype.get(subtype).add(mutations);
+		sequencesPerSubtype.get(subtype).add(sequence);
 	}
 	
-	private void processSequences(ConsensusCalculator calculator,
-			List<Map<Short, String>> sequences) {
-		for (Map<Short, String> mutations : sequences) {
-			calculator.process(mutations);
+	private void processSequences(ConsensusCalculator calculator, List<SimpleSequence> sequences) {
+		for (SimpleSequence sequence : sequences) {
+			calculator.process(sequence);
 		}
 	}
 	
@@ -72,4 +71,5 @@ public class ConsensusWindow {
 		}
 		return sequencesPerSubtype.get(subtype).size();
 	}
+	
 }
