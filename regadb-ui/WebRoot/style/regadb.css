@@ -654,3 +654,14 @@ table.form-custom-grid > tbody > tr > td {
 	border-right: 1px dashed #bbb;
 	padding: 0.5em;
 }
+
+.chart-popup{
+	background-image: url('../pics/marker.gif');
+	background-repeat: no-repeat;
+	font-family: sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	margin-left: -6px;
+	margin-top: -6px;
+	padding-left: 1.5em;
+}

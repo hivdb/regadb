@@ -7,7 +7,7 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.io.util.StandardObjects;
 import eu.webtoolkit.jwt.chart.Axis;
 
-public class ViralLoadSeries extends TestResultSeries {
+public class ViralLoadSeries extends LimitedValueSeries {
 	private Genome genome;
 	
 	public ViralLoadSeries(Genome genome, Axis axis) {
@@ -26,7 +26,7 @@ public class ViralLoadSeries extends TestResultSeries {
 
 	@Override
 	public String getName(){
-		return "Viral Load ("+ getGenome().getOrganismName() +")";
+		return "Viral Load ("+ getGenome().getOrganismName() +") (log10)";
 	}
 
 	@Override

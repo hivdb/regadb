@@ -12,13 +12,13 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.meta.Equals;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.chart.Axis;
+import eu.webtoolkit.jwt.chart.MarkerType;
 import eu.webtoolkit.jwt.chart.SeriesType;
 import eu.webtoolkit.jwt.chart.WDataSeries;
 
 public class TestResultSeries extends WDataSeries {
 	
-	@SuppressWarnings("unused")
-	private static final Comparator<TestResult> comparator = new Comparator<TestResult>(){
+	public static final Comparator<TestResult> comparator = new Comparator<TestResult>(){
 		public int compare(TestResult o1, TestResult o2) {
 			return o1.getTestDate().compareTo(o2.getTestDate());
 		}
@@ -29,12 +29,13 @@ public class TestResultSeries extends WDataSeries {
 	private ValueTypes valueType;
 
 	public TestResultSeries(TestType testType, Axis axis){
-		this(testType, -1, axis);
+		this(testType, SeriesType.LineSeries, axis);
 	}
 
-	private TestResultSeries(TestType testType, int modelColumn, Axis axis){
-		super(modelColumn, SeriesType.LineSeries, axis);
+	protected TestResultSeries(TestType testType, SeriesType type, Axis axis){
+		super(-1, type, axis);
 		setLegendEnabled(true);
+		setMarker(MarkerType.CircleMarker);
 		
 		setTestType(testType);
 		results = new TreeMap<Date, TestResult>();
@@ -62,10 +63,17 @@ public class TestResultSeries extends WDataSeries {
 		
 		for(TestResult tr : p.getTestResults()){
 			if(isOk(tr))
-				results.put(tr.getTestDate(), tr);
+				addResult(tr);
 		}
 		
+		if(results.size() == 0)
+			setLegendEnabled(false);
+		
 		return results;
+	}
+	
+	protected void addResult(TestResult tr){
+		results.put(tr.getTestDate(), tr);
 	}
 	
 	public boolean isOk(TestResult tr){

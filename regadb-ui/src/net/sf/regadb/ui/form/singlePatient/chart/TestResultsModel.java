@@ -1,13 +1,10 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.util.date.DateUtils;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WStandardItemModel;
 
@@ -27,25 +24,35 @@ public class TestResultsModel extends WStandardItemModel{
 	}
 	
 	public void loadResults(Patient p){
-		int cols = 1 + series.size();
-		insertColumns(0, cols);
-		
 		int col = 1;
 		int row = 0;
 
+		insertColumn(0);
+		
 		for(TestResultSeries s : series){
-			s.setModelColumn(col);
-			setHeaderData(col, s.getName());
+			s.loadResults(p);
 
-			Map<Date, TestResult> results = s.loadResults(p);
-			for(TestResult tr : results.values()){
-				insertRow(row);
-				setData(row, getXSeriesColumn(), new WDate(tr.getTestDate()));
-				setData(row, col, s.getValue(tr));
-//				System.out.println(row +","+ col +","+ DateUtils.format(tr.getTestDate()) +","+ s.getValue(tr));
-				++row;
+			if(s instanceof LimitedValueSeries){
+				LimitedValueSeries lvs = (LimitedValueSeries)s;
+				row = fill(lvs.getCutOffSeries(), row, col++);
 			}
-			++col;
+			
+			row = fill(s, row, col++);
 		}
+	}
+	
+	private int fill(TestResultSeries series, int row, int col){
+		insertColumn(col);
+		series.setModelColumn(col);
+		setHeaderData(col, series.getName());
+		
+		for(TestResult tr : series.getResults().values()){
+			insertRow(row);
+			setData(row, getXSeriesColumn(), new WDate(tr.getTestDate()));
+			setData(row, col, series.getValue(tr));
+//			System.out.println(row +","+ col +","+ DateUtils.format(tr.getTestDate()) +","+ s.getValue(tr));
+			++row;
+		}
+		return row;
 	}
 }
