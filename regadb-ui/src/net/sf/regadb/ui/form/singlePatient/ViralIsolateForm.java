@@ -100,19 +100,25 @@ public class ViralIsolateForm extends FormWidget
 	
 	@Override
 	public void saveData()
-	{                
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        
-        _mainForm.confirmSequences();
-        
-        Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
-        if(genome == null)
-            return;
-        
-        _mainForm.saveData(t);
-        
-        //remove resistance tests
-        Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
+	{
+		Transaction t = RegaDBMain.getApp().createTransaction();
+
+		_mainForm.confirmSequences();
+
+		Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
+		if(genome == null)
+			return;
+
+		if (getInteractionState()==InteractionState.Adding) {
+			Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
+			t.attach(p);
+			p.addViralIsolate(viralIsolate_);
+		}
+
+		_mainForm.saveData(t);
+
+		//remove resistance tests
+		Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
 		while (i.hasNext()) {
 			TestResult test = i.next();
 			if (test.getTest().getTestType().getDescription().equals(
@@ -121,25 +127,18 @@ public class ViralIsolateForm extends FormWidget
 				t.delete(test);
 			}
 		}
-        
+
 		viralIsolate_.setGenome(t.getGenome(genome.getOrganismName()));
-		
-		if (getInteractionState()==InteractionState.Adding) {
-			Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
-			t.attach(p);
-			p.addViralIsolate(viralIsolate_);
-		}
-		
-        update(viralIsolate_, t);
-        t.commit();
-        
-        _mainForm.startAnalysis(genome);
-             
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(viralIsolate_);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
-        redirectToView(
-        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem(),
-        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
+
+		t.commit();
+
+		_mainForm.startAnalysis(genome);
+
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(viralIsolate_);
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
+		redirectToView(
+				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem(),
+				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
 	}
 	
 	private Genome blast(NtSequence ntseq){
