@@ -149,29 +149,32 @@ public class ViralIsolateMainForm extends WContainerWidget
 		
 		Transaction trans = RegaDBMain.getApp().createTransaction();
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
-        if (config != null)
-		for(int i = 0; i < config.getTests().size(); i++) {
-			Test test = trans.getTest(config.getTests().get(i).description);
-			TestResult theTr = null;
-			for (TestResult tr : vi.getTestResults()) {
-				if (tr.getTest().getDescription().equals(test.getDescription())) 
-					theTr = tr;
-			}
-
-			FormField f = testFormFields_.get(i);
-			if (theTr != null) {
-				if (f instanceof ComboBox) {
-					((ComboBox) f).selectItem(theTr.getTestNominalValue().getValue());
-				} else {
-					if (theTr.getValue() != null)
-						f.setText(theTr.getValue());
-					else 
-						f.setText(new String(theTr.getData()));
+        if(config != null){
+			for(int i = 0; i < config.getTests().size(); i++) {
+				Test test = trans.getTest(config.getTests().get(i).description);
+				TestResult theTr = null;
+				for (TestResult tr : vi.getTestResults()) {
+					if (tr.getTest().getDescription().equals(test.getDescription())){
+						theTr = tr;
+						break;
+					}
 				}
-			} else {
-				//hide?
+	
+				FormField f = testFormFields_.get(i);
+				if (theTr != null) {
+					if (f instanceof ComboBox) {
+						((ComboBox) f).selectItem(theTr.getTestNominalValue().getValue());
+					} else {
+						if (theTr.getValue() != null)
+							f.setText(theTr.getValue());
+						else 
+							f.setText(new String(theTr.getData()));
+					}
+				} else {
+					//hide?
+				}
 			}
-		}
+        }
         
         for(NtSequence ntseq : vi.getNtSequences())
         {
@@ -357,8 +360,10 @@ public class ViralIsolateMainForm extends WContainerWidget
 		for(int i = 0; i < config.getTests().size(); i++) {
             TestResult tr = null;
             for (TestResult vi_tr : viralIsolateForm_.getViralIsolate().getTestResults()) {
-            	if (vi_tr.getTest().getDescription().equals(config.getTests().get(i).description))
+            	if (vi_tr.getTest().getDescription().equals(config.getTests().get(i).description)){
             		tr = vi_tr;
+            		break;
+            	}
             }
             FormField f = testFormFields_.get(i);
             if(f instanceof ComboBox) {
@@ -373,9 +378,10 @@ public class ViralIsolateMainForm extends WContainerWidget
                 		tr = createTestResult(t.getTest(config.getTests().get(i).description));
                     tr.setData(f.text().getBytes());
                 }
-            }
-            if(tr!=null) {
-                t.save(tr);
+                else if(tr != null){
+                	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);
+                	t.delete(tr);
+                }
             }
         }
         

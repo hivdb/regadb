@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "$1" == "id" ]
+then
+  git log | head -n 1 | cut -f 2 -d ' '
+fi
+
+if [ "$1" == "author" ]
+then
+  git log | head -n 2 | tail -n 1 | sed -e 's/Author:[ ]*//'
+fi
+
+if [ "$1" == "time" ]
+then
+  git log | head -n 3 | tail -n 1 | sed -e 's/Date:[ ]*//'
+fi
+
