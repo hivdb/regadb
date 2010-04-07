@@ -35,6 +35,10 @@ public class Version {
 		return properties.getProperty("build.system");
 	}
 	
+	public static final Properties getProperties(){
+		return properties;
+	}
+	
 	public static void main(String args[]){
 		for(Entry<Object, Object> e : properties.entrySet())
 			System.out.println(e.getKey() +"="+ e.getValue());

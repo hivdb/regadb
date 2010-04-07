@@ -20,6 +20,7 @@ import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
+import net.sf.regadb.ui.form.administrator.VersionForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
@@ -223,6 +224,9 @@ public class TreeContent
     public ActionItem logView;
     public ActionItem logDelete;
     public LogSelectedItem logSelectedItem;
+    
+    public ActionItem version;
+    
 	public QueryDefinitionSelectedItem queryToolSelected;
 	public ActionItem queryToolSelectedView;
 	public ActionItem queryToolSelectedEdit;
@@ -1058,6 +1062,14 @@ public class TreeContent
                 public void performAction(TreeMenuNode node) 
                 {
                     RegaDBMain.getApp().getFormContainer().setForm(new LogForm(WWidget.tr("form.log.view"), InteractionState.Deleting, logSelectedItem.getSelectedItem()));
+                }
+            });
+            
+            version = new ActionItem(WResource.tr("menu.version"),administratorMain, new ITreeAction()
+            {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new VersionForm());
                 }
             });
             
