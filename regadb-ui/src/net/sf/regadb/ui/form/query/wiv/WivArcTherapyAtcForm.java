@@ -24,7 +24,7 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 import org.hibernate.Query;
 
 public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
-    private String therapyDateConstraint = " not ((tp.startDate > :var_date and not cast(:var_date as date) is null) or ( not tp.stopDate is null and tp.stopDate < :var_date )) ";
+    private String therapyDateConstraint = " not ((tp.startDate > :var_date and not cast(:var_date as date) is null) or ( not tp.stopDate is null and tp.stopDate <= :var_date )) ";
     
     private DateField dateField;
 
@@ -98,8 +98,12 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         			"select tp.patient from Therapy tp where " +
         				therapyDateConstraint +
         			") " +
-        		"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("pav.patient.patientIi"));
+        		"and pav.attribute.name = 'PatCode' and "+ getArcPatientQuery("pav.patient.patientIi")
+        		+" and "+ getContactConstraint("pav.patient.id"));
         q.setDate("var_date", dateField.getDate());
+        q.setDate("var_start_date", getStartDate());
+        q.setDate("var_end_date", getEndDate());
+        
         List<PatientAttributeValue> pavs = q.list();
         
         for(PatientAttributeValue pav : pavs){
@@ -117,11 +121,11 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         }
         for(TherapyCommercial tc : tp.getTherapyCommercials()){
         	DrugCommercial dc = tc.getId().getDrugCommercial();
-        	if(dc.getAtcCode() != null || dc.getAtcCode().length() != 0){
+        	if(dc.getAtcCode() != null && dc.getAtcCode().length() != 0){
         		atcs.add(dc.getAtcCode());
         	}
         	else{
-	            for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+	            for(DrugGeneric dg : dc.getDrugGenerics()){
 	            	String ss[] = dg.getAtcCode().split("[+]");
 	            	for(String s : ss){
 	            		atcs.add(s.trim());

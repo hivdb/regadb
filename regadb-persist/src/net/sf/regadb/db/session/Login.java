@@ -35,6 +35,7 @@ import org.hibernate.Session;
 public class Login {
     private String uid;
     private Session session_;
+    private Transaction transaction;
 
     /**
      * Create a new authenticated login to the database.
@@ -78,8 +79,20 @@ public class Login {
      * 
      * @return
      */
-    public Transaction createTransaction() {
-        return new Transaction(this, getSession());
+    public Transaction createTransaction()
+    {
+      return getTransaction(true);
+    }
+
+    public Transaction getTransaction(boolean createNewTransaction)
+    {
+      if (this.transaction == null || !this.transaction.isActive())
+      {
+        if (createNewTransaction)
+          return (this.transaction = new net.sf.regadb.db.Transaction(this, this.session_));
+        return (this.transaction = null);
+      }
+      return this.transaction;
     }
     
     public String getUid() {
@@ -97,24 +110,26 @@ public class Login {
         Transaction t  = new Transaction(this, getSession());
         SettingsUser su = t.getSettingsUser(uid);
         
-        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(su.getRole()).getBlockedAttributes();
-        if(blockAttributes && attributes!=null) {
-        	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
-        	Attribute attribute;
-        	for(AttributeConfig a : attributes) {
-        		attribute = t.getAttribute(a.getName(), a.getGroup());
-        		if(attribute!=null) {
-        			attribute_iis.add(attribute.getAttributeIi());
-        		} else {
-        			System.err.println("Blocked Attribute cannot be found: " + a.getGroup() + " - " +a.getName());
-        		}
-        	}
-        	
-        	if(attribute_iis.size()>0)
-        		session_.enableFilter("attributeFilter").setParameterList("attribute_ii_list", attribute_iis);
+        if(su != null){
+	        List<AttributeConfig> attributes = RegaDBSettings.getInstance().getAccessPolicyConfig().getRole(su.getRole()).getBlockedAttributes();
+	        if(blockAttributes && attributes!=null) {
+	        	Set<Integer> attribute_iis = new HashSet<Integer>(attributes.size());
+	        	Attribute attribute;
+	        	for(AttributeConfig a : attributes) {
+	        		attribute = t.getAttribute(a.getName(), a.getGroup());
+	        		if(attribute!=null) {
+	        			attribute_iis.add(attribute.getAttributeIi());
+	        		} else {
+	        			System.err.println("Blocked Attribute cannot be found: " + a.getGroup() + " - " +a.getName());
+	        		}
+	        	}
+	        	
+	        	if(attribute_iis.size()>0)
+	        		session_.enableFilter("attributeFilter").setParameterList("attribute_ii_list", attribute_iis);
+	        }
+	        
+	        prepareQueries();
         }
-        
-        prepareQueries();
     }
     
     public Login copyLogin()

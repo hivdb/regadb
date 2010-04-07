@@ -6,8 +6,18 @@ import java.io.PrintStream;
 
 public class TreeWeights {
 	
-	public static short WEIGHT_FOR_PR = 50;
-	public static short WEIGHT_FOR_RT = 100;
+	public static final short WEIGHT_FOR_PR = 50;
+	public static final short WEIGHT_FOR_RT = 100;
+	
+	public static short getWeightFor(String protein){
+		if("PR".equals(protein)){
+			return WEIGHT_FOR_PR;
+		}
+		if("RT".equals(protein)){
+			return WEIGHT_FOR_RT;
+		}
+		throw new IllegalArgumentException(protein);		
+	}
 	
 	public class DoublePointer{
 		double value = 0;
@@ -105,13 +115,25 @@ public class TreeWeights {
 	}
 		
 	public static void main(String[] args){
+		if(args.length != 3){
+			System.err.println("Usage: TreeWeights tree.phy weights.csv protein");
+			System.exit(0);
+		}
+		int decayFactor = 0;
+		if("PR".equals(args[2])){
+			decayFactor = TreeWeights.WEIGHT_FOR_PR;
+		}else if("RT".equals(args[2])){
+			decayFactor = TreeWeights.WEIGHT_FOR_RT;
+		}else{
+			System.out.println(args[2]+" unknown protein or no weight specified for protein");
+		}
 		try {
-			TreeParser tp = new TreeParser("/home/gbehey0/tree.phy");
+			TreeParser tp = new TreeParser(args[0]);
 			TreeNode root = tp.parseTree();
-			TreeWeights tw = new TreeWeights(50); // PR:50 RT:100
+			TreeWeights tw = new TreeWeights(decayFactor);
 			tw.calculateWeights(root);
-			PrintStream out = new PrintStream(new FileOutputStream("/home/gbehey0/out50.csv"));
-			out.println(root.printWeights());
+			PrintStream out = new PrintStream(new FileOutputStream(args[1]));
+			out.print(root.printWeights());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

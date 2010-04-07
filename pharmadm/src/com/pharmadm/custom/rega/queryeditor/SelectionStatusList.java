@@ -144,7 +144,7 @@ public class SelectionStatusList implements SelectionList, Serializable {
                         }
                     }
                     // only table selected
-                   if (DatabaseManager.getInstance().getDatabaseConnector().isTableSelectionAllowed()) {
+                   if (DatabaseManager.getInstance().isTableSelectionAllowed()) {
                     	return true;
                     }
                 } else {

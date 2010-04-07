@@ -62,11 +62,14 @@ public class FullAnalysis implements IAnalysis {
                 {
                     if(ntseq.getAaSequences().size()==0)
                     {
-                        AnalysisPool.getInstance().launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), sessionSafeLogin.getUid(), genome.getOrganismName()), sessionSafeLogin);
-                        AnalysisPool.getInstance().launchAnalysis(new SubtypeAnalysis(   ntseq,
-                                                                                            subTypeTest,
-                                                                                            genome,
-                                                                                            sessionSafeLogin.getUid()), sessionSafeLogin); 
+                        launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
+                        		sessionSafeLogin.getUid(), 
+                        		genome.getOrganismName()), sessionSafeLogin);
+                        launchAnalysis(new SubtypeAnalysis(ntseq,
+                        		subTypeTest,
+                                genome,
+                                sessionSafeLogin.getUid()), 
+                                sessionSafeLogin); 
                     }
                 }
                 
@@ -79,7 +82,7 @@ public class FullAnalysis implements IAnalysis {
                     {
                         if(test.getAnalysis()!=null)
                         {
-                            AnalysisPool.getInstance().launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
+                            launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
                         }
                     }
                 }
@@ -88,6 +91,10 @@ public class FullAnalysis implements IAnalysis {
         }
         
         setEndTime(new Date());
+    }
+    
+    protected void launchAnalysis(IAnalysis analysis, Login login) {
+    	AnalysisPool.getInstance().launchAnalysis(analysis, login);
     }
 
     public void pause() {

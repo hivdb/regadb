@@ -236,7 +236,7 @@ public class JDBCConnector implements  DatabaseConnector{
         return new JDBCStatement(con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY));
     }
 
-	public boolean isTableSelectionAllowed() {
-		return false;
+	public void close() {
+		// TODO Auto-generated method stub
 	}
 }

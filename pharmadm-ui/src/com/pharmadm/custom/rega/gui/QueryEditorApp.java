@@ -11,24 +11,22 @@
  * See http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
  */
 package com.pharmadm.custom.rega.gui;
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
+import net.sf.regadb.db.session.Login;
 
-import com.pharmadm.util.work.WorkManager;
 import com.pharmadm.custom.rega.queryeditor.FrontEnd;
 import com.pharmadm.custom.rega.queryeditor.FrontEndManager;
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.gui.QueryEditorTree;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 import com.pharmadm.util.settings.RegaSettings;
 import com.pharmadm.util.thread.ThreadManager;
 import com.pharmadm.util.thread.WorkManagerThreadManagerAdapter;
-
-import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.session.Login;
+import com.pharmadm.util.work.WorkManager;
 
 
 /**
@@ -126,13 +124,7 @@ public class QueryEditorApp implements FrontEnd{
 //        	DatabaseConnector con = new JDBCConnector(null, "jdbc:postgresql://localhost:5432/regadb", "freek", "freek");
 //        	QueryVisitor visitor = new SqlQuery();
         	final Login login = Login.authenticate("admin", "admin");
-            DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(false){
-				@Override
-				public Transaction createTransaction() {
-					return login.createTransaction();
-				}
-            });
-            DatabaseManager.getInstance().fillCatalog(new HibernateCatalogBuilder());
+            DatabaseManager.initInstance(new SwingDatabaseConnectorProvider(login), new HibernateQuery(), new HibernateCatalogBuilder(), false);
         } catch (Exception e) {
         	e.printStackTrace();
             return false;

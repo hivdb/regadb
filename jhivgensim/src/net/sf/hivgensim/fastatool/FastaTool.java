@@ -30,6 +30,7 @@ public abstract class FastaTool {
 	}
 	
 	public void close(){
+		out.flush();
 		out.close();
 	}
 	

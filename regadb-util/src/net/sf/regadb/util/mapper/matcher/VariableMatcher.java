@@ -1,10 +1,19 @@
 package net.sf.regadb.util.mapper.matcher;
 
+import java.util.Map;
+
 import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
 
 import org.jdom.Element;
 
 public abstract class VariableMatcher extends Matcher{
+	@SuppressWarnings("serial")
+	public static class VariableDoesNotExistException extends MatcherException{
+		public VariableDoesNotExistException(String variable){
+			super("Variable does not exist: '"+ variable +"'");
+		}
+	}
+	
     private String string;
     private String variable;
     
@@ -29,5 +38,11 @@ public abstract class VariableMatcher extends Matcher{
     }
     public void setVariable(String variable){
         this.variable = variable;
+    }
+    
+    protected String getValue(Map<String,String> variables) throws VariableDoesNotExistException{
+    	if(!variables.containsKey(getVariable()))
+    		throw new VariableDoesNotExistException(getVariable());
+    	return variables.get(getVariable());
     }
 }

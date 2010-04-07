@@ -3,17 +3,25 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientImplHelper;
+import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
+import net.sf.regadb.ui.form.query.querytool.fasta.QTFastaExporter;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.exception.SQLGrammarException;
@@ -38,10 +46,12 @@ import eu.webtoolkit.jwt.WString;
 
 public class QueryToolRunnable implements Runnable {
 	private QueryEditor editor;
-	private Login login;
+	private Login originalLogin;
 	private String fileName;
 	private Status status;
 	private File csvFile;
+	private File fastaFile;
+	private int numberFastaEntries;
 	private String statusMsg = "";
 	private QueryStatement statement;
 	private Object mutex = new Object();
@@ -79,9 +89,9 @@ public class QueryToolRunnable implements Runnable {
 	    }
 	}
 	
-	public QueryToolRunnable(Login copiedLogin, String fileName, QueryEditor editor) {
+	public QueryToolRunnable(Login login, String fileName, QueryEditor editor) {
 		this.fileName = fileName;
-		this.login = copiedLogin;
+		this.originalLogin = login;
 		this.editor = editor;
 		status = Status.WAITING;
 		errors = new HashMap<String, String>();
@@ -139,22 +149,34 @@ public class QueryToolRunnable implements Runnable {
     private File getOutputFile() {
         File queryDir = getResultDir();
         return new File(queryDir.getAbsolutePath()  + File.separator + fileName);
-    }  
+    }
 	
-    public WFileResource getDownloadResource(){
+    public WFileResource getTableDownloadResource(){
     	if (isDone()) {
     		return new WFileResource("application/csv", csvFile.getAbsolutePath());
     	}
     	return null;
-    }		
+    }
+    
+    public WFileResource getFastaDownloadResource() {
+    	if (isDone() && fastaFile != null) {
+    		return new WFileResource("application/fasta", fastaFile.getAbsolutePath());
+    	}
+    	return null;
+    }
 	
     private boolean process(File csvFile){
     	boolean success = false;
-        
-    	Transaction t = login.createTransaction();
-    	statement = new HibernateStatement(t);
     	
+    	fastaFile = null;
+    	numberFastaEntries = 0;
+        
+    	Login copiedLogin = originalLogin.copyLogin();
+
         try{
+        	Transaction t = copiedLogin.createTransaction();
+        	statement = new HibernateStatement(t);
+        	
         	// create a copy of the query editor so the user can work on
         	// his query while this thread is running
         	QueryEditor newEditor = (QueryEditor) editor.clone();
@@ -172,9 +194,21 @@ public class QueryToolRunnable implements Runnable {
             if(result != null){
         		List<Selection> selections = getFlatSelectionList(newList);
 
+        		Set<Dataset> datasets = new HashSet<Dataset>(t.getDatasets());
+        		Map<String, Protein> proteins = new HashMap<String, Protein>();
+        		for (Protein p : t.getProteins()) 
+        			proteins.put(p.getAbbreviation(), p);
+        		
 	            FileOutputStream os = new FileOutputStream(csvFile);
 	            ExportToCsv csvExport = new ExportToCsv();
 				Set<Integer> accessiblePatients = getAccessiblePatients(t);
+				
+				OutputStreamWriter fastaOS = null;
+				if (newEditor.getQuery().getFastaExport() != null  
+						&& ((QTFastaExporter)newEditor.getQuery().getFastaExport()).getMode() != null) {
+					fastaFile = new File(getResultDir().getAbsolutePath()  + File.separator + fileName + ".fasta");
+					fastaOS = new OutputStreamWriter(new FileOutputStream(fastaFile));
+				}
 	          
 	            os.write(getHeaderLine(selections, newList.getSelectedColumnNames()).getBytes());
 	          
@@ -185,6 +219,10 @@ public class QueryToolRunnable implements Runnable {
             		synchronized (mutex) {
                 		o = result.get();
 					}
+            		if (fastaFile != null) {
+            			if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)o[o.length - 1], new HashSet<Dataset>(), accessiblePatients))
+            				numberFastaEntries += ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
+            		}
             		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
             		//this access solving stuff is horrible and could use a little rewrite, someday
             		writtenLines+= (processLine(o, t, os, csvExport, selections, new HashSet<Dataset>(), accessiblePatients)?1:0);
@@ -192,10 +230,15 @@ public class QueryToolRunnable implements Runnable {
             		statusMsg = " (" + writtenLines + ")";
             	}
 	            
+            	if (fastaFile != null)
+            		fastaOS.close();
 	            os.close();
         		statusMsg = " (" + writtenLines + ")";
 	            success = true;
             }
+            
+			statement.close();
+            t.clearCache();
         }
         catch(IOException e){
         	statusMsg = ": " + errors.get("write_error");
@@ -220,9 +263,9 @@ public class QueryToolRunnable implements Runnable {
 		catch (Exception e) {
 			statusMsg = ": " + e.getMessage();
 			e.printStackTrace();
+		} finally {
+			copiedLogin.closeSession();
 		}
-		statement.close();
-    	t.clearCache();
         return success;
     }
     
@@ -230,8 +273,8 @@ public class QueryToolRunnable implements Runnable {
     private Set<Integer> getAccessiblePatients(Transaction t) {
 		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery(
 				"select pd.id.patient.patientIi from PatientDataset pd where " +
-				"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ login.getUid() +"') "+
-				"or pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + login.getUid() + "')", null);
+				"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ originalLogin.getUid() +"') "+
+				"or pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + originalLogin.getUid() + "')", null);
 		Set<Integer> results = new HashSet<Integer>();
 		while (!result.isLast()) {
 			results.add((Integer) result.get()[0]);
@@ -254,21 +297,26 @@ public class QueryToolRunnable implements Runnable {
 		
 		CsvLine line = new CsvLine();
 		
-		for (int j = 0 ; j < array.length ; j++) {		    
-			if (selections.get(j) instanceof TableSelection) {
-				lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
-			}
-			else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
-				// if the first element is an outputselection selection list
-				// changes made earlier guarantee that it is a static value
-				// so it can be outputted regardless of access
-				if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
-					line.addField(array[j].toString());
+		try{
+			for (int j = 0 ; j < selections.size() ; j++) {
+				if (selections.get(j) instanceof TableSelection) {
+					lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 				}
-				else {
-					line.addField(null);
+				else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
+					// if the first element is an outputselection selection list
+					// changes made earlier guarantee that it is a static value
+					// so it can be outputted regardless of access
+					if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
+						line.addField(array[j].toString());
+					}
+					else {
+						line.addField(null);
+					}
 				}
 			}
+		}
+		catch(IllegalAccessException e){
+			return "";
 		}
 		return line.toString() +"\n";
     }
@@ -394,5 +442,9 @@ public class QueryToolRunnable implements Runnable {
 
 	public boolean isRunning() {
 		return status == Status.RUNNING;
+	}
+
+	public int getFastaEntries() {
+		return numberFastaEntries;
 	}
 }

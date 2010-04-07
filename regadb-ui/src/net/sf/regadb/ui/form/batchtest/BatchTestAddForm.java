@@ -67,7 +67,7 @@ public class BatchTestAddForm extends FormWidget {
 	@Override
 	public void saveData() {
 		Test t = cmbTest.currentValue();
-		BatchTestRunningForm.runTest(t);
+		BatchTestRunningForm.runTest(RegaDBMain.getApp().getLogin().copyLogin(), t);
 		try { Thread.sleep(100); } catch ( InterruptedException e ) { e.printStackTrace(); }
 		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().batchTestRunning, RegaDBMain.getApp().getTree().getTreeContent().batchTestRunning);
 	}

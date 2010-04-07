@@ -31,9 +31,10 @@ public class ParseAll {
     	
     	if(confDir.isSet())
     		RegaDBSettings.createInstance(confDir.getValue());
+    	
     	else
     		RegaDBSettings.createInstance();
-    	
+    	  RegaDBSettings.getInstance().getProxyConfig().initProxySettings();
         ParseAll pa = new ParseAll();
         pa.run(importDir.getValue(),
         		mappingDir.getValue(),

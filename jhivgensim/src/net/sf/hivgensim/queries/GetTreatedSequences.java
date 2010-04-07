@@ -40,7 +40,7 @@ public class GetTreatedSequences extends Query<Patient,NtSequence> {
 	public void process(Patient p) {
 		Set<String> history = new HashSet<String>();
 		history = new HashSet<String>();
-		for(Therapy t : TherapyUtils.sortTherapies(p.getTherapies())){
+		for(Therapy t : TherapyUtils.sortTherapiesByStartDate(p.getTherapies())){
 			for(TherapyGeneric tg : t.getTherapyGenerics()){
 				history.add(tg.getId().getDrugGeneric().getGenericId());
 			}

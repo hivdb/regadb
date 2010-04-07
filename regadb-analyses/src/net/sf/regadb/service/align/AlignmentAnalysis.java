@@ -98,6 +98,7 @@ public class AlignmentAnalysis implements IAnalysis
                     ntseq.getAaSequences().add(aaseq);
                 }
             }
+            ntseq.setAligned(true);
             
             t.update(ntseq);
             t.commit();

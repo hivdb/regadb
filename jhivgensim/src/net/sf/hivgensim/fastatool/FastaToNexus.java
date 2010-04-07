@@ -13,7 +13,7 @@ public class FastaToNexus{
 	private FastaScanner scanner;
 	private PrintStream out;
 	private ArrayList<FastaSequence> sequences;
-
+	
 	public FastaToNexus(String fastaFilename, String nexusFilename)
 			throws FileNotFoundException {
 		scanner = new FastaScanner(new File(fastaFilename));

@@ -107,9 +107,9 @@ public class MutationTable extends Table {
 	public MutationTable(String filename) throws FileNotFoundException{
 		super(new InputStreamReader(new BufferedInputStream(new FileInputStream(filename))), false,',');
 	}
-	
+
 	private Set<String> mutationNames;
-	
+
 	private void createHeader(Set<String> mutationNames){
 		this.mutationNames = mutationNames;
 		ArrayList<String> temp = new ArrayList<String>();
@@ -118,11 +118,19 @@ public class MutationTable extends Table {
 			temp.add(s);
 			addColumn(temp);
 		}
-		
+
 	}
 	
-	public void addSequence(NtSequence seq, SelectionWindow[] windows){
-		createNewRow(seq.getViralIsolate().getSampleId());
+	private void createInfoHeader(Set<String> info){
+		ArrayList<String> temp = new ArrayList<String>();
+		for(String s : info){
+			temp.clear();
+			temp.add(s);
+			addColumn(temp);
+		}
+	}
+
+	private void completeNewRow(NtSequence seq, SelectionWindow[] windows){
 		Set<AaSequence> aaSequences = seq.getAaSequences();
 		for(AaSequence aaSequence : aaSequences){
 			for(SelectionWindow win : windows){
@@ -189,11 +197,30 @@ public class MutationTable extends Table {
 					}
 				}
 			}
-		}
+		}	
 	}
-	
+
+	public void addSequence(NtSequence seq, SelectionWindow[] windows, ArrayList<String> infoCols){
+		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ""));
+		for(String info : infoCols){
+			setValue(findInRow(0, info), numRows()-1,"y");
+		}
+		completeNewRow(seq, windows);
+	}
+
+	public void addSequence(NtSequence seq, SelectionWindow[] windows){
+		createNewRow(seq.getViralIsolate().getSampleId().replace(",", ""));
+		completeNewRow(seq, windows);
+	}
+
 	public MutationTable(Set<String> mutationNames){
 		createIdColumn();
+		createHeader(mutationNames);
+	}
+	
+	public MutationTable(Set<String> mutationNames, Set<String> info){
+		createIdColumn();
+		createInfoHeader(info);
 		createHeader(mutationNames);
 	}
 
@@ -204,7 +231,7 @@ public class MutationTable extends Table {
 
 		createIdColumn();
 		createHeader(getAllMutations(seqlist, windows));
-		
+
 		for(NtSequence seq : seqlist){
 			addSequence(seq, windows);			
 		}
@@ -224,6 +251,10 @@ public class MutationTable extends Table {
 	public void removeInsertions(){
 		deleteColumns(".*ins.*");
 	}
+	
+	public void removeDeletions(){
+		deleteColumns(".*del.*");
+	}
 
 	/**
 	 * remove all columns with unknown AA-mutation
@@ -234,7 +265,7 @@ public class MutationTable extends Table {
 	}
 
 	public void removeMutationsOutsideRange(int start,int stop){
-		Pattern p = Pattern.compile("[A-Za-z]+([0-9]+).");
+		Pattern p = Pattern.compile("(RT | PR)?[A-Z]([0-9]+)([A-Z*]+|del|ins)");
 		Matcher m = null;
 		ArrayList<Integer> toBeDeleted = new ArrayList<Integer>();
 		ArrayList<String> header = getRow(0);
@@ -252,50 +283,45 @@ public class MutationTable extends Table {
 		}
 		deleteColumns(toBeDeleted);
 	}
+	
+	public void removeNonPrevalingMutations(ArrayList<String> ignoredHeaders){
+		ArrayList<Integer> toBeDeleted = new ArrayList<Integer>();
+		ArrayList<String> col;
+		int i;
+		for(String mut : getRow(0)){
+			if(ignoredHeaders.contains(mut)){
+				continue;
+			}
+			i = findColumn(mut);
+			col = getColumn(i);
+			if(!col.contains("y")){
+				toBeDeleted.add(i);
+			}
+		}
+		deleteColumns(toBeDeleted);
+	}
 
 	private void createIdColumn(){
-		//create id column
 		ArrayList<String> ids = new ArrayList<String>();
 		ids.add("id");
 		addColumn(ids, 0);
-	}	
-
-	//	private void addMutation(String mutationString) {
-	//		int nbCol = findInRow(0, mutationString);
-	//		if(nbCol == -1){ //new mut
-	//			createNewColumn(mutationString);
-	//		}else{ //adjust mut
-	//			setValue(nbCol, numRows()-1, "y");									
-	//		}
-	//	}
-
-	//	private void createNewColumn(String mutation){
-	//		ArrayList<String> newcol = new ArrayList<String>(numRows());
-	//		newcol.add(mutation);
-	//		for(int i = 1;i<numRows();i++){
-	//			if(i != numRows()-1){
-	//				newcol.add("n");
-	//			}else{
-	//				newcol.add("y");
-	//			}			
-	//		}
-	//		addColumn(newcol);		
-	//	}
+	}
 
 	private void createNewRow(String id){
 		ArrayList<String> newrow = new ArrayList<String>(numColumns());
 		newrow.add(id);
-		for(int i = 1;i<numColumns();i++){
-			newrow.add("");						
-		}
+		
+		//mutations
+		for(int i = 1; i < numColumns(); i++){
+			if(MUT_PATTERN.matcher(valueAt(i, 0)).matches()){
+				newrow.add("");
+			}else{
+				newrow.add("n");
+			}			
+		}		
 		addRow(newrow);		
 	}
-
-	//	private boolean mutationInWindow(Mutation m, SelectionWindow sw){
-	//		return m.getAaPos() >= (sw.getStartCheck()/3)+1
-	//		&& m.getAaPos() <= (sw.getStopCheck()/3)+1;
-	//	}
-
 	
-
+	public static final Pattern MUT_PATTERN = Pattern.compile("([A-Z]+)([0-9]+)([A-Z]*|del|ins)");	
+	
 }

@@ -84,7 +84,7 @@ public class TestResultExamples {
 				fields[i] = parse(fields[i]);
 			
 			for(File f : new File(lisdir.getValue()).listFiles()){
-				if(!f.getName().startsWith("GHB_"))
+				if(!f.getName().startsWith("rega"))
 					continue;
 				
 				BufferedReader br2 = new BufferedReader(new FileReader(f));

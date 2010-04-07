@@ -11,7 +11,6 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.ui.form.singlePatient.ViralIsolateMainForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
@@ -68,7 +67,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		String [] row = new String[4];
 		
 		row[0] = DateUtils.format(type.getSampleDate());
-		row[1] = type.getSampleId();
+		row[1] = type.getSampleId() == null ? "---":type.getSampleId();
 		
 		SortedSet<String> proteinList = new TreeSet<String>();
 		for(NtSequence ntseq : type.getNtSequences())
@@ -88,7 +87,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		}
 		row[2] = proteinBuffer.toString();
 		
-		Genome genome = ViralIsolateMainForm.getGenome(type);
+		Genome genome = type.getGenome();
 		row[3] = (genome == null ? "":genome.getOrganismName());
 		
 		return row;

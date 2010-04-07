@@ -9,7 +9,7 @@ public class CaseInsensitiveEqualsMatcher extends VariableMatcher{
         super.setString(string.toLowerCase());
     }
     
-    public boolean matchesCondition(Map<String,String> variables){
-        return getString().equals(variables.get(getVariable()).toLowerCase());
+    public boolean matchesCondition(Map<String,String> variables) throws MatcherException{
+        return getString().equals(getValue(variables).toLowerCase());
     }
 }

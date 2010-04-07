@@ -6,31 +6,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class NtSequenceUtils {
 	
-	public static String resistance(NtSequence seq, String drug){
-		for(TestResult tr : seq.getViralIsolate().getTestResults()){
-			if(tr.getDrugGeneric().getGenericId().equalsIgnoreCase(drug)){
-				String dat = new String(tr.getData());
-				Pattern p = Pattern.compile(".*<sir>(.)</sir>.*");
-				Matcher m = p.matcher(dat);
-				if(m.matches()){
-					return m.group(1);
-				}				
-			}
-		}
-		return "";
+	public static String resistance(NtSequence seq, String drug) {
+		return resistance(seq, "Rega v8.0.2", drug);
+	}
+	public static String resistance(NtSequence seq, String algorithm, String drug){
+		return ViralIsolateUtils.resistance(seq.getViralIsolate(), algorithm, drug);
 	}
 	
 	public static List<NtSequence> sort(Set<NtSequence> sequences){
@@ -59,26 +48,15 @@ public class NtSequenceUtils {
 		return result;
 	}
 	
-//	public static Set<NtSequence> sortBySamplingDate(Set<NtSequence> sequences){
-//		Comparator<NtSequence> c = new Comparator<NtSequence>(){
-//
-//			
-//			public int compare(NtSequence o1, NtSequence o2) {
-//				if(o1.getViralIsolate().getSampleDate() == null){
-//					return 1;
-//				}
-//				if(o2.getViralIsolate().getSampleDate() == null){
-//					return -1;
-//				}				
-//				return o1.getViralIsolate().getSampleDate().compareTo(o2.getViralIsolate().getSampleDate());
-//			}
-//
-//		};
-//		SortedSet<NtSequence> result = new TreeSet<NtSequence>(c);
-//		result.addAll(result);
-//		return result;
-//	}
-
+	public static boolean coversRegion(NtSequence ntseq, String organism, String protein, int  start, int  stop){
+		for(AaSequence aaseq : ntseq.getAaSequences()){
+			if(AaSequenceUtils.coversRegion(aaseq, organism, protein, start, stop)){
+				return true;
+			}
+		}
+		return false;		
+	}
+	
 	public static boolean coversRegion(NtSequence ntseq, String organism, String protein){
 		for(AaSequence aaseq : ntseq.getAaSequences()){
 			if(AaSequenceUtils.coversRegion(aaseq, organism, protein)){
@@ -100,6 +78,27 @@ public class NtSequenceUtils {
 		}
 		return null;
 	}
+	
+	public static NtSequence getLatestNtSequence(Collection<NtSequence> sequences){
+		if(sequences.isEmpty()){
+			return null;
+		}
+		NtSequence latest = null;
+		for(NtSequence seq : sequences){
+			if(latest == null || seq.getViralIsolate().getSampleDate().after(latest.getViralIsolate().getSampleDate())){
+				latest = seq;
+			}
+		}
+		return latest;
+	}
 
+	public static String getSubtype(NtSequence input){
+		for(TestResult tr : input.getTestResults()){
+			if(StandardObjects.getSubtypeTestDescription().equals(tr.getTest().getDescription())){
+				return tr.getValue();
+			}
+		}
+		return "";
+	}
 
 }

@@ -59,7 +59,7 @@ create table regadbschema.event (event_ii integer default nextval('event_event_i
 create table regadbschema.event_nominal_value (nominal_value_ii integer default nextval('event_nominal_value_event_nominal_value_ii_seq'), version integer  not null, event_ii integer  not null, value varchar(500) not null, primary key (nominal_value_ii));
 create table regadbschema.genome (genome_ii integer default nextval('genome_genome_ii_seq'), version integer  not null, organism_name varchar(50) not null, organism_description varchar(500) not null, genbank_number varchar(50), primary key (genome_ii));
 create table regadbschema.genome_drug_generic (genome_ii integer  not null, generic_ii integer  not null, primary key (generic_ii, genome_ii));
-create table regadbschema.nt_sequence (nt_sequence_ii integer default nextval('nt_sequence_nt_sequence_ii_seq'), version integer  not null, viral_isolate_ii integer  not null, label varchar(50), sequence_date date, nucleotides text, primary key (nt_sequence_ii));
+create table regadbschema.nt_sequence (nt_sequence_ii integer default nextval('nt_sequence_nt_sequence_ii_seq'), version integer  not null, viral_isolate_ii integer  not null, label varchar(50), sequence_date date, nucleotides text, aligned bool not null, primary key (nt_sequence_ii));
 create table regadbschema.open_reading_frame (open_reading_frame_ii integer default nextval('open_reading_frame_open_reading_frame_ii_seq'), version integer  not null, genome_ii integer  not null, name varchar(50) not null, description varchar(500) not null, reference_sequence text not null, primary key (open_reading_frame_ii));
 create table regadbschema.patient (patient_ii integer default nextval('patient_patient_ii_seq'), version integer  not null, patient_id varchar(50) not null, primary key (patient_ii));
 create table regadbschema.patient_attribute_value (patient_attribute_value_ii integer default nextval('patient_attribute_value_patient_attribute_value_ii_seq'), version integer  not null, attribute_ii integer  not null, patient_ii integer  not null, nominal_value_ii integer , value varchar(100), primary key (patient_attribute_value_ii));
@@ -79,13 +79,13 @@ create table regadbschema.test_nominal_value (nominal_value_ii integer default n
 create table regadbschema.test_object (test_object_ii integer default nextval('test_object_test_object_ii_seq'), version integer  not null, description varchar(50) not null, test_object_id integer , primary key (test_object_ii));
 create table regadbschema.test_result (test_result_ii integer default nextval('test_result_test_result_ii_seq'), version integer  not null, test_ii integer  not null, generic_ii integer , viral_isolate_ii integer , nominal_value_ii integer , patient_ii integer , nt_sequence_ii integer , value varchar(50), test_date date, sample_id varchar(50), data bytea, primary key (test_result_ii));
 create table regadbschema.test_type (test_type_ii integer default nextval('test_type_test_type_ii_seq'), version integer  not null, value_type_ii integer , genome_ii integer , test_object_ii integer  not null, description varchar(50) not null, primary key (test_type_ii));
-create table regadbschema.therapy (therapy_ii integer default nextval('therapy_therapy_ii_seq'), version integer  not null, therapy_motivation_ii integer , patient_ii integer  not null, start_date date not null, stop_date date, comment varchar(50), primary key (therapy_ii));
+create table regadbschema.therapy (therapy_ii integer default nextval('therapy_therapy_ii_seq'), version integer  not null, therapy_motivation_ii integer , patient_ii integer  not null, start_date date not null, stop_date date, comment varchar(200), primary key (therapy_ii));
 create table regadbschema.therapy_commercial (therapy_ii integer  not null, commercial_ii integer  not null, version integer  not null, day_dosage_units float8, placebo bool not null, blind bool not null, frequency int8, primary key (therapy_ii, commercial_ii));
 create table regadbschema.therapy_generic (therapy_ii integer  not null, generic_ii integer  not null, version integer  not null, day_dosage_mg float8, placebo bool not null, blind bool not null, frequency int8, primary key (therapy_ii, generic_ii));
 create table regadbschema.therapy_motivation (therapy_motivation_ii integer default nextval('therapy_motivation_therapy_motivation_ii_seq'), version integer  not null, value varchar(50) not null, primary key (therapy_motivation_ii));
 create table regadbschema.user_attribute (user_attribute_ii integer default nextval('user_attribute_user_attribute_ii_seq'), value_type_ii integer , uid varchar(50), name varchar(50), value varchar(100), data bytea, primary key (user_attribute_ii));
 create table regadbschema.value_type (value_type_ii integer default nextval('value_type_value_type_ii_seq'), version integer  not null, description varchar(50) not null, minimum float8, maximum float8, multiple bool, primary key (value_type_ii));
-create table regadbschema.viral_isolate (viral_isolate_ii integer default nextval('viral_isolate_viral_isolate_ii_seq'), version integer  not null, patient_ii integer  not null, sample_id varchar(50), sample_date date, primary key (viral_isolate_ii));
+create table regadbschema.viral_isolate (viral_isolate_ii integer default nextval('viral_isolate_viral_isolate_ii_seq'), version integer  not null, patient_ii integer  not null, sample_id varchar(50), sample_date date, genome_ii integer , primary key (viral_isolate_ii));
 alter table regadbschema.aa_insertion add constraint "FK_aa_insertion_aa_sequence" foreign key (aa_sequence_ii) references regadbschema.aa_sequence(aa_sequence_ii) ON UPDATE CASCADE;
 alter table regadbschema.aa_mutation add constraint "FK_aa_mutation_aa_sequence" foreign key (aa_sequence_ii) references regadbschema.aa_sequence(aa_sequence_ii) ON UPDATE CASCADE;
 alter table regadbschema.aa_sequence add constraint "FK_aa_sequence_nt_sequence" foreign key (nt_sequence_ii) references regadbschema.nt_sequence(nt_sequence_ii) ON UPDATE CASCADE;
@@ -148,6 +148,7 @@ alter table regadbschema.therapy_generic add constraint "FK_therapy_generic_drug
 alter table regadbschema.therapy_generic add constraint "FK_therapy_generic_therapy" foreign key (therapy_ii) references regadbschema.therapy(therapy_ii) ON UPDATE CASCADE;
 alter table regadbschema.user_attribute add constraint "FK_user_attribute_settings_user" foreign key (uid) references regadbschema.settings_user(uid) ON UPDATE CASCADE;
 alter table regadbschema.user_attribute add constraint "FK_user_attribute_value_type" foreign key (value_type_ii) references regadbschema.value_type(value_type_ii) ON UPDATE CASCADE;
+alter table regadbschema.viral_isolate add constraint "FK_viral_isolate_genome" foreign key (genome_ii) references regadbschema.genome(genome_ii) ON UPDATE CASCADE;
 alter table regadbschema.viral_isolate add constraint "FK_viral_isolate_patient" foreign key (patient_ii) references regadbschema.patient(patient_ii) ON UPDATE CASCADE;
 create index aa_sequence_nt_sequence_ii_idx on regadbschema.aa_sequence (nt_sequence_ii);
 create index aa_sequence_protein_ii_idx on regadbschema.aa_sequence (protein_ii);
@@ -197,4 +198,5 @@ create index therapy_patient_ii_idx on regadbschema.therapy (patient_ii);
 create index therapy_therapy_motivation_ii_idx on regadbschema.therapy (therapy_motivation_ii);
 create index user_attribute_uid_idx on regadbschema.user_attribute (uid);
 create index user_attribute_value_type_ii_idx on regadbschema.user_attribute (value_type_ii);
+create index viral_isolate_genome_ii_idx on regadbschema.viral_isolate (genome_ii);
 create index viral_isolate_patient_ii_idx on regadbschema.viral_isolate (patient_ii);

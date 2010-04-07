@@ -22,6 +22,8 @@ import net.sf.regadb.ui.framework.widgets.MyComboBox;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WLabel;
@@ -86,15 +88,21 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 
 	private void loadCombo() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
+		
+    	ViralIsolateFormConfig config = 
+    		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
 
 		Set<String> tests = new HashSet<String>();
-		//        for(TestResult tr : patient_.getTestResults()) {
 		for(ViralIsolate iso : patient_.getViralIsolates()){
 			for(TestResult tr: iso.getTestResults()){
 				Test test = tr.getTest();
 				if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())){
-					if(tests.add(test.getDescription()))
+					if(tests.add(test.getDescription())) {
+						if (config != null && config.getAlgorithms() != null && !config.getAlgorithms().contains(test.getDescription()))
+							continue;
+						
 						asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));
+					}
 				}
 			}
 		}
@@ -103,7 +111,7 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 		asiCombo_.setCurrentIndex(0);
 
 		UserAttribute ua = t.getUserAttribute(t.getSettingsUser(), "chart.mutation");
-		if(ua!=null)
+		if(ua!=null && ua.getValue()!=null)
 			asiCombo_.setCurrentItem(ua.getValue());
 
 		t.commit();
@@ -160,12 +168,15 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 			}
 		}
 
+        ViralIsolateFormConfig config = 
+        	RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+		
 		//clear table
 		for(int i = 1; i < resistanceTable_.getRowCount(); i++)
 		{
 			for(int j = 2; j< resistanceTable_.getColumnCount(); j++)
 			{
-				ViralIsolateFormUtils.putResistanceTableResult(null, resistanceTable_.getElementAt(i, j), false, showMutations_.isChecked());
+				ViralIsolateFormUtils.putResistanceTableResult(null, resistanceTable_.getElementAt(i, j), config, false, showMutations_.isChecked());
 			}
 		}
 
@@ -179,11 +190,11 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 					colN = viralIsolateColumn.get(viId);
 					rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr));
 					if(colN!=null && rowN!=null) {
-						ViralIsolateFormUtils.putResistanceTableResult(tr, resistanceTable_.getElementAt(rowN, colN), false, showMutations_.isChecked());
+						ViralIsolateFormUtils.putResistanceTableResult(tr, resistanceTable_.getElementAt(rowN, colN), config, false, showMutations_.isChecked());
 					}
 					rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
 					if(colN!=null && rowN!=null) {
-						ViralIsolateFormUtils.putResistanceTableResult(tr, resistanceTable_.getElementAt(rowN, colN), true, showMutations_.isChecked());
+						ViralIsolateFormUtils.putResistanceTableResult(tr, resistanceTable_.getElementAt(rowN, colN), config, true, showMutations_.isChecked());
 					}
 				}
 			}

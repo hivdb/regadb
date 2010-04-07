@@ -10,6 +10,7 @@ import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
+import net.sf.regadb.ui.datatable.importTool.SelectImportToolForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionForm;
 import net.sf.regadb.ui.datatable.query.SelectQueryDefinitionRunForm;
@@ -21,12 +22,15 @@ import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
 import net.sf.regadb.ui.form.impex.ExportForm;
 import net.sf.regadb.ui.form.impex.ImportFormAdd;
 import net.sf.regadb.ui.form.impex.ImportFormRunning;
+import net.sf.regadb.ui.form.importTool.ImportToolForm;
 import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
@@ -58,6 +62,7 @@ import net.sf.regadb.ui.tree.items.datasetSettings.DatasetAccessSelectedItem;
 import net.sf.regadb.ui.tree.items.datasetSettings.DatasetSelectedItem;
 import net.sf.regadb.ui.tree.items.events.EventSelectedItem;
 import net.sf.regadb.ui.tree.items.events.SelectEventForm;
+import net.sf.regadb.ui.tree.items.importTool.ImportToolSelectedItem;
 import net.sf.regadb.ui.tree.items.myAccount.LoginItem;
 import net.sf.regadb.ui.tree.items.myAccount.LogoutItem;
 import net.sf.regadb.ui.tree.items.myAccount.MyAccountItem;
@@ -147,6 +152,15 @@ public class TreeContent
     public ActionItem updateFromCentralServer;
     public ActionItem updateFromCentralServerUpdate;
     public ActionItem updateFromCentralServerUpdateView;
+    
+    public ActionItem importTool;
+    public ActionItem importToolSelect;
+    public ActionItem importToolAdd;
+    public ImportToolSelectedItem importToolSelected;
+    public ActionItem importToolSelectedView;
+    public ActionItem importToolSelectedEdit;
+    public ActionItem importToolSelectedDelete;
+    
     public ActionItem importXML;
     public ActionItem importXMLadd;
     public ActionItem importXMLrun;
@@ -930,6 +944,58 @@ public class TreeContent
                 }
             });
             
+            importTool = new ActionItem(RootItem.tr("menu.importTool"), administratorMain)
+            {
+                @Override
+                public boolean isEnabled()
+                {
+                    return RegaDBMain.getApp().getLogin()!=null;
+                }
+            };
+            
+            importToolSelect = new ActionItem(WResource.tr("menu.importTool.select"), importTool, new ITreeAction()
+            {
+            	public void performAction(TreeMenuNode node)
+            	{
+            		RegaDBMain.getApp().getFormContainer().setForm(new SelectImportToolForm());
+            	}
+            });
+            
+            importToolAdd = new ActionItem(WResource.tr("menu.importTool.add"), importTool, new ITreeAction()
+            {
+            	public void performAction(TreeMenuNode node)
+            	{
+            		TreeContent.this.importToolSelected.setSelectedItem(null);
+            		RegaDBMain.getApp().getFormContainer().setForm(new ImportToolForm(InteractionState.Adding, WWidget.tr("menu.importTool.add"), null));
+            	}
+            });
+            
+            importToolSelected = new ImportToolSelectedItem(importTool);
+            
+    	        importToolSelectedView = new ActionItem(WResource.tr("menu.importTool.selected.view"), importToolSelected, new ITreeAction()
+    	        {
+    	        	public void performAction(TreeMenuNode node)
+    	        	{
+    	        		RegaDBMain.getApp().getFormContainer().setForm(new ImportToolForm(InteractionState.Viewing, WWidget.tr("menu.importTool.selected.view"), importToolSelected.getSelectedItem()));
+    	        	}
+    	        });
+    	        
+    	        importToolSelectedEdit = new ActionItem(WResource.tr("menu.importTool.selected.edit"), importToolSelected, new ITreeAction()
+    	        {
+    	        	public void performAction(TreeMenuNode node)
+    	        	{
+    	        		RegaDBMain.getApp().getFormContainer().setForm(new ImportToolForm(InteractionState.Editing, WWidget.tr("menu.importTool.selected.edit"), importToolSelected.getSelectedItem()));
+    	        	}
+    	        });
+    	        
+    	        importToolSelectedDelete = new ActionItem(WResource.tr("menu.importTool.selected.delete"), importToolSelected, new ITreeAction()
+    	        {
+    	        	public void performAction(TreeMenuNode node)
+    	        	{
+    	        		RegaDBMain.getApp().getFormContainer().setForm(new ImportToolForm(InteractionState.Deleting, WWidget.tr("menu.importTool.selected.delete"), importToolSelected.getSelectedItem()));
+    	        	}
+    	        });
+            
             importXML = new ActionItem(WResource.tr("menu.impex.import"), administratorMain);
             importXMLrun = new ActionItem(WResource.tr("menu.impex.import.run"), importXML, new ITreeAction()
             {
@@ -954,21 +1020,21 @@ public class TreeContent
                 }
             });
             
-//            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
-//            
-//            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
-//                public void performAction(TreeMenuNode node) 
-//                {
-//                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
-//                }
-//            });
-//
-//            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
-//                public void performAction(TreeMenuNode node) 
-//                {
-//                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
-//                }
-//            });
+            batchTest = new ActionItem(WResource.tr("menu.batchtest"), administratorMain);
+            
+            batchTestRunning = new ActionItem(WResource.tr("menu.batchtest.running"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestRunningForm(WResource.tr("form.batchtest.title"), InteractionState.Viewing));
+                }
+            });
+
+            batchTestAdd = new ActionItem(WResource.tr("menu.batchtest.add"), batchTest, new ITreeAction() {
+                public void performAction(TreeMenuNode node) 
+                {
+                    RegaDBMain.getApp().getFormContainer().setForm(new BatchTestAddForm(WResource.tr("form.batchtest.title"), InteractionState.Adding));
+                }
+            });
             
             
             log = new ActionItem(WResource.tr("menu.log"),administratorMain);

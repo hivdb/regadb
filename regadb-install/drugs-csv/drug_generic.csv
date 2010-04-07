@@ -39,3 +39,6 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 39,RTG,6,raltegravir,J05AX08,HIV-1+HIV-2A+HIV-2B
 40,MVC,4,maraviroc,J05AX09,HIV-1+HIV-2A+HIV-2B
 41,CPV,3,capravirine,J05AG-CPV,HIV-1+HIV-2A+HIV-2B
+42,EVG,6,elvitegravir,none,HIV-1+HIV-2A+HIV-2B
+42,EVG/r,6,elvitegravir/r,none+J05AE03,HIV-1+HIV-2A+HIV-2B
+43,RPV,3,rilpivirine,,HIV-1+HIV-2A+HIV-2B

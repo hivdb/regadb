@@ -6,6 +6,7 @@ import java.util.Map;
 import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
 import net.sf.regadb.util.mapper.matcher.Matcher;
 import net.sf.regadb.util.mapper.matcher.MatcherFactory;
+import net.sf.regadb.util.mapper.matcher.Matcher.MatcherException;
 
 import org.jdom.Element;
 
@@ -21,7 +22,7 @@ public abstract class Mapping {
     
     protected abstract void parseMapping(Element e) throws MapperParseException;
     
-    protected boolean matches(Map<String,String> variables){
+    protected boolean matches(Map<String,String> variables) throws MatcherException{
         return matcher.matches(variables);
     }
     

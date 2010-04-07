@@ -30,10 +30,14 @@ public class ImportKwsContacts {
 	public static void main(String args[]) throws BiffException, IOException{
 		Arguments as = new Arguments();
     	ValueArgument conf			= as.addValueArgument("conf-dir", "configuration directory", false);
+    	ValueArgument dateFormat	= as.addValueArgument("date-format", "java date format", false);
+    	dateFormat.setValue("M/d/yy H:m");
+    	
     	PositionalArgument user		= as.addPositionalArgument("regadb user", true);
     	PositionalArgument pass		= as.addPositionalArgument("regadb password", true);
     	PositionalArgument dataset	= as.addPositionalArgument("regadb dataset", true);
 		PositionalArgument file = as.addPositionalArgument("contacten.xls", true);
+		
 		if(!as.handle(args))
 			return;
 		
@@ -44,7 +48,7 @@ public class ImportKwsContacts {
 		
 		try {
 			ImportKwsContacts pkc = new ImportKwsContacts(user.getValue(), pass.getValue(), dataset.getValue());
-			pkc.run(new File(file.getValue()));
+			pkc.run(new File(file.getValue()),dateFormat.getValue());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -66,7 +70,11 @@ public class ImportKwsContacts {
 	}
 	
 	public void run(File contactFile) throws BiffException, IOException{
-        DateFormat df = new SimpleDateFormat("M/d/yy H:m");
+		run(contactFile, "M/d/yy H:m");
+	}
+	
+	public void run(File contactFile, String dateFormat) throws BiffException, IOException{
+        DateFormat df = new SimpleDateFormat(dateFormat);
 		try {
 			Dataset dataset = os.getDataset(datasetDescription);
 			
@@ -79,16 +87,24 @@ public class ImportKwsContacts {
 			wb = Workbook.getWorkbook(contactFile);
 			Sheet sh = wb.getSheet(0);
 			
+			long maxYearDifference = 50l * (365l * 24l * 60l * 60l * 1000l);
+			
 			for(int i = 1; i < sh.getRows(); ++i){
 				String eadnr = sh.getCell(0, i).getContents();
 				String datum = sh.getCell(1, i).getContents();
 				String ctype = sh.getCell(2, i).getContents();
 				
 				Patient p = os.getPatient(dataset, eadnr);
-				if(p == null)
+				if(p == null){
+					System.err.println("Creating new patient: '"+ eadnr +"'");
 					p = os.createPatient(dataset, eadnr);
+				}
 				
 				Date d = df.parse(datum);
+				Date now = new Date();
+				if(now.getTime() - d.getTime() > maxYearDifference)
+					throw new Exception("Wrong date: "+ datum +" parsed as "+ DateUtils.format(d));
+				
 				TestResult tr = new TestResult(ctype.equals("consultatie") ? consultation : hospitalisation);
 				tr.setTestDate(d);
 				tr.setValue(d.getTime()+"");

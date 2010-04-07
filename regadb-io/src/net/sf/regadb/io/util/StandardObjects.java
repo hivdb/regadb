@@ -332,6 +332,9 @@ public class StandardObjects {
         return map.get(testTypeDescription);
     }
     public static TestType getTestType(String testTypeDescription, Genome genome){
+    	if (genome == null)
+    		return null;
+    	
         Map<String, TestType> map = standardGenomeTestTypes.get(genome.getOrganismName());
         if(map == null)
             return null;
@@ -783,6 +786,10 @@ public class StandardObjects {
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Subsaharan Africa"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "North Africa"));
         geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Eastern Europe"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Middle East"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Polynesia"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Central Africa"));
+        geographicOrigin.getAttributeNominalValues().add(new AttributeNominalValue(geographicOrigin, "Caribbean"));
         
         return geographicOrigin;
     }

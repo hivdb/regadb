@@ -13,6 +13,7 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.util.mapper.AttributeMapping;
 import net.sf.regadb.util.mapper.TestMapping;
 import net.sf.regadb.util.mapper.XmlMapper;
+import net.sf.regadb.util.mapper.matcher.Matcher.MatcherException;
 
 public class ObjectMapper{
     @SuppressWarnings("serial")
@@ -76,18 +77,18 @@ public class ObjectMapper{
         this.mapper = mapper;
     }
     
-    public TestMapping getTestMapping(Map<String,String> variables) throws MappingDoesNotExistException{
+    public TestMapping getTestMapping(Map<String,String> variables) throws MappingDoesNotExistException, MatcherException{
         TestMapping tm = mapper.getTest(variables);
         if(tm == null)
             throw new MappingDoesNotExistException(variables);
         return tm;
     }
     
-    public Test getTest(Map<String,String> variables) throws MappingException{
+    public Test getTest(Map<String,String> variables) throws MappingException, MatcherException{
         return getTest(getTestMapping(variables));
     }
     
-    public TestResult getTestResult(Map<String,String> variables) throws MappingException{
+    public TestResult getTestResult(Map<String,String> variables) throws MappingException, MatcherException{
         return getTestResult(getTestMapping(variables), variables);
     }
     
@@ -101,7 +102,7 @@ public class ObjectMapper{
         return getAttribute(getAttributeMapping(variables));
     }
     
-    public PatientAttributeValue getAttributeValue(Map<String,String> variables) throws MappingException{
+    public PatientAttributeValue getAttributeValue(Map<String,String> variables) throws MappingException, MatcherException{
         return getAttributeValue(getAttributeMapping(variables), variables);
     }
     
@@ -122,7 +123,7 @@ public class ObjectMapper{
         return t;
     }
     
-    public TestResult getTestResult(TestMapping tm, Map<String,String> variables) throws MappingException{
+    public TestResult getTestResult(TestMapping tm, Map<String,String> variables) throws MappingException, MatcherException{
         Test t = getTest(tm);
         
         TestResult tr = new TestResult();
@@ -158,7 +159,7 @@ public class ObjectMapper{
         return getObjectStore().getAttribute(m.getName(), m.getGroup());
     }
     
-    public PatientAttributeValue getAttributeValue(AttributeMapping am, Map<String,String> variables) throws MappingException{
+    public PatientAttributeValue getAttributeValue(AttributeMapping am, Map<String,String> variables) throws MappingException, MatcherException{
         Attribute a = getAttribute(am);
         
         if(a == null)

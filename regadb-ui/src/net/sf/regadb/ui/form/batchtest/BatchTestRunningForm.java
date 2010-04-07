@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.batchtest;
 import java.util.ArrayList;
 
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
@@ -103,8 +104,8 @@ public class BatchTestRunningForm extends FormWidget {
 		}
 	}
 	
-	public static void runTest(Test t) {
-		BatchTestRunningTest testing = new BatchTestRunningTest(t);
+	public static void runTest(Login copiedLogin, Test t) {
+		BatchTestRunningTest testing = new BatchTestRunningTest(copiedLogin, t);
 		runningList.add(testing);
 		testing.start();
 	}

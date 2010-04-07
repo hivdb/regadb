@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.HibernateUtil;
+import net.sf.regadb.db.session.Login;
 
 import org.hibernate.Query;
 import org.hibernate.engine.SessionFactoryImplementor;
@@ -16,33 +17,20 @@ import org.hibernate.type.Type;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseConnector;
 import com.pharmadm.custom.rega.queryeditor.port.QueryResult;
-import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 
-public abstract class HibernateConnector implements DatabaseConnector {
-	private boolean tableSelectionAllowed;
+public class HibernateConnector implements DatabaseConnector {
+	private Login login;
 	
-	public HibernateConnector(boolean tables) {
-		try {
-			tableSelectionAllowed = tables;
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	public QueryStatement createScrollableReadOnlyStatement() throws SQLException {
-		Transaction t = createTransaction();
-		return new HibernateStatement(t);
+	public HibernateConnector(Login login) {
+		this.login = login.copyLogin();
 	}
 
 	public QueryResult executeQuery(String query) throws SQLException {
-		Transaction transaction = createTransaction();
+		Transaction transaction = login.createTransaction();
 		Query q = transaction.createQuery(query);
 		QueryResult result = new HibernateResult(q.scroll(), q.getReturnAliases(), q.getReturnTypes());
 		return result;
 	}
-	
-	public abstract Transaction createTransaction();
 
 	public List<String> getPrimitiveColumnNames(String tableName) {
 		List<String> list= new ArrayList<String>();
@@ -182,7 +170,7 @@ public abstract class HibernateConnector implements DatabaseConnector {
 		return list;
 	}
 
-	public boolean isTableSelectionAllowed() {
-		return tableSelectionAllowed;
+	public void close() {
+		login.closeSession();
 	}
 }

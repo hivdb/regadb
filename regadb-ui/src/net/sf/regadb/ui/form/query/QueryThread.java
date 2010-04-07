@@ -14,14 +14,16 @@ public class QueryThread
 	
 	private Thread thread_;
 	private String fileName_;
+	private Login copiedLogin_;
 	
-	public QueryThread(final Login copiedLogin, final QueryDefinitionRun qdr, Map<String, Object> paramObjects)
+	public QueryThread(Login copiedLogin, final QueryDefinitionRun qdr, Map<String, Object> paramObjects)
 	{
-		fileName_ = init(copiedLogin, qdr);
+		copiedLogin_ = copiedLogin;
+		fileName_ = init(qdr);
 		thread_ = new Thread(new QueryRunnable(copiedLogin, qdr, fileName_, paramObjects));
 	}
 		
-    private String init(final Login copiedLogin, final QueryDefinitionRun qdr)
+    private String init(final QueryDefinitionRun qdr)
     {
     	synchronized(mutex_)
     	{
@@ -34,7 +36,7 @@ public class QueryThread
 				e.printStackTrace();
 			}
     		
-			return copiedLogin.getUid() + "_" + qdr.getQueryDefinition().getName() + "_" + qdr.getName() + "_" + System.currentTimeMillis() + ".csv";
+			return copiedLogin_.getUid() + "_" + qdr.getQueryDefinition().getName() + "_" + qdr.getName() + "_" + System.currentTimeMillis() + ".csv";
     	}
     }
 	
@@ -59,6 +61,10 @@ public class QueryThread
     
     public static void removeQueryThread(String fileName)
     {
+    	QueryThread qt = queryThreads.get(fileName);
+    	if(qt != null)
+    		qt.copiedLogin_.closeSession();
+    	
     	queryThreads.remove(fileName);
     }
 }

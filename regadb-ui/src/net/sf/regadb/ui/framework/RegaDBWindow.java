@@ -1,13 +1,15 @@
 package net.sf.regadb.ui.framework;
 
+import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WStdLocalizedStrings;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WTableCell;
 
 public class RegaDBWindow extends WTable
 {
-	private Header header_;
 	private Tree tree_;
 	private FormContainer container_;
 	
@@ -22,7 +24,12 @@ public class RegaDBWindow extends WTable
 		WApplication.getInstance().useStyleSheet("style/querytool.css");
 		
 		//! TODO make the edition configurable
-		header_ = new Header(this.getElementAt(0, 0), Edition.Clinical);
+		if (RegaDBSettings.getInstance().getInstituteConfig().getLogo() == null)
+			new Header(this.getElementAt(0, 0), Edition.Clinical);
+		else {
+			WImage image = new WImage(RegaDBSettings.getInstance().getInstituteConfig().getLogo(), "Logo", getElementAt(0, 0));
+			getElementAt(0, 0).setContentAlignment(AlignmentFlag.AlignCenter);
+		}
 		WTable contentTable = new WTable(this.getElementAt(1, 0));
 		tree_ = new Tree(contentTable.getElementAt(0, 0));
 		contentTable.getElementAt(0, 0).setStyleClass("main-tree");
@@ -41,11 +48,6 @@ public class RegaDBWindow extends WTable
 	public FormContainer getContainer_()
 	{
 		return container_;
-	}
-
-	public Header getHeader_()
-	{
-		return header_;
 	}
 
 	public Tree getTree_()

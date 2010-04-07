@@ -2,19 +2,19 @@ package net.sf.hivgensim.fastatool;
 
 import java.io.FileNotFoundException;
 
-import net.sf.hivgensim.preprocessing.SelectionWindow;
-
 /*
  * WARNING: difference with old fastaclean: old PR only starting point is checked!
  * 
  */
 public class FastaClean extends FastaTool{
 	
-	SelectionWindow[] windows;
+	private int startNt;
+	private int stopNt;
 	
-	public FastaClean(String inputFilename, String outputFilename, SelectionWindow[] windows) throws FileNotFoundException{
+	public FastaClean(String inputFilename, String outputFilename, int start, int stop) throws FileNotFoundException{
 		super(inputFilename,outputFilename);
-		this.windows = windows;
+		this.startNt = (start-1)*3;
+		this.stopNt = stop*3;
 	}
 	
 	@Override
@@ -30,13 +30,20 @@ public class FastaClean extends FastaTool{
 	@Override
 	protected void processSequence(FastaSequence fs) {
 		boolean seqIsClean = true;
-		for(SelectionWindow sw : windows){
-			if(fs.getSequence().substring(sw.getStartCheck(), sw.getStopCheck()).contains("-")){				
+		if(fs.getSequence().substring(27,95*3).contains("-") || fs.getSequence().substring(143*3, 300*3).contains("-")){				
 				seqIsClean = false;					
-			}
-		}		
+		}				
 		if(seqIsClean){
 			getOut().println(fs.getId() + "\n" + fs.getSequence());			
 		}		
+	}
+	
+	public static void main(String[] args) throws NumberFormatException, FileNotFoundException{
+		if(args.length != 4){
+			System.err.println("Usage: fastaclean in.fasta out.fasta startAA stopAA");
+			System.exit(1);
+		}
+		FastaClean fc = new FastaClean(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+		fc.processFastaFile();
 	}
 }

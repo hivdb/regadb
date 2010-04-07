@@ -207,7 +207,7 @@ public class Table {
 			sout.flush();
 	}
 
-	private ArrayList<String> splitHandleQuotes(String s, char delimiter, char quoteChar, char escapeChar) {
+	public static ArrayList<String> splitHandleQuotes(String s, char delimiter, char quoteChar, char escapeChar) {
 		ArrayList<String> results = new ArrayList<String>();
 
 		StringBuffer current = new StringBuffer("");
@@ -246,8 +246,8 @@ public class Table {
 		return results;
 	}
 
-	public String valueAt(int i, int j) {
-		return rows.get(j).get(i);
+	public String valueAt(int col, int row) {
+		return rows.get(row).get(col);
 	}
 
 	public String valueAt(Index index, int i, int j) {
@@ -433,6 +433,11 @@ public class Table {
 		}		
 		return result;
 	}
+	
+	public ArrayList<String> getColumn(String name) {
+		int i = findColumn(name);
+		return i == -1 ? null : getColumn(i);
+	}
 
 	public ArrayList<String> getRow(int r){
 		return rows.get(r);
@@ -473,7 +478,6 @@ public class Table {
 
 	public int findInRow(int i, String s) {
 		ArrayList<String> row = rows.get(i);
-
 		return row.indexOf(s);
 	}
 
@@ -823,6 +827,7 @@ public class Table {
 		int column = this.findInRow(0, name);
 		return column;
 	}
+	
 	public int findColumn(int offset, String name) {
 		int column = this.findInRow(0, offset, name);
 

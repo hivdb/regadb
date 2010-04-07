@@ -7,6 +7,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 
+import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
@@ -48,12 +49,7 @@ public class IntegratedRegaDBApplication extends RegaDBApplication{
 
 	public void login(String uid){
 		setLogin(Login.getLogin(uid));
-		DatabaseManager.initInstance(new HibernateQuery(), new HibernateConnector(false){
-			@Override
-			public Transaction createTransaction() {
-				return IntegratedRegaDBApplication.this.getLogin().createTransaction();
-			}
-		});
+		DatabaseManager.initInstance(new RegaDBConnectorProvider(getLogin()), new HibernateQuery(), new HibernateCatalogBuilder(), false);
 	}
 	
 	public String getPatientId(){

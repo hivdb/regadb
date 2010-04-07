@@ -652,7 +652,7 @@ public class Utils {
      	{
          	DrugGeneric genDrug = regaDrugGenerics.get(j);
          	
-         	if(genDrug.getGenericId().equals(drug.toUpperCase()))
+         	if(genDrug.getGenericId().toUpperCase().equals(drug.toUpperCase()))
          	{
          		ConsoleLogger.getInstance().logInfo("Found drug "+drug.toUpperCase()+" in Rega list");
          		
@@ -703,7 +703,14 @@ public class Utils {
      }
      
      public static void handlePatientAttributeValue(NominalAttribute na, String value, Patient p) {
-        AttributeNominalValue anv = na.nominalValueMap.get(value);
+    	 AttributeNominalValue anv = null;
+    	 for (AttributeNominalValue anvt : na.attribute.getAttributeNominalValues()) {
+    		 if (anvt.getValue().equalsIgnoreCase(value)) 
+    			 anv = anvt;
+    	 }
+    	 
+    	 if (anv == null)
+    		 anv = na.nominalValueMap.get(value);
         
          if (anv != null)
          {
@@ -726,7 +733,7 @@ public class Utils {
         		  if(pev.getStartDate() == null){
         			  return null;
         		  }
-        		  if(pev.getEventNominalValue().equals(env) && pev.getStartDate().equals(startDate)){
+        		  if(env.equals(pev.getEventNominalValue()) && pev.getStartDate().equals(startDate)){
         			  ConsoleLogger.getInstance().logWarning("Duplicate ade event for patient "+ p.getPatientId() +"(" + env.getValue() +" "+ startDate +" )");
         			  return null;
         		  }
@@ -850,9 +857,24 @@ public class Utils {
          }
      }
      
+     private static AttributeNominalValue getANV(NominalAttribute na, String value) {
+    	 for (AttributeNominalValue anvt : na.attribute.getAttributeNominalValues()) {
+    		 if (anvt.getValue().equalsIgnoreCase(value)) 
+    			 return anvt;
+    	 }
+    	 
+    	 return null;
+     }
+     
      public static boolean addCountryOrGeographicOrigin(NominalAttribute countryNA, NominalAttribute geographicNA, String val, Patient p) {
-         AttributeNominalValue cnv = countryNA.nominalValueMap.get(val);
-         AttributeNominalValue gnv = geographicNA.nominalValueMap.get(val);
+         AttributeNominalValue cnv = getANV(countryNA, val);
+         AttributeNominalValue gnv = getANV(geographicNA, val);
+         
+         if (cnv == null)
+        	 cnv = countryNA.nominalValueMap.get(val);
+         if (gnv == null)
+        	 gnv = geographicNA.nominalValueMap.get(val);
+         
          if(cnv!=null) {
              PatientAttributeValue v = p.createPatientAttributeValue(countryNA.attribute);
              v.setAttributeNominalValue(cnv);
@@ -863,7 +885,7 @@ public class Utils {
              v.setAttributeNominalValue(gnv);
              return true;
          }
-         ConsoleLogger.getInstance().logError("No mapping for nominal value: " + val);
+         ConsoleLogger.getInstance().logWarning("No mapping for nominal value: " + val);
          return false;
      }
 
