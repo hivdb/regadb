@@ -2,6 +2,7 @@ package net.sf.regadb.util.args;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,11 @@ public class Arguments{
 	}
 	public PositionalArgument addPositionalArgument(String name, boolean mandatory){
 		PositionalArgument a = (PositionalArgument)new PositionalArgument(name).setMandatory(mandatory);
+		add(a);
+		return a;
+	}
+	public NominalArgument addNominalArgument(String name, Collection<String> possibleValues, boolean mandatory){
+		NominalArgument a = (NominalArgument)new NominalArgument(name, possibleValues).setMandatory(mandatory);
 		add(a);
 		return a;
 	}
@@ -143,17 +149,12 @@ public class Arguments{
 		as.addPositionalArgument("pass",true);
 		as.addValueArgument("db","database-name",false);
 		as.addArgument("force",false);
+		as.addNominalArgument("do", Arrays.asList("y","n"), false);
 		
-		try {
-			as.parse(args);
-		} catch (ArgumentException e) {
-			System.err.println(e.getMessage());
-		}
+		as.handle(args);
 		
 		if(as.isValid())
 			as.printValues(System.out);
-		else
-			as.printUsage(System.err);
 	}
 
 	public void printUsage(PrintStream out) {

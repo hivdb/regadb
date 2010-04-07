@@ -12,7 +12,8 @@ public class PositionalArgument extends ValueArgument{
 	}
 	
 	public PositionalArgument(int position, String description){
-		
+		setPosition(position);
+		setValueDescription(description);
 	}
 	
 	public PositionalArgument setPosition(int position) {
