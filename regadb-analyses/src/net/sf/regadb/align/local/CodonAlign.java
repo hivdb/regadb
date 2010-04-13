@@ -343,7 +343,8 @@ public class CodonAlign {
                 new SubstitutionMatrix(DNATools.getDNA(), nuc4_4, "NUC4.4");
 
             blosum30matrix =
-                new SubstitutionMatrix(ProteinTools.getTAlphabet(), blosum30, "BLOSUM30");
+                new AASubstitutionMatrix(ProteinTools.getTAlphabet(), blosum30, "BLOSUM30");
+            
         } catch (BioException e) {
             e.printStackTrace();
         }
