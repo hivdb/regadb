@@ -78,7 +78,8 @@ public class FullAnalysis implements IAnalysis {
                 String uid = sessionSafeLogin.getUid();
                 for(Test test : tests)
                 {
-                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
+                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType())
+                    		|| Equals.isSameTestType(StandardObjects.getTDRTestType(genome),test.getTestType()))
                     {
                         if(test.getAnalysis()!=null)
                         {

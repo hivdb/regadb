@@ -121,8 +121,9 @@ public class ViralIsolateForm extends FormWidget
 		Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
 		while (i.hasNext()) {
 			TestResult test = i.next();
-			if (test.getTest().getTestType().getDescription().equals(
-					StandardObjects.getGssDescription())) {
+			String description = test.getTest().getTestType().getDescription();
+			if (description.equals(StandardObjects.getGssDescription()) ||
+					description.equals(StandardObjects.getTDRDescription())) {
 				i.remove();
 				t.delete(test);
 			}

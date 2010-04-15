@@ -46,6 +46,8 @@ public class StandardObjects {
     private static String seroStatusDescription = "Serostatus";
     private static String seroconversionDescription = "Seroconversion";
     private static String gssDescription = "Genotypic Susceptibility Score (GSS)";
+    private static String transmittedResistance = "Transmitted Drug Resistance";
+    
     private static String subtypeTestDescription = "Rega Subtype Tool";
     private static String subtypeTestTypeDescription = "Subtype Test";
     
@@ -186,7 +188,10 @@ public class StandardObjects {
         genomeTestTypes.add(tt);
         createStandardGenomeTestTypes(hiv1Genome,genomeTestTypes,false);
         createStandardGenomeTestTypes(hiv2aGenome,genomeTestTypes,false);
-
+        
+        tt = new TestType(numberValueType, null, resistanceTestObject, getTDRDescription(), new TreeSet<TestNominalValue>());
+        genomeTestTypes.add(tt);
+        createStandardGenomeTestTypes(hiv1Genome,genomeTestTypes,false);
         
         genericCD4Test          = createTest(createTestType(numberValueType, null, patientTestObject, "CD4 Count (cells/ul)", new TreeSet<TestNominalValue>()), "CD4 Count (generic)");
         genericCD4PercentageTest= createTest(createTestType(numberValueType, null, patientTestObject, "CD4 Count (%)", new TreeSet<TestNominalValue>()), "CD4 Count % (generic)");
@@ -362,6 +367,9 @@ public class StandardObjects {
     }
     public static String getGssDescription() {
         return gssDescription;
+    }
+    public static String getTDRDescription() {
+    	return transmittedResistance;
     }
     public static String getSubtypeTestTypeDescription(){
     	return subtypeTestTypeDescription;
@@ -807,6 +815,10 @@ public class StandardObjects {
 
     public static TestType getGssTestType(Genome genome) {
         return getTestType(getGssDescription(), genome);
+    }
+    
+    public static TestType getTDRTestType(Genome genome) {
+    	return getTestType(getTDRDescription(), genome);
     }
 
    
