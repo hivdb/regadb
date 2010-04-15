@@ -16,6 +16,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
@@ -126,6 +127,9 @@ public class PrepareCentralRepos
         resTest = createResistanceTest("Rega-HIV1-8.0.2.xml", "REGA v8.0.2", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
         
+        resTest = createTransmittedResistanceTest("TDR-WHO-2009.xml", "WHO 2009", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
+        
         resTest = createResistanceTest("Rega-HIV2-7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
         
@@ -158,7 +162,17 @@ public class PrepareCentralRepos
     
     private static Test createResistanceTest(String baseFileName, String algorithm, Genome genome)
     {
-        Test resistanceTest = new Test(StandardObjects.getGssTestType(genome), algorithm);
+    	return createResistanceTest(StandardObjects.getGssTestType(genome), baseFileName, algorithm, genome);
+    }
+    
+    private static Test createTransmittedResistanceTest(String baseFileName, String algorithm, Genome genome)
+    {
+    	return createResistanceTest(StandardObjects.getTDRTestType(genome), baseFileName, algorithm, genome);
+    }
+    
+    private static Test createResistanceTest(TestType testType, String baseFileName, String algorithm, Genome genome)
+    {
+        Test resistanceTest = new Test(testType, algorithm);
         
         Analysis analysis = new Analysis();
         analysis.setUrl(RegaDBWtsServer.getUrl());
