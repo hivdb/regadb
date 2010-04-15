@@ -61,7 +61,7 @@ public class ViralIsolateTransmittedResistanceForm extends WContainerWidget {
 	    algorithmL.setBuddy(algorithmCB);
 	    algorithmCB.changed().addListener(this, new Signal.Listener(){
 			public void trigger() {
-				showInterpretation();
+				showInterpretation(algorithmCB.getCurrentText().toString());
 			}
 	    });
 	    
@@ -89,17 +89,17 @@ public class ViralIsolateTransmittedResistanceForm extends WContainerWidget {
         	algorithmCB.addItem(a);
         }
         
-        if (formerSelection != null && algorithmCB.getCount() > 0) {
+        if (formerSelection != null && !formerSelection.toString().equals("") && algorithmCB.getCount() > 0) {
 	        for (int i = 0; i < algorithmCB.getCount(); i++) {
 	        	if (algorithmCB.getItemText(i).equals(formerSelection)) {
 	        		algorithmCB.setCurrentIndex(i);
 	        		break;
 	        	}
 	        }
-	        showInterpretation();
+	        showInterpretation(algorithmCB.getCurrentText().toString());
         } else if (algorithmCB.getCount() > 0){
         	algorithmCB.setCurrentIndex(0);
-        	showInterpretation();
+        	showInterpretation(algorithmCB.getCurrentText().toString());
         } else {
         	algorithmCB.setEnabled(false);
         }
@@ -107,7 +107,7 @@ public class ViralIsolateTransmittedResistanceForm extends WContainerWidget {
         t.commit();
     }
     
-	private void showInterpretation() {
+	private void showInterpretation(String algorithm) {
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
 		final StringBuffer interpretations = new StringBuffer();
@@ -117,7 +117,8 @@ public class ViralIsolateTransmittedResistanceForm extends WContainerWidget {
 		for (String dc : drugClasses) {
 			for (TestResult tr : viralIsolateForm_.getViralIsolate().getTestResults()) {
 				if (tr.getDrugGeneric().getDrugClass().getClassId().equals(dc)
-						&&tr.getTest().getTestType().getDescription().equals(StandardObjects.getTDRDescription())) {
+						&& tr.getTest().getTestType().getDescription().equals(StandardObjects.getTDRDescription())
+						&& tr.getTest().getDescription().equals(algorithm)) {
 					interpretations.append("<b>" + dc + ":</b> ");
 					
 					ResistanceInterpretationParser parser = new ResistanceInterpretationParser() {
