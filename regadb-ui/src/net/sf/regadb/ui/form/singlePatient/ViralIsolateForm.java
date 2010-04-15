@@ -29,6 +29,7 @@ public class ViralIsolateForm extends FormWidget
 	private ViralIsolateMainForm _mainForm;
 	private ViralIsolateProteinForm proteinForm_;
     private ViralIsolateResistanceForm resistanceForm_;
+    private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
     public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
@@ -70,7 +71,12 @@ public class ViralIsolateForm extends FormWidget
 				resistanceForm_ = new ViralIsolateResistanceForm(this);
 				tabs.addTab(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
 			}
-	        reportForm_ = new ViralIsolateReportForm(this);
+			TestType tdrTestType = StandardObjects.getTestType(StandardObjects.getTDRDescription(), getViralIsolate().getGenome());
+			if (tdrTestType != null) {
+				transmittedResistanceForm_ = new ViralIsolateTransmittedResistanceForm(this);
+				tabs.addTab(tr("form.viralIsolate.editView.tab.transmittedResistance"), transmittedResistanceForm_);
+			}
+			reportForm_ = new ViralIsolateReportForm(this);
 			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
         }
         
