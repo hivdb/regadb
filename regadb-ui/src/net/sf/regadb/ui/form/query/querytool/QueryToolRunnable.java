@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientImplHelper;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -22,6 +20,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
 import net.sf.regadb.ui.form.query.querytool.fasta.QTFastaExporter;
+import net.sf.regadb.util.script.Python;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.exception.SQLGrammarException;
@@ -51,11 +50,14 @@ public class QueryToolRunnable implements Runnable {
 	private Status status;
 	private File csvFile;
 	private File fastaFile;
+	private File summaryFile;
 	private int numberFastaEntries;
 	private String statusMsg = "";
 	private QueryStatement statement;
 	private Object mutex = new Object();
 	private HashMap<String, String> errors;
+	private boolean postProcessing;
+	private String postProcessingScript;
 	
 	private enum Status {
 		WAITING,
@@ -89,8 +91,9 @@ public class QueryToolRunnable implements Runnable {
 	    }
 	}
 	
-	public QueryToolRunnable(Login login, String fileName, QueryEditor editor) {
+	public QueryToolRunnable(Login login, String fileName, String postProcessingScript, QueryEditor editor) {
 		this.fileName = fileName;
+		this.postProcessingScript = postProcessingScript;
 		this.originalLogin = login;
 		this.editor = editor;
 		status = Status.WAITING;
@@ -99,6 +102,7 @@ public class QueryToolRunnable implements Runnable {
 		errors.put("memory_error", WString.tr("form.query.querytool.label.status.failed.memoryerror").getValue());
 		errors.put("sql_error", WString.tr("form.query.querytool.label.status.failed.sqlerror").getValue());
 		errors.put("type_error", WString.tr("form.query.querytool.label.status.failed.typeerror").getValue());
+		postProcessing = false;
 	}
 	
 	public boolean isDone() {
@@ -128,7 +132,7 @@ public class QueryToolRunnable implements Runnable {
 	public void run() {
         csvFile =  getOutputFile();
 
-        if(process(csvFile)){
+        if(process()){
             status = Status.FINISHED;
         }
         else{
@@ -164,12 +168,17 @@ public class QueryToolRunnable implements Runnable {
     	}
     	return null;
     }
+    
+    public File getSummaryFile() {
+    	return summaryFile;
+    }
 	
-    private boolean process(File csvFile){
+    private boolean process(){
     	boolean success = false;
     	
     	fastaFile = null;
     	numberFastaEntries = 0;
+    	summaryFile = null;
         
     	Login copiedLogin = originalLogin.copyLogin();
 
@@ -233,10 +242,12 @@ public class QueryToolRunnable implements Runnable {
             	if (fastaFile != null)
             		fastaOS.close();
 	            os.close();
+	            
+	            postProcess();
+	            
         		statusMsg = " (" + writtenLines + ")";
 	            success = true;
             }
-            
 			statement.close();
             t.clearCache();
         }
@@ -267,6 +278,27 @@ public class QueryToolRunnable implements Runnable {
 			copiedLogin.closeSession();
 		}
         return success;
+    }
+    
+    private void postProcess() throws IOException {
+    	if (postProcessingScript == null)
+    		return;
+    	
+    	postProcessing = true;
+    	
+    	List<String> arguments = new ArrayList<String>();
+    	
+    	String fastaFileName = fastaFile == null? "" : fastaFile.getAbsolutePath();
+    	
+    	summaryFile = new File(getResultDir().getAbsolutePath()  + File.separator + fileName + "summary.csv");
+    	
+    	arguments.add(csvFile.getAbsolutePath());
+    	arguments.add(fastaFileName);
+    	arguments.add(summaryFile.getAbsolutePath());
+    	
+    	Python.getInstance().execute(postProcessingScript, "query_tool_post_process", arguments);
+    	
+    	postProcessing = false;
     }
     
 
@@ -442,6 +474,10 @@ public class QueryToolRunnable implements Runnable {
 
 	public boolean isRunning() {
 		return status == Status.RUNNING;
+	}
+	
+	public boolean isPostprocessing() {
+		return postProcessing;
 	}
 
 	public int getFastaEntries() {

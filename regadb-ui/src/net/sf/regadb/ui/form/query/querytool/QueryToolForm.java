@@ -88,7 +88,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         tabs.addTab(tr("form.query.querytool.group.info"), infoTab);
         tabs.setStatusBar(statusbar);
         
-		runGroup_ = new RunGroupBox(queryTreeTab.getQueryEditor(), this);
+		runGroup_ = new RunGroupBox(this, queryTreeTab.getQueryEditor(), this);
         
 		addControlButtons();
 		
@@ -192,5 +192,9 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 		} catch (IOException e) {}
     	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(definition);
 		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
+	}
+	
+	public QueryDefinition getQueryDefinition() {
+		return definition;
 	}
 }
