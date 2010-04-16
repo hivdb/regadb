@@ -92,6 +92,18 @@ public class RunGroupBox extends WGroupContainer {
 						link = new WAnchor(res, tr("form.query.querytool.label.fasta").arg(qt.getFastaEntries()));
 						tc.addWidget(link);
 					}
+					if (qt.getSummaryFile() != null) {
+						tc.addWidget(new WText("   "));
+						
+						WText report = new WText(tr("form.query.querytool.label.report"));
+						report.setStyleClass("text-link");
+						report.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent arg) {
+								queryToolForm.addReportTab(new ReportContainer(qt.getSummaryFile()));
+							}
+						});
+						tc.addWidget(report);
+					}
 				}
 				else {
 					final WText status = new WText(qt.getStatusText());

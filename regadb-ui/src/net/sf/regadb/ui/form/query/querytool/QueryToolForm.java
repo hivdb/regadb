@@ -25,7 +25,6 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
-
 	private WTabbedPane tabs;
 	private QueryEditorTreeContainer queryTreeTab;
 	private SelectionListContainer selectionTab;
@@ -196,5 +195,10 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	
 	public QueryDefinition getQueryDefinition() {
 		return definition;
+	}
+	
+	public void addReportTab(ReportContainer report) {
+		tabs.addTab(tr("form.query.querytool.group.report"), report);
+		tabs.showTab(report);
 	}
 }
