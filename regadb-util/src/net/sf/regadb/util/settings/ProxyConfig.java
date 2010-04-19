@@ -2,25 +2,33 @@ package net.sf.regadb.util.settings;
 
 import java.util.ArrayList;
 
+import net.sf.regadb.util.settings.ProxyConfig.ProxyServer.Type;
+
 import org.jdom.Comment;
 import org.jdom.Element;
 
 public class ProxyConfig implements IConfigParser {
 	public static class ProxyServer{
+		public static enum Type {HTTP,SOCKS};
+		
 		private String host, port;
 		private String user, password;
+		private Type type;
 		
 		public ProxyServer(String host, String port){
-			this.host = host;
-			this.port = port;
-			this.user = null;
-			this.password = null;
+			this(host,port,Type.HTTP);
 		}
 		
-		public ProxyServer(String host, String port, String user, String password){
-		    this(host, port);
+		public ProxyServer(String host, String port, Type type){
+			this(host, port, null, null, type);
+		}
+		
+		public ProxyServer(String host, String port, String user, String password, Type type){
+			this.host = host;
+			this.port = port;
 		    this.user = user;
 		    this.password = password;
+		    this.type = type;
 		}
 		
 		public String getHost(){
@@ -34,6 +42,9 @@ public class ProxyConfig implements IConfigParser {
 		}
 		public String getPassword(){
 		    return password;
+		}
+		public Type getType(){
+			return type;
 		}
 	}
 
@@ -57,10 +68,14 @@ public class ProxyConfig implements IConfigParser {
 			String user = ee.getChildTextTrim("user");
 			String pass = ee.getChildTextTrim("password");
 			
+			ProxyServer.Type type = ProxyServer.Type.HTTP;
+			if("socks".equals(ee.getAttributeValue("type")))
+				type = ProxyServer.Type.SOCKS;
+			
 			if(user == null)
-			    ps = new ProxyServer(host, port);
+			    ps = new ProxyServer(host, port, type);
 			else
-			    ps = new ProxyServer(host, port, user, pass);
+			    ps = new ProxyServer(host, port, user, pass, type);
 			proxyList.add(ps);
 		}
 	}
@@ -77,6 +92,11 @@ public class ProxyConfig implements IConfigParser {
 		for(ProxyServer ps : proxyList){
 			Element e = new Element("proxy");
 			r.addContent(e);
+			
+			if(ps.getType() == Type.SOCKS)
+				e.setAttribute("type", "socks");
+			else
+				e.setAttribute("type", "http");
 			
 			Element ee = new Element("host");
 			ee.setText(ps.getHost());
@@ -108,16 +128,30 @@ public class ProxyConfig implements IConfigParser {
 	
     public void setProxySettings(ProxyServer proxy){
         if(proxy.getHost() != null){
-            System.setProperty("http.proxyHost", proxy.getHost());
-            
-            if(proxy.getPort() != null)
-            	System.setProperty("http.proxyPort", proxy.getPort());
+        	if(proxy.getType() == ProxyServer.Type.HTTP){
+                System.setProperty("http.proxyHost", proxy.getHost());
+                
+                if(proxy.getPort() != null)
+                	System.setProperty("http.proxyPort", proxy.getPort());
 
-            if(proxy.getUser() != null)
-                System.setProperty("http.proxyUser", proxy.getUser());
-            
-            if(proxy.getPassword() != null)
-                System.setProperty("http.proxyPassword", proxy.getPassword());
+                if(proxy.getUser() != null)
+                    System.setProperty("http.proxyUser", proxy.getUser());
+                
+                if(proxy.getPassword() != null)
+                    System.setProperty("http.proxyPassword", proxy.getPassword());
+        	}
+        	else if(proxy.getType() == ProxyServer.Type.SOCKS){
+        		System.setProperty("socksProxyHost", proxy.getHost());
+        		
+        		if(proxy.getPort() != null)
+        			System.setProperty("socksProxyPort", proxy.getPort());
+
+        		if(proxy.getUser() != null)
+        			System.setProperty("java.net.socks.username", proxy.getUser());
+
+        		if(proxy.getPassword() != null)
+        			System.setProperty("java.net.socks.password", proxy.getPassword());
+        	}
         }
     }
     
