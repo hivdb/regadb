@@ -1,0 +1,20 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Preparing files..." >> $monitor_file
+
+asi_rules_file="$1/inputs/asi_rules"
+
+description_file="$1/outputs/description"
+
+echo "Starting ASI Mutation Describing Tool..." >> $monitor_file
+
+LD_LIBRARY_PATH=/soft/lib:$LD_LIBRARY_PATH /soft/bin/describemutations $asi_rules_file >> $description_file 2>> $monitor_file 
+
+echo "Calculation ended" >> $monitor_file
+
+rm "$running_file"
+
+echo "ENDED_SUCCES" > "$1/.ended"
