@@ -5,7 +5,7 @@ cd ../../../
 
 apt-get -y install ant
 ant clean
-ant build
+ant 
 
 TOMCAT="/var/lib/tomcat6"
 

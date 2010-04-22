@@ -5,19 +5,17 @@ running_file="$1/.running"
 
 echo "Setting files" >> monitor_file
  
-nt_sequences_file="$1/inputs/nt_sequences"
-region_file="$1/inputs/region"
+organism_name=`cat "$1/inputs/organism_name"`
+nt_sequence_file="$1/inputs/nt_sequence"
 
-aa_sequence_file="$1/outputs/aa_sequences"
+mutations_file="$1/outputs/codon_mutations"
 
 echo "Starting calc" >> $monitor_file
-
-cat $nt_sequences_file >> $aa_sequence_file
-cat $region_file >> $aa_sequence_file
-echo "blabla" >> $aa_sequence_file
+/soft/bin/regadb_align /soft/wts/file-providers/regadb-genomes/genomes.xml "$organism_name" "$nt_sequence_file" > "$mutations_file" 2> $monitor_file
 
 echo "Calculation ended" >> $monitor_file
 
 rm "$running_file"
 
 echo "ENDED_SUCCES" > "$1/.ended"
+

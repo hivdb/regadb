@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 public class Operations {
 	public static interface AnnotationParser {
@@ -43,20 +44,22 @@ public class Operations {
 		String nucleotides = "ACGTMRWSYKVHDBN";
 		
 		FileWriter fw = new FileWriter(fasta);
-		for (Map.Entry<String, String> e : database.entrySet()) {
-			fw.write(">" + e.getKey() + "\n");
-			fw.write(e.getValue() + "\n");
+		for (String key : new TreeSet<String>(database.keySet())) {
+			String value = database.get(key);
+			fw.write(">" + key + "\n");
+			fw.write(value + "\n");
 			
-			for (char c : e.getValue().toCharArray()) {
+			for (char c : value.toCharArray()) {
 				if (!nucleotides.contains(Character.toUpperCase(c) + "")) 
-					System.err.println(e.getKey() + " -> seq contains non nucl chars");
+					System.err.println(key + " -> seq contains non nucl chars");
 			}
 			
-			for (char c : e.getKey().toCharArray()) {
+			for (char c : key.toCharArray()) {
 				if (!Character.isLetterOrDigit(c))
-					System.err.println("incorrect seq name? -> " + e.getKey());
+					System.err.println("incorrect seq name? -> " + key);
 			}
 		}
+		fw.close();
 	}
 	
 	public static Map<String, String> readFasta(File fasta, AnnotationParser ap) throws IOException {
@@ -82,6 +85,11 @@ public class Operations {
 				sequence += line;
 			}
 		}
+		
+		if (name != null) {
+			sequences.put(name, sequence);
+		}
+		
 		in.close();
 		
 		return sequences;
