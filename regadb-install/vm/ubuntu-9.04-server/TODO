@@ -1,5 +1,5 @@
-tomcat.sh -> stijn
-postgres.sh -> pieter
 regadb.sh -> stijn
-wts.sh -> build + dir structuur -> stijn 
-sequencetool.sh -> pieter 
+wts.sh -> build -> stijn
+regadb config + dirs
+wts soft (bin)
+prepare central repos
