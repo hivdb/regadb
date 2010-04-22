@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <regadb-settings>
   <institute>
+    <wts-url>http://localhost:8080/wts/services/</wts-url>
 	<!--  directory for logging files, read/write permissions necessary
 	      this field is required 
 	-->  
