@@ -2,6 +2,9 @@
 
 cd `echo $0 | sed 's/\/[^\/]*$/\//g'`
 
+echo Installing 32bit binaries support
+apt-get install -y ia32-libs
+
 echo Installing Postgres
 ./postgres.sh
 
