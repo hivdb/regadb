@@ -2,6 +2,8 @@
 
 cd `echo $0 | sed 's/\/[^\/]*$/\//g'`
 
+apt-get update
+
 echo Installing 32bit binaries support
 apt-get install -y ia32-libs
 
