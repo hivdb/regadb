@@ -10,6 +10,7 @@ import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ImportGenomes;
+import net.sf.regadb.util.settings.InstituteConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class BlastAnalysis extends NtSequenceAnalysis{
@@ -38,10 +39,12 @@ public class BlastAnalysis extends NtSequenceAnalysis{
     
     public BlastAnalysis(NtSequence ntSequence){
         super(ntSequence);
+        setUrl(InstituteConfig.WTS_URL);
     }
     
     public BlastAnalysis(NtSequence ntSequence, String uid) {
         super(ntSequence, uid);
+        setUrl(InstituteConfig.WTS_URL);
     }
 
     protected void init(){

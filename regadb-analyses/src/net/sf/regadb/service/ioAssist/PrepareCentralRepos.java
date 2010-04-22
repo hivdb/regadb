@@ -22,6 +22,7 @@ import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
 import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.settings.InstituteConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.apache.commons.io.FileUtils;
@@ -161,7 +162,7 @@ public class PrepareCentralRepos
         Test resistanceTest = new Test(StandardObjects.getGssTestType(genome), algorithm);
         
         Analysis analysis = new Analysis();
-        analysis.setUrl(RegaDBWtsServer.getUrl());
+        analysis.setUrl(InstituteConfig.WTS_URL);
         analysis.setAnalysisType(new AnalysisType("wts"));
         analysis.setAccount("public");
         analysis.setPassword("public");

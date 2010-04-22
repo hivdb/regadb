@@ -7,6 +7,7 @@ import org.jdom.Comment;
 import org.jdom.Element;
 
 public class InstituteConfig implements IConfigParser {
+	public final static String WTS_URL = "$WTS_URL";
 	
 	private Filter organismFilter = null;
 	private File logDir;
@@ -16,7 +17,7 @@ public class InstituteConfig implements IConfigParser {
 	private String dateFormat;
 	private int minYear;
 	private int maxDaysFuture;
-	private String serviceProviderUrl;
+	private String wtsUrl;
 	private boolean sampleDateMandatory = true;
 	private String logo;
 	private boolean trugeneFix = false;
@@ -105,9 +106,9 @@ public class InstituteConfig implements IConfigParser {
 			}
 		}
 		
-		ee = e.getChild("service-provider-url");
+		ee = e.getChild("wts-url");
 		if(ee != null)
-				setServiceProviderUrl(ee.getTextTrim());
+				setWtsUrl(ee.getTextTrim());
 	}
 	
 	private void parseForm(RegaDBSettings settings, Element e){
@@ -135,7 +136,7 @@ public class InstituteConfig implements IConfigParser {
 		setMinYear(-1);
 		setMaxDaysFuture(-1);
 		
-		setServiceProviderUrl("http://regadb.med.kuleuven.be/wts/services/");
+		setWtsUrl(getDefaultWtsUrl());
 	}
 	
 	public void addFormConfig(FormConfig form){
@@ -202,8 +203,8 @@ public class InstituteConfig implements IConfigParser {
 				e.addContent(fc.toXml());
 		}
 		
-		e = new Element("service-provider-url");
-		e.setText(getServiceProviderUrl().toString());
+		e = new Element("wts-url");
+		e.setText(getWtsUrl().toString());
 		r.addContent(e);
 		
 		return r;
@@ -298,16 +299,27 @@ public class InstituteConfig implements IConfigParser {
 		this.importToolDir = importToolDir;
 	}
 
-	public void setServiceProviderUrl(String serviceProviderUrl) {
-		if(!serviceProviderUrl.endsWith("/"))
-			serviceProviderUrl += '/';
-		if(!serviceProviderUrl.startsWith("http://") && !serviceProviderUrl.startsWith("https://"))
-			serviceProviderUrl = "http://"+ serviceProviderUrl;
-		this.serviceProviderUrl = serviceProviderUrl;
+	public void setWtsUrl(String wtsUrl) {
+		if(!wtsUrl.endsWith("/"))
+			wtsUrl += '/';
+		if(!wtsUrl.startsWith("http://") && !wtsUrl.startsWith("https://"))
+			wtsUrl = "http://"+ wtsUrl;
+		this.wtsUrl = wtsUrl;
 	}
 
-	public String getServiceProviderUrl() {
-		return serviceProviderUrl;
+	public String getWtsUrl() {
+		return wtsUrl;
+	}
+	
+	public String getWtsUrl(String url){
+		if(url.equals(WTS_URL))
+			return getWtsUrl();
+		else
+			return url;
+	}
+	
+	public static String getDefaultWtsUrl() {
+		return "http://regadb.med.kuleuven.be/wts/services/";
 	}
 	
 	public boolean isTrugeneFix() {

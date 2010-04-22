@@ -8,14 +8,14 @@ import net.sf.regadb.db.AnalysisType;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.InstituteConfig;
 
 public class RegaDBWtsServer 
 {
 	private static Test subtypeTest = null;
 	
     public static String getUrl() {
-    	return RegaDBSettings.getInstance().getInstituteConfig().getServiceProviderUrl();
+    	return InstituteConfig.getDefaultWtsUrl();
     }
     
     private static File getFile(String localFileName, String provider, String remoteFileName) throws IOException{
