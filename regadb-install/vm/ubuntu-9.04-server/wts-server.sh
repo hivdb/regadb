@@ -6,8 +6,8 @@ mkdir -p /soft/wts
 
 mkdir /soft/wts/sessions
 mkdir /soft/wts/users
-cp wts-users.pwd /soft/wts/users.pwd
+cp wts-users.pwd /soft/wts/users/users.pwd
 
-cp -R ../../../regadb-wts-services/ services
+cp -R ../../../regadb-wts-services/ /soft/wts/services
 
-chown -R tomcat:tomcat /soft/wts
+chown -R tomcat6:tomcat6 /soft/wts
