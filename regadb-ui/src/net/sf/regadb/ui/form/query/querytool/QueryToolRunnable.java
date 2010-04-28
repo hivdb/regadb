@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientImplHelper;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -37,6 +35,7 @@ import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
+import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateStatement;
@@ -56,6 +55,8 @@ public class QueryToolRunnable implements Runnable {
 	private QueryStatement statement;
 	private Object mutex = new Object();
 	private HashMap<String, String> errors;
+	
+	private HashMap<String, Integer> variablePositions = new HashMap<String, Integer>();
 	
 	private enum Status {
 		WAITING,
@@ -210,6 +211,7 @@ public class QueryToolRunnable implements Runnable {
 					fastaOS = new OutputStreamWriter(new FileOutputStream(fastaFile));
 				}
 	          
+				
 	            os.write(getHeaderLine(selections, newList.getSelectedColumnNames()).getBytes());
 	          
 	            int lines = 0;
@@ -299,15 +301,25 @@ public class QueryToolRunnable implements Runnable {
 		
 		try{
 			for (int j = 0 ; j < selections.size() ; j++) {
-				if (selections.get(j) instanceof TableSelection) {
+				Selection sel = selections.get(j);
+				if (sel instanceof TableSelection) {
 					lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 				}
-				else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
+				else if (sel instanceof FieldSelection
+						|| sel instanceof OutputSelection) {
 					// if the first element is an outputselection selection list
 					// changes made earlier guarantee that it is a static value
 					// so it can be outputted regardless of access
 					if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
 						line.addField(array[j].toString());
+						
+						if(sel instanceof ExporterSelection){
+							ExporterSelection xsel = (ExporterSelection)sel;
+							Integer i = variablePositions.get(xsel.getExporter().getVariableName());
+							if(i != null)
+								for(String val : xsel.getExporter().getSelectedValues(array[i]))
+									line.addField(val);
+						}
 					}
 					else {
 						line.addField(null);
@@ -328,10 +340,20 @@ public class QueryToolRunnable implements Runnable {
     }
     
     private String getHeaderLine(List<Selection> selections, List<String> columnNames) {
+    	variablePositions.clear();
+    	
         CsvLine line = new CsvLine();
         for (int i = 0 ; i < selections.size(); i++) {
-        	if (!(selections.get(i) instanceof TableSelection)) {
+        	Selection sel = selections.get(i);
+        	if (!(sel instanceof TableSelection)) {
         		line.addField(columnNames.get(i));
+        		if(sel instanceof ExporterSelection)
+        			for(String s : ((ExporterSelection)sel).getExporter().getSelectedColumns())
+        				line.addField(s);
+        	}
+        	else{
+        		TableSelection tsel = (TableSelection)selections.get(i);
+        		variablePositions.put(tsel.getVariableName(),i);
         	}
         }   
         return line.toString() + "\n";
@@ -390,13 +412,18 @@ public class QueryToolRunnable implements Runnable {
 					}
 				}
 			}
-			else if (sel instanceof OutputSelection) {
+			else if (sel instanceof OutputSelection || sel instanceof ExporterSelection) {
 				OutputVariable ovar = (OutputVariable) sel.getObjectSpec();
 				TableSelection outputTable = getTableSelectionFromOutputVariable(ovar);
 				if (outputTable != null && sel.isSelected()) {
 					selectList.getSelections().add(outputTable);
 				}
-				clone = new OutputSelection(ovar, sel.isSelected());
+				if(sel instanceof ExporterSelection){
+					clone = new ExporterSelection(ovar, sel.isSelected());
+					((ExporterSelection)clone).setExporter(((ExporterSelection)sel).getExporter());
+				}
+				else
+					clone = new OutputSelection(ovar, sel.isSelected());
 			}
 			
 			if (clone != null) {
