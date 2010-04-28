@@ -67,10 +67,14 @@ public class SelectionListContainer extends WContainerWidget{
 				if(selection instanceof ExporterSelection
 					&& ((ExporterSelection)selection).getDbObject().getDescription().startsWith("Genotypic Susceptibility Score")){
 					ExporterSelection xsel = (ExporterSelection)selection;
-					String variableName = getInputVariableName((OutputVariable)selection.getObjectSpec());
-					GSSExporter gss = new GSSExporter(variableName);
-					xsel.setExporter(gss);
-					((QueryToolForm)mainForm).exporters.put(variableName, gss);
+					
+					GSSExporter gss = (GSSExporter)xsel.getExporter();
+					if(xsel.getExporter() == null){
+						String variableName = getInputVariableName((OutputVariable)selection.getObjectSpec());
+						gss = new GSSExporter(variableName);
+						xsel.setExporter(gss);
+					}
+					((QueryToolForm)mainForm).exporters.put(gss.getVariableName(), gss);
 					rootSelectorPanel.addWidget(new ExporterSelectionContainer(
 							mainForm.getSavable(), xsel, gss));
 				}

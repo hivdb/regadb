@@ -1,10 +1,11 @@
 package com.pharmadm.custom.rega.queryeditor;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class FieldExporter {
+public abstract class FieldExporter implements Serializable {
 	private String variableName;
 	private String[] columns;
 	private boolean[] selected;

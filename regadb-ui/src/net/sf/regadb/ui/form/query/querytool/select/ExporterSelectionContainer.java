@@ -20,9 +20,17 @@ public class ExporterSelectionContainer extends WContainerWidget{
 	private ExporterSelection selection;
 
 	public ExporterSelectionContainer(Savable savable, ExporterSelection selection, FieldExporter exporter) {
-		this.exporter = exporter;
-		this.selection = selection;
+		setSelection(selection);
+		setExporter(exporter);
 		init(savable);
+	}
+	
+	private void setSelection(ExporterSelection selection){
+		this.selection = selection;
+	}
+	
+	private void setExporter(FieldExporter exporter){
+		this.exporter = exporter;
 	}
 
 	private void init(Savable savable){
@@ -41,6 +49,7 @@ public class ExporterSelectionContainer extends WContainerWidget{
 		checkboxes = new WCheckBox[exporter.getColumns().length];
 		for(int i=0; i<exporter.getColumns().length; ++i){
 			checkboxes[i] = addField(exporter.getColumn(i), i);
+			checkboxes[i].setChecked(exporter.isSelected(i));
 		}
 	}
 	
