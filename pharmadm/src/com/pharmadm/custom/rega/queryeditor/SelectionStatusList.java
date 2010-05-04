@@ -13,7 +13,10 @@
 package com.pharmadm.custom.rega.queryeditor;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.QueryVisitor;
@@ -87,6 +90,11 @@ public class SelectionStatusList implements SelectionList, Serializable {
                 }
                 else { // selection instanceof OutputSelection
                     selectedColumns.add(varName);
+                    
+                    if(selection instanceof ExporterSelection){
+                    	ExporterSelection xsel = (ExporterSelection)selection;
+                    	selectedColumns.addAll(xsel.getExporter().getSelectedColumns());
+                    }
                 }
             }
         }
@@ -168,7 +176,12 @@ public class SelectionStatusList implements SelectionList, Serializable {
     private void addOrCopyVariableTo(OutputVariable ovar, Collection<Selection> selectList) {
         Selection selection = find(ovar);
         if (selection == null) {
-            selection = (ovar.consistsOfSingleFromVariable() ? (Selection)(new TableSelection(ovar, true)) : (Selection)(new OutputSelection(ovar, true)));
+            if(ovar.consistsOfSingleFromVariable())
+            	selection = (Selection)(new TableSelection(ovar, true));
+            else if(ovar.getObject().getDescription().startsWith("Genotypic Susceptibility Score"))
+            	selection = (Selection)(new ExporterSelection(ovar, true));
+            else
+            	selection = (Selection)(new OutputSelection(ovar, true));
             selection.setController(this);
         } else {
             //System.out.println("Making a copy !");

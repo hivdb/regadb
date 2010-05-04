@@ -3,6 +3,8 @@ package net.sf.regadb.ui.form.query.querytool;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.Transaction;
@@ -25,6 +27,8 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
+	public Map<String, GSSExporter> exporters = new HashMap<String, GSSExporter>();
+
 	private WTabbedPane tabs;
 	private QueryEditorTreeContainer queryTreeTab;
 	private SelectionListContainer selectionTab;
