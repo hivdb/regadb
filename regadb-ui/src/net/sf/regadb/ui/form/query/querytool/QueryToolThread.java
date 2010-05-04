@@ -3,7 +3,9 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.ui.framework.forms.fields.FileUpload.FileBlob;
 
 import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 
@@ -18,10 +20,11 @@ public class QueryToolThread {
 	private Thread thread_;
 	private String fileName_;
 	
-	public QueryToolThread(final Login login, QueryEditor editor)
+	public QueryToolThread(final Login login, QueryEditor editor, QueryDefinition queryDefinition)
 	{
 		fileName_ = init(login);
-		run_ = new QueryToolRunnable(login, fileName_, editor);
+		FileBlob fb = FileBlob.loadBlob(queryDefinition.getPostProcessingScript());
+		run_ = new QueryToolRunnable(login, fileName_, fb==null?null:fb.data, editor);
 		thread_ = new Thread(run_);
 	}
 		

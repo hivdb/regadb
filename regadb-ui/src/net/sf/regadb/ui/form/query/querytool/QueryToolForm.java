@@ -25,7 +25,6 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
-
 	private WTabbedPane tabs;
 	private QueryEditorTreeContainer queryTreeTab;
 	private SelectionListContainer selectionTab;
@@ -88,7 +87,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         tabs.addTab(tr("form.query.querytool.group.info"), infoTab);
         tabs.setStatusBar(statusbar);
         
-		runGroup_ = new RunGroupBox(queryTreeTab.getQueryEditor(), this);
+		runGroup_ = new RunGroupBox(this, queryTreeTab.getQueryEditor(), this);
         
 		addControlButtons();
 		
@@ -192,5 +191,14 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 		} catch (IOException e) {}
     	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(definition);
 		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
+	}
+	
+	public QueryDefinition getQueryDefinition() {
+		return definition;
+	}
+	
+	public void addReportTab(ReportContainer report) {
+		tabs.addTab(tr("form.query.querytool.group.report"), report);
+		tabs.showTab(report);
 	}
 }

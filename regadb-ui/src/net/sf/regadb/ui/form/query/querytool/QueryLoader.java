@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.io.IOException;
 
 import net.sf.regadb.db.QueryDefinition;
+import net.sf.regadb.ui.framework.forms.fields.FileUpload.FileBlob;
 
 import com.pharmadm.custom.rega.queryeditor.Query;
 import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
@@ -47,6 +48,10 @@ public class QueryLoader implements Savable {
 	private void saveData(QueryDefinition definition) {
     	definition.setName(infoContainer.getName());
     	definition.setDescription(infoContainer.getDescription());
+    	FileBlob blob = infoContainer.getPostProcessingScript();
+    	if (blob != null) {
+    		definition.setPostProcessingScript(blob.saveBlob());
+    	}
     	if (mainForm.getSavable().isLoaded()) {
     		mainForm.getEditorModel().getQueryEditor().getQuery().setFastaExport(mainForm.getFastaExportTab().getFastaExporter());
     		definition.setQuery(new XStream().toXML(mainForm.getEditorModel().getQueryEditor().getQuery()));
@@ -63,6 +68,12 @@ public class QueryLoader implements Savable {
 				infoContainer.setName(def.getName());
 				infoContainer.setDescription(def.getDescription());
 				infoContainer.setUser(def.getSettingsUser().getUid());
+				
+				byte[] script = def.getPostProcessingScript();
+				if (script != null) {
+					infoContainer.setPostProcessingScript(FileBlob.loadBlob(script));
+				}
+					
 		    	XStream xs = new XStream();
 		    	Query query = (Query) xs.fromXML(def.getQuery());
 		    	queryLoaded = checkQueryValidity(query);

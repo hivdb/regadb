@@ -42,6 +42,9 @@
       </key>
       <one-to-many class="net.sf.regadb.db.QueryDefinitionRun" />
     </set>
+	<property name="postProcessingScript" type="binary">
+      <column name="post_processing_script" />
+    </property>
   </class>
 </hibernate-mapping>
 
