@@ -178,7 +178,8 @@ public class SelectionStatusList implements SelectionList, Serializable {
         if (selection == null) {
             if(ovar.consistsOfSingleFromVariable())
             	selection = (Selection)(new TableSelection(ovar, true));
-            else if(ovar.getObject().getDescription().startsWith("Genotypic Susceptibility Score"))
+            else if(ovar.getObject().getDescription().startsWith("Genotypic Susceptibility Score") 
+            		|| ovar.getObject().getDescription().startsWith("Transmitted Drug Resistance"))
             	selection = (Selection)(new ExporterSelection(ovar, true));
             else
             	selection = (Selection)(new OutputSelection(ovar, true));

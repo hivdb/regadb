@@ -65,7 +65,8 @@ public class SelectionListContainer extends WContainerWidget{
 			else {
 //				((QueryToolForm)mainForm).
 				if(selection instanceof ExporterSelection
-					&& ((ExporterSelection)selection).getDbObject().getDescription().startsWith("Genotypic Susceptibility Score")){
+					&& (((ExporterSelection)selection).getDbObject().getDescription().startsWith("Genotypic Susceptibility Score")
+					|| ((ExporterSelection)selection).getDbObject().getDescription().startsWith("Transmitted Drug Resistance"))) {
 					ExporterSelection xsel = (ExporterSelection)selection;
 					
 					GSSExporter gss = (GSSExporter)xsel.getExporter();
