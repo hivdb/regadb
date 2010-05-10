@@ -52,8 +52,8 @@ public class ImportClinicalDb {
 	        
 	            Date birthDate = getBirthDate(cnp);
 	            Utils.setBirthDate(patient, birthDate);
-	            Utils.setLastName(patient, getValue(r, "Nume"));
-	            Utils.setFirstName(patient, getValue(r, "Prenume"));
+	            Utils.setLastName(patient, cleanupName(getValue(r, "Nume")));
+	            Utils.setFirstName(patient, cleanupName(getValue(r, "Prenume")));
 				int sex = Integer.parseInt(cnp.charAt(0) + "");
 				if (sex == 1 || sex == 5 || sex == 7) {
 					Utils.setPatientAttributeValue(patient, StandardObjects.getGenderAttribute(), "male");
@@ -70,15 +70,18 @@ public class ImportClinicalDb {
 			}
 			
 			String analysis = getValue(r, "DenumireAnaliza");
-			String date = getValue(r, "DataSet");
-			if (df.parse(date) == null) {
+			
+			Date date = df.parse(getValue(r, "DataSet"));
+			if (date == null) {
 				System.err.println("Test date null at row " + r);
 			}
+			
 			String value = getValue(r, "Rezultat");
 			
 			if (analysis.equals("CD3/CD4/CD8")) {
 				try {
 					Integer.parseInt(value);
+					MateibalsUtils.addTestResult(patient, StandardObjects.getGenericCD4Test(), value, date);
 				} catch(Exception e) {
 					System.err.println(value);
 				}
@@ -105,13 +108,16 @@ public class ImportClinicalDb {
 					value = value.substring(value.indexOf('(') + 1, value.indexOf(')'));
 				}
 				
-				MateibalsUtils.parseViralLoad(r, value.trim());
+				value = MateibalsUtils.parseViralLoad(r, value.trim());
+				if (value != null) {
+					MateibalsUtils.addTestResult(patient, t, value, date);
+				}
 			} else {
 				System.err.println("Ignoring test: " + analysis);
 			}
 		}
 		
-		return null;
+		return patients;
 	}
 	
 	private String getValue(int r, String string) {
@@ -141,5 +147,16 @@ public class ImportClinicalDb {
 		}
 		
 		return MateibalsUtils.createDate(df, day + "." + month + "." + year);
+	}
+	
+	public static String cleanupName(String name) {
+		String[] parts = name.split(" ");
+		StringBuilder cleanedName = new StringBuilder();
+		for (String p : parts) {
+			if (!p.trim().equals(""))
+			cleanedName.append(p + " ");
+		}
+
+		return cleanedName.toString().trim();
 	}
 }

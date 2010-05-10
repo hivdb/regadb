@@ -4,6 +4,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class MateibalsUtils {
@@ -78,5 +82,11 @@ public class MateibalsUtils {
 			System.err.println("No column named \"" + columnName + "\"");
 		
 		return table.getCell(row, col).trim();
+	}
+	
+	public static void addTestResult(Patient p, Test t, String value, Date d) {
+        TestResult tr = p.createTestResult(t);
+        tr.setValue(value);
+        tr.setTestDate(d);
 	}
 }
