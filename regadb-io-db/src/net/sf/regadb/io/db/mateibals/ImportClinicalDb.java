@@ -27,6 +27,15 @@ public class ImportClinicalDb {
 			Name n = (Name)obj;
 			return n.first.equals(this.first) && n.last.equals(this.last);
 		}
+		
+		public int hashCode() { 
+		    int hash = 1;
+		    hash = hash * 31 + first.hashCode();
+		    hash = hash * 31 
+		                + last.hashCode();
+		    return hash;
+		}
+
 
 		public String first;
 		public String last;
