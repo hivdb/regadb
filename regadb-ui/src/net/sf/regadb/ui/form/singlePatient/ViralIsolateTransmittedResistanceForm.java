@@ -116,8 +116,8 @@ public class ViralIsolateTransmittedResistanceForm extends WContainerWidget {
 			ViralIsolateResistanceForm.getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi());
 		for (String dc : drugClasses) {
 			for (TestResult tr : viralIsolateForm_.getViralIsolate().getTestResults()) {
-				if (tr.getDrugGeneric().getDrugClass().getClassId().equals(dc)
-						&& tr.getTest().getTestType().getDescription().equals(StandardObjects.getTDRDescription())
+				if (tr.getTest().getTestType().getDescription().equals(StandardObjects.getTDRDescription())
+						&& tr.getDrugGeneric().getDrugClass().getClassId().equals(dc)
 						&& tr.getTest().getDescription().equals(algorithm)) {
 					interpretations.append("<b>" + dc + ":</b> ");
 					

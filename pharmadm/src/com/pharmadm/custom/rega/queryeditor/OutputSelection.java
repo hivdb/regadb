@@ -42,6 +42,10 @@ public class OutputSelection extends SimpleSelection implements Serializable {
 
 	public boolean isValid() {
 		DbObject obj = ((OutputVariable) getObject()).getObject();
+		
+		if (obj.isPrimitive())
+			return true;
+		
 		if (obj.getTableName() != null || obj.getPropertyName() != null) {
 			return obj.isTable() || obj.isField();
 		}
