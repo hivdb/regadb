@@ -21,14 +21,14 @@ public class ImportMateibalsIsolates {
 		ImportClinicalDb clinical = new ImportClinicalDb();
 		Map<String, Patient> patients = null;
 		try {
-			patients = clinical.getPatients(new File("/home/pieter/projects/mybiodata/mateibals/mail_mona/cd4_vl.xls"));
+			patients = clinical.loadPatients(new File("/home/pieter/projects/mybiodata/mateibals/mail_mona/cd4_vl.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
-		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(args[0]), new File(args[1]), patients);
+		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(args[0]), new File(args[1]), clinical.getPatients(), clinical.getPatientNames());
 		importIsolates.run();
 	}
 	
@@ -37,11 +37,13 @@ public class ImportMateibalsIsolates {
 	private Map<String, String> sequences = new HashMap<String, String>();
 	private Map<String, String> sequencesInfo = new HashMap<String, String>();
 	private Map<String, Patient> patients;
+	private Map<String, Set<ImportClinicalDb.Name>> patientNames;
 	
 	SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
-	public ImportMateibalsIsolates(File xlsFile, File fastaDir, Map<String, Patient> patients) {
+	public ImportMateibalsIsolates(File xlsFile, File fastaDir, Map<String, Patient> patients, Map<String, Set<ImportClinicalDb.Name>> patientNames) {
 		this.patients = patients;
+		this.patientNames = patientNames;
 		
 		df.setLenient(false);
 		
@@ -130,11 +132,18 @@ public class ImportMateibalsIsolates {
 	}
 	
 	public Patient findPatient(String name, Date birthDate) {
+		//TODO fix patient name
+		
 		for (Map.Entry<String, Patient> e : patients.entrySet()) {
 			Patient p = e.getValue();
-			if (birthDate != null && df.format(p.getBirthDate()).equals(df.format(birthDate)) &&
-					name.toLowerCase().equals(p.getLastName().toLowerCase() + " "  + p.getFirstName().toLowerCase())) {
-				return p;
+			if (birthDate != null && df.format(p.getBirthDate()).equals(df.format(birthDate))) {
+				Set<ImportClinicalDb.Name> names = this.patientNames.get(p.getPatientId());
+				for (ImportClinicalDb.Name n : names) {
+					if (name.toLowerCase().equals(n.last.toLowerCase() + " "  + n.first.toLowerCase())) {
+						return p;
+					}
+				}
+				
 			}
 		}
 		

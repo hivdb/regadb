@@ -17,16 +17,29 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportClinicalDb {
+	public static class Name {
+		public Name(String first, String last) {
+			this.first = first;
+			this.last = last;
+		}
+		
+		public boolean equals(Object obj) {
+			Name n = (Name)obj;
+			return n.first.equals(this.first) && n.last.equals(this.last);
+		}
+
+		public String first;
+		public String last;
+	}
+	
 	private SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
 	private ExcelTable table = new ExcelTable("dd.MM.yyyy");
 	private Set<Test> viralLoads = new HashSet<Test>();
 	
-	public static void main(String [] args) throws IOException, ParseException {
-		ImportClinicalDb clinical = new ImportClinicalDb();
-		clinical.getPatients(new File("/home/pieter/projects/mybiodata/mateibals/mail_mona/cd4_vl.xls"));
-	}
-	
+	private Map<String, Patient> patients = new HashMap<String, Patient>();
+	private Map<String, Set<Name>> patientNames = new HashMap<String, Set<Name>>();
+
 	public ImportClinicalDb() {
 		viralLoads.add(new Test(StandardObjects.getHiv1ViralLoadTestType(), "Amplicor Monitor 1.5"));
 		viralLoads.add(new Test(StandardObjects.getHiv1ViralLoadTestType(), "Cobas TaqMan"));
@@ -34,8 +47,8 @@ public class ImportClinicalDb {
 		viralLoads.add(new Test(StandardObjects.getHiv1ViralLoadTestType(), "RT-PCR LCx"));
 	}
 	
-	public Map<String, Patient> getPatients(File xlsFile) throws IOException, ParseException {
-		Map<String, Patient> patients = new HashMap<String, Patient>();
+	public Map<String, Patient> loadPatients(File xlsFile) throws IOException, ParseException {
+		patients.clear();
 		
 		table.loadFile(xlsFile);
 		
@@ -49,7 +62,9 @@ public class ImportClinicalDb {
 				patient = new Patient();
 	            patient.setPatientId(cnp);
 	            patients.put(cnp, patient);
-	        
+	            
+	            patientNames.put(cnp, new HashSet<Name>());
+	            
 	            Date birthDate = getBirthDate(cnp);
 	            Utils.setBirthDate(patient, birthDate);
 	            Utils.setLastName(patient, cleanupName(getValue(r, "Nume")));
@@ -68,6 +83,8 @@ public class ImportClinicalDb {
 					System.err.println("Contains patient already: " + cnp + " " + rep);
 				}
 			}
+			
+			patientNames.get(cnp).add(new Name(cleanupName(getValue(r, "Prenume")), cleanupName(getValue(r, "Nume"))));
 			
 			String analysis = getValue(r, "DenumireAnaliza");
 			
@@ -158,5 +175,13 @@ public class ImportClinicalDb {
 		}
 
 		return cleanedName.toString().trim();
+	}
+	
+	public Map<String, Patient> getPatients() {
+		return patients;
+	}
+
+	public Map<String, Set<Name>> getPatientNames() {
+		return patientNames;
 	}
 }
