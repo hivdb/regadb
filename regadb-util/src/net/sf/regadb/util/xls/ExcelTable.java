@@ -89,7 +89,7 @@ public class ExcelTable {
 				return fullSimpleDateFormat.format(cell.getDateCellValue());
 			else {
 				double value = cell.getNumericCellValue();
-				int iValue = (int)value;
+				long iValue = (long)value;
 				value = (double)iValue;
 				if (value == cell.getNumericCellValue())
 					return iValue + "";
