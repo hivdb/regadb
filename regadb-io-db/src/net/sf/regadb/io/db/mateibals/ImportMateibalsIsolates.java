@@ -12,11 +12,23 @@ import java.util.Set;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportMateibalsIsolates {
 	public static void main(String [] args) {
-		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(args[0]), new File(args[1]));
+		ImportClinicalDb clinical = new ImportClinicalDb();
+		Map<String, Patient> patients = null;
+		try {
+			patients = clinical.getPatients(new File("/home/pieter/projects/mybiodata/mateibals/mail_mona/cd4_vl.xls"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(args[0]), new File(args[1]), patients);
 		importIsolates.run();
 	}
 	
@@ -24,8 +36,15 @@ public class ImportMateibalsIsolates {
 	private Map<String, Integer> colNameMappings = new HashMap<String, Integer>();
 	private Map<String, String> sequences = new HashMap<String, String>();
 	private Map<String, String> sequencesInfo = new HashMap<String, String>();
+	private Map<String, Patient> patients;
 	
-	public ImportMateibalsIsolates(File xlsFile, File fastaDir) {
+	SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+	
+	public ImportMateibalsIsolates(File xlsFile, File fastaDir, Map<String, Patient> patients) {
+		this.patients = patients;
+		
+		df.setLenient(false);
+		
 		try {
 			table.loadFile(xlsFile);
 		} catch (IOException e) {
@@ -70,9 +89,6 @@ public class ImportMateibalsIsolates {
 	}
 	
 	public void run() {
-		SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-		df.setLenient(false);
-		
 		Set<String> county = new HashSet<String>();
 		Set<String> residence = new HashSet<String>();
 		Set<String> epid = new HashSet<String>();
@@ -82,7 +98,14 @@ public class ImportMateibalsIsolates {
 				MateibalsUtils.parseDate(df, getValue(r, "Drawn date"), MateibalsUtils.createDate(df, "01.01.2000"), r + 1, "Drawn date");
 			Date birthDate = 
 				MateibalsUtils.parseDate(df, getValue(r, "Birth date"), MateibalsUtils.createDate(df, "01.01.1920"), r + 1, "Drawn date");
-						
+			
+			String name = getValue(r, "Patient name");
+			
+			if (findPatient(name, birthDate) == null) {
+				String bd = (birthDate !=null) ? df.format(birthDate) : "";
+				System.err.println("Cannot find patient :" + name + " " +  bd + " >" + sequencesInfo.get(fixIsolateName(getValue(r, "Registration No"))));
+			}
+			
 			residence.add(getValue(r, "Residence"));
 			
 			county.add(getValue(r, "County"));
@@ -104,6 +127,18 @@ public class ImportMateibalsIsolates {
 		}
 		
 		System.err.println(table.rowCount());
+	}
+	
+	public Patient findPatient(String name, Date birthDate) {
+		for (Map.Entry<String, Patient> e : patients.entrySet()) {
+			Patient p = e.getValue();
+			if (birthDate != null && df.format(p.getBirthDate()).equals(df.format(birthDate)) &&
+					name.toLowerCase().equals(p.getLastName().toLowerCase() + " "  + p.getFirstName().toLowerCase())) {
+				return p;
+			}
+		}
+		
+		return null;
 	}
 	
 	private String getValue(int r, String string) {
