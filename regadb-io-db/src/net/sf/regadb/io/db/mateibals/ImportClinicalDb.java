@@ -101,7 +101,7 @@ public class ImportClinicalDb {
 				if (value.equals("nedetectabil")) {
 					value = "-1";
 				} else {
-					value = value.replace("nedetectabil", "");
+					value = "-1";
 				}
 				
 				if (value.contains("(") && value.contains(")")) {
