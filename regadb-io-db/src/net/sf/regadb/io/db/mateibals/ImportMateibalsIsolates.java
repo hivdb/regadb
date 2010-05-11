@@ -156,6 +156,8 @@ public class ImportMateibalsIsolates {
 			String seqInfo = sequencesInfo.get(isolateId);
 			if (seqInfo == null)
 				seqInfo = "";
+			else 
+				seqInfo = "_" + seqInfo;
 			
 			String sequence = sequences.get(isolateId);
 			
@@ -163,7 +165,7 @@ public class ImportMateibalsIsolates {
 			if (sequence != null) {
 				vi = addViralIsolate(p, isolateId + seqInfo, sequence, drawnDate);
 			} else {
-				//System.err.println("no seq:" + getValue(r, "Registration No"));
+				System.err.println("no seq:" + getValue(r, "Registration No"));
 			}
 			
 			String drawnDateColor = table.getCellHexColor(r, colNameMappings.get("Drawn date"));
@@ -177,7 +179,6 @@ public class ImportMateibalsIsolates {
 			}
 			
 			epid.add(getValue(r, "Epidem info"));
-			epid.add(getValue(r, "extra"));
 		}
 	}
 	
