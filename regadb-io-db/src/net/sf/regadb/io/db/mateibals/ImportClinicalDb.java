@@ -56,9 +56,9 @@ public class ImportClinicalDb {
 	            Utils.setPatientAttributeValue(patient, MateibalsUtils.nameA, name);
 				int sex = Integer.parseInt(cnp.charAt(0) + "");
 				if (sex == 1 || sex == 5 || sex == 7) {
-					Utils.setPatientAttributeValue(patient, StandardObjects.getGenderAttribute(), "male");
+					MateibalsUtils.handleANV(patient, StandardObjects.getGenderAttribute(), "male");
 				} else if (sex == 2 || sex == 6 || sex == 8) {
-					Utils.setPatientAttributeValue(patient, StandardObjects.getGenderAttribute(), "female");
+					MateibalsUtils.handleANV(patient, StandardObjects.getGenderAttribute(), "female");
 				} else {
 					System.err.println("Wrong gender: " + sex + " patient=" + cnp);
 				}
