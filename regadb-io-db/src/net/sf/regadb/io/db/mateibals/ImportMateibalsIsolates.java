@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.NtSequence;
@@ -80,6 +82,14 @@ public class ImportMateibalsIsolates {
 		for (File d : fastaDir.listFiles()) {
 			for (File fasta : d.listFiles()) {
 				if (fasta.isFile()) {
+					try {
+						String fastaContent = FileUtils.readFileToString(fasta);
+						fastaContent = fastaContent.replaceAll("\\?", "");
+						FileUtils.writeStringToFile(fasta, fastaContent);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
 					FastaRead fr = FastaHelper.readFastaFile(fasta, true);
 
 					switch (fr.status_) {
