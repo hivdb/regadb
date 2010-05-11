@@ -15,17 +15,12 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.hibernate.Hibernate;
-import org.hibernate.LazyInitializationException;
-
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
@@ -184,9 +179,19 @@ public class FullCsvExport implements ExportPatient {
 		formatField(row, tr.getTest().getTestType().getDescription());
 		formatField(row, tr.getTestDate());
 		formatField(row, tr.getSampleId());
-		formatField(row, tr.getValue()==null?tr.getTestNominalValue().getValue():tr.getValue(), false);
+		formatField(row, getValue(tr), false);
 		
 		fw.append(row.toString());
+	}
+	
+	private String getValue(TestResult tr){
+		if(tr.getValue() != null)
+			return tr.getValue();
+		if(tr.getTestNominalValue() != null)
+			return tr.getTestNominalValue().getValue();
+		if(tr.getData() != null)
+			return new String(tr.getData());
+		return "";
 	}
 
 	private void eventHeader(FileWriter fw) throws IOException {
@@ -272,7 +277,6 @@ public class FullCsvExport implements ExportPatient {
 		formatField(row, p.getPatientId());
 		formatField(row, vi.getSampleDate());
 		formatField(row, vi.getSampleId());
-		
 		for(TestResult tr : vi.getTestResults()) {
 			TestType tt = tr.getTest().getTestType();
 			if(tt.getDescription().equals(StandardObjects.getGssDescription())) {
@@ -357,6 +361,7 @@ public class FullCsvExport implements ExportPatient {
 			testFileWriter.close();
 			therapyFileWriter.close();
 			viralIsolateFileWriter.close();
+			resistanceFileWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -1,14 +1,15 @@
 package net.sf.regadb.analysis.functions;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugClass;
@@ -27,16 +28,32 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
-import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 public class GenerateReport 
 {
+	private static class RIResult{
+		public String gss, mutations, remarks, sir, level, description;
+		
+		public RIResult(String xml){
+			gss = getValue(xml,"gss");
+			mutations = getValue(xml,"mutations");
+			remarks = getValue(xml,"remarks");
+			level = getValue(xml,"level");
+			description = getValue(xml,"description");
+			sir = getValue(xml,"sir");
+		}
+		
+		private String getValue(String xml, String tag){
+			String v = getSubString(xml, '<'+ tag +'>', "</"+ tag +'>').result;
+			return v == null || v.equals("null") ? "" : v; 
+		}
+	}
+	
+	private Map<String,Map<String,RIResult>> riresults = new HashMap<String,Map<String,RIResult>>();
+	
     private StringBuffer rtfBuffer_;
     private static final long MILLISECS_PER_DAY = 1000*60*60*24;
     
@@ -77,11 +94,9 @@ public class GenerateReport
         replace("$ORGANISM", getOrganismName(vi));
         replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
         
-        if (algorithms != null && algorithms.size() > 0) {
-	        replace("$ASI_ALGORITHM", algorithmsToString(algorithms));
-	        List<TestResult> results = getGssTestResults(vi, algorithms);
-	        setRITable(drugClasses, results, t);
-        }
+        replace("$ASI_ALGORITHMS", algorithmsToString(algorithms));
+        loadGssTestResults(vi);
+        setRITable(algorithms, drugClasses, t);
         
         setMutations(vi, t);
         
@@ -93,6 +108,9 @@ public class GenerateReport
     }
     
     private String algorithmsToString(Collection<String> algorithms) {
+    	if(algorithms.size() == 0)
+    		return "";
+    	
     	StringBuilder sb = new StringBuilder();
     	for(String algorithm : algorithms)
     		sb.append(", "+ algorithm);
@@ -180,26 +198,30 @@ public class GenerateReport
         return drugs.toString();
     }
     
-    private List<TestResult> getGssTestResults(ViralIsolate vi, Collection<String> algorithms)
+    private void loadGssTestResults(ViralIsolate vi)
     {
-        List<TestResult> testResults = new ArrayList<TestResult>();
         try{
             Genome g = vi.getGenome();
             TestType gssTestType = StandardObjects.getGssTestType(g);
             
             for(TestResult tr : vi.getTestResults())
             {
-                if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType) 
-                        && algorithms.contains(tr.getTest().getDescription())) {
-                    testResults.add(tr);
+                if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType)) {
+                	String genericName = tr.getDrugGeneric().getGenericName();
+                	String algorithm = tr.getTest().getDescription();
+                	
+                    Map<String,RIResult> ariresults = riresults.get(algorithm);
+                    if(ariresults == null){
+                    	ariresults = new HashMap<String,RIResult>();
+                    	riresults.put(algorithm, ariresults);
+                    }
+                    ariresults.put(genericName,new RIResult(new String(tr.getData())));
                 }
             }
         }
         catch(Exception e){
             e.printStackTrace();
         }
-        
-        return testResults;
     }
     
     private void setMutations(ViralIsolate vi, Transaction t)
@@ -273,111 +295,113 @@ public class GenerateReport
             rtfBuffer_.replace(findStart, findStart + find.length(), pic.toString());
     }
     
-    public void setRITable(Collection<String> drugClasses, List<TestResult> testResults, Transaction t)
+    private static class SubString{
+    	public String result;
+    	public int bpos, epos;
+    	
+    	public SubString(String result, int bpos, int epos){
+    		this.result = result;
+    		this.bpos = bpos;
+    		this.epos = epos;
+    	}
+    }
+    
+    private static SubString getSubString(String seed, String begin, String end){
+    	return getSubString(seed, begin, end, 0);
+    }
+    private static SubString getSubString(String seed, String begin, String end, int bpos){
+    	int epos;
+    	if((bpos = seed.indexOf(begin,bpos)) != -1 && (epos = seed.indexOf(end,bpos+begin.length())) != -1)
+    		return new SubString(seed.substring(bpos+begin.length(),epos),bpos,epos+end.length());
+    	else
+    		return null;
+    }
+    private static SubString getSubString(StringBuffer seed, String begin, String end, int bpos){
+    	int epos;
+    	if((bpos = seed.indexOf(begin,bpos)) != -1 && (epos = seed.indexOf(end,bpos+begin.length())) != -1)
+    		return new SubString(seed.substring(bpos+begin.length(),epos),bpos,epos+end.length());
+    	else
+    		return null;
+    }
+    
+    private String getRITable(String algorithm, Collection<String> drugs, String asiString){
+    	asiString = asiString.replace("$ASI_ALGORITHM", algorithm);
+    	
+    	SubString tableString = getSubString(asiString, "$BEGIN_TABLE", "$END_TABLE");
+    	
+    	StringBuilder result = new StringBuilder(asiString.substring(0,tableString.bpos));
+    	
+    	Map<String,RIResult> ariresults = riresults.get(algorithm);
+    	for(String drug : drugs){
+    		RIResult riresult = ariresults.get(drug);
+    		if(riresult == null)
+        		result.append(tableString.result
+        				.replace("$ASI_DRUG", drug)
+        				.replace("$ASI_MUTATIONS", "")
+        				.replace("$ASI_GSS", "")
+        				.replace("$ASI_LEVEL", "")
+        				.replace("$ASI_SIR", "")
+        				.replace("$ASI_REMARKS", "")
+        				.replace("$ASI_DESCRIPTION", "")
+        				);
+    		else
+	    		result.append(tableString.result
+	    				.replace("$ASI_DRUG", drug)
+	    				.replace("$ASI_MUTATIONS", riresult.mutations)
+	    				.replace("$ASI_GSS", riresult.gss)
+	    				.replace("$ASI_LEVEL", riresult.level)
+	    				.replace("$ASI_SIR", riresult.sir)
+	    				.replace("$ASI_REMARKS", riresult.remarks)
+	    				.replace("$ASI_DESCRIPTION", riresult.description)
+	    				);
+    	}
+    	
+    	result.append(asiString.substring(tableString.epos));
+    	return result.toString();
+    }
+    
+    public void setRITable(Collection<String> algorithms, Collection<String> drugClasses, Transaction t)
     {
-        List<DrugGeneric> drugs = new ArrayList<DrugGeneric>();
+        List<String> drugs = new ArrayList<String>();
         List<DrugClass> sortedDrugClasses_  = t.getDrugClassesSortedOnResistanceRanking();
         
         List<DrugGeneric> genericDrugs;
-        boolean addedAmprenavir = false;
+//        boolean addedAmprenavir = false;
         for(DrugClass dc : sortedDrugClasses_) {
         	if(!drugClasses.contains(dc.getClassId()))
         		continue;
         	
             genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
             for(DrugGeneric dg : genericDrugs) {
-                if(!addedAmprenavir && dg.getGenericId().startsWith("FPV")) {
-                    drugs.add(new DrugGeneric(dg.getDrugClass(), "APV", "amprenavir"));
-                    drugs.add(new DrugGeneric(dg.getDrugClass(), "APV/r", "amprenavir/r"));
-                    addedAmprenavir = true;
-                }
-                drugs.add(dg);
+//                if(!addedAmprenavir && dg.getGenericId().startsWith("FPV")) {
+//                    new DrugGeneric(dg.getDrugClass(), "APV", "amprenavir"));
+//                    new DrugGeneric(dg.getDrugClass(), "APV/r", "amprenavir/r"));
+//                    addedAmprenavir = true;
+//                }
+                drugs.add(dg.getGenericName());
             }
         }
         
-        int interpretation1Pos = rtfBuffer_.indexOf("$INTERPRETATION1");
-        int mutation1Pos = rtfBuffer_.indexOf("$MUTATIONS1");
-        
-        String lastString;
-        if (interpretation1Pos < mutation1Pos)
-            lastString = "$MUTATIONS";
-        else
-            lastString = "$INTERPRETATION";
-        
-        String line
-            = rtfBuffer_.substring( rtfBuffer_.indexOf(lastString + "2") + lastString.length() + 1,
-                                    rtfBuffer_.indexOf(lastString + "3") + lastString.length() + 1);
+        int bpos = 0;
+        SubString asiString;
+        while((asiString = getSubString(rtfBuffer_, "$BEGIN_ASI", "$END_ASI", bpos)) != null){
+        	String result;
+        	SubString paramString = getSubString(asiString.result,"(",")");
+        	asiString.result = asiString.result.substring(paramString.epos);
 
-        System.err.println(line);
-        
-        int ii = 1;
-        TestResult tr;
-        for (DrugGeneric dg : drugs) {
-            String drug = dg.getGenericName();
-            String drugCode = dg.getGenericId();
-
-            final StringBuffer mutationsLocal = new StringBuffer();
-            String interpretation = null;
-            Double gss = null;
-
-            tr = null;
-            for(TestResult ttr : testResults) {
-                if(drugCode.equals(ttr.getDrugGeneric().getGenericId())) {
-                    tr = ttr;
-                }
-            }
-
-                if (tr != null) {
-                    if(mutationsLocal.length()!=0)
-                    mutationsLocal.delete(0, mutationsLocal.length());
-                    interpretation = tr.getValue();
-                    ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
-                    {
-                        @Override
-                        public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
-                        {
-                            int size = mutations.size();
-                            for(int i = 0; i<size; i++) {
-                                mutationsLocal.append(mutations.get(i));
-                                if(i!=size-1)
-                                    mutationsLocal.append(' ');
-                            }
-                        }
-                    };
-                    try 
-                    {
-                        inp.parse(new InputSource(new ByteArrayInputStream(tr.getData())));
-                    } 
-                    catch (SAXException e) 
-                    {
-                        e.printStackTrace();
-                    } 
-                    catch (IOException e) 
-                    {
-                        e.printStackTrace();
-                    }
-                    
-                    if (mutationsLocal != null) {
-                        if (ii >= 3)
-                            replace(line, line + line);
-
-                        String reportMutations = "$MUTATIONS" + (Math.min(ii, 3));
-                        String reportInterpretation = "$INTERPRETATION" + (Math.min(ii, 3));
-
-                        replace("$DRUG" + (Math.min(ii, 3)), drug);
-                        replace(reportMutations, mutationsLocal.toString());
-
-                        try {
-                            gss = Double.parseDouble(interpretation);
-                        } catch(NumberFormatException e) {
-                            gss = null;                   
-                        }
-                        replace(reportInterpretation, ResistanceInterpretationHelper.getSIRRepresentation(gss)+ " ("+interpretation+")");
-                        ++ii;
-                    }
-                }
+        	if(paramString.result.length() == 0){
+        		StringBuilder sb = new StringBuilder();
+        		for(String algorithm : algorithms)
+        			sb.append(getRITable(algorithm, drugs, asiString.result));
+        		result = sb.toString();
+        	}
+        	else{
+        		String [] params = paramString.result.split(",");
+        		result = getRITable(params[1], drugs, asiString.result);
+        	}
+        	
+        	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
+        	bpos = asiString.bpos + asiString.result.length();
         }
-        
-        replace(line, "");       
     }
 }

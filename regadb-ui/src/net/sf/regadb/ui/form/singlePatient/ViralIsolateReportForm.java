@@ -60,7 +60,7 @@ public class ViralIsolateReportForm extends WContainerWidget
         reportTable_ = new FormTable(this);
         algorithmL_ = new Label(tr("form.viralIsolate.editView.report.algorithm"));
         algorithmCB_ = new WSelectionBox(viralIsolateForm_);
-//        algorithmCB_.setSelectionMode(SelectionMode.ExtendedSelection);
+        algorithmCB_.setSelectionMode(SelectionMode.ExtendedSelection);
         reportTable_.addLineToTable(algorithmL_, algorithmCB_);
         templateL_ = new Label(tr("form.viralIsolate.editView.report.template"));
         resRepTemplateCB_ = new ComboBox<ResistanceInterpretationTemplate>(InteractionState.Editing, viralIsolateForm_);
