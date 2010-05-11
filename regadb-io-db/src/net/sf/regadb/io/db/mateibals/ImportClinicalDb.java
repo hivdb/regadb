@@ -17,37 +17,13 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportClinicalDb {
-	public static class Name {
-		public Name(String first, String last) {
-			this.first = first;
-			this.last = last;
-		}
-		
-		public boolean equals(Object obj) {
-			Name n = (Name)obj;
-			return n.first.equals(this.first) && n.last.equals(this.last);
-		}
-		
-		public int hashCode() { 
-		    int hash = 1;
-		    hash = hash * 31 + first.hashCode();
-		    hash = hash * 31 
-		                + last.hashCode();
-		    return hash;
-		}
-
-
-		public String first;
-		public String last;
-	}
-	
 	private SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
 	private ExcelTable table = new ExcelTable("dd.MM.yyyy");
 	private Set<Test> viralLoads = new HashSet<Test>();
 	
 	private Map<String, Patient> patients = new HashMap<String, Patient>();
-	private Map<String, Set<Name>> patientNames = new HashMap<String, Set<Name>>();
+	private Map<String, Set<String>> patientNames = new HashMap<String, Set<String>>();
 
 	public ImportClinicalDb() {
 		viralLoads.add(new Test(StandardObjects.getHiv1ViralLoadTestType(), "Amplicor Monitor 1.5"));
@@ -67,17 +43,17 @@ public class ImportClinicalDb {
 			String cnp = getValue(r, "CNP");
 			
 			Patient patient = patients.get(cnp);
+			String name = cleanupName(getValue(r, "Nume")) + " " + cleanupName(getValue(r, "Prenume"));
 			if (patient == null) {
 				patient = new Patient();
 	            patient.setPatientId(cnp);
 	            patients.put(cnp, patient);
 	            
-	            patientNames.put(cnp, new HashSet<Name>());
+	            patientNames.put(cnp, new HashSet<String>());
 	            
 	            Date birthDate = getBirthDate(cnp);
 	            Utils.setBirthDate(patient, birthDate);
-	            Utils.setLastName(patient, cleanupName(getValue(r, "Nume")));
-	            Utils.setFirstName(patient, cleanupName(getValue(r, "Prenume")));
+	            Utils.setPatientAttributeValue(patient, MateibalsUtils.nameA, name);
 				int sex = Integer.parseInt(cnp.charAt(0) + "");
 				if (sex == 1 || sex == 5 || sex == 7) {
 					Utils.setPatientAttributeValue(patient, StandardObjects.getGenderAttribute(), "male");
@@ -93,7 +69,7 @@ public class ImportClinicalDb {
 				}
 			}
 			
-			patientNames.get(cnp).add(new Name(cleanupName(getValue(r, "Prenume")), cleanupName(getValue(r, "Nume"))));
+			patientNames.get(cnp).add(name);
 			
 			String analysis = getValue(r, "DenumireAnaliza");
 			
@@ -190,7 +166,7 @@ public class ImportClinicalDb {
 		return patients;
 	}
 
-	public Map<String, Set<Name>> getPatientNames() {
+	public Map<String, Set<String>> getPatientNames() {
 		return patientNames;
 	}
 }

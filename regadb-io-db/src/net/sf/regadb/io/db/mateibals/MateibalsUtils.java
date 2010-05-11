@@ -4,13 +4,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.db.ValueType;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class MateibalsUtils {
+	public static Attribute nameA = new Attribute();
+	
+	static {
+		nameA.setValueType(new ValueType("string"));
+		nameA.setName("Name");
+		nameA.setAttributeGroup(StandardObjects.getPersonalAttributeGroup());
+	}
+	
 	public static Date createDate(SimpleDateFormat df, String date) {
 		try {
 			return df.parse(date);

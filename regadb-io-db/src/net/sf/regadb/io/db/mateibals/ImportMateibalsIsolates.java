@@ -4,16 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportMateibalsIsolates {
@@ -37,11 +38,12 @@ public class ImportMateibalsIsolates {
 	private Map<String, String> sequences = new HashMap<String, String>();
 	private Map<String, String> sequencesInfo = new HashMap<String, String>();
 	private Map<String, Patient> patients;
-	private Map<String, Set<ImportClinicalDb.Name>> patientNames;
+	private List<Patient> externalPatients = new ArrayList<Patient>();
+	private Map<String, Set<String>> patientNames;
 	
-	SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+	private SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	
-	public ImportMateibalsIsolates(File xlsFile, File fastaDir, Map<String, Patient> patients, Map<String, Set<ImportClinicalDb.Name>> patientNames) {
+	public ImportMateibalsIsolates(File xlsFile, File fastaDir, Map<String, Patient> patients, Map<String, Set<String>> patientNames) {
 		this.patients = patients;
 		this.patientNames = patientNames;
 		
@@ -98,12 +100,15 @@ public class ImportMateibalsIsolates {
 		for (int r = 1; r < table.rowCount(); r++) {
 			Date drawnDate = 
 				MateibalsUtils.parseDate(df, getValue(r, "Drawn date"), MateibalsUtils.createDate(df, "01.01.2000"), r + 1, "Drawn date");
+			
 			Date birthDate = 
 				MateibalsUtils.parseDate(df, getValue(r, "Birth date"), MateibalsUtils.createDate(df, "01.01.1920"), r + 1, "Drawn date");
 			
 			String name = getValue(r, "Patient name");
 			
-			if (findPatient(name, birthDate) == null) {
+			Patient p = findPatientInClinicalDB(name, birthDate);
+			
+			if (p == null) {
 				String bd = (birthDate !=null) ? df.format(birthDate) : "";
 				System.err.println("Cannot find patient :" + name + " " +  bd + " >" + sequencesInfo.get(fixIsolateName(getValue(r, "Registration No"))));
 			}
@@ -130,20 +135,17 @@ public class ImportMateibalsIsolates {
 		
 		System.err.println(table.rowCount());
 	}
-	
-	public Patient findPatient(String name, Date birthDate) {
-		//TODO fix patient name
-		
+
+	public Patient findPatientInClinicalDB(String name, Date birthDate) {
 		for (Map.Entry<String, Patient> e : patients.entrySet()) {
 			Patient p = e.getValue();
 			if (birthDate != null && df.format(p.getBirthDate()).equals(df.format(birthDate))) {
-				Set<ImportClinicalDb.Name> names = this.patientNames.get(p.getPatientId());
-				for (ImportClinicalDb.Name n : names) {
-					if (name.toLowerCase().equals(n.last.toLowerCase() + " "  + n.first.toLowerCase())) {
+				Set<String> names = this.patientNames.get(p.getPatientId());
+				for (String n : names) {
+					if (name.toLowerCase().equals(n.toLowerCase())) {
 						return p;
 					}
 				}
-				
 			}
 		}
 		
