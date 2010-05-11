@@ -8,6 +8,7 @@ import java.util.HashSet;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
@@ -138,6 +139,15 @@ public class MateibalsUtils {
 			a.getAttributeNominalValues().add(selectedAnv);
 		}
 		
-		p.createPatientAttributeValue(a).setAttributeNominalValue(selectedAnv);
+		boolean addANV = true;
+		
+		for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
+			if (pav.getAttribute().getName().equals(a.getName())) {
+				addANV = false;
+			}
+		}
+		
+		if (addANV)
+			p.createPatientAttributeValue(a).setAttributeNominalValue(selectedAnv);
 	}
 }
