@@ -132,7 +132,13 @@ public class ImportMateibalsIsolates {
 					externalPatients.add(p);
 				}
 				
-				String vl = MateibalsUtils.parseViralLoad(r, getValue(r, "VL"));
+				String vl = getValue(r, "VL");
+				if (vl.contains("(") && vl.contains(")")) {
+					vl = vl.substring(vl.indexOf('(') + 1, vl.indexOf(')'));
+					if (vl.startsWith("~"))
+						vl = vl.substring(1);
+				}
+				vl = MateibalsUtils.parseViralLoad(r, vl);
 				if (vl != null) {
 					MateibalsUtils.addTestResult(p, StandardObjects.getGenericHiv1ViralLoadTest(), vl, drawnDate);
 				}
