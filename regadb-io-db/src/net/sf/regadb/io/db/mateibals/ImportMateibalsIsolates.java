@@ -134,8 +134,11 @@ public class ImportMateibalsIsolates {
 				}
 				
 				try {
-					int cd4 = Integer.parseInt(getValue(r, "CD4"));
-					MateibalsUtils.addTestResult(p, StandardObjects.getGenericCD4Test(), cd4+"", drawnDate);
+					String cd4 = getValue(r, "CD4");
+					if (!cd4.equals("")) {
+						Integer.parseInt(cd4);
+						MateibalsUtils.addTestResult(p, StandardObjects.getGenericCD4Test(), cd4+"", drawnDate);
+					}
 				} catch(Exception e) {
 					System.err.println("Invalid CD4 row=" + r + " value=" + getValue(r, "CD4"));
 				}
