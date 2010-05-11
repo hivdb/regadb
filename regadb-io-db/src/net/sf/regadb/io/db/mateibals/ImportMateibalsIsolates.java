@@ -14,13 +14,11 @@ import java.util.Set;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
-import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
-import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -28,17 +26,19 @@ import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportMateibalsIsolates {
 	public static void main(String [] args) {
+		File dir = new File(args[0]);
+		
 		ImportClinicalDb clinical = new ImportClinicalDb();
 		Map<String, Patient> patients = null;
 		try {
-			patients = clinical.loadPatients(new File("/home/pieter/projects/mybiodata/mateibals/mail_mona/cd4_vl.xls"));
+			patients = clinical.loadPatients(new File(dir.getAbsolutePath() + File.separatorChar + "cd4_vl.xls"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
-		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(args[0]), new File(args[1]), clinical.getPatients(), clinical.getPatientNames());
+		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(dir.getAbsolutePath() + File.separatorChar + "database.xls"), new File(dir.getAbsolutePath() + File.separatorChar + "fasta"), clinical.getPatients(), clinical.getPatientNames());
 		importIsolates.run();
 	}
 	
