@@ -84,7 +84,7 @@ public class MateibalsUtils {
         value = value.replace(",", "");
         value = value.replace(".", "");
         
-        if(Character.isDigit(value.charAt(0))) {
+        if(Character.isDigit(value.charAt(0)) || value.charAt(0) == '-') {
             value = "=" + value;
         }
         if(value.charAt(0)=='>' || value.charAt(0)=='<' || value.charAt(0)=='=') {

@@ -100,9 +100,7 @@ public class ImportClinicalDb {
 				value = value.replace("/ml", "");
 				value = value.replace("cml", "");
 				
-				if (value.equals("nedetectabil")) {
-					value = "-1";
-				} else {
+				if (value.contains("nedetectabil")) {
 					value = "-1";
 				}
 				
@@ -110,9 +108,11 @@ public class ImportClinicalDb {
 					value = value.substring(value.indexOf('(') + 1, value.indexOf(')'));
 				}
 				
-				value = MateibalsUtils.parseViralLoad(r, value.trim());
-				if (value != null) {
-					MateibalsUtils.addTestResult(patient, t, value, date);
+				String parsedValue = MateibalsUtils.parseViralLoad(r, value.trim());
+				if (parsedValue != null) {
+					MateibalsUtils.addTestResult(patient, t, parsedValue, date);
+				} else {
+					System.err.println("Cannot parse VL (clinical db): row=" + r +" value="+value);
 				}
 			} else {
 				System.err.println("Ignoring test: " + analysis);
