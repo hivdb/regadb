@@ -3,8 +3,10 @@ package net.sf.regadb.io.db.mateibals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
@@ -14,6 +16,8 @@ import net.sf.regadb.util.xls.ExcelTable;
 
 public class MateibalsUtils {
 	public static Attribute nameA = new Attribute();
+	public static Attribute countyA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"County", new HashSet<AttributeNominalValue>());
+	public static Attribute residenceA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"Residence", new HashSet<AttributeNominalValue>());
 	
 	static {
 		nameA.setValueType(new ValueType("string"));
@@ -99,5 +103,25 @@ public class MateibalsUtils {
         TestResult tr = p.createTestResult(t);
         tr.setValue(value);
         tr.setTestDate(d);
+	}
+	
+	public static void handleANV(Patient p, Attribute a, String value) {
+		value = value.trim();
+		if (value.equals(""))
+			return;
+
+		AttributeNominalValue selectedAnv = null;
+
+		for (AttributeNominalValue anv : a.getAttributeNominalValues()) {
+			if (anv.getValue().equals(value))
+				selectedAnv = anv;
+		}
+
+		if (selectedAnv == null) {
+			selectedAnv = new AttributeNominalValue(a, value);
+			a.getAttributeNominalValues().add(selectedAnv);
+		}
+		
+		p.createPatientAttributeValue(a).setAttributeNominalValue(selectedAnv);
 	}
 }

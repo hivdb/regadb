@@ -14,6 +14,7 @@ import java.util.Set;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.io.db.util.Utils;
@@ -96,8 +97,6 @@ public class ImportMateibalsIsolates {
 	}
 	
 	public void run() {
-		Set<String> county = new HashSet<String>();
-		Set<String> residence = new HashSet<String>();
 		Set<String> epid = new HashSet<String>();
 		
 		for (int r = 1; r < table.rowCount(); r++) {
@@ -144,24 +143,20 @@ public class ImportMateibalsIsolates {
 				}
 			}
 			
-			residence.add(getValue(r, "Residence"));
-			
-			county.add(getValue(r, "County"));
+			MateibalsUtils.handleANV(p, MateibalsUtils.countyA, getValue(r, "County"));
+			MateibalsUtils.handleANV(p, MateibalsUtils.residenceA, getValue(r, "Residence"));
 			
 			epid.add(getValue(r, "Epidem info"));
 			epid.add(getValue(r, "extra"));
 			
 			if (sequences.get(fixIsolateName(getValue(r, "Registration No"))) == null) {
+				//TODO
 				//System.err.println("no seq:" + getValue(r, "Registration No"));
 			}
 		}
 		
 		for (Map.Entry<String, String> e : sequencesInfo.entrySet()) {
 			//System.err.println( e.getValue());
-		}
-		
-		for (String c  : county) {
-			System.err.println(c);
 		}
 		
 		System.err.println(table.rowCount());
