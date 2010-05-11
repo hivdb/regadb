@@ -102,8 +102,6 @@ public class ImportMateibalsIsolates {
 	}
 	
 	public void run() {
-		Set<String> epid = new HashSet<String>();
-		
 		for (int r = 1; r < table.rowCount(); r++) {
 			Date drawnDate = 
 				MateibalsUtils.parseDate(df, getValue(r, "Drawn date"), MateibalsUtils.createDate(df, "01.01.2000"), r + 1, "Drawn date");
@@ -178,7 +176,10 @@ public class ImportMateibalsIsolates {
 				addViralIsolateTest(p, vi, MateibalsUtils.viSetNoT, setNo);
 			}
 			
-			epid.add(getValue(r, "Epidem info"));
+			String epid = getValue(r, "Epidem info");
+			if (!epid.equals("") && vi != null) {
+				addViralIsolateTest(p, vi, MateibalsUtils.viEpidT, epid);
+			}
 		}
 	}
 	

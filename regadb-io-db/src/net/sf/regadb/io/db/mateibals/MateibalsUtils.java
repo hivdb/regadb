@@ -22,6 +22,7 @@ public class MateibalsUtils {
 	
 	public static Test viCommentT;
 	public static Test viSetNoT;
+	public static Test viEpidT;
 	
 	static {
 		nameA.setValueType(new ValueType("string"));
@@ -30,6 +31,7 @@ public class MateibalsUtils {
 		
 		viCommentT = createViTest("Comment");
 		viSetNoT = createViTest("Set no");
+		viEpidT = createViTest("Epidem info");
 	}
 	
 	private static Test createViTest(String name) {
