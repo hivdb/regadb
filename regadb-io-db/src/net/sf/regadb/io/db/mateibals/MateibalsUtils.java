@@ -10,6 +10,7 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
@@ -19,10 +20,23 @@ public class MateibalsUtils {
 	public static Attribute countyA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"County", new HashSet<AttributeNominalValue>());
 	public static Attribute residenceA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"Residence", new HashSet<AttributeNominalValue>());
 	
+	public static Test viCommentT;
+	public static Test viSetNoT;
+	
 	static {
 		nameA.setValueType(new ValueType("string"));
 		nameA.setName("Name");
 		nameA.setAttributeGroup(StandardObjects.getPersonalAttributeGroup());
+		
+		viCommentT = createViTest("Comment");
+		viSetNoT = createViTest("Set no");
+	}
+	
+	private static Test createViTest(String name) {
+		TestType type = 
+			new TestType(StandardObjects.getViralIsolateAnalysisTestObject(), name);
+		type.setValueType(StandardObjects.getStringValueType());
+		return new Test(type, name);
 	}
 	
 	public static Date createDate(SimpleDateFormat df, String date) {

@@ -18,6 +18,9 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -156,14 +159,37 @@ public class ImportMateibalsIsolates {
 			
 			String sequence = sequences.get(isolateId);
 			
+			ViralIsolate vi = null;
 			if (sequence != null) {
-				addViralIsolate(p, isolateId + seqInfo, sequence, drawnDate);
+				vi = addViralIsolate(p, isolateId + seqInfo, sequence, drawnDate);
 			} else {
 				//System.err.println("no seq:" + getValue(r, "Registration No"));
 			}
 			
+			String drawnDateColor = table.getCellHexColor(r, colNameMappings.get("Drawn date"));
+			if (drawnDateColor.equals("CCCC:FFFF:FFFF") && vi != null) {
+				addViralIsolateTest(p, vi, MateibalsUtils.viCommentT, "Sample date could be earlier");
+			}
+			
+			String setNo = getValue(r, "Set no");
+			if (!setNo.equals("")) {
+				addViralIsolateTest(p, vi, MateibalsUtils.viSetNoT, setNo);
+			}
+			
 			epid.add(getValue(r, "Epidem info"));
 			epid.add(getValue(r, "extra"));
+		}
+	}
+	
+	private static void addViralIsolateTest(Patient p, ViralIsolate vi, Test test, String value) {
+		if (!value.equals("")) {
+			TestResult tr = new TestResult();
+			tr.setTest(test);
+			tr.setData(value.getBytes());
+			tr.setViralIsolate(vi);
+			
+			tr.setPatient(vi.getPatient());
+			vi.getTestResults().add(tr);
 		}
 	}
 	
