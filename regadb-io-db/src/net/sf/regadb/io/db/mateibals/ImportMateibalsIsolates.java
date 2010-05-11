@@ -20,7 +20,9 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
 
@@ -39,7 +41,8 @@ public class ImportMateibalsIsolates {
 		}
 		
 		ImportMateibalsIsolates importIsolates = new ImportMateibalsIsolates(new File(dir.getAbsolutePath() + File.separatorChar + "database.xls"), new File(dir.getAbsolutePath() + File.separatorChar + "fasta"), clinical.getPatients(), clinical.getPatientNames());
-		importIsolates.run();
+		importIsolates.run(new File(dir.getAbsolutePath() + File.separatorChar + "patients.xml"), 
+				new File(dir.getAbsolutePath() + File.separatorChar + "isolates.xml"));
 	}
 	
 	private ExcelTable table = new ExcelTable("dd.MM.yyyy");
@@ -101,7 +104,7 @@ public class ImportMateibalsIsolates {
 		}
 	}
 	
-	public void run() {
+	public void run(File patientOutputFile, File isolateOutputFile) {
 		for (int r = 1; r < table.rowCount(); r++) {
 			Date drawnDate = 
 				MateibalsUtils.parseDate(df, getValue(r, "Drawn date"), MateibalsUtils.createDate(df, "01.01.2000"), r + 1, "Drawn date");
@@ -187,6 +190,13 @@ public class ImportMateibalsIsolates {
 				addViralIsolateTest(p, vi, MateibalsUtils.viEpidT, epid);
 			}
 		}
+		
+		for (Patient p : externalPatients) {
+			patients.put(p.getPatientId(), p);
+		}
+
+        IOUtils.exportPatientsXML(patients.values(), patientOutputFile.getAbsolutePath(), ConsoleLogger.getInstance());
+        IOUtils.exportNTXMLFromPatients(patients.values(), isolateOutputFile.getAbsolutePath(), ConsoleLogger.getInstance());
 	}
 	
 	private static void addViralIsolateTest(Patient p, ViralIsolate vi, Test test, String value) {
