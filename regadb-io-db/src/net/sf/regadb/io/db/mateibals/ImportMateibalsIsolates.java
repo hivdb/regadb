@@ -165,12 +165,6 @@ public class ImportMateibalsIsolates {
 			epid.add(getValue(r, "Epidem info"));
 			epid.add(getValue(r, "extra"));
 		}
-		
-		for (Map.Entry<String, String> e : sequencesInfo.entrySet()) {
-			//System.err.println( e.getValue());
-		}
-		
-		System.err.println(table.rowCount());
 	}
 	
 	private static ViralIsolate addViralIsolate(Patient p, String id, String sequence, Date date) {
