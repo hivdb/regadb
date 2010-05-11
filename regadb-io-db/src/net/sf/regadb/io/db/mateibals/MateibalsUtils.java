@@ -61,7 +61,8 @@ public class MateibalsUtils {
         
         String val = null;
         
-        value = value.replace(',', '.');
+        value = value.replace(",", "");
+        value = value.replace(".", "");
         
         if(Character.isDigit(value.charAt(0))) {
             value = "=" + value;

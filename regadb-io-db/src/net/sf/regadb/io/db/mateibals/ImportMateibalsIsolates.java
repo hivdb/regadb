@@ -17,6 +17,7 @@ import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportMateibalsIsolates {
@@ -125,6 +126,18 @@ public class ImportMateibalsIsolates {
 					Utils.setBirthDate(p, birthDate);
 					Utils.setPatientAttributeValue(p, MateibalsUtils.nameA, name);
 					externalPatients.add(p);
+				}
+				
+				String vl = MateibalsUtils.parseViralLoad(r, getValue(r, "VL"));
+				if (vl != null) {
+					MateibalsUtils.addTestResult(p, StandardObjects.getGenericHiv1ViralLoadTest(), vl, drawnDate);
+				}
+				
+				try {
+					int cd4 = Integer.parseInt(getValue(r, "CD4"));
+					MateibalsUtils.addTestResult(p, StandardObjects.getGenericCD4Test(), cd4+"", drawnDate);
+				} catch(Exception e) {
+					System.err.println("Invalid CD4 row=" + r + " value=" + getValue(r, "CD4"));
 				}
 			}
 			
