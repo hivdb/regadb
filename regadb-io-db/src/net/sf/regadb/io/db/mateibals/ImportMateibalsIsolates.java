@@ -15,8 +15,10 @@ import java.util.Set;
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
@@ -108,6 +110,8 @@ public class ImportMateibalsIsolates {
 			
 			String name = getValue(r, "Patient name");
 			
+			String isolateId = fixIsolateName(getValue(r, "Registration No"));
+			
 			Patient p = findPatientInClinicalDB(name, birthDate);
 			
 			if (p == null) {
@@ -146,13 +150,20 @@ public class ImportMateibalsIsolates {
 			MateibalsUtils.handleANV(p, MateibalsUtils.countyA, getValue(r, "County"));
 			MateibalsUtils.handleANV(p, MateibalsUtils.residenceA, getValue(r, "Residence"));
 			
-			epid.add(getValue(r, "Epidem info"));
-			epid.add(getValue(r, "extra"));
+			String seqInfo = sequencesInfo.get(isolateId);
+			if (seqInfo == null)
+				seqInfo = "";
 			
-			if (sequences.get(fixIsolateName(getValue(r, "Registration No"))) == null) {
-				//TODO
+			String sequence = sequences.get(isolateId);
+			
+			if (sequence != null) {
+				addViralIsolate(p, isolateId + seqInfo, sequence, drawnDate);
+			} else {
 				//System.err.println("no seq:" + getValue(r, "Registration No"));
 			}
+			
+			epid.add(getValue(r, "Epidem info"));
+			epid.add(getValue(r, "extra"));
 		}
 		
 		for (Map.Entry<String, String> e : sequencesInfo.entrySet()) {
@@ -160,6 +171,23 @@ public class ImportMateibalsIsolates {
 		}
 		
 		System.err.println(table.rowCount());
+	}
+	
+	private static ViralIsolate addViralIsolate(Patient p, String id, String sequence, Date date) {
+		id = id.trim();
+		sequence = sequence.trim();
+		
+        ViralIsolate vi = p.createViralIsolate();
+        vi.setSampleDate(date);
+        vi.setSampleId(id);
+        
+        NtSequence ntseq = new NtSequence();
+        ntseq.setLabel("Sequence 1");
+        ntseq.setNucleotides(Utils.clearNucleotides(sequence));
+        
+        vi.getNtSequences().add(ntseq);
+        
+        return vi;
 	}
 
 	public Patient findExternalPatient(String name, Date birthDate) {
