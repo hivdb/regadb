@@ -36,7 +36,8 @@ public class Utils {
             ArrayList<Test> toRemove = new ArrayList<Test>();
             for(Test resTest : resistanceTests)
             {
-                if(!resTest.getTestType().getDescription().equals(StandardObjects.getGssDescription()))
+                if(!(resTest.getTestType().getDescription().equals(StandardObjects.getGssDescription())
+                		|| resTest.getTestType().getDescription().equals(StandardObjects.getTDRDescription())))
                 {
                     toRemove.add(resTest);
                 }
