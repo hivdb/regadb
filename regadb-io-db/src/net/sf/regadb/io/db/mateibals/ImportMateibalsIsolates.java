@@ -167,12 +167,12 @@ public class ImportMateibalsIsolates {
 			}
 			
 			String drawnDateColor = table.getCellHexColor(r, colNameMappings.get("Drawn date"));
-			if (drawnDateColor.equals("CCCC:FFFF:FFFF") && vi != null) {
+			if (drawnDateColor != null && drawnDateColor.equals("CCCC:FFFF:FFFF") && vi != null) {
 				addViralIsolateTest(p, vi, MateibalsUtils.viCommentT, "Sample date could be earlier");
 			}
 			
 			String setNo = getValue(r, "Set no");
-			if (!setNo.equals("")) {
+			if (!setNo.equals("") && vi != null) {
 				addViralIsolateTest(p, vi, MateibalsUtils.viSetNoT, setNo);
 			}
 			
