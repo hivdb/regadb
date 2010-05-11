@@ -109,7 +109,7 @@ public class ImportClinicalDb {
 					Integer.parseInt(value);
 					MateibalsUtils.addTestResult(patient, StandardObjects.getGenericCD4Test(), value, date);
 				} catch(Exception e) {
-					System.err.println(value);
+					System.err.println("Invalid CD4 row=" + r + " value=" + value);
 				}
 			} else if (analysis.toLowerCase().startsWith("hiv")) {
 				Test t = getVLTest(analysis);
