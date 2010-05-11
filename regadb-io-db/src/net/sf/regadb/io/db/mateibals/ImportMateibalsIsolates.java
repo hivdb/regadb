@@ -15,6 +15,8 @@ import java.util.Set;
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.util.xls.ExcelTable;
 
 public class ImportMateibalsIsolates {
@@ -109,8 +111,21 @@ public class ImportMateibalsIsolates {
 			Patient p = findPatientInClinicalDB(name, birthDate);
 			
 			if (p == null) {
-				String bd = (birthDate !=null) ? df.format(birthDate) : "";
-				System.err.println("Cannot find patient :" + name + " " +  bd + " >" + sequencesInfo.get(fixIsolateName(getValue(r, "Registration No"))));
+				p = findExternalPatient(name, birthDate);
+				if (p == null) {
+					String bd = (birthDate !=null) ? df.format(birthDate) : "";
+					System.err.println("cannot find patient :" + name.toLowerCase() + " " +  bd + " >" + sequencesInfo.get(fixIsolateName(getValue(r, "Registration No"))));
+					
+					p = new Patient();
+					String id = name.replace(' ', '_');
+					if (birthDate != null) {
+						id += "_" + df.format(birthDate);
+					}
+					p.setPatientId(id);
+					Utils.setBirthDate(p, birthDate);
+					Utils.setPatientAttributeValue(p, MateibalsUtils.nameA, name);
+					externalPatients.add(p);
+				}
 			}
 			
 			residence.add(getValue(r, "Residence"));
@@ -136,6 +151,22 @@ public class ImportMateibalsIsolates {
 		System.err.println(table.rowCount());
 	}
 
+	public Patient findExternalPatient(String name, Date birthDate) {
+		for (Patient p : externalPatients) {
+			if ((birthDate != null && p.getBirthDate() != null && df.format(p.getBirthDate()).equals(df.format(birthDate)))
+					|| (birthDate == null && p.getBirthDate() == null)) {
+				for (PatientAttributeValue pav : p.getPatientAttributeValues()) {
+					if  (pav.getAttribute().getName().equals(MateibalsUtils.nameA.getName())) {
+						if (pav.getValue().toLowerCase().equals(name.toLowerCase())) 
+							return p;
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public Patient findPatientInClinicalDB(String name, Date birthDate) {
 		for (Map.Entry<String, Patient> e : patients.entrySet()) {
 			Patient p = e.getValue();
