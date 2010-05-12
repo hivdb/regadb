@@ -224,6 +224,7 @@ public class ImportMateibalsIsolates {
 	private static void addViralIsolateTest(Patient p, ViralIsolate vi, Test test, String value) {
 		if (!value.equals("")) {
 			TestResult tr = new TestResult();
+			tr.setTestDate(new Date());
 			tr.setTest(test);
 			tr.setData(value.getBytes());
 			tr.setViralIsolate(vi);
