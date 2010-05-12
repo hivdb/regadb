@@ -7,12 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
 
 import net.sf.regadb.analysis.functions.FastaHelper;
 import net.sf.regadb.analysis.functions.FastaRead;
@@ -27,6 +24,9 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.xls.ExcelTable;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 
 public class ImportMateibalsIsolates {
 	public static void main(String [] args) {
@@ -185,8 +185,8 @@ public class ImportMateibalsIsolates {
 				System.err.println("no seq:" + getValue(r, "Registration No"));
 			}
 			
-			String drawnDateColor = table.getCellHexColor(r, colNameMappings.get("Drawn date"));
-			if (drawnDateColor != null && drawnDateColor.equals("CCCC:FFFF:FFFF") && vi != null) {
+			HSSFCellStyle drawnDateStyle = table.getCellStyle(r, colNameMappings.get("Drawn date"));
+			if (drawnDateStyle != null && drawnDateStyle.getFillForegroundColor() == 41 &&  vi != null) {
 				addViralIsolateTest(p, vi, MateibalsUtils.viCommentT, "Sample date could be earlier");
 			}
 			
