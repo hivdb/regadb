@@ -1,6 +1,5 @@
 package net.sf.regadb.util.xls;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,13 +9,12 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.IndexedColors;
 
 
 /**
@@ -139,14 +137,14 @@ public class ExcelTable {
 			setCell(row, col, (String) value);
 	}
 	
-	public String getCellHexColor(int row, int col) {
+	public HSSFCellStyle getCellStyle(int row, int col) {
 		HSSFCell cell = sheet.getRow(row).getCell(col);
 		
 		if (cell == null) {
 			return null;
 		}
 		
-		return workBook.getCustomPalette().getColor(cell.getCellStyle().getFillBackgroundColor()).getHexString();
+		return cell.getCellStyle();
 	}
 
 	public int columnCount() {
