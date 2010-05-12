@@ -170,6 +170,18 @@ public class ImportMateibalsIsolates {
 			MateibalsUtils.handleANV(p, MateibalsUtils.countyA, getValue(r, "County"));
 			MateibalsUtils.handleANV(p, MateibalsUtils.residenceA, getValue(r, "Residence"));
 			
+			String deceasedYear = getValue(r, "Deceased");
+			if (!deceasedYear.equals("")) {
+				try {
+					Date deceased = df.parse("01.01." + Integer.parseInt(deceasedYear));
+					Utils.setDeathDate(p, deceased);
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			
 			String seqInfo = sequencesInfo.get(isolateId);
 			if (seqInfo == null)
 				seqInfo = "";
