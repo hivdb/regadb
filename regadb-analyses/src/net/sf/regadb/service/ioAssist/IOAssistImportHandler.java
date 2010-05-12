@@ -85,6 +85,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         	System.err.println(genome.getOrganismDescription());
         }
         
+        object.setGenome(genome);
+        
         for(final NtSequence ntseq : object.getNtSequences()) {
             align(ntseq, genome);
 
@@ -118,6 +120,8 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
                 ntseq.getAaSequences().add(aaseq);
             }
         }
+        
+        ntseq.setAligned(true);
     }
     
     private void calculateRI(ViralIsolate object, Genome genome) {
