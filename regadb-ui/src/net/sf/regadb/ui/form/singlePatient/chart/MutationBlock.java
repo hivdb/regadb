@@ -24,6 +24,6 @@ public class MutationBlock implements Comparable<MutationBlock>
 	}
 
 	public int compareTo(MutationBlock o) {
-		return proteinName.compareTo(((MutationBlock)o).proteinName);
+		return proteinName.compareTo(o.proteinName);
 	}
 }

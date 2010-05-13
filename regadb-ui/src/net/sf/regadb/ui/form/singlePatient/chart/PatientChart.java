@@ -289,7 +289,7 @@ public class PatientChart
 	{
 		width_ = IMAGE_WIDTH;
 		height_ = CHART_HEIGHT + BORDER_CHART_DRUGS + DRUG_HEIGHT * drugList.size() + BORDER_DRUGS_MUTATIONS
-				+ ((MUTATION_HEIGHT + 1) * maxMutations);
+				+ ((MUTATION_HEIGHT + 10) * maxMutations);
 
 		BufferedImage imBig = new BufferedImage(width_, height_, BufferedImage.TYPE_INT_ARGB);
 
@@ -357,7 +357,6 @@ public class PatientChart
 			vg.setStroke(new BasicStroke());
 
 			List<MutationBlock> mutationBlocks = new ArrayList<MutationBlock>();
-			Collections.sort(mutationBlocks);
 			
 			for (NtSequence s : vi.getNtSequences()) {
 				for (AaSequence a : s.getAaSequences()) {
@@ -365,6 +364,8 @@ public class PatientChart
 					mutationBlocks.add(mb);
 				}
 			}
+			
+			Collections.sort(mutationBlocks);
 			
 			for (MutationBlock mb : mutationBlocks) {
 					if (mb.mutations.size() == 0)
