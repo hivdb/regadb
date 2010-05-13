@@ -376,7 +376,7 @@ public class ViralIsolateMainForm extends WContainerWidget
                 if(f.text()!=null && !f.text().trim().equals("")) {
                 	if (tr == null)
                 		tr = createTestResult(t.getTest(config.getTests().get(i).description));
-                    tr.setData(f.text().getBytes());
+                    tr.setValue(f.text());
                 }
                 else if(tr != null){
                 	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);
