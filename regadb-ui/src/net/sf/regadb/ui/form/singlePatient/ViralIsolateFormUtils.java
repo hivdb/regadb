@@ -51,6 +51,10 @@ public class ViralIsolateFormUtils {
 		proteinAbbrevDrugClass.put("IN", l);
 	}
 	
+	public static Collection<String> getRelevantDrugClasses(String proteinAbbreviation) {
+		return proteinAbbrevDrugClass.get(proteinAbbreviation);
+	}
+	
 	public static Collection<String> getRelevantDrugClassIds(Collection<String> proteinAbbreviations){
 		List<String> drugClasses = new ArrayList<String>();
         for(String proteinAbbreviation : proteinAbbreviations){

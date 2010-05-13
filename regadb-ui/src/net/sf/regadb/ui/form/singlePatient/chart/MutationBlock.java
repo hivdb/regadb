@@ -2,7 +2,7 @@ package net.sf.regadb.ui.form.singlePatient.chart;
 
 import java.util.ArrayList;
 
-public class MutationBlock
+public class MutationBlock implements Comparable<MutationBlock>
 {
 	String proteinName;
 
@@ -21,5 +21,9 @@ public class MutationBlock
 	int numLines()
 	{
 		return Math.max(2, 1 + mutations.size());
+	}
+
+	public int compareTo(MutationBlock o) {
+		return proteinName.compareTo(((MutationBlock)o).proteinName);
 	}
 }
