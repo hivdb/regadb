@@ -90,11 +90,6 @@ public class SelectionStatusList implements SelectionList, Serializable {
                 }
                 else { // selection instanceof OutputSelection
                     selectedColumns.add(varName);
-                    
-                    if(selection instanceof ExporterSelection){
-                    	ExporterSelection xsel = (ExporterSelection)selection;
-                    	selectedColumns.addAll(xsel.getExporter().getSelectedColumns());
-                    }
                 }
             }
         }
