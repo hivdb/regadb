@@ -426,8 +426,9 @@ public class QueryToolRunnable implements Runnable {
 		for (Selection  sel : list.getSelections()) {
 			Selection clone = null;
 			if (sel instanceof TableSelection) {
+				clone = new TableSelection((OutputVariable) sel.getObjectSpec(), true);
+				
 				if (sel.isSelected()) {
-					clone = new TableSelection((OutputVariable) sel.getObjectSpec(), sel.isSelected());
 					List<Selection> subSelections = new ArrayList<Selection>();
 					List<Selection> origSubSelections = new ArrayList<Selection>();
 					subSelections.addAll(clone.getSubSelections());
@@ -440,10 +441,13 @@ public class QueryToolRunnable implements Runnable {
 						subSelections.get(i).setSelected(origSubSelections.get(i).isSelected());
 					}
 					
-					// select the clone if one of the children is selected
-					if (selected) {
-						clone.setSelected(true);
-					}
+//					// select the clone if one of the children is selected
+//					if (selected) {
+//						clone.setSelected(true);
+//					}
+				}
+				else{
+					clone.getSubSelections().clear();
 				}
 			}
 			else if (sel instanceof OutputSelection || sel instanceof ExporterSelection) {
