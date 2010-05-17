@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,10 +33,12 @@ import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
-import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
@@ -50,8 +53,9 @@ import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.compare.DrugGenericComparator;
 import net.sf.regadb.db.compare.TestResultComparator;
+import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.service.wts.DescribeMutations;
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
 
 public class PatientChart
 {
@@ -113,7 +117,6 @@ public class PatientChart
 
 	private int height_;
     
-    private HashMap<String, String> positionMap_ = null;
     private String positionAlgorithm_ = null;
     
     private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -134,17 +137,47 @@ public class PatientChart
 	public MutationBlock getMutationBlock(AaSequence a)
 	{
 		MutationBlock mb = new MutationBlock(a.getProtein().getAbbreviation(), a.getFirstAaPos(), a.getLastAaPos());
-
-		for (AaMutInsertion m : AaMutInsertion.getSortedMutInsertionList(a))
-		{
-			if (positionMap_ == null || positionMap_.containsKey(a.getProtein().getAbbreviation().toLowerCase()+m.getPosition())) {
-			if (m.isInsertion())
-				mb.mutations.add(m.getPosition() + "i" + m.getAaMutationString());
-			else if (!m.isSilent())
-			    mb.mutations.add(m.getPosition() + m.getAaMutationString());
-            }
+		
+		if (positionAlgorithm_ == null ) {
+			for (AaMutInsertion m : AaMutInsertion.getSortedMutInsertionList(a)) {
+				if (m.isInsertion())
+					mb.mutations.add(m.getPosition() + "i" + m.getAaMutationString());
+				else if (!m.isSilent())
+				    mb.mutations.add(m.getPosition() + m.getAaMutationString());
+			}
+		} else {
+			Collection<String> classes = ViralIsolateFormUtils.getRelevantDrugClasses(a.getProtein().getAbbreviation());
+			final Set<String> mutations = new TreeSet<String>();
+			
+			for (TestResult tr : a.getNtSequence().getViralIsolate()
+					.getTestResults()) {
+				if (tr.getTest().getDescription().equals(positionAlgorithm_)
+						&& tr.getDrugGeneric() != null
+						&& classes.contains(tr.getDrugGeneric().getDrugClass()
+								.getClassId())) {
+					ResistanceInterpretationParser parser = new ResistanceInterpretationParser() {
+						public void completeScore(String drug, int level,
+								double gss, String description, char sir,
+								ArrayList<String> mutationsP, String remarks) {
+							mutations.addAll(mutationsP);
+						}
+					};
+					try {
+						parser.parse(new InputSource(new ByteArrayInputStream(
+								tr.getData())));
+					} catch (SAXException e) {
+						System.err.println("Parsing of resistance test failed");
+					} catch (IOException e) {
+						System.err.println("Parsing of resistance test failed");
+					}
+				}
+			}
+			
+			for (String mut : mutations) {
+				mb.mutations.add(mut);
+			}
 		}
-
+		
 		return mb;
 	}
 
@@ -180,7 +213,6 @@ public class PatientChart
             else if("chart.mutation".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
             {
                 positionAlgorithm_ = ua.getValue();
-                positionMap_ = createPositionMap(ua.getData());
             }
         }
 
@@ -191,9 +223,12 @@ public class PatientChart
 			{
 				for (AaSequence a : s.getAaSequences())
 				{
-					int l = getMutationBlock(a).numLines();
-					if (l > maxMutations)
-						maxMutations = l;
+					MutationBlock mb = getMutationBlock(a);
+					if (mb.mutations.size() > 0) {
+						int l = mb.numLines() + 2;
+						if (l > maxMutations)
+							maxMutations = l;
+					}
 				}
 			}
 		}
@@ -212,30 +247,10 @@ public class PatientChart
         if (algorithm == null)
         	return;
         	
-        if(!algorithm.getDescription().equals(positionAlgorithm_) || positionMap_==null) {
+        if(!algorithm.getDescription().equals(positionAlgorithm_)) {
             positionAlgorithm_ = algorithm.getDescription();
-            positionMap_ = createPositionMap(DescribeMutations.describeMutations(((AnalysisData)algorithm.getAnalysis().getAnalysisDatas().toArray()[0]).getData()));
         }
-    }
-    
-    private HashMap<String, String> createPositionMap(byte [] data) {
-        if(data!=null) {
-            Table csv = new Table(new ByteArrayInputStream(data), false);
-            if("protein".equals(csv.valueAt(0, 0)) && "position".equals(csv.valueAt(1, 0))) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                for(int i = 1; i<csv.numRows(); i++) {
-                    map.put(csv.valueAt(0, i).toLowerCase()+csv.valueAt(1, i), null);
-                }
-                return map;
-            }
-            else {
-                return null;
-            }
-        }
-        else {
-            return null;
-        }
-    }
+    }    
 
     private List<TestResult> getSortedTestResults()
     {
@@ -255,7 +270,7 @@ public class PatientChart
 	{
 		width_ = IMAGE_WIDTH;
 		height_ = CHART_HEIGHT + BORDER_CHART_DRUGS + DRUG_HEIGHT * drugList.size() + BORDER_DRUGS_MUTATIONS
-				+ MUTATION_HEIGHT * maxMutations;
+				+ ((MUTATION_HEIGHT + 10) * maxMutations);
 
 		BufferedImage imBig = new BufferedImage(width_, height_, BufferedImage.TYPE_INT_ARGB);
 
@@ -322,11 +337,21 @@ public class PatientChart
 
 			vg.setStroke(new BasicStroke());
 
-			for (NtSequence s : vi.getNtSequences())
-			{
-				for (AaSequence a : s.getAaSequences())
-				{
+			List<MutationBlock> mutationBlocks = new ArrayList<MutationBlock>();
+			
+			for (NtSequence s : vi.getNtSequences()) {
+				for (AaSequence a : s.getAaSequences()) {
 					MutationBlock mb = getMutationBlock(a);
+					mutationBlocks.add(mb);
+				}
+			}
+			
+			Collections.sort(mutationBlocks);
+			
+			for (MutationBlock mb : mutationBlocks) {
+					if (mb.mutations.size() == 0)
+						continue;
+					
 					int lines = mb.numLines();
 
 					vg.setColor(Color.LIGHT_GRAY);
@@ -345,7 +370,6 @@ public class PatientChart
 					}
 
 					yStart += lines * MUTATION_HEIGHT;
-				}
 			}
 		}
 	}
