@@ -250,26 +250,7 @@ public class PatientChart
         if(!algorithm.getDescription().equals(positionAlgorithm_)) {
             positionAlgorithm_ = algorithm.getDescription();
         }
-    }
-    
-    private HashMap<String, String> createPositionMap(byte [] data) {
-        if(data!=null) {
-            Table csv = new Table(new ByteArrayInputStream(data), false);
-            if("protein".equals(csv.valueAt(0, 0)) && "position".equals(csv.valueAt(1, 0))) {
-                HashMap<String, String> map = new HashMap<String, String>();
-                for(int i = 1; i<csv.numRows(); i++) {
-                    map.put(csv.valueAt(0, i).toLowerCase()+csv.valueAt(1, i), null);
-                }
-                return map;
-            }
-            else {
-                return null;
-            }
-        }
-        else {
-            return null;
-        }
-    }
+    }    
 
     private List<TestResult> getSortedTestResults()
     {
