@@ -7,6 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import net.sf.regadb.io.importXML.ImportFromXML;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
@@ -16,26 +19,26 @@ public class IOAssist
 {
     public static void main(String [] args)
     {
-        if(args.length<2) {
-            System.err.println("IOAssist usage: IOAssist inputfile outputfile [proxyurl:proxyport] [--wtsUrl url]");
-            System.exit(0);
-        }
+    	Arguments as = new Arguments();
+    	PositionalArgument in = as.addPositionalArgument("inputfile", true);
+    	PositionalArgument out = as.addPositionalArgument("outputfile", true);
+    	ValueArgument proxy = as.addValueArgument("proxy", "host:url", false);
+    	ValueArgument wts = as.addValueArgument("wts", "url", false).setValue("http://regadb.med.kuleuven.be/wts/services/");
+    	
+    	if(!as.handle(args))
+    		return;
+        
+        
         System.err.println("IOAssist started");
-        if(args.length==3 && args[2].contains(":")) {
-            String proxyHost = args[2].split(":")[0];
-            String proxyPort = args[2].split(":")[1];
+        if(proxy.isSet() && proxy.getValue().contains(":")) {
+            String proxyHost = proxy.getValue().split(":")[0];
+            String proxyPort = proxy.getValue().split(":")[1];
             System.setProperty("http.proxyHost", proxyHost);
             System.setProperty("http.proxyPort", proxyPort);
         }
-        String wtsUrl = null;
-        for(int i = 0; i<args.length; i++) {
-            if(args[i].equals("--wtsUrl")) {
-                wtsUrl = args[i+1];
-                break;
-            }
-        }
+
         RegaDBSettings.createInstance();
-        run(new File(args[0]), new File(args[1]), wtsUrl);
+        run(new File(in.getValue()), new File(out.getValue()), wts.getValue());
     }
     
     public static void run(File inputFile, File outputFile, String wtsUrl) {
