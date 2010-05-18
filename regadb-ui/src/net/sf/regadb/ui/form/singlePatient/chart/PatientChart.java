@@ -258,7 +258,8 @@ public class PatientChart
         
         for (TestResult r : data.getTestResults())
         {
-            list.add(r);
+        	if(r.getTestDate() != null)
+        		list.add(r);
         }
         
         Collections.sort(list, new TestResultComparator());
