@@ -202,6 +202,23 @@ DatasetLine += ",";
 return DatasetLine;
 }
 
+public String getCsvContentLine(DrugClass DrugClassvar) throws IllegalAccessException {
+String DrugClassLine = "";
+if(DrugClassvar.getClassId()!=null) {
+DrugClassLine += DrugClassvar.getClassId().toString();
+}
+DrugClassLine += ",";
+if(DrugClassvar.getClassName()!=null) {
+DrugClassLine += DrugClassvar.getClassName().toString();
+}
+DrugClassLine += ",";
+if(DrugClassvar.getResistanceTableOrder()!=null) {
+DrugClassLine += DrugClassvar.getResistanceTableOrder().toString();
+}
+DrugClassLine += ",";
+return DrugClassLine;
+}
+
 public String getCsvContentLine(DrugCommercial DrugCommercialvar) throws IllegalAccessException {
 String DrugCommercialLine = "";
 if(DrugCommercialvar.getName()!=null) {
@@ -590,6 +607,14 @@ DatasetLine += "Dataset.revision,";
 return DatasetLine;
 }
 
+public String getCsvHeaderLineDrugClass(){
+String DrugClassLine = "";
+DrugClassLine += "DrugClass.classId,";
+DrugClassLine += "DrugClass.className,";
+DrugClassLine += "DrugClass.resistanceTableOrder,";
+return DrugClassLine;
+}
+
 public String getCsvHeaderLineDrugCommercial(){
 String DrugCommercialLine = "";
 DrugCommercialLine += "DrugCommercial.name,";
@@ -861,6 +886,14 @@ else {
  throw new IllegalAccessException("DrugGeneric");
 }
 }
+else if(object instanceof DrugClass) {
+if(DatasetAccessSolver.getInstance().canAccessDrugClass((DrugClass)object, datasets, accessiblePatients)){
+return getCsvContentLine((DrugClass)object);
+}
+else {
+ throw new IllegalAccessException("DrugClass");
+}
+}
 else if(object instanceof OpenReadingFrame) {
 if(DatasetAccessSolver.getInstance().canAccessOpenReadingFrame((OpenReadingFrame)object, datasets, accessiblePatients)){
 return getCsvContentLine((OpenReadingFrame)object);
@@ -1046,6 +1079,9 @@ return getCsvHeaderLineGenome();
 }
 else if(object instanceof DrugGeneric) {
 return getCsvHeaderLineDrugGeneric();
+}
+else if(object instanceof DrugClass) {
+return getCsvHeaderLineDrugClass();
 }
 else if(object instanceof OpenReadingFrame) {
 return getCsvHeaderLineOpenReadingFrame();
