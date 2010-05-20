@@ -22,23 +22,18 @@ public class IOAssist
     	Arguments as = new Arguments();
     	PositionalArgument in = as.addPositionalArgument("inputfile", true);
     	PositionalArgument out = as.addPositionalArgument("outputfile", true);
-    	ValueArgument proxy = as.addValueArgument("proxy", "host:url", false);
-    	ValueArgument wts = as.addValueArgument("wts", "url", false).setValue("http://regadb.med.kuleuven.be/wts/services/");
+    	ValueArgument conf = as.addValueArgument("conf-dir", "configuration directory", false);
     	
     	if(!as.handle(args))
     		return;
-        
-        
-        System.err.println("IOAssist started");
-        if(proxy.isSet() && proxy.getValue().contains(":")) {
-            String proxyHost = proxy.getValue().split(":")[0];
-            String proxyPort = proxy.getValue().split(":")[1];
-            System.setProperty("http.proxyHost", proxyHost);
-            System.setProperty("http.proxyPort", proxyPort);
-        }
 
-        RegaDBSettings.createInstance();
-        run(new File(in.getValue()), new File(out.getValue()), wts.getValue());
+        if(conf.isSet())
+        	RegaDBSettings.createInstance(conf.getValue());
+        else
+        	RegaDBSettings.createInstance();
+
+        System.err.println("IOAssist started");
+        run(new File(in.getValue()), new File(out.getValue()), null);
     }
     
     public static void run(File inputFile, File outputFile, String wtsUrl) {
