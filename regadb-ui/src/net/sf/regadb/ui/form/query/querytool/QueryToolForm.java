@@ -3,6 +3,8 @@ package net.sf.regadb.ui.form.query.querytool;
 
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.Transaction;
@@ -25,6 +27,7 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
 public class QueryToolForm extends FormWidget implements QueryToolApp{
+	public Map<String, GSSExporter> exporters = new HashMap<String, GSSExporter>();
 
 	private WTabbedPane tabs;
 	private QueryEditorTreeContainer queryTreeTab;
@@ -88,7 +91,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         tabs.addTab(tr("form.query.querytool.group.info"), infoTab);
         tabs.setStatusBar(statusbar);
         
-		runGroup_ = new RunGroupBox(queryTreeTab.getQueryEditor(), this);
+		runGroup_ = new RunGroupBox(this, queryTreeTab.getQueryEditor(), this);
         
 		addControlButtons();
 		
@@ -192,5 +195,14 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 		} catch (IOException e) {}
     	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(definition);
 		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
+	}
+	
+	public QueryDefinition getQueryDefinition() {
+		return definition;
+	}
+	
+	public void addReportTab(ReportContainer report) {
+		tabs.addTab(tr("form.query.querytool.group.report"), report);
+		tabs.showTab(report);
 	}
 }

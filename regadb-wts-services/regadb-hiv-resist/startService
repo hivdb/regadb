@@ -12,7 +12,7 @@ interpretation_file="$1/outputs/interpretation"
 
 echo "Starting HIV Drug Resistance Interpretation..." >> $monitor_file
 
-/soft/wts/services/regadb-hiv-resist/interpretservice $viral_isolate_file $asi_rules_file >> $interpretation_file 2>> $monitor_file 
+LD_LIBRARY_PATH=/soft/lib:$LD_LIBRARY_PATH /soft/bin/interpretservice $viral_isolate_file $asi_rules_file >> $interpretation_file 2>> $monitor_file 
 
 echo "Calculation ended" >> $monitor_file
 

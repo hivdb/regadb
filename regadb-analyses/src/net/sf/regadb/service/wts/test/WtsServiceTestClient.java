@@ -63,26 +63,6 @@ public class WtsServiceTestClient extends TestCase{
         testClient_.testService("regadb-blast", inputs, outputs);
     }
     
-    public void testHivType() throws Exception{
-        Map<String,byte[]> inputs = new HashMap<String,byte[]>();
-        inputs.put("nt_sequence", getHiv1bRefSeq().getBytes());
-        
-        Map<String,IOutputValidator> outputs = new HashMap<String,IOutputValidator>();
-        outputs.put("type", new StringOutputValidator("HIV 1"));
-        
-        testClient_.testService("regadb-hiv-type", inputs, outputs);
-    }
-
-    public void testHivSubtype() throws Exception{
-        Map<String,byte[]> inputs = new HashMap<String,byte[]>();
-        inputs.put("nt_sequence", getHiv1bRefSeq().getBytes());
-        
-        Map<String,IOutputValidator> outputs = new HashMap<String,IOutputValidator>();
-        outputs.put("subtype", new StringOutputValidator("HIV-1 Subtype B"));
-        
-        testClient_.testService("regadb-hiv-subtype", inputs, outputs);
-    }
-    
     public void testHiv1Align() throws Exception{
         Map<String,byte[]> inputs = new HashMap<String,byte[]>();
         inputs.put("nt_sequences", getHiv1MutSeq().getBytes());

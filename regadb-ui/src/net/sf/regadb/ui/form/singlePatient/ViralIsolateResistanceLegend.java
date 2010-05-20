@@ -1,6 +1,8 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.awt.Color;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
@@ -12,6 +14,8 @@ import eu.webtoolkit.jwt.WText;
 
 public class ViralIsolateResistanceLegend extends WContainerWidget {
 	private WTable table;
+	private Set<String> entries = new HashSet<String>();
+	
 	public ViralIsolateResistanceLegend(WContainerWidget parent) {
 		super(parent);
 		
@@ -44,6 +48,9 @@ public class ViralIsolateResistanceLegend extends WContainerWidget {
 		row++;
 		
 		for (ScoreInfo si : config.getScoreInfos()) {
+			if(isDuplicate(si))
+				continue;
+			
 			WText t = new WText(table.getElementAt(row, 0));
 			table.getElementAt(row, 0).setStyleClass("item");
 	        t.setText(si.getStringRepresentation());
@@ -60,5 +67,9 @@ public class ViralIsolateResistanceLegend extends WContainerWidget {
 		table.getElementAt(row, 0).addWidget(new WText("*"));
 		table.getElementAt(row, 0).setStyleClass("item");
 		table.getElementAt(row, 1).addWidget(new WText("Assumptions"));
+	}
+	
+	private boolean isDuplicate(ScoreInfo si){
+		return !entries.add(si.getStringRepresentation() +":"+ si.getDescription());
 	}
 }

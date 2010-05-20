@@ -29,8 +29,10 @@ public class QueryDefinition implements java.io.Serializable {
 
     private Set<QueryDefinitionRun> queryDefinitionRuns = new HashSet<QueryDefinitionRun>(
             0);
+    
+    private byte[] postProcessingScript;
 
-    public QueryDefinition() {
+	public QueryDefinition() {
     }
 
     public QueryDefinition(int queryTypeIi) {
@@ -41,7 +43,8 @@ public class QueryDefinition implements java.io.Serializable {
             String description, String query, int queryTypeIi,
             Set<CombinedQueryDefinition> combinedQueryDefinitions,
             Set<QueryDefinitionParameter> queryDefinitionParameters,
-            Set<QueryDefinitionRun> queryDefinitionRuns) {
+            Set<QueryDefinitionRun> queryDefinitionRuns,
+            byte[] postProcessingScript) {
         this.settingsUser = settingsUser;
         this.name = name;
         this.description = description;
@@ -50,6 +53,7 @@ public class QueryDefinition implements java.io.Serializable {
         this.combinedQueryDefinitions = combinedQueryDefinitions;
         this.queryDefinitionParameters = queryDefinitionParameters;
         this.queryDefinitionRuns = queryDefinitionRuns;
+        this.postProcessingScript = postProcessingScript;
     }
 
     public Integer getQueryDefinitionIi() {
@@ -127,4 +131,11 @@ public class QueryDefinition implements java.io.Serializable {
         this.queryDefinitionRuns = queryDefinitionRuns;
     }
 
+    public byte[] getPostProcessingScript() {
+		return postProcessingScript;
+	}
+
+	public void setPostProcessingScript(byte[] postProcessingScript) {
+		this.postProcessingScript = postProcessingScript;
+	}
 }

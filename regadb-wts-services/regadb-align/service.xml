@@ -1,37 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <service>
-	<description>
-	RegaDB Alignment tool
-	</description>
-	<version>
-	1.0
-	</version>
+	<description>RegaDB Alignment tool</description>
+	<version>2.0</version>
 <inputs>
 	<input>
-		<name>
-		nt_sequences
-		</name>
-		<description>
-		A file containing multiple nucleotide sequences.
-		</description>
+		<name>organism_name</name>
+		<description>organism name</description>
 	</input>
         <input>
-                <name>
-               	region 
-                </name>
-                <description>
-        	A file containing the region what should be aligned (PRO/RT)        
-		</description>
+            <name>nt_sequence</name>
+            <description>fasta</description>
         </input>
 </inputs>
 <outputs>
 	<output>
-		<name>
-		aa_sequences
-		</name>
-		<description>
-		A file containing the amino acid sequences
-		</description>
+		<name>codon_mutations</name>
+		<description>A file containing the codon mutations per region.</description>
 	</output>
 </outputs>
 </service>

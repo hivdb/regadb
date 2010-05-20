@@ -44,7 +44,7 @@ public class StringFilter extends WContainerWidget implements IFilter
 	
 	public String getStringValue()
 	{
-		return tf_.getText();
+		return tf_.getText().trim();
 	}
 
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex) {

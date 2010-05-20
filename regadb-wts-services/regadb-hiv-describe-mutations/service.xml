@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	RegaDB ASI Mutation Description Tool 
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		asi_rules
+		</name>
+		<description>
+		An XML file describing the drug ranking rules in ASI format	
+		</description>
+	</input>
+</inputs>
+<outputs>
+	<output>
+		<name>
+		description	
+		</name>
+		<description>
+		A csv file describing the mutations for a specific ASI XML file (protein,position, mutations)	
+		</description>
+	</output>
+</outputs>
+</service>

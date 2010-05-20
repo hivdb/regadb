@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "$1" == "id" ]
+then
+  git log | head -n 5 | grep 'commit ' | head -n 1 | sed -e 's/commit //'
+fi
+
+if [ "$1" == "author" ]
+then
+  git log | head -n 5 | grep 'Author:' | head -n 1 | sed -e 's/Author:[ ]*//'
+fi
+
+if [ "$1" == "time" ]
+then
+  git log | head -n 5 | grep 'Date:' | head -n 1 | sed -e 's/Date:[ ]*//'
+fi
+

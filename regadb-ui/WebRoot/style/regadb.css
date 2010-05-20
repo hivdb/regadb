@@ -331,6 +331,12 @@ table.date-field td {
 	color: blue;
 }
 
+*.text-link {
+	cursor: pointer;
+	color: blue;
+	text-decoration: underline;
+}
+
 /* login form */
 
 .create-account {

@@ -147,7 +147,10 @@ public class FastaExporter {
 			return entries;
 		} else if (mode == Mode.Submitted) {
 			for (NtSequence ntseq : viralIsolate.getNtSequences()) {
-				os.write(">" + getFastaId(viralIsolate, datasets) + "_" + ntseq.getLabel() + "\n");
+				os.write(">" + getFastaId(viralIsolate, datasets));
+				if (viralIsolate.getNtSequences().size() > 1)
+					os.write("_" + ntseq.getLabel());
+				os.write("\n");
 				os.write(ntseq.getNucleotides()  + "\n");
 				entries++;
 			}

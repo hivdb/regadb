@@ -1,5 +1,7 @@
 package net.sf.regadb.util.settings;
 
+import net.sf.regadb.util.settings.ProxyConfig.ProxyServer;
+
 
 public class ConfigTest {
 
@@ -9,7 +11,7 @@ public class ConfigTest {
 		
 		set.getInstituteConfig().getSelectPatientFormConfig().setAttributeFilter(new AttributeConfig("Gender", "Personal"));
 		
-		set.getProxyConfig().getProxyList().add(new ProxyConfig.ProxyServer("www-proxy","3128","user1","pass1"));
+		set.getProxyConfig().getProxyList().add(new ProxyConfig.ProxyServer("www-proxy","3128","user1","pass1",ProxyServer.Type.HTTP));
 		
 		WivConfig wiv = new WivConfig();
 		wiv.setArcPatientFilter(new AttributeConfig("FOLLOW-UP","WIV","1: ARC of the same institution as ARL"));

@@ -8,6 +8,7 @@ import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.WtsClient;
 
 public class ViralIsolateAnalysisHelper
@@ -24,7 +25,8 @@ public class ViralIsolateAnalysisHelper
     
     private static byte[] runInternal(File resultFile, ViralIsolate vi_, Test test_, int waitDelay_)
     {
-        WtsClient client = new WtsClient(test_.getAnalysis().getUrl());
+        WtsClient client = new WtsClient(
+        		RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(test_.getAnalysis().getUrl()));
         
         byte[] result = null;
         String input = "";

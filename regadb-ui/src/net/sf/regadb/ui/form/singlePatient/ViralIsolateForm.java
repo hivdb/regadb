@@ -29,6 +29,7 @@ public class ViralIsolateForm extends FormWidget
 	private ViralIsolateMainForm _mainForm;
 	private ViralIsolateProteinForm proteinForm_;
     private ViralIsolateResistanceForm resistanceForm_;
+    private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
     public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
@@ -70,7 +71,12 @@ public class ViralIsolateForm extends FormWidget
 				resistanceForm_ = new ViralIsolateResistanceForm(this);
 				tabs.addTab(tr("form.viralIsolate.editView.tab.resistance"), resistanceForm_);
 			}
-	        reportForm_ = new ViralIsolateReportForm(this);
+			TestType tdrTestType = StandardObjects.getTestType(StandardObjects.getTDRDescription(), getViralIsolate().getGenome());
+			if (tdrTestType != null) {
+				transmittedResistanceForm_ = new ViralIsolateTransmittedResistanceForm(this);
+				tabs.addTab(tr("form.viralIsolate.editView.tab.transmittedResistance"), transmittedResistanceForm_);
+			}
+			reportForm_ = new ViralIsolateReportForm(this);
 			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
         }
         
@@ -100,46 +106,46 @@ public class ViralIsolateForm extends FormWidget
 	
 	@Override
 	public void saveData()
-	{                
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        
-        _mainForm.confirmSequences();
-        
-        Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
-        if(genome == null)
-            return;
-        
-        _mainForm.saveData(t);
-        
-        //remove resistance tests
-        Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
-		while (i.hasNext()) {
-			TestResult test = i.next();
-			if (test.getTest().getTestType().getDescription().equals(
-					StandardObjects.getGssDescription())) {
-				i.remove();
-				t.delete(test);
-			}
-		}
-        
-		viralIsolate_.setGenome(t.getGenome(genome.getOrganismName()));
-		
+	{
+		Transaction t = RegaDBMain.getApp().createTransaction();
+
+		_mainForm.confirmSequences();
+
+		Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
+		if(genome == null)
+			return;
+
 		if (getInteractionState()==InteractionState.Adding) {
 			Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 			t.attach(p);
 			p.addViralIsolate(viralIsolate_);
 		}
-		
-        update(viralIsolate_, t);
-        t.commit();
-        
-        _mainForm.startAnalysis(genome);
-             
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(viralIsolate_);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
-        redirectToView(
-        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem(),
-        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
+
+		_mainForm.saveData(t);
+
+		//remove resistance tests
+		Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
+		while (i.hasNext()) {
+			TestResult test = i.next();
+			String description = test.getTest().getTestType().getDescription();
+			if (description.equals(StandardObjects.getGssDescription()) ||
+					description.equals(StandardObjects.getTDRDescription())) {
+				i.remove();
+				t.delete(test);
+			}
+		}
+
+		viralIsolate_.setGenome(t.getGenome(genome.getOrganismName()));
+
+		t.commit();
+
+		_mainForm.startAnalysis(genome);
+
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(viralIsolate_);
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
+		redirectToView(
+				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem(),
+				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem());
 	}
 	
 	private Genome blast(NtSequence ntseq){
