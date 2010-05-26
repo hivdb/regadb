@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugClass;
@@ -35,7 +37,16 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 public class GenerateReport 
 {
 	private static class RIResult{
-		public String gss, mutations, remarks, sir, level, description;
+		public String gss="",
+			mutations="",
+			remarks="",
+			sir="",
+			level="",
+			description="";
+		
+		public RIResult(){
+			
+		}
 		
 		public RIResult(String xml){
 			gss = getValue(xml,"gss");
@@ -51,6 +62,8 @@ public class GenerateReport
 			return v == null || v.equals("null") ? "" : v; 
 		}
 	}
+	
+	private static final RIResult emptyRIResult = new RIResult();
 	
 	private Map<String,Map<String,RIResult>> riresults = new HashMap<String,Map<String,RIResult>>();
 	
@@ -327,36 +340,46 @@ public class GenerateReport
     private String getRITable(String algorithm, Collection<String> drugs, String asiString){
     	asiString = asiString.replace("$ASI_ALGORITHM", algorithm);
     	
-    	SubString tableString = getSubString(asiString, "$BEGIN_TABLE", "$END_TABLE");
+    	final Pattern pattern = Pattern.compile("\\$ASI_[A-Z_]+1");
+    	Matcher matcher = pattern.matcher(asiString);
+    	String first;
+    	int bpos,epos;
+    	if(!matcher.find(0))
+    		return asiString;
+
+    	first = matcher.group();
+    	first = first.substring(0,first.length()-1);
     	
-    	StringBuilder result = new StringBuilder(asiString.substring(0,tableString.bpos));
+    	bpos = matcher.start();
+    	epos = asiString.indexOf(first + "2");
+    	
+    	String line = asiString.substring(bpos,epos);
+    	StringBuilder result = new StringBuilder(asiString.substring(0, bpos));
     	
     	Map<String,RIResult> ariresults = riresults.get(algorithm);
+    	int i = 0;
+    	int n = 1;
     	for(String drug : drugs){
     		RIResult riresult = ariresults.get(drug);
     		if(riresult == null)
-        		result.append(tableString.result
-        				.replace("$ASI_DRUG", drug)
-        				.replace("$ASI_MUTATIONS", "")
-        				.replace("$ASI_GSS", "")
-        				.replace("$ASI_LEVEL", "")
-        				.replace("$ASI_SIR", "")
-        				.replace("$ASI_REMARKS", "")
-        				.replace("$ASI_DESCRIPTION", "")
-        				);
-    		else
-	    		result.append(tableString.result
-	    				.replace("$ASI_DRUG", drug)
-	    				.replace("$ASI_MUTATIONS", riresult.mutations)
-	    				.replace("$ASI_GSS", riresult.gss)
-	    				.replace("$ASI_LEVEL", riresult.level)
-	    				.replace("$ASI_SIR", riresult.sir)
-	    				.replace("$ASI_REMARKS", riresult.remarks)
-	    				.replace("$ASI_DESCRIPTION", riresult.description)
-	    				);
+    			riresult = emptyRIResult;
+    		
+    		if(++i == drugs.size()){
+    			line = asiString.substring(epos);
+    			n = 2;
+    		}
+    			
+    		result.append(line
+    				.replace("$ASI_DRUG"+n, drug)
+    				.replace("$ASI_MUTATIONS"+n, riresult.mutations)
+    				.replace("$ASI_GSS"+n, riresult.gss)
+    				.replace("$ASI_LEVEL"+n, riresult.level)
+    				.replace("$ASI_SIR"+n, riresult.sir)
+    				.replace("$ASI_REMARKS"+n, riresult.remarks)
+    				.replace("$ASI_DESCRIPTION"+n, riresult.description)
+    				);
     	}
     	
-    	result.append(asiString.substring(tableString.epos));
     	return result.toString();
     }
     
@@ -382,6 +405,9 @@ public class GenerateReport
             }
         }
         
+        //for legacy rtf templates
+        setRITableOld(algorithms.isEmpty() ? "":algorithms.iterator().next(), drugs);
+        
         int bpos = 0;
         SubString asiString;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_ASI", "$END_ASI", bpos)) != null){
@@ -404,4 +430,45 @@ public class GenerateReport
         	bpos = asiString.bpos + asiString.result.length();
         }
     }
+    
+	public void setRITableOld(String algorithm, Collection<String> drugs) {
+		int interpretation1Pos = rtfBuffer_.indexOf("$INTERPRETATION1");
+		int mutation1Pos = rtfBuffer_.indexOf("$MUTATIONS1");
+
+		String lastString;
+		if (interpretation1Pos < mutation1Pos)
+			lastString = "$MUTATIONS";
+		else
+			lastString = "$INTERPRETATION";
+
+		String line = rtfBuffer_.substring(rtfBuffer_.indexOf(lastString + "2")
+				+ lastString.length() + 1, rtfBuffer_.indexOf(lastString + "3")
+				+ lastString.length() + 1);
+
+		System.err.println(line);
+
+		int ii = 1;
+		Map<String, RIResult> ariresults = riresults.get(algorithm);
+
+		for (String drug : drugs) {
+			RIResult riresult = ariresults.get(drug);
+
+			if (riresult != null) {
+				if (ii >= 3)
+                    replace(line, line + line);
+				
+				String reportMutations = "$MUTATIONS" + (Math.min(ii, 3));
+				String reportInterpretation = "$INTERPRETATION"
+						+ (Math.min(ii, 3));
+
+				replace("$DRUG" + (Math.min(ii, 3)), drug);
+				replace(reportMutations, riresult.mutations);
+
+				replace(reportInterpretation,riresult.sir +" ("+ riresult.gss +")");
+				++ii;
+			}
+		}
+
+		replace(line, "");
+	}
 }
