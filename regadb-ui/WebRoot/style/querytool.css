@@ -261,3 +261,8 @@
 	color: #ee0000;
 	line-height:1.4em;
 }
+
+.querytoolform-report-legend {
+	width: auto;
+	margin: auto;
+}
