@@ -113,11 +113,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
         	.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.getSelectedActionItem().expand();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
         	.getSelectedActionItem().refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.getViewActionItem().selectNode();
 	}
 
 	public boolean[] sortableFields()
