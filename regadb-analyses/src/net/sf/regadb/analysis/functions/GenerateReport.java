@@ -37,12 +37,12 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 public class GenerateReport 
 {
 	private static class RIResult{
-		public String gss="",
-			mutations="",
-			remarks="",
-			sir="",
-			level="",
-			description="";
+		public String gss="N/A",
+			mutations="N/A",
+			remarks="N/A",
+			sir="N/A",
+			level="N/A",
+			description="N/A";
 		
 		public RIResult(){
 			
@@ -360,11 +360,13 @@ public class GenerateReport
     	int i = 0;
     	int n = 1;
     	for(String drug : drugs){
+    		++i;
+
     		RIResult riresult = ariresults.get(drug);
     		if(riresult == null)
     			riresult = emptyRIResult;
     		
-    		if(++i == drugs.size()){
+    		if(i == drugs.size()){
     			line = asiString.substring(epos);
     			n = 2;
     		}
