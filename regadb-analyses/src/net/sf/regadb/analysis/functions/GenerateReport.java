@@ -21,7 +21,6 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Protein;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
@@ -93,16 +92,9 @@ public class GenerateReport
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient));
-        
-        TestResult viralLoad = getTestResult(vi, patient, StandardObjects.getGenericHiv1ViralLoadTest(), dateTolerance);
-        String viralLoadValue = viralLoad==null?"- ":viralLoad.getValue();
-        replace("$VIRAL_LOAD_RNA", viralLoadValue);
-        
-        TestResult cd4Count = getTestResult(vi, patient, StandardObjects.getGenericCD4Test(), dateTolerance);
-        if(cd4Count!=null)
-            replace("$CD4_COUNT", cd4Count.getValue());
-        else
-            replace("$CD4_COUNT", "- ");
+
+        replaceTestResult(patient, vi, StandardObjects.getHiv1ViralLoadTestType(), dateTolerance, "VIRAL_LOAD_RNA");
+        replaceTestResult(patient, vi, StandardObjects.getCd4TestType(), dateTolerance, "CD4_COUNT");
         
         replace("$ORGANISM", getOrganismName(vi));
         replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
@@ -118,6 +110,20 @@ public class GenerateReport
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private void replaceTestResult(Patient p, ViralIsolate vi, TestType tt, int dateTolerance, String pattern){
+        String value, date;
+        TestResult tr = getTestResult(vi, p, tt, dateTolerance);
+        if(tr != null){
+        	value = tr.getValue();
+        	date = DateUtils.format(tr.getTestDate());
+        }
+        else
+        	value = date = "-";
+        
+        replace("$"+ pattern +"_DATE", date);
+        replace("$"+ pattern, value);
     }
     
     private String algorithmsToString(Collection<String> algorithms) {
@@ -146,16 +152,23 @@ public class GenerateReport
     
     private String getType(ViralIsolate vi, String typeTest)
     {
+    	TreeSet<String> subtypes = new TreeSet<String>();
         for(NtSequence ntSeq : vi.getNtSequences())
         {
             for(TestResult testResult : ntSeq.getTestResults())
             {
                 if(testResult.getTest().getDescription().equals(typeTest))
-                    return testResult.getValue();
+                    subtypes.add(testResult.getValue());
             }
         }
         
-        return "";
+        if(subtypes.size() == 0)
+        	return "";
+        
+        String result = "";
+        for(String subtype : subtypes)
+        	result += ", "+ subtype;
+        return result.substring(2);
     }
     
     private String getOrganismName(ViralIsolate vi){
@@ -165,7 +178,7 @@ public class GenerateReport
         return "";
     }
     
-    private TestResult getTestResult(ViralIsolate vi, Patient patient, Test referenceTest, int dateTolerance)
+    private TestResult getTestResult(ViralIsolate vi, Patient patient, TestType referenceTestType, int dateTolerance)
     {
         TestResult viralLoadS = null;
         TestResult viralLoadD = null;
@@ -175,7 +188,7 @@ public class GenerateReport
         
         for(TestResult testResult : patient.getTestResults())
         {
-            if(testResult.getTest().getDescription().equals(referenceTest.getDescription()))
+            if(Equals.isSameTestType(testResult.getTest().getTestType(),referenceTestType))
             {
                 if(vi.getSampleId().equals(testResult.getSampleId())){
                     viralLoadS = testResult;
