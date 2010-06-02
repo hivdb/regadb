@@ -418,7 +418,8 @@ public class GenerateReport
         }
         
         //for legacy rtf templates
-        setRITableOld(algorithms.isEmpty() ? "":algorithms.iterator().next(), drugs);
+        if(!algorithms.isEmpty())
+        	setRITableOld(algorithms.iterator().next(), drugs);
         
         int bpos = 0;
         SubString asiString;
