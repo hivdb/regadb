@@ -441,6 +441,13 @@ public class GenerateReport
         	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
         	bpos = asiString.bpos + asiString.result.length();
         }
+        
+        bpos = 0;
+        while((asiString = getSubString(rtfBuffer_, "$BEGIN_MULTIASI", "$END_MULTIASI", bpos)) != null){
+        	String result = getMultiAsiTable(algorithms, drugs, asiString.result);
+        	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
+        	bpos = asiString.bpos + asiString.result.length();
+        }
     }
     
 	public void setRITableOld(String algorithm, Collection<String> drugs) {
@@ -482,5 +489,125 @@ public class GenerateReport
 		}
 
 		replace(line, "");
+	}
+	
+	public String getMultiAsiTable(Collection<String> algorithms, Collection<String> drugs, String tableString){
+    	int i;
+    	int bpos1,epos1,bpos2,epos2;
+    	StringBuilder result;
+
+    	//expand u
+    	
+    	//expand algorithm names
+    	bpos1 = tableString.indexOf("$ASI_ALGORITHM1");
+    	if(bpos1 > -1 && (epos1 = tableString.indexOf("$ASI_ALGORITHM2")) > -1){
+	    	String algtpl = tableString.substring(bpos1+"$ASI_ALGORITHM1".length(), epos1);
+	    	
+	    	result = new StringBuilder(tableString.substring(0,bpos1));
+	    	i = 0;
+	    	for(String algorithm : algorithms){
+	    		++i;
+	    		
+	    		if(i == algorithms.size()){
+	    			result.append(algorithm);
+	    		}
+	    		else{
+	    			result.append(algorithm).append(algtpl);
+	    		}
+	    	}
+	    	tableString = result.toString() + tableString.substring(epos1 + "$ASI_ALGORITHM2".length());
+    	}
+    	
+		//expand template columns
+    	Pattern pattern = Pattern.compile("\\$ASI_[A-Z_]+1\\(1\\)");
+    	Matcher matcher = pattern.matcher(tableString);
+    	String first;
+
+    	if(matcher.find(0)){
+
+	    	first = matcher.group();
+	    	first = first.substring(0,first.length()-4);
+	    	
+	    	bpos1 = matcher.start();
+	    	epos1 = tableString.indexOf(first + "1(2)");
+	    	bpos2 = tableString.indexOf(first +"2(1)");
+	    	epos2 = tableString.indexOf(first+"2(2)");
+	    	
+	    	String coltpl1 = tableString.substring(bpos1,epos1);
+	    	String coltpl2 = tableString.substring(bpos2,epos2);
+	    	
+	    	StringBuilder rowtpl1 = new StringBuilder();
+	    	StringBuilder rowtpl2 = new StringBuilder();
+	    	
+	    	i = 0;
+	    	for(String algorithm : algorithms){
+	    		++i;
+	    		
+	    		if(i == algorithms.size()){
+	    			//end of row
+	    			coltpl1 = tableString.substring(epos1,bpos2);
+	    			coltpl2 = tableString.substring(epos2);
+	    		}
+	    		
+	    		rowtpl1.append(coltpl1.replaceAll("\\$ASI_([A-Z]+)1\\([12]\\)", "\\$ASI_$1\\1("+ algorithm +")"));
+	    		rowtpl2.append(coltpl2.replaceAll("\\$ASI_([A-Z]+)2\\([12]\\)", "\\$ASI_$1\\2("+ algorithm +")"));
+	    	}
+	    	
+	    	tableString = tableString.substring(0,bpos1) + rowtpl1.toString() + rowtpl2.toString();
+    	}
+
+    	//expand rows
+    	pattern = Pattern.compile("(\\$ASI_[A-Z_]+)1");
+    	matcher = pattern.matcher(tableString);
+    	if(matcher.find(0)){
+    		bpos1 = matcher.start();
+    		epos1 = tableString.indexOf(matcher.group(1) +"2");
+    		String rowtpl = tableString.substring(bpos1, epos1);
+
+    		//get a list of algorithms actually being used
+    		List<String> usedalgorithms = new ArrayList<String>();
+    		pattern = Pattern.compile("(\\$ASI_[A-Z_]+)1\\(([^)]+)\\)");
+    		matcher = pattern.matcher(rowtpl);
+    		bpos2 = 0;
+    		while(matcher.find(bpos2)){
+    			if(riresults.get(matcher.group(2)) != null)
+    				usedalgorithms.add(matcher.group(2));
+    			bpos2 = matcher.end();
+    		}
+    		
+    		result = new StringBuilder(tableString.substring(0,bpos1));
+    		i = 0;
+    		for(String drug : drugs){
+    			++i;
+    			
+    			String row;
+    			if(i == drugs.size())
+    				row = tableString.substring(epos1);
+    			else
+    				row = rowtpl;
+    			
+    			row = row.replaceAll("\\$ASI_DRUG[12]", drug);
+    			
+    			for(String algorithm : usedalgorithms){
+    				RIResult rir = riresults.get(algorithm).get(drug);
+    				if(rir == null)
+    					rir = emptyRIResult;
+    				
+    				row = row
+    					.replaceAll("\\$ASI_DESRIPTION[12]\\("+ algorithm +"\\)", rir.description)
+    					.replaceAll("\\$ASI_GSS[12]\\("+ algorithm +"\\)", rir.gss)
+    					.replaceAll("\\$ASI_LEVEL[12]\\("+ algorithm +"\\)", rir.level)
+    					.replaceAll("\\$ASI_MUTATIONS[12]\\("+ algorithm +"\\)", rir.mutations)
+    					.replaceAll("\\$ASI_REMARKS[12]\\("+ algorithm +"\\)", rir.remarks)
+    					.replaceAll("\\$ASI_SIR[12]\\("+ algorithm +"\\)", rir.sir);
+    			}
+    			
+    			result.append(row);
+    		}
+    		
+    		tableString = result.toString();
+    	}
+    	
+    	return tableString;
 	}
 }
