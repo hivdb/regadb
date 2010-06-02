@@ -5,12 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.regadb.csv.Table;
+import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WStandardItemModel;
+import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WTreeView;
 import eu.webtoolkit.jwt.chart.LabelOption;
 import eu.webtoolkit.jwt.chart.WPieChart;
@@ -41,12 +43,10 @@ public class ReportContainer extends WContainerWidget {
         table.setModel(model);
 
         WPieChart chart = new WPieChart(this);
+        chart.setDisplayLabels(LabelOption.NoLabels);
         chart.setModel(model); 
         chart.setLabelsColumn(0); 
-        chart.setDataColumn(1); 
-
-        chart.setDisplayLabels(LabelOption.Outside, LabelOption.TextLabel,
-                LabelOption.TextPercentage);
+        chart.setDataColumn(1);
 
         chart.setPerspectiveEnabled(true, 0.2);
 
@@ -54,6 +54,13 @@ public class ReportContainer extends WContainerWidget {
 
         chart.setMargin(10, Side.Top, Side.Bottom); 
         chart.setMargin(WLength.Auto, Side.Left, Side.Right);
+        
+        WTable legend = new WTable(this);
+        legend.setStyleClass("querytoolform-report-legend");
+        
+        for (int i = 0; i < model.getRowCount(); i++) {
+        	legend.getElementAt(i, 0).addWidget(chart.createLegendItemWidget(i, LabelOption.TextLabel, LabelOption.TextPercentage));
+        }
 	}
 	
     public WAbstractItemModel readFromCsv(Table csv) {

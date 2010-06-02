@@ -26,6 +26,7 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 import org.hibernate.exception.SQLGrammarException;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.queryeditor.FieldSelection;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
@@ -36,7 +37,6 @@ import com.pharmadm.custom.rega.queryeditor.QueryEditor;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionStatusList;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
-import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.queryeditor.port.QueryStatement;
 import com.pharmadm.custom.rega.queryeditor.port.ScrollableQueryResult;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateStatement;
@@ -227,14 +227,16 @@ public class QueryToolRunnable implements Runnable {
 	          
 	            int lines = 0;
 	            int writtenLines = 0;
+	            Set<Integer> isolateIds = new HashSet<Integer>();
             	while (!result.isLast() && status != Status.CANCELED) {
             		Object[] o = null;
             		synchronized (mutex) {
                 		o = result.get();
 					}
             		if (fastaFile != null) {
-            			if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)o[o.length - 1], new HashSet<Dataset>(), accessiblePatients))
-            				numberFastaEntries += ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
+            			ViralIsolate vi = (ViralIsolate)o[o.length - 1];
+            			if(isolateIds.add(vi.getViralIsolateIi()) && DatasetAccessSolver.getInstance().canAccessViralIsolate(vi, new HashSet<Dataset>(), accessiblePatients))
+            				numberFastaEntries += ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export(vi, fastaOS, datasets, proteins);
             		}
             		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
             		//this access solving stuff is horrible and could use a little rewrite, someday

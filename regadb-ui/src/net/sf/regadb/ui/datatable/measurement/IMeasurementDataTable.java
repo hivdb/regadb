@@ -102,11 +102,7 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
         	.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
-        	.getSelectedActionItem().expand();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
         	.getSelectedActionItem().refreshAllChildren();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
-        	.getViewActionItem().selectNode();
 	}
 
     public boolean[] sortableFields()
