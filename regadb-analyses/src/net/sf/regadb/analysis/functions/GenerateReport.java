@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -435,10 +434,6 @@ public class GenerateReport
             }
         }
         
-        //for legacy rtf templates
-        if(!algorithms.isEmpty())
-        	setRITableOld(algorithms.iterator().next(), drugs);
-        
         int bpos = 0;
         SubString asiString;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_ASI", "$END_ASI", bpos)) != null){
@@ -461,11 +456,19 @@ public class GenerateReport
         	bpos = asiString.bpos + asiString.result.length();
         }
         
+        //multi asi tables
         bpos = 0;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_MULTIASI", "$END_MULTIASI", bpos)) != null){
         	String result = getMultiAsiTable(algorithms, drugs, asiString.result);
         	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
         	bpos = asiString.bpos + asiString.result.length();
+        }
+        
+        //legacy rtf templates
+        if(!algorithms.isEmpty()){
+        	String algorithm = algorithms.iterator().next();
+        	setRITableOld(algorithm, drugs);
+        	replace("$ASI_ALGORITHM", algorithm);
         }
     }
     
