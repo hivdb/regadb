@@ -5,9 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -203,9 +203,22 @@ public class GenerateReport
     }
     
     private String getARTExperience(Patient p){
-        HashSet<String> combinations = new HashSet<String>();
+        StringBuilder result = new StringBuilder();
         
-        for(Therapy t : p.getTherapies()){
+        TreeSet<Therapy> therapies = new TreeSet<Therapy>(new Comparator<Therapy>() {
+			public int compare(Therapy o1, Therapy o2) {
+				return o1.getStartDate().compareTo(o2.getStartDate());
+			}
+		});
+        
+        for(Therapy t : p.getTherapies())
+        	therapies.add(t);
+
+        if(therapies.size() == 0)
+        	return "";
+        
+        String prev = "";
+        for(Therapy t : therapies){
         	TreeSet<String> combination = new TreeSet<String>();
             for(TherapyGeneric tg : t.getTherapyGenerics()){
                 combination.add(tg.getId().getDrugGeneric().getGenericId());
@@ -215,10 +228,14 @@ public class GenerateReport
                     combination.add(dg.getGenericId());
                 }
             }
-            combinations.add(combination.toString().replace(',', '+'));
+            String curr = combination.toString().replace(", ", "+");
+            if(!curr.equals(prev)){
+            	result.append(", "+ curr);
+            	prev = curr;
+            }
         }
         
-        return combinations.toString().replace("[", "").replace("]", "");
+        return result.substring(2);
     }
     
     private void loadGssTestResults(ViralIsolate vi)
@@ -417,10 +434,6 @@ public class GenerateReport
             }
         }
         
-        //for legacy rtf templates
-        if(!algorithms.isEmpty())
-        	setRITableOld(algorithms.iterator().next(), drugs);
-        
         int bpos = 0;
         SubString asiString;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_ASI", "$END_ASI", bpos)) != null){
@@ -443,11 +456,19 @@ public class GenerateReport
         	bpos = asiString.bpos + asiString.result.length();
         }
         
+        //multi asi tables
         bpos = 0;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_MULTIASI", "$END_MULTIASI", bpos)) != null){
         	String result = getMultiAsiTable(algorithms, drugs, asiString.result);
         	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
         	bpos = asiString.bpos + asiString.result.length();
+        }
+        
+        //legacy rtf templates
+        if(!algorithms.isEmpty()){
+        	String algorithm = algorithms.iterator().next();
+        	setRITableOld(algorithm, drugs);
+        	replace("$ASI_ALGORITHM", algorithm);
         }
     }
     
