@@ -120,8 +120,9 @@ public class Chart extends WCartesianChart{
 	
 	@Override
 	protected void paintEvent(WPaintDevice paintDevice) {
-		super.paintEvent(paintDevice);
+		WPainter painter = new WPainter(paintDevice);
 		
+		this.paint(painter);
 		
 		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + 50;
 		double spacing = 3;
@@ -133,14 +134,14 @@ public class Chart extends WCartesianChart{
 		for(String drug : drugsUsed.keySet()){
 			drugsUsed.put(drug, i);
 
-			paintDevice.drawLine(0, i + height + spacing, getWidth().getValue(), i + height + spacing);
-			paintDevice.drawText(new WRectF(0, i+spacing, getWidth().getValue(), height), EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), drug);
+			painter.drawLine(0, i + height + spacing, getWidth().getValue(), i + height + spacing);
+			painter.drawText(new WRectF(0, i+spacing, getWidth().getValue(), height), EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), drug);
 			
 			i += spacing*2 +height;
 		}
 		
-		paintDevice.getPainter().setPen(new WPen(WColor.transparent));
-		double linewidth = 2; //paintDevice.getPainter().getPen().getWidth().getValue();
+		painter.setPen(new WPen(WColor.transparent));
+		double linewidth = 2;
 		
 		WBrush closedTherapyBrush = new WBrush(WColor.green);
 		WBrush openTherapyBrush = new WBrush(WColor.darkGreen);
@@ -150,10 +151,10 @@ public class Chart extends WCartesianChart{
 			WDate stopDate;
 			if(me.getKey().getStopDate() == null){
 				stopDate = maxDate;
-				paintDevice.getPainter().setBrush(openTherapyBrush);
+				painter.setBrush(openTherapyBrush);
 			} else {
 				stopDate = new WDate(me.getKey().getStopDate());
-				paintDevice.getPainter().setBrush(closedTherapyBrush);
+				painter.setBrush(closedTherapyBrush);
 			}
 		
 			double x2 = this.mapToDevice(stopDate,0).getX();
@@ -166,7 +167,7 @@ public class Chart extends WCartesianChart{
 				
 				WPainterPath path = new WPainterPath();
 				path.addRect(x1 + linewidth, y1 + linewidth, x2-x1 - linewidth, y2-y1 - linewidth*2);
-				paintDevice.drawPath(path);
+				painter.drawPath(path);
 			}
 		}
 	}
