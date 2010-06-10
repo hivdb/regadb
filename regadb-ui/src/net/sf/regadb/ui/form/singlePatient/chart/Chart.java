@@ -114,8 +114,15 @@ public class Chart extends WCartesianChart{
 	@Override
 	public void renderLegendItem(WPainter painter, WPointF pos,
 			WDataSeries series) {
-		painter.getFont().setSize(WFont.Size.Small);
+		painter.save();
+		
+		WFont font = painter.getFont();
+		font.setSize(WFont.Size.XXSmall);
+		painter.setFont(font);
+		
 		super.renderLegendItem(painter, pos, series);
+		
+		painter.restore();
 	}
 	
 	@Override
