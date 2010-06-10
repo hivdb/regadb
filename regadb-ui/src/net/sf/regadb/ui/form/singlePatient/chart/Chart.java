@@ -42,6 +42,9 @@ public class Chart extends WCartesianChart{
 	public Chart(WContainerWidget widget) {
 		super(ChartType.ScatterPlot, widget);
 		
+		//TODO, just a tmp workaround
+		setPreferredMethod(Method.InlineSvgVml);
+		
 		WAxis axis = getAxis(Axis.XAxis);
 		axis.setScale(AxisScale.DateScale);
 		axis.setGridLinesEnabled(true);
