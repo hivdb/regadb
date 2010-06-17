@@ -573,6 +573,9 @@ public class StandardObjects {
     public static Test getGenericHCVViralLoadTest(){
     	return getGenericTest(getViralLoadDescription(), getHcvGenome());
     }
+    public static Test getGenericHCVViralLoadLog10Test(){
+    	return getGenericTest(getViralLoadLog10Description(), getHcvGenome());
+    }
     public static TestType getHCVViralLoadTestType(){
     	return getGenericHCVViralLoadTest().getTestType();
     }
