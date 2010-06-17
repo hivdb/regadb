@@ -24,8 +24,10 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
+import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WComboBox;
 import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -38,6 +40,7 @@ public class ExportForm extends FormWidget {
 	private WComboBox format;
 	private WAnchor anchor;
 	private File exportFile;
+	private WCheckBox exportMutations;
 	
 	public ExportForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
@@ -58,6 +61,23 @@ public class ExportForm extends FormWidget {
 		format.addItem("XML");
 		format.addItem("CSV");
 		table_.addLineToTable(formatL, format);
+		
+		exportMutations = new WCheckBox();
+		final int i = table_.addLineToTable(new Label(tr("form.impex.export.mutations")),exportMutations);
+		table_.getRowAt(i).hide();
+		
+		format.changed().addListener(this, new Signal.Listener()
+        {
+			public void trigger()
+			{
+				if(format.getCurrentText().getValue().equals("CSV")){
+					table_.getRowAt(i).show();
+				}
+				else{
+					table_.getRowAt(i).hide();
+				}
+			}
+        });
 		
 		WPushButton export = new WPushButton(tr("form.impex.export.title"));
 		Label exportL = new Label(tr("form.impex.export.title"));
@@ -105,7 +125,7 @@ public class ExportForm extends FormWidget {
         }
         
 		try {
-			FullCsvExport fullCsvExport = new FullCsvExport(t.getMaxAmountOfSequences(), t.getAttributes(), resistanceTestsDrugs, exportFile);
+			FullCsvExport fullCsvExport = new FullCsvExport(t.getMaxAmountOfSequences(), t.getAttributes(), resistanceTestsDrugs, exportFile, exportMutations.isChecked());
 	        PatientExporter<Patient> csvExport = new PatientExporter<Patient>(RegaDBMain.getApp().getLogin(), ds.getDescription(), fullCsvExport);
 	        csvExport.run();
 		} catch (IOException e) {

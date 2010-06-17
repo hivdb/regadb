@@ -1,4 +1,4 @@
-package net.sf.regadb.analysis.functions;
+package net.sf.regadb.db.tools;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -111,7 +111,7 @@ public class MutationHelper
                             m1.getAaMutationString(), m1.getPosition(), m1.getAaReferenceString());
                 } else if (!sort(m1.getAaMutationString()).equals(sort(m2.getAaMutationString()))) {
                     result = addMutation(result,
-                            m1.getAaMutationString(), m1.getPosition(), m2.getAaReferenceString());
+                            m1.getAaMutationString(), m1.getPosition(), m2.getAaMutationString());
                 }
             }
 
