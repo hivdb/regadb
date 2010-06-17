@@ -53,7 +53,8 @@ public class Import {
 		randomizationNumberAttribute = createAttribute("Randomization number", StandardObjects.getNumberValueType());
 	}
 	
-	public void run(File input, File output){
+	public void run(File input, File output, boolean exportIsolates){
+		patients.clear();
 		try {
 			Workbook book = WorkbookParser.getWorkbook(input);
 			Sheet sheet = book.getSheet(0);
@@ -77,8 +78,8 @@ public class Import {
 				String remarks = sheet.getCell(header.get("remarks"), i).getContents().trim();
 				String nucleotides = sheet.getCell(header.get("Nucleotide sequence"), i).getContents().trim();
 				
-//				if(nucleotides.length() == 0)
-//					continue;
+				if(exportIsolates && nucleotides.length() == 0)
+					continue;
 				
 				Patient p = patients.get(patientId);
 				if(p == null){
@@ -121,10 +122,13 @@ public class Import {
 			
 			String patientsXml = output.getAbsolutePath() + File.separatorChar +"patients.xml";
 			String viXml = output.getAbsolutePath() + File.separatorChar +"viral-isolates.xml";
-			System.out.println("writing "+ patientsXml);
-			IOUtils.exportPatientsXML(patients.values(), patientsXml, ConsoleLogger.getInstance());
-			System.out.println("writing "+ viXml);
-			IOUtils.exportNTXMLFromPatients(patients.values(), viXml, ConsoleLogger.getInstance());
+			if(!exportIsolates){
+				System.out.println("writing "+ patientsXml);
+				IOUtils.exportPatientsXML(patients.values(), patientsXml, ConsoleLogger.getInstance());
+			}else{
+				System.out.println("writing "+ viXml);
+				IOUtils.exportNTXMLFromPatients(patients.values(), viXml, ConsoleLogger.getInstance());
+			}
 			System.out.println("done");
 		} catch (BiffException e) {
 			e.printStackTrace();
@@ -233,6 +237,7 @@ public class Import {
 			return;
 		
 		Import imp = new Import();
-		imp.run(new File(input.getValue()), new File(output.getValue()));
+		imp.run(new File(input.getValue()), new File(output.getValue()), false);
+		imp.run(new File(input.getValue()), new File(output.getValue()), true);
 	}
 }
