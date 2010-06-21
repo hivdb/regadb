@@ -25,10 +25,11 @@ import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WPaintDevice;
 import eu.webtoolkit.jwt.WPainter;
-import eu.webtoolkit.jwt.WPainterPath;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRectF;
+import eu.webtoolkit.jwt.WLength.Unit;
+import eu.webtoolkit.jwt.WPainter.RenderHint;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.AxisScale;
 import eu.webtoolkit.jwt.chart.ChartType;
@@ -131,31 +132,43 @@ public class Chart extends WCartesianChart{
 	@Override
 	protected void paintEvent(WPaintDevice paintDevice) {
 		WPainter painter = new WPainter(paintDevice);
-		
+		painter.setRenderHint(RenderHint.Antialiasing,true);
 		this.paint(painter);
 		
 		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + 50;
-		double spacing = 3;
-		double height = 14;
+		double spacing = 1;
+		double height = 15;
 		
 		WDate maxDate = new WDate(new Date());
 		
 		double i = sy;
+		
+		painter.setRenderHint(RenderHint.Antialiasing,false);
+		painter.drawLine(0, i, getWidth().getValue(), i);
+		painter.setRenderHint(RenderHint.Antialiasing,true);
+
 		for(String drug : drugsUsed.keySet()){
 			drugsUsed.put(drug, i);
 
-			painter.drawLine(0, i + height + spacing, getWidth().getValue(), i + height + spacing);
-			painter.drawText(new WRectF(0, i+spacing, getWidth().getValue(), height), EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), drug);
+			painter.drawText(new WRectF(0, i, 100, i+height), EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
+			painter.drawText(new WRectF(getWidth().getValue() - 100, i, 100, i+height), EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignRight), drug);
 			
-			i += spacing*2 +height;
+			i += height+1;
+
+			painter.setRenderHint(RenderHint.Antialiasing,false);
+			painter.drawLine(0, i, getWidth().getValue(), i);
+			painter.setRenderHint(RenderHint.Antialiasing,true);
 		}
-		
-		painter.setPen(new WPen(WColor.transparent));
-		double linewidth = 2;
+
+		double linewidth = 1;
+		WPen pen = new WPen(WColor.transparent);
+		pen.setWidth(new WLength(linewidth,Unit.Pixel));
+		painter.setPen(pen);
 		
 		WBrush closedTherapyBrush = new WBrush(WColor.green);
 		WBrush openTherapyBrush = new WBrush(WColor.darkGreen);
 		
+		painter.setRenderHint(RenderHint.Antialiasing,false);
 		for(Map.Entry<Therapy, TreeSet<String>> me : drugsMap.entrySet()){
 			double x1 = this.mapToDevice(new WDate(me.getKey().getStartDate()), 0).getX();
 			WDate stopDate;
@@ -171,15 +184,14 @@ public class Chart extends WCartesianChart{
 			
 			for(String drug : me.getValue()){
 				i = drugsUsed.get(drug);
-				
-				double y1 = i - spacing;
-				double y2 = i + height + spacing;
-				
-				WPainterPath path = new WPainterPath();
-				path.addRect(x1 + linewidth, y1 + linewidth, x2-x1 - linewidth, y2-y1 - linewidth*2);
-				painter.drawPath(path);
+
+				double y1 = i+1 + spacing;
+				double y2 = i + height+1 - spacing;
+
+				painter.drawRect(x1 + linewidth, y1, x2-x1 - linewidth, y2-y1);
 			}
 		}
+		painter.setRenderHint(RenderHint.Antialiasing,true);
 	}
 	
 	private TreeMap<Therapy,TreeSet<String>> drugsMap = new TreeMap<Therapy,TreeSet<String>>(
