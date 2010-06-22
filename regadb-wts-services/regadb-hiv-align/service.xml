@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	RegaDB HIV-1 Alignment tool
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		nt_sequences
+		</name>
+		<description>
+		A file containing multiple nucleotide sequences.
+		</description>
+	</input>
+        <input>
+                <name>
+               	region 
+                </name>
+                <description>
+        	A file containing the region what should be aligned (PRO/RT)        
+		</description>
+        </input>
+</inputs>
+<outputs>
+	<output>
+		<name>
+		aa_sequences
+		</name>
+		<description>
+		A file containing the amino acid sequences
+		</description>
+	</output>
+</outputs>
+</service>

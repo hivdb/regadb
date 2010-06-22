@@ -9,28 +9,28 @@
 <inputs>
 	<input>
 		<name>
-		nt_sequences
+		sequences
 		</name>
 		<description>
-		A file containing multiple nucleotide sequences.
+		unaligned fasta file
 		</description>
 	</input>
-        <input>
-                <name>
-               	region 
-                </name>
-                <description>
-        	A file containing the region what should be aligned (PRO/RT)        
+	<input>
+		<name>
+		genome
+		</name>
+		<description>
+		organism name of sequences
 		</description>
-        </input>
+	</input>
 </inputs>
 <outputs>
 	<output>
 		<name>
-		aa_sequences
+		mutations
 		</name>
 		<description>
-		A file containing the amino acid sequences
+		mutations file
 		</description>
 	</output>
 </outputs>
