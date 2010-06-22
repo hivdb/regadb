@@ -55,39 +55,38 @@ public class FullAnalysis implements IAnalysis {
             Transaction t = sessionSafeLogin.createTransaction();
             Test subTypeTest = t.getTest(StandardObjects.getSubtypeTestDescription(), StandardObjects.getSubtypeTestTypeDescription());
             t.commit();
-                        
-            if(genome != null){
-                
-                for(NtSequence ntseq : getViralIsolate().getNtSequences())
+            
+            launchAnalysis(new AlignService(getViralIsolate(), genome.getOrganismName()), sessionSafeLogin);
+
+            for(NtSequence ntseq : getViralIsolate().getNtSequences())
+            {
+                if(ntseq.getAaSequences().size()==0)
                 {
-                    if(ntseq.getAaSequences().size()==0)
-                    {
-                        launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
-                        		sessionSafeLogin.getUid(), 
-                        		genome.getOrganismName()), sessionSafeLogin);
-                        launchAnalysis(new SubtypeAnalysis(ntseq,
-                        		subTypeTest,
-                                genome,
-                                sessionSafeLogin.getUid()), 
-                                sessionSafeLogin); 
-                    }
+//                    launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
+//                    		sessionSafeLogin.getUid(), 
+//                    		genome.getOrganismName()), sessionSafeLogin);
+                    launchAnalysis(new SubtypeAnalysis(ntseq,
+                    		subTypeTest,
+                            genome,
+                            sessionSafeLogin.getUid()), 
+                            sessionSafeLogin); 
                 }
-                
-                t = sessionSafeLogin.createTransaction();
-                List<Test> tests = t.getTests();
-                String uid = sessionSafeLogin.getUid();
-                for(Test test : tests)
-                {
-                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
-                    {
-                        if(test.getAnalysis()!=null)
-                        {
-                            launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
-                        }
-                    }
-                }
-                t.commit();
             }
+            
+            t = sessionSafeLogin.createTransaction();
+            List<Test> tests = t.getTests();
+            String uid = sessionSafeLogin.getUid();
+            for(Test test : tests)
+            {
+                if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
+                {
+                    if(test.getAnalysis()!=null)
+                    {
+                        launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
+                    }
+                }
+            }
+            t.commit();
         }
         
         setEndTime(new Date());
