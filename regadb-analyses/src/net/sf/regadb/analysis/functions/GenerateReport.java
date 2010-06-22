@@ -634,6 +634,18 @@ public class GenerateReport
     		for(String drug : drugs){
     			++i;
     			
+    			//skip if no results for any algorithm
+    			boolean hasresult = false;
+    			for(String algorithm : usedalgorithms){
+    				if(riresults.get(algorithm).get(drug) != null){
+    					hasresult = true;
+    					break;
+    				}
+    			}
+    			if(!hasresult)
+    				continue;
+    					
+    			
     			String row;
     			if(i == drugs.size())
     				row = tableString.substring(epos1);
