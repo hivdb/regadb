@@ -277,7 +277,7 @@ public class GenerateReport
         }
         
         String result;
-        String textToReplace;
+        String tplMut, tplStart, tplStop;
         boolean foundMatchinqSeq;
         
         
@@ -286,7 +286,10 @@ public class GenerateReport
         for(Protein protein : t.getProteins(g))
         {   
             foundMatchinqSeq = false;
-            textToReplace = "$"+protein.getAbbreviation().toUpperCase()+"_MUTATIONS";
+            tplMut = "$"+protein.getAbbreviation().toUpperCase()+"_MUTATIONS";
+            tplStart = "$"+protein.getAbbreviation().toUpperCase()+"_START";
+            tplStop = "$"+protein.getAbbreviation().toUpperCase()+"_STOP";
+
             for(AaSequence aaSeq : aaSeqs)
             {
                 if(aaSeq.getProtein().getAbbreviation().equals(protein.getAbbreviation()))
@@ -294,12 +297,20 @@ public class GenerateReport
                     result = MutationHelper.getNonSynonymousMutations(aaSeq);
                     if("".equals(result.trim()))
                         result = "-";
-                    replace(textToReplace, result);
+                    
+                    replace(tplMut, result);
+                    replace(tplStart, aaSeq.getFirstAaPos()+"");
+                    replace(tplStop, aaSeq.getLastAaPos()+"");
+                    
                     foundMatchinqSeq = true;
+                    break;
                 }
             }
-            if(!foundMatchinqSeq)
-                replace(textToReplace, "undetermined");
+            if(!foundMatchinqSeq){
+                replace(tplMut, "undetermined");
+                replace(tplStart, "-");
+                replace(tplStop, "-");
+            }
         }
     }
     
