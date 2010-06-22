@@ -90,10 +90,21 @@ public class GenerateReport
         replace("$PATIENT_NAME", patient.getFirstName());
         replace("$PATIENT_LASTNAME", patient.getLastName());
         replace("$PATIENT_ID", patient.getPatientId());
-        replace("$PATIENT_CLINICAL_FILE_NR", getClinicalFileNumber(patient));
+        replace("$PATIENT_CLINICAL_FILE_NR", getPatientAttributeValue(patient,StandardObjects.getClinicalFileNumberAttribute().getName()));
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient));
+        
+        int bpos;
+        while((bpos = rtfBuffer_.indexOf("$ATTRIBUTE(")) > -1){
+        	int epos = rtfBuffer_.indexOf(")",bpos);
+        	if(epos > -1){
+        		String attributeName = rtfBuffer_.substring(bpos + "$ATTRIBUTE(".length(),epos);
+        		replace("$ATTRIBUTE("+ attributeName +")", getPatientAttributeValue(patient, attributeName));
+        	} else {
+        		rtfBuffer_.delete(bpos, bpos + "$ATTRIBUTE(".length());
+        	}
+        }
 
         replaceTestResult(patient, vi, StandardObjects.getHiv1ViralLoadTestType(), dateTolerance, "VIRAL_LOAD_RNA");
         replaceTestResult(patient, vi, StandardObjects.getCd4TestType(), dateTolerance, "CD4_COUNT");
@@ -139,12 +150,18 @@ public class GenerateReport
     	return sb.toString().substring(2);
 	}
 
-	private String getClinicalFileNumber(Patient patient)
+	private String getPatientAttributeValue(Patient patient, String attributeName)
     {
         for(PatientAttributeValue pav : patient.getPatientAttributeValues())
         {
-            if(StandardObjects.getClinicalFileNumberAttribute().getName().equals(pav.getAttribute().getName()))
+            if(attributeName.equalsIgnoreCase(pav.getAttribute().getName()))
             {
+                if(pav.getAttributeNominalValue() != null)
+                	return pav.getAttributeNominalValue().getValue();
+                
+                if(Equals.isSameValueType(pav.getAttribute().getValueType(),StandardObjects.getDateValueType()))
+                	return DateUtils.format(pav.getValue());
+                
                 return pav.getValue();
             }
         }
@@ -596,6 +613,9 @@ public class GenerateReport
     	if(matcher.find(0)){
     		bpos1 = matcher.start();
     		epos1 = tableString.indexOf(matcher.group(1) +"2");
+    		if(epos1 < bpos1)
+    			throw new StringIndexOutOfBoundsException("error in template, not found: "+ matcher.group(1)+"2");
+    			
     		String rowtpl = tableString.substring(bpos1, epos1);
 
     		//get a list of algorithms actually being used
