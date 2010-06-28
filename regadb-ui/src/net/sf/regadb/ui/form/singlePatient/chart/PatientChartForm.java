@@ -21,7 +21,6 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.WMouseEvent.Coordinates;
 import eu.webtoolkit.jwt.chart.Axis;
 
 public class PatientChartForm extends WGroupBox implements IForm 
@@ -69,6 +68,7 @@ public class PatientChartForm extends WGroupBox implements IForm
 		});
 		
 		chart.loadTherapies(p);
+		chart.loadViralIsolates(p);
 		
 		t.commit();
 		

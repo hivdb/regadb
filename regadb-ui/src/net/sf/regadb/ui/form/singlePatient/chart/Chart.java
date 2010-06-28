@@ -15,7 +15,9 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.ViralIsolate;
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.PenStyle;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
@@ -38,7 +40,7 @@ import eu.webtoolkit.jwt.chart.WCartesianChart;
 import eu.webtoolkit.jwt.chart.WDataSeries;
 
 public class Chart extends WCartesianChart{
-	private WColor colors[];
+	private static WColor colors[] = null;
 
 	public Chart(WContainerWidget widget) {
 		super(ChartType.ScatterPlot, widget);
@@ -53,7 +55,7 @@ public class Chart extends WCartesianChart{
 		
 		axis = getAxis(Axis.YAxis);
 		axis.setScale(AxisScale.LogScale);
-		axis.setGridLinesEnabled(true);
+//		axis.setGridLinesEnabled(true);
 		axis.setTitle("log10");
 		
 		axis = getAxis(Axis.Y2Axis);
@@ -64,27 +66,10 @@ public class Chart extends WCartesianChart{
 
 		setLegendEnabled(true);
 		
-		colors = generateColors(10);
+		colors = generateColors(11);
 	}
-
-//	@Override
-//	public void drawMarker(WDataSeries series, WPainterPath result) {
-//		if(series instanceof CutOffSeries){
-//			int r = 3;
-//			series.setBrush(new WBrush(WColor.white));
-//			result.addEllipse(-r, -r, 2*r, 2*r);
-//			result.lineTo(-r, -r);
-//			result.lineTo(0, 0);
-//			result.lineTo(r, r);
-//			result.lineTo(0, 0);
-//			result.lineTo(r, -r);
-//			result.lineTo(-r, r);
-//			result.closeSubPath();
-//		} else
-//			super.drawMarker(series, result);
-//	}
 	
-	protected WColor[] generateColors(int n){
+	public static WColor[] generateColors(int n){
 		WColor colors[] = new WColor[n];
 		
 		float j = 0f;
@@ -97,7 +82,10 @@ public class Chart extends WCartesianChart{
 		return colors;
 	}
 	
-	public WColor getColor(int i){
+	public static WColor getColor(int i){
+		if(colors == null)
+			colors = generateColors(10);
+		
 		return colors[i % colors.length];
 	}
 	
@@ -165,8 +153,8 @@ public class Chart extends WCartesianChart{
 		pen.setWidth(new WLength(linewidth,Unit.Pixel));
 		painter.setPen(pen);
 		
-		WBrush closedTherapyBrush = new WBrush(WColor.green);
-		WBrush openTherapyBrush = new WBrush(WColor.darkGreen);
+		WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
+		WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
 		
 		painter.setRenderHint(RenderHint.Antialiasing,false);
 		for(Map.Entry<Therapy, TreeSet<String>> me : drugsMap.entrySet()){
@@ -190,6 +178,31 @@ public class Chart extends WCartesianChart{
 
 				painter.drawRect(x1 + linewidth, y1, x2-x1 - linewidth, y2-y1);
 			}
+		}
+		
+		//draw viral isolates
+		pen = new WPen(WColor.black);
+		pen.setStyle(PenStyle.DashLine);
+		paintDevice.getPainter().setPen(pen);
+		for(ViralIsolate vi : viralisolates){
+			double x1 = this.mapToDevice(new WDate(vi.getSampleDate()), 0).getX();
+			
+			paintDevice.drawLine(x1, 0, x1, sy + height);
+			paintDevice.getPainter().drawText(x1, sy+height+spacing, 0, height, EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignCenter), vi.getSampleId());
+			
+//			i = sy + height + spacing;
+//			for(NtSequence nt : vi.getNtSequences()){
+//				for(AaSequence aa : nt.getAaSequences()){
+//					i += height + spacing;
+//					
+//					paintDevice.getPainter().drawText(x1 - 25, i, 0, height, EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), aa.getProtein().getAbbreviation());
+//					
+//					for(AaMutation mut : aa.getAaMutations()){
+//						paintDevice.getPainter().drawText(x1, i, 0, height, EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), mut.getAaReference() + mut.getId().getMutationPosition() + mut.getAaMutation());
+//						i += height + spacing;
+//					}
+//				}
+//			}
 		}
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 	}
@@ -246,5 +259,28 @@ public class Chart extends WCartesianChart{
 			if(maxDate == null || d.after(maxDate))
 				maxDate = d;
 		}
+	}
+	
+	
+	private TreeSet<ViralIsolate> viralisolates = new TreeSet<ViralIsolate>(
+			new Comparator<ViralIsolate>() {
+				public int compare(ViralIsolate o1, ViralIsolate o2) {
+					return o1.getSampleDate().compareTo(o2.getSampleDate());
+				}
+			});
+	
+	public void loadViralIsolates(Patient p){
+		if(p.getViralIsolates().size() == 0)
+			return;
+		
+		for(ViralIsolate vi : p.getViralIsolates()){
+			viralisolates.add(vi);
+		}
+		
+		int i = getModel().getRowCount();
+		getModel().insertRow(i);
+		getModel().setData(i,0,new WDate(viralisolates.first().getSampleDate()));
+		getModel().insertRow(++i);
+		getModel().setData(i,0,new WDate(viralisolates.last().getSampleDate()));
 	}
 }
