@@ -202,8 +202,8 @@ public class Chart extends WCartesianChart{
 			});
 	private TreeMap<String,Double> drugsUsed = new TreeMap<String,Double>();
 	
-	private WDate minTherapyDate;
-	private WDate maxTherapyDate;
+	private Date minDate = null;
+	private Date maxDate = null;
 	
 	public void loadTherapies(Patient p){
 		Map<String,List<String>> commercialGeneric = new TreeMap<String,List<String>>();
@@ -238,14 +238,13 @@ public class Chart extends WCartesianChart{
 		}
 		
 		if(drugsMap.size() > 0){
-			minTherapyDate = new WDate(drugsMap.firstKey().getStartDate());
-			maxTherapyDate = new WDate(drugsMap.lastKey().getStopDate() == null ? new Date() : drugsMap.lastKey().getStopDate());
+			Date d = drugsMap.firstKey().getStartDate();
+			if(minDate == null || d.before(minDate))
+				minDate = d;
 			
-			int i = getModel().getRowCount();
-			getModel().insertRow(i);
-			getModel().setData(i, 0, minTherapyDate);
-			getModel().insertRow(++i);
-			getModel().setData(i, 0, maxTherapyDate);
+			d = drugsMap.lastKey().getStopDate() == null ? new Date() : drugsMap.lastKey().getStopDate();
+			if(maxDate == null || d.after(maxDate))
+				maxDate = d;
 		}
 	}
 }
