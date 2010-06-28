@@ -103,4 +103,12 @@ public class TestResultSeries extends WDataSeries {
 		Genome g = getTestType().getGenome();
 		return g == null ? getTestType().getDescription() : getTestType().getDescription() + " ("+ g.getOrganismDescription() +")";
 	}
+	
+	public Date getMinDate(){
+		return results.size() == 0 ? null : results.firstKey();
+	}
+	
+	public Date getMaxDate(){
+		return results.size() == 0 ? null : results.lastKey();
+	}
 }

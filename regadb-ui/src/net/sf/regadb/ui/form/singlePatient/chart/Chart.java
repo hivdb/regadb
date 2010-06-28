@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
 import java.awt.Color;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
@@ -41,7 +42,11 @@ import eu.webtoolkit.jwt.chart.WDataSeries;
 
 public class Chart extends WCartesianChart{
 	private static WColor colors[] = null;
-
+	
+	private Date cutoffDate;
+	private Date minDate = null;
+	private Date maxDate = null;
+	
 	public Chart(WContainerWidget widget) {
 		super(ChartType.ScatterPlot, widget);
 		
@@ -67,6 +72,10 @@ public class Chart extends WCartesianChart{
 		setLegendEnabled(true);
 		
 		colors = generateColors(11);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(1900, 1, 1);
+		cutoffDate = cal.getTime();
 	}
 	
 	public static WColor[] generateColors(int n){
@@ -89,7 +98,21 @@ public class Chart extends WCartesianChart{
 		return colors[i % colors.length];
 	}
 	
+	public void setDateRange(Date minDate, Date maxDate){
+		getAxis(Axis.XAxis).setRange(
+				new WDate(minDate).toJulianDay(),
+				new WDate(maxDate).toJulianDay());
+	}
+	
 	public void addSeries(TestResultSeries series){
+		if(series.getMinDate() != null){
+			if(cutoffDate.before(series.getMinDate()) && (minDate == null || series.getMinDate().before(minDate)))
+				minDate = series.getMinDate();
+			if(cutoffDate.before(series.getMaxDate()) && (maxDate == null || series.getMaxDate().after(maxDate)))
+				maxDate = series.getMaxDate();
+		}
+		setDateRange(minDate, maxDate);
+		
 		WColor c = getColor(getSeries().size());
 		WPen p = new WPen(c);
 		p.setWidth(new WLength(2));
@@ -127,8 +150,6 @@ public class Chart extends WCartesianChart{
 		double spacing = 1;
 		double height = 15;
 		
-		WDate maxDate = new WDate(new Date());
-		
 		double i = sy;
 		
 		painter.setRenderHint(RenderHint.Antialiasing,false);
@@ -161,7 +182,7 @@ public class Chart extends WCartesianChart{
 			double x1 = this.mapToDevice(new WDate(me.getKey().getStartDate()), 0).getX();
 			WDate stopDate;
 			if(me.getKey().getStopDate() == null){
-				stopDate = maxDate;
+				stopDate = new WDate(maxDate);
 				painter.setBrush(openTherapyBrush);
 			} else {
 				stopDate = new WDate(me.getKey().getStopDate());
@@ -215,9 +236,6 @@ public class Chart extends WCartesianChart{
 			});
 	private TreeMap<String,Double> drugsUsed = new TreeMap<String,Double>();
 	
-	private Date minDate = null;
-	private Date maxDate = null;
-	
 	public void loadTherapies(Patient p){
 		Map<String,List<String>> commercialGeneric = new TreeMap<String,List<String>>();
 		drugsMap.clear();
@@ -252,12 +270,14 @@ public class Chart extends WCartesianChart{
 		
 		if(drugsMap.size() > 0){
 			Date d = drugsMap.firstKey().getStartDate();
-			if(minDate == null || d.before(minDate))
+			if(cutoffDate.before(d) && (minDate == null || d.before(minDate)))
 				minDate = d;
 			
 			d = drugsMap.lastKey().getStopDate() == null ? new Date() : drugsMap.lastKey().getStopDate();
-			if(maxDate == null || d.after(maxDate))
+			if(cutoffDate.before(d) && (maxDate == null || d.after(maxDate)))
 				maxDate = d;
+			
+			setDateRange(minDate, maxDate);
 		}
 	}
 	
@@ -274,13 +294,14 @@ public class Chart extends WCartesianChart{
 			return;
 		
 		for(ViralIsolate vi : p.getViralIsolates()){
+			if(cutoffDate.before(vi.getSampleDate()) && (minDate == null || vi.getSampleDate().before(minDate)))
+				minDate = vi.getSampleDate();
+			if(cutoffDate.before(vi.getSampleDate()) && (maxDate == null || vi.getSampleDate().after(maxDate)))
+				maxDate = vi.getSampleDate();
+			
 			viralisolates.add(vi);
 		}
 		
-		int i = getModel().getRowCount();
-		getModel().insertRow(i);
-		getModel().setData(i,0,new WDate(viralisolates.first().getSampleDate()));
-		getModel().insertRow(++i);
-		getModel().setData(i,0,new WDate(viralisolates.last().getSampleDate()));
+		setDateRange(minDate, maxDate);
 	}
 }
