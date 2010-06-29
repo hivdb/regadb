@@ -64,11 +64,6 @@ public class PatientChartForm extends WGroupBox implements IForm
 		chart.addSeries(cd4Series);
 		chart.setXSeriesColumn(model.getXSeriesColumn());
 
-		chart.resize(1000, 1000);
-		chart.setPlotAreaPadding(80,Side.Left);
-		chart.setPlotAreaPadding(200,Side.Right);
-		chart.setPlotAreaPadding(500,Side.Bottom);
-		
 		chart.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
             public void trigger(WMouseEvent a) {
             	chartClicked(a);
@@ -77,6 +72,19 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		chart.loadTherapies(p);
 		chart.loadViralIsolates(p);
+		
+		int chartHeight = 500;
+		int chartWidth = 750;
+		int chartPaddingLeft = 80;
+		int chartPaddingRight = 200;
+		int chartPaddingBottom = chart.calculateAddedHeight();
+
+		
+		chart.resize(chartWidth + chartPaddingLeft + chartPaddingRight,
+				chartHeight + chartPaddingBottom);
+		chart.setPlotAreaPadding(chartPaddingLeft,Side.Left);
+		chart.setPlotAreaPadding(chartPaddingRight,Side.Right);
+		chart.setPlotAreaPadding(chartPaddingBottom,Side.Bottom);
 		
 		t.commit();
 		
@@ -150,7 +158,7 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		viTable.clear();
 		viTable.getElementAt(0, 0).addWidget(new WText(v.getSampleId(), TextFormat.PlainText));
-		viTable.getElementAt(0, 1).addWidget(new WText(DateUtils.format(v.getSampleDate()), TextFormat.PlainText));
+//		viTable.getElementAt(0, 1).addWidget(new WText(DateUtils.format(v.getSampleDate()), TextFormat.PlainText));
 
 		int i = 1;
 		for(NtSequence nt : v.getNtSequences()){

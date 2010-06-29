@@ -139,6 +139,11 @@ public class Chart extends WCartesianChart{
 		
 		painter.restore();
 	}
+
+	private int therapyOffset = 50;
+	private int therapySpacing = 1;
+	private int therapyHeight = 15;
+	private int therapyLineWidth = 1;
 	
 	@Override
 	protected void paintEvent(WPaintDevice paintDevice) {
@@ -146,32 +151,29 @@ public class Chart extends WCartesianChart{
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 		this.paint(painter);
 		
-		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + 50;
-		double spacing = 1;
-		double height = 15;
-		
-		double i = sy;
+		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
 		
 		painter.setRenderHint(RenderHint.Antialiasing,false);
-		painter.drawLine(0, i, getWidth().getValue(), i);
+		painter.drawLine(0, sy, getWidth().getValue(), sy);
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 
 		for(String drug : drugsUsed.keySet()){
-			drugsUsed.put(drug, i);
+			drugsUsed.put(drug, sy);
 
-			painter.drawText(new WRectF(0, i, 100, i+height), EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
-			painter.drawText(new WRectF(getWidth().getValue() - 100, i, 100, i+height), EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignRight), drug);
+			painter.drawText(new WRectF(0, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
+			painter.drawText(new WRectF(getWidth().getValue() - 100, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignRight), drug);
 			
-			i += height+1;
+			sy += therapyHeight+therapyLineWidth+(therapySpacing*2);
 
 			painter.setRenderHint(RenderHint.Antialiasing,false);
-			painter.drawLine(0, i, getWidth().getValue(), i);
+			painter.drawLine(0, sy, getWidth().getValue(), sy);
 			painter.setRenderHint(RenderHint.Antialiasing,true);
 		}
 
-		double linewidth = 1;
 		WPen pen = new WPen(WColor.transparent);
-		pen.setWidth(new WLength(linewidth,Unit.Pixel));
+		pen.setWidth(new WLength(therapyLineWidth,Unit.Pixel));
 		painter.setPen(pen);
 		
 		WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
@@ -192,12 +194,10 @@ public class Chart extends WCartesianChart{
 			double x2 = this.mapToDevice(stopDate,0).getX();
 			
 			for(String drug : me.getValue()){
-				i = drugsUsed.get(drug);
+				double i = drugsUsed.get(drug);
 
-				double y1 = i+1 + spacing;
-				double y2 = i + height+1 - spacing;
-
-				painter.drawRect(x1 + linewidth, y1, x2-x1 - linewidth, y2-y1);
+				painter.drawRect(x1 + therapyLineWidth, i + therapyLineWidth + therapySpacing, 
+						x2-x1 - therapyLineWidth, therapyHeight);
 			}
 		}
 		
@@ -208,23 +208,11 @@ public class Chart extends WCartesianChart{
 		for(ViralIsolate vi : viralisolates){
 			double x1 = this.mapToDevice(new WDate(vi.getSampleDate()), 0).getX();
 			
-			paintDevice.drawLine(x1, 0, x1, sy + height);
-			paintDevice.getPainter().drawText(x1, sy+height+spacing, 0, height, EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignCenter), vi.getSampleId());
-			
-//			i = sy + height + spacing;
-//			for(NtSequence nt : vi.getNtSequences()){
-//				for(AaSequence aa : nt.getAaSequences()){
-//					i += height + spacing;
-//					
-//					paintDevice.getPainter().drawText(x1 - 25, i, 0, height, EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), aa.getProtein().getAbbreviation());
-//					
-//					for(AaMutation mut : aa.getAaMutations()){
-//						paintDevice.getPainter().drawText(x1, i, 0, height, EnumSet.of(AlignmentFlag.AlignTextBottom,AlignmentFlag.AlignLeft), mut.getAaReference() + mut.getId().getMutationPosition() + mut.getAaMutation());
-//						i += height + spacing;
-//					}
-//				}
-//			}
+			paintDevice.drawLine(x1, 0, x1, sy+therapyHeight);
+			paintDevice.getPainter().drawText(x1, sy+therapyHeight+therapySpacing, 0, therapyHeight,
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter), vi.getSampleId());
 		}
+
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 	}
 	
@@ -303,5 +291,9 @@ public class Chart extends WCartesianChart{
 		}
 		
 		setDateRange(minDate, maxDate);
+	}
+	
+	public int calculateAddedHeight(){
+		return therapyOffset + ((drugsUsed.size()+2) * (therapySpacing*2 + therapyHeight + therapyLineWidth));
 	}
 }
