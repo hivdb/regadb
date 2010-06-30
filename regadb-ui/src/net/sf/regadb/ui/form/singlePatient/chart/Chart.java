@@ -99,9 +99,17 @@ public class Chart extends WCartesianChart{
 	}
 	
 	public void setDateRange(Date minDate, Date maxDate){
+		WDate wMinDate = new WDate(minDate);
+		WDate wMaxDate = new WDate(maxDate);
+		
+		if (Math.abs(wMinDate.getDaysTo(wMaxDate)) < 31) {
+			wMinDate = wMinDate.addMonths(-1);
+			wMaxDate = wMaxDate.addMonths(1);
+		}
+		
 		getAxis(Axis.XAxis).setRange(
-				new WDate(minDate).toJulianDay(),
-				new WDate(maxDate).toJulianDay());
+				wMinDate.toJulianDay(),
+				wMaxDate.toJulianDay());
 	}
 	
 	public void addSeries(TestResultSeries series){
