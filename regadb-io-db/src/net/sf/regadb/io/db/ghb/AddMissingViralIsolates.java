@@ -45,7 +45,7 @@ public class AddMissingViralIsolates {
 			String sampleId = f.getName();
 			Matcher matcher = pattern.matcher(sampleId);
 			if(matcher.matches()){
-				sampleId = matcher.group(1);
+				sampleId = matcher.group(1).toLowerCase();
 				String label = matcher.group(2);
 				String nucleotides = FastaHelper.readFastaFile(f, true).xna_;
 				
@@ -70,14 +70,13 @@ public class AddMissingViralIsolates {
 		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
-		for(int i=0; i<t.numRows(); ++i){
+		for(int i=1; i<t.numRows(); ++i){
 			try {
 				String patientId = t.valueAt(iPatientId, i);
 				String sampleId = t.valueAt(iSampleId, i);
-				Date sampleDate;
-					sampleDate = df.parse(t.valueAt(iSampleDate, i));
+				Date sampleDate = df.parse(t.valueAt(iSampleDate, i));
 				
-				List<Pair<String,String>> s = sequences.get(sampleId);
+				List<Pair<String,String>> s = sequences.get(sampleId.toLowerCase());
 				if(s == null){
 					System.err.println("no fasta(s) found: "+ sampleId);
 					continue;
@@ -90,6 +89,9 @@ public class AddMissingViralIsolates {
 				System.err.println(e.getMessage());
 			}
 		}
+		
+		adder.exportViralIsolates(
+				new File(sequenceDir.getAbsolutePath() + File.separatorChar + "viralisolates.xml"));
 	}
 	
 	public static void main(String args[]) {

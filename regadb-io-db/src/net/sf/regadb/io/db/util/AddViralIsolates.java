@@ -55,7 +55,11 @@ public class AddViralIsolates {
 	}
 	
 	public void handleViralIsolate(String patientId, String sampleId, Date sampleDate, Collection<Pair<String,String>> sequences) throws AddViralIsolateException{
-		if(isDuplicate(sampleId))
+		t = login.createTransaction();
+		boolean dupe = isDuplicate(sampleId);
+		t.commit();
+		
+		if(dupe)
 			throw new DuplicateSampleIdException(sampleId);
 
 		Patient p = getPatient(patientId);
