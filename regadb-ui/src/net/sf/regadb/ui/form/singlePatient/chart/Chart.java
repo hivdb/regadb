@@ -99,6 +99,9 @@ public class Chart extends WCartesianChart{
 	}
 	
 	public void setDateRange(Date minDate, Date maxDate){
+		if(minDate == null || maxDate == null)
+			return;
+		
 		WDate wMinDate = new WDate(minDate);
 		WDate wMaxDate = new WDate(maxDate);
 		
