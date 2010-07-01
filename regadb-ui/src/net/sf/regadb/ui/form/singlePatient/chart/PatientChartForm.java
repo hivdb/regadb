@@ -15,8 +15,6 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
-import net.sf.regadb.util.date.DateUtils;
-import eu.webtoolkit.jwt.PositionScheme;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
@@ -34,7 +32,6 @@ public class PatientChartForm extends WGroupBox implements IForm
 {
 	private Chart chart;
 	private TestResultsModel model;
-	private WText label;
 	private WTable viTable;
 	
 	public PatientChartForm(Patient p)
@@ -88,33 +85,12 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		t.commit();
 		
-		label = new WText("n/a");
-		label.setStyleClass("chart-popup");
-		label.setPopup(true);
-		label.hide();
-		label.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-            public void trigger(WMouseEvent a) {
-            	label.hide();
-            }
-		});
-		addWidget(label);
-		
 		viTable = new WTable(this);
 	}
 	
 	private void chartClicked(WMouseEvent a){
 		WPointF c = new WPointF(a.getWidget());
 		Date d = WDate.fromJulianDay((int)chart.mapFromDevice(c,Axis.XAxis).getX()).getDate();
-		
-		String x = DateUtils.format(d);
-		double y = Math.round(chart.mapFromDevice(c,Axis.YAxis).getY()*100d)/100d;
-		double y2 = Math.round(chart.mapFromDevice(c,Axis.Y2Axis).getY()*100d)/100d;
-
-		label.setText("("+ x +", "+ y +", "+ y2 +")");
-		label.setPositionScheme(PositionScheme.Absolute);
-		label.setOffsets(a.getDocument().x,Side.Left);
-		label.setOffsets(a.getDocument().y,Side.Top);
-		label.show();
 		
 		showClosestViralIsolate(d);
 	}
@@ -137,6 +113,7 @@ public class PatientChartForm extends WGroupBox implements IForm
 
 	}
 	
+	private int prevViralIsolateIi = -1;
 	public void showClosestViralIsolate(Date date){
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		Patient p = RegaDBMain.getApp().getSelectedPatient();
@@ -153,8 +130,9 @@ public class PatientChartForm extends WGroupBox implements IForm
 				break;
 		}
 		
-		if(v == null)
+		if(v == null || v.getViralIsolateIi() == prevViralIsolateIi)
 			return;
+		prevViralIsolateIi = v.getViralIsolateIi();
 		
 		viTable.clear();
 		viTable.getElementAt(0, 0).addWidget(new WText(v.getSampleId(), TextFormat.PlainText));
