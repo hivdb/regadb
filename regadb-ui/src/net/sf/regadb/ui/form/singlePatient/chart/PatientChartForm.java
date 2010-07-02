@@ -47,8 +47,8 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		List<ViralLoadSeries> vlSeries = new LinkedList<ViralLoadSeries>();
 		for(Genome genome : StandardObjects.getGenomes())
-			vlSeries.add(new ViralLoadSeries(genome, Axis.YAxis));
-		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.Y2Axis);
+			vlSeries.add(new ViralLoadSeries(genome, Axis.Y2Axis));
+		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.YAxis);
 		
 		for(ViralLoadSeries vl : vlSeries)
 			model.getSeries().add(vl);
@@ -71,8 +71,8 @@ public class PatientChartForm extends WGroupBox implements IForm
 		chart.loadViralIsolates(p);
 		
 		int chartHeight = 500;
-		int chartWidth = 750;
-		int chartPaddingLeft = 80;
+		int chartWidth = 700;
+		int chartPaddingLeft = 40;
 		int chartPaddingRight = 200;
 		int chartPaddingBottom = chart.calculateAddedHeight();
 
