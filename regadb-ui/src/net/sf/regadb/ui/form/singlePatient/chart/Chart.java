@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
 import java.awt.Color;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
@@ -15,7 +16,9 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.ViralIsolate;
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.PenStyle;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
@@ -38,8 +41,12 @@ import eu.webtoolkit.jwt.chart.WCartesianChart;
 import eu.webtoolkit.jwt.chart.WDataSeries;
 
 public class Chart extends WCartesianChart{
-	private WColor colors[];
-
+	private static WColor colors[] = null;
+	
+	private Date cutoffDate;
+	private Date minDate = null;
+	private Date maxDate = null;
+	
 	public Chart(WContainerWidget widget) {
 		super(ChartType.ScatterPlot, widget);
 		
@@ -51,12 +58,12 @@ public class Chart extends WCartesianChart{
 		axis.setGridLinesEnabled(true);
 		axis.setLabelAngle(-30);
 		
-		axis = getAxis(Axis.YAxis);
+		axis = getAxis(Axis.Y2Axis);
 		axis.setScale(AxisScale.LogScale);
-		axis.setGridLinesEnabled(true);
+		axis.setVisible(true);
 		axis.setTitle("log10");
 		
-		axis = getAxis(Axis.Y2Axis);
+		axis = getAxis(Axis.YAxis);
 		axis.setScale(AxisScale.LinearScale);
 		axis.setGridLinesEnabled(true);
 		axis.setVisible(true);
@@ -64,27 +71,14 @@ public class Chart extends WCartesianChart{
 
 		setLegendEnabled(true);
 		
-		colors = generateColors(10);
+		colors = generateColors(11);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(1900, 1, 1);
+		cutoffDate = cal.getTime();
 	}
-
-//	@Override
-//	public void drawMarker(WDataSeries series, WPainterPath result) {
-//		if(series instanceof CutOffSeries){
-//			int r = 3;
-//			series.setBrush(new WBrush(WColor.white));
-//			result.addEllipse(-r, -r, 2*r, 2*r);
-//			result.lineTo(-r, -r);
-//			result.lineTo(0, 0);
-//			result.lineTo(r, r);
-//			result.lineTo(0, 0);
-//			result.lineTo(r, -r);
-//			result.lineTo(-r, r);
-//			result.closeSubPath();
-//		} else
-//			super.drawMarker(series, result);
-//	}
 	
-	protected WColor[] generateColors(int n){
+	public static WColor[] generateColors(int n){
 		WColor colors[] = new WColor[n];
 		
 		float j = 0f;
@@ -97,11 +91,39 @@ public class Chart extends WCartesianChart{
 		return colors;
 	}
 	
-	public WColor getColor(int i){
+	public static WColor getColor(int i){
+		if(colors == null)
+			colors = generateColors(10);
+		
 		return colors[i % colors.length];
 	}
 	
+	public void setDateRange(Date minDate, Date maxDate){
+		if(minDate == null || maxDate == null)
+			return;
+		
+		WDate wMinDate = new WDate(minDate);
+		WDate wMaxDate = new WDate(maxDate);
+		
+		if (Math.abs(wMinDate.getDaysTo(wMaxDate)) < 31) {
+			wMinDate = wMinDate.addMonths(-1);
+			wMaxDate = wMaxDate.addMonths(1);
+		}
+		
+		getAxis(Axis.XAxis).setRange(
+				wMinDate.toJulianDay(),
+				wMaxDate.toJulianDay());
+	}
+	
 	public void addSeries(TestResultSeries series){
+		if(series.getMinDate() != null){
+			if(cutoffDate.before(series.getMinDate()) && (minDate == null || series.getMinDate().before(minDate)))
+				minDate = series.getMinDate();
+			if(cutoffDate.before(series.getMaxDate()) && (maxDate == null || series.getMaxDate().after(maxDate)))
+				maxDate = series.getMaxDate();
+		}
+		setDateRange(minDate, maxDate);
+		
 		WColor c = getColor(getSeries().size());
 		WPen p = new WPen(c);
 		p.setWidth(new WLength(2));
@@ -128,6 +150,11 @@ public class Chart extends WCartesianChart{
 		
 		painter.restore();
 	}
+
+	private int therapyOffset = 50;
+	private int therapySpacing = 1;
+	private int therapyHeight = 15;
+	private int therapyLineWidth = 1;
 	
 	@Override
 	protected void paintEvent(WPaintDevice paintDevice) {
@@ -135,45 +162,40 @@ public class Chart extends WCartesianChart{
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 		this.paint(painter);
 		
-		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + 50;
-		double spacing = 1;
-		double height = 15;
-		
-		WDate maxDate = new WDate(new Date());
-		
-		double i = sy;
+		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
 		
 		painter.setRenderHint(RenderHint.Antialiasing,false);
-		painter.drawLine(0, i, getWidth().getValue(), i);
+		painter.drawLine(0, sy, getWidth().getValue(), sy);
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 
 		for(String drug : drugsUsed.keySet()){
-			drugsUsed.put(drug, i);
+			drugsUsed.put(drug, sy);
 
-			painter.drawText(new WRectF(0, i, 100, i+height), EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
-			painter.drawText(new WRectF(getWidth().getValue() - 100, i, 100, i+height), EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignRight), drug);
+			painter.drawText(new WRectF(0, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
+			painter.drawText(new WRectF(getWidth().getValue() - 100, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignRight), drug);
 			
-			i += height+1;
+			sy += therapyHeight+therapyLineWidth+(therapySpacing*2);
 
 			painter.setRenderHint(RenderHint.Antialiasing,false);
-			painter.drawLine(0, i, getWidth().getValue(), i);
+			painter.drawLine(0, sy, getWidth().getValue(), sy);
 			painter.setRenderHint(RenderHint.Antialiasing,true);
 		}
 
-		double linewidth = 1;
 		WPen pen = new WPen(WColor.transparent);
-		pen.setWidth(new WLength(linewidth,Unit.Pixel));
+		pen.setWidth(new WLength(therapyLineWidth,Unit.Pixel));
 		painter.setPen(pen);
 		
-		WBrush closedTherapyBrush = new WBrush(WColor.green);
-		WBrush openTherapyBrush = new WBrush(WColor.darkGreen);
+		WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
+		WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
 		
 		painter.setRenderHint(RenderHint.Antialiasing,false);
 		for(Map.Entry<Therapy, TreeSet<String>> me : drugsMap.entrySet()){
 			double x1 = this.mapToDevice(new WDate(me.getKey().getStartDate()), 0).getX();
 			WDate stopDate;
 			if(me.getKey().getStopDate() == null){
-				stopDate = maxDate;
+				stopDate = new WDate(maxDate);
 				painter.setBrush(openTherapyBrush);
 			} else {
 				stopDate = new WDate(me.getKey().getStopDate());
@@ -183,14 +205,25 @@ public class Chart extends WCartesianChart{
 			double x2 = this.mapToDevice(stopDate,0).getX();
 			
 			for(String drug : me.getValue()){
-				i = drugsUsed.get(drug);
+				double i = drugsUsed.get(drug);
 
-				double y1 = i+1 + spacing;
-				double y2 = i + height+1 - spacing;
-
-				painter.drawRect(x1 + linewidth, y1, x2-x1 - linewidth, y2-y1);
+				painter.drawRect(x1 + therapyLineWidth, i + therapyLineWidth + therapySpacing, 
+						x2-x1 - therapyLineWidth, therapyHeight);
 			}
 		}
+		
+		//draw viral isolates
+		pen = new WPen(WColor.black);
+		pen.setStyle(PenStyle.DashLine);
+		paintDevice.getPainter().setPen(pen);
+		for(ViralIsolate vi : viralisolates){
+			double x1 = this.mapToDevice(new WDate(vi.getSampleDate()), 0).getX();
+			
+			paintDevice.drawLine(x1, 0, x1, sy+therapyHeight);
+			paintDevice.getPainter().drawText(x1, sy+therapyHeight+therapySpacing, 0, therapyHeight,
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter), vi.getSampleId());
+		}
+
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 	}
 	
@@ -201,9 +234,6 @@ public class Chart extends WCartesianChart{
 				}
 			});
 	private TreeMap<String,Double> drugsUsed = new TreeMap<String,Double>();
-	
-	private WDate minTherapyDate;
-	private WDate maxTherapyDate;
 	
 	public void loadTherapies(Patient p){
 		Map<String,List<String>> commercialGeneric = new TreeMap<String,List<String>>();
@@ -238,14 +268,43 @@ public class Chart extends WCartesianChart{
 		}
 		
 		if(drugsMap.size() > 0){
-			minTherapyDate = new WDate(drugsMap.firstKey().getStartDate());
-			maxTherapyDate = new WDate(drugsMap.lastKey().getStopDate() == null ? new Date() : drugsMap.lastKey().getStopDate());
+			Date d = drugsMap.firstKey().getStartDate();
+			if(cutoffDate.before(d) && (minDate == null || d.before(minDate)))
+				minDate = d;
 			
-			int i = getModel().getRowCount();
-			getModel().insertRow(i);
-			getModel().setData(i, 0, minTherapyDate);
-			getModel().insertRow(++i);
-			getModel().setData(i, 0, maxTherapyDate);
+			d = drugsMap.lastKey().getStopDate() == null ? new Date() : drugsMap.lastKey().getStopDate();
+			if(cutoffDate.before(d) && (maxDate == null || d.after(maxDate)))
+				maxDate = d;
+			
+			setDateRange(minDate, maxDate);
 		}
+	}
+	
+	
+	private TreeSet<ViralIsolate> viralisolates = new TreeSet<ViralIsolate>(
+			new Comparator<ViralIsolate>() {
+				public int compare(ViralIsolate o1, ViralIsolate o2) {
+					return o1.getSampleDate().compareTo(o2.getSampleDate());
+				}
+			});
+	
+	public void loadViralIsolates(Patient p){
+		if(p.getViralIsolates().size() == 0)
+			return;
+		
+		for(ViralIsolate vi : p.getViralIsolates()){
+			if(cutoffDate.before(vi.getSampleDate()) && (minDate == null || vi.getSampleDate().before(minDate)))
+				minDate = vi.getSampleDate();
+			if(cutoffDate.before(vi.getSampleDate()) && (maxDate == null || vi.getSampleDate().after(maxDate)))
+				maxDate = vi.getSampleDate();
+			
+			viralisolates.add(vi);
+		}
+		
+		setDateRange(minDate, maxDate);
+	}
+	
+	public int calculateAddedHeight(){
+		return therapyOffset + ((drugsUsed.size()+2) * (therapySpacing*2 + therapyHeight + therapyLineWidth));
 	}
 }

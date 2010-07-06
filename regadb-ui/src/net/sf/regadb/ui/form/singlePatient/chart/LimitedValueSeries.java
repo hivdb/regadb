@@ -17,7 +17,7 @@ public class LimitedValueSeries extends TestResultSeries {
 			this.parent = parent;
 
 			setMarker(MarkerType.CircleMarker);
-			setBrush(new WBrush(WColor.white));
+			setMarkerBrush(new WBrush(WColor.white));
 			
 			setLegendEnabled(false);
 		}

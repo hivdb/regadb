@@ -31,7 +31,7 @@ public class ViralLoadSeries extends LimitedValueSeries {
 
 	@Override
 	public boolean isOk(TestResult tr){
-		if(getResults().containsKey(tr.getTestDate()))
+		if(tr.getTestDate() == null || getResults().containsKey(tr.getTestDate()))
 			return false;
 		
 		TestType tt = tr.getTest().getTestType();
