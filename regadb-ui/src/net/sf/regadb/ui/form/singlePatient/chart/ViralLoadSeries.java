@@ -50,8 +50,9 @@ public class ViralLoadSeries extends LimitedValueSeries {
 	
 	@Override
 	public Object getValue(TestResult tr){
+		Double val = (Double)super.getValue(tr);
 		if(isViralLoadCopies(tr.getTest().getTestType()))
-			return Math.log10((Double)super.getValue(tr));
+			return val.doubleValue() <= 0 ? 0 : Math.log10(val);
 		else
 			return super.getValue(tr);
 	}
