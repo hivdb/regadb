@@ -21,6 +21,7 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.PenStyle;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WBrush;
+import eu.webtoolkit.jwt.WBrushStyle;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
@@ -218,11 +219,12 @@ public class Chart extends WCartesianChart{
 		pen = new WPen(WColor.black);
 		pen.setStyle(PenStyle.DashLine);
 		paintDevice.getPainter().setPen(pen);
+		
 		for(ViralIsolate vi : viralisolates){
 			double x1 = this.mapToDevice(new WDate(vi.getSampleDate()), 0).getX();
 			
-			paintDevice.drawLine(x1, 0, x1, sy+therapyHeight);
-			paintDevice.getPainter().drawText(x1, sy+therapyHeight+therapySpacing, 0, therapyHeight,
+			painter.drawLine(x1, 0, x1, sy+therapyHeight);
+			painter.drawText(x1-50, sy+therapyHeight+therapySpacing, 100, therapyHeight,
 					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter), vi.getSampleId());
 		}
 
