@@ -21,7 +21,6 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.PenStyle;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WBrush;
-import eu.webtoolkit.jwt.WBrushStyle;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
@@ -167,8 +166,11 @@ public class Chart extends WCartesianChart{
 		
 		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
 		
+
+		double width = getWidth().getValue() - getPlotAreaPadding(Side.Right) + 60;
+
 		painter.setRenderHint(RenderHint.Antialiasing,false);
-		painter.drawLine(0, sy, getWidth().getValue(), sy);
+		painter.drawLine(0, sy, width, sy);
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 
 		for(String drug : drugsUsed.keySet()){
@@ -176,13 +178,13 @@ public class Chart extends WCartesianChart{
 
 			painter.drawText(new WRectF(0, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
 					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
-			painter.drawText(new WRectF(getWidth().getValue() - 100, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
-					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignRight), drug);
+			painter.drawText(new WRectF(width-30, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
 			
 			sy += therapyHeight+therapyLineWidth+(therapySpacing*2);
 
 			painter.setRenderHint(RenderHint.Antialiasing,false);
-			painter.drawLine(0, sy, getWidth().getValue(), sy);
+			painter.drawLine(0, sy, width, sy);
 			painter.setRenderHint(RenderHint.Antialiasing,true);
 		}
 
