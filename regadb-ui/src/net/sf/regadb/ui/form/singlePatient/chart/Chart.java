@@ -59,12 +59,14 @@ public class Chart extends WCartesianChart{
 		axis.setLabelAngle(-30);
 		
 		axis = getAxis(Axis.Y2Axis);
-		axis.setScale(AxisScale.LogScale);
+		axis.setScale(AxisScale.LinearScale);
+		axis.setLabelFormat("%.2f");
 		axis.setVisible(true);
 		axis.setTitle("log10");
 		
 		axis = getAxis(Axis.YAxis);
 		axis.setScale(AxisScale.LinearScale);
+		axis.setLabelFormat("%.0f");
 		axis.setGridLinesEnabled(true);
 		axis.setVisible(true);
 		axis.setTitle("cells/ul");
