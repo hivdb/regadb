@@ -4,8 +4,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
-import org.biojava.bio.seq.Sequence;
-
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
@@ -98,7 +96,7 @@ public class ViralIsolateAnalysisHelper
     	StringBuilder sb = new StringBuilder();
     	
     	for(NtSequence nt : vi.getNtSequences())
-			sb.append('>').append(nt.getNtSequenceIi()).append('\n')
+			sb.append('>').append(nt.getLabel().replace(' ','_').replace(',','-')).append('\n')
 				.append(nt.getNucleotides()).append('\n');
     	
     	return sb.toString();
