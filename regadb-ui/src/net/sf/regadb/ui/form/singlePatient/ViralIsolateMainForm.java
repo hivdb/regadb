@@ -99,20 +99,25 @@ public class ViralIsolateMainForm extends WContainerWidget
         if (config != null)
 		for(TestItem ti : config.getTests()) {
         	Test t = tr.getTest(ti.description);
-            Label l = new Label(TestComboBox.getLabel(t));
-            FormField testResultField;
-            if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
-                testResultField = new ComboBox(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-                for(TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
-                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
-                }
-                ((ComboBox)testResultField).sort();
-            } else {
-                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
-            }
-
-            table_.addLineToTable(l, testResultField);
-            testFormFields_.add(testResultField);
+        	if(t != null){
+	            Label l = new Label(TestComboBox.getLabel(t));
+	            FormField testResultField;
+	            if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
+	                testResultField = new ComboBox(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
+	                for(TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
+	                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
+	                }
+	                ((ComboBox)testResultField).sort();
+	            } else {
+	                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
+	            }
+	
+	            table_.addLineToTable(l, testResultField);
+	            testFormFields_.add(testResultField);
+        	}
+        	else{
+        		System.err.println("ViralIsolateForm: test does not exist: '"+ ti.description +'\'');
+        	}
         }
         tr.commit();
 
@@ -152,6 +157,9 @@ public class ViralIsolateMainForm extends WContainerWidget
         if(config != null){
 			for(int i = 0; i < config.getTests().size(); i++) {
 				Test test = trans.getTest(config.getTests().get(i).description);
+				if(test == null)
+					continue;
+				
 				TestResult theTr = null;
 				for (TestResult tr : vi.getTestResults()) {
 					if (tr.getTest().getDescription().equals(test.getDescription())){
@@ -376,7 +384,7 @@ public class ViralIsolateMainForm extends WContainerWidget
                 if(f.text()!=null && !f.text().trim().equals("")) {
                 	if (tr == null)
                 		tr = createTestResult(t.getTest(config.getTests().get(i).description));
-                    tr.setData(f.text().getBytes());
+                    tr.setValue(f.text());
                 }
                 else if(tr != null){
                 	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);

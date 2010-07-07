@@ -99,6 +99,12 @@
   	<attribute name="Class-Path" value="${jar-dependencies}"/>
       </manifest>
     </jar>
+    <jar jarfile="${dist}/preparecentralrepos.jar" basedir="${build}">
+      <manifest>
+  	<attribute name="Main-Class" value="net.sf.regadb.service.ioAssist.PrepareCentralRepos"/>
+  	<attribute name="Class-Path" value="${jar-dependencies}"/>
+      </manifest>
+    </jar>
     <antcall target="create-package" />
   </target>
   

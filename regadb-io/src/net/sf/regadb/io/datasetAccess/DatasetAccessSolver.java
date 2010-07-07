@@ -11,6 +11,7 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
@@ -187,4 +188,9 @@ public class DatasetAccessSolver implements IDatasetAccess {
             Set<Integer> accessiblePatients) {
         return true;
     }
+
+	public boolean canAccessDrugClass(DrugClass DrugClassvar,
+			Set<Dataset> datasets, Set<Integer> accessiblePatients) {
+		return true;
+	}
 }

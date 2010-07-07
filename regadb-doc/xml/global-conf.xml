@@ -197,9 +197,10 @@
 
   <!--  a list of proxy servers, with optional authentication 
         this element is only required if your installation is behind a proxy server
+        the optional 'type' attribute can be either 'http' (default) or 'socks'
   -->
   <proxies>
-    <proxy>
+    <proxy type="http">
       <host>www-proxy</host>
       <port>3128</port>
       <user>user1</user>

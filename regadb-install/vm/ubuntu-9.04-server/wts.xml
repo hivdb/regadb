@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<wts-settings>
+        <wts-dir>
+        /soft/wts
+        </wts-dir>
+        <challenge-settings>
+                <expire-time>
+                300
+                </expire-time>
+        </challenge-settings>
+</wts-settings>
+

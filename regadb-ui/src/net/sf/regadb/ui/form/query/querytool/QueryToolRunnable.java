@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientImplHelper;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -22,11 +20,13 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.datasetAccess.DatasetAccessSolver;
 import net.sf.regadb.io.exportCsv.ExportToCsv;
 import net.sf.regadb.ui.form.query.querytool.fasta.QTFastaExporter;
+import net.sf.regadb.util.script.Python;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.exception.SQLGrammarException;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.queryeditor.FieldSelection;
 import com.pharmadm.custom.rega.queryeditor.FromVariable;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
@@ -51,11 +51,16 @@ public class QueryToolRunnable implements Runnable {
 	private Status status;
 	private File csvFile;
 	private File fastaFile;
+	private File summaryFile;
 	private int numberFastaEntries;
 	private String statusMsg = "";
 	private QueryStatement statement;
 	private Object mutex = new Object();
 	private HashMap<String, String> errors;
+	private boolean postProcessing;
+	private String postProcessingScript;
+	
+	private HashMap<String, Integer> variablePositions = new HashMap<String, Integer>();
 	
 	private enum Status {
 		WAITING,
@@ -89,8 +94,9 @@ public class QueryToolRunnable implements Runnable {
 	    }
 	}
 	
-	public QueryToolRunnable(Login login, String fileName, QueryEditor editor) {
+	public QueryToolRunnable(Login login, String fileName, String postProcessingScript, QueryEditor editor) {
 		this.fileName = fileName;
+		this.postProcessingScript = postProcessingScript;
 		this.originalLogin = login;
 		this.editor = editor;
 		status = Status.WAITING;
@@ -99,6 +105,7 @@ public class QueryToolRunnable implements Runnable {
 		errors.put("memory_error", WString.tr("form.query.querytool.label.status.failed.memoryerror").getValue());
 		errors.put("sql_error", WString.tr("form.query.querytool.label.status.failed.sqlerror").getValue());
 		errors.put("type_error", WString.tr("form.query.querytool.label.status.failed.typeerror").getValue());
+		postProcessing = false;
 	}
 	
 	public boolean isDone() {
@@ -128,7 +135,7 @@ public class QueryToolRunnable implements Runnable {
 	public void run() {
         csvFile =  getOutputFile();
 
-        if(process(csvFile)){
+        if(process()){
             status = Status.FINISHED;
         }
         else{
@@ -164,12 +171,17 @@ public class QueryToolRunnable implements Runnable {
     	}
     	return null;
     }
+    
+    public File getSummaryFile() {
+    	return summaryFile;
+    }
 	
-    private boolean process(File csvFile){
+    private boolean process(){
     	boolean success = false;
     	
     	fastaFile = null;
     	numberFastaEntries = 0;
+    	summaryFile = null;
         
     	Login copiedLogin = originalLogin.copyLogin();
 
@@ -210,18 +222,21 @@ public class QueryToolRunnable implements Runnable {
 					fastaOS = new OutputStreamWriter(new FileOutputStream(fastaFile));
 				}
 	          
+				
 	            os.write(getHeaderLine(selections, newList.getSelectedColumnNames()).getBytes());
 	          
 	            int lines = 0;
 	            int writtenLines = 0;
+	            Set<Integer> isolateIds = new HashSet<Integer>();
             	while (!result.isLast() && status != Status.CANCELED) {
             		Object[] o = null;
             		synchronized (mutex) {
                 		o = result.get();
 					}
             		if (fastaFile != null) {
-            			if(DatasetAccessSolver.getInstance().canAccessViralIsolate((ViralIsolate)o[o.length - 1], new HashSet<Dataset>(), accessiblePatients))
-            				numberFastaEntries += ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export((ViralIsolate)o[o.length - 1], fastaOS, datasets, proteins);
+            			ViralIsolate vi = (ViralIsolate)o[o.length - 1];
+            			if(isolateIds.add(vi.getViralIsolateIi()) && DatasetAccessSolver.getInstance().canAccessViralIsolate(vi, new HashSet<Dataset>(), accessiblePatients))
+            				numberFastaEntries += ((QTFastaExporter)newEditor.getQuery().getFastaExport()).export(vi, fastaOS, datasets, proteins);
             		}
             		//TODO new HashSet<Dataset>() is a workaround, only accessiblePatients is being used in the end
             		//this access solving stuff is horrible and could use a little rewrite, someday
@@ -233,10 +248,12 @@ public class QueryToolRunnable implements Runnable {
             	if (fastaFile != null)
             		fastaOS.close();
 	            os.close();
+	            
+	            postProcess();
+	            
         		statusMsg = " (" + writtenLines + ")";
 	            success = true;
             }
-            
 			statement.close();
             t.clearCache();
         }
@@ -269,6 +286,27 @@ public class QueryToolRunnable implements Runnable {
         return success;
     }
     
+    private void postProcess() throws IOException {
+    	if (postProcessingScript == null)
+    		return;
+    	
+    	postProcessing = true;
+    	
+    	List<String> arguments = new ArrayList<String>();
+    	
+    	String fastaFileName = fastaFile == null? "" : fastaFile.getAbsolutePath();
+    	
+    	summaryFile = new File(getResultDir().getAbsolutePath()  + File.separator + fileName + "summary.csv");
+    	
+    	arguments.add(csvFile.getAbsolutePath());
+    	arguments.add(fastaFileName);
+    	arguments.add(summaryFile.getAbsolutePath());
+    	
+    	Python.getInstance().execute(postProcessingScript, "query_tool_post_process", arguments);
+    	
+    	postProcessing = false;
+    }
+    
 
     private Set<Integer> getAccessiblePatients(Transaction t) {
 		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery(
@@ -299,15 +337,25 @@ public class QueryToolRunnable implements Runnable {
 		
 		try{
 			for (int j = 0 ; j < selections.size() ; j++) {
-				if (selections.get(j) instanceof TableSelection) {
+				Selection sel = selections.get(j);
+				if (sel instanceof TableSelection) {
 					lastTableAccess = (csvExport.getCsvLineSwitch(array[j], userDatasets, accessiblePatients) != null);
 				}
-				else if (selections.get(j) instanceof FieldSelection || selections.get(j) instanceof OutputSelection) {
+				else if (sel instanceof FieldSelection
+						|| sel instanceof OutputSelection) {
 					// if the first element is an outputselection selection list
 					// changes made earlier guarantee that it is a static value
 					// so it can be outputted regardless of access
 					if (array[j]!=null && ( lastTableAccess || j == 0 && selections.get(j) instanceof OutputSelection )) {
 						line.addField(array[j].toString());
+						
+						if(sel instanceof ExporterSelection){
+							ExporterSelection xsel = (ExporterSelection)sel;
+							Integer i = variablePositions.get(xsel.getExporter().getVariableName());
+							if(i != null)
+								for(String val : xsel.getExporter().getSelectedValues(array[i]))
+									line.addField(val);
+						}
 					}
 					else {
 						line.addField(null);
@@ -328,10 +376,20 @@ public class QueryToolRunnable implements Runnable {
     }
     
     private String getHeaderLine(List<Selection> selections, List<String> columnNames) {
+    	variablePositions.clear();
+    	
         CsvLine line = new CsvLine();
         for (int i = 0 ; i < selections.size(); i++) {
-        	if (!(selections.get(i) instanceof TableSelection)) {
+        	Selection sel = selections.get(i);
+        	if (!(sel instanceof TableSelection)) {
         		line.addField(columnNames.get(i));
+        		if(sel instanceof ExporterSelection)
+        			for(String s : ((ExporterSelection)sel).getExporter().getSelectedColumns())
+        				line.addField(s);
+        	}
+        	else{
+        		TableSelection tsel = (TableSelection)selections.get(i);
+        		variablePositions.put(tsel.getVariableName(),i);
         	}
         }   
         return line.toString() + "\n";
@@ -370,8 +428,9 @@ public class QueryToolRunnable implements Runnable {
 		for (Selection  sel : list.getSelections()) {
 			Selection clone = null;
 			if (sel instanceof TableSelection) {
+				clone = new TableSelection((OutputVariable) sel.getObjectSpec(), true);
+				
 				if (sel.isSelected()) {
-					clone = new TableSelection((OutputVariable) sel.getObjectSpec(), sel.isSelected());
 					List<Selection> subSelections = new ArrayList<Selection>();
 					List<Selection> origSubSelections = new ArrayList<Selection>();
 					subSelections.addAll(clone.getSubSelections());
@@ -384,19 +443,27 @@ public class QueryToolRunnable implements Runnable {
 						subSelections.get(i).setSelected(origSubSelections.get(i).isSelected());
 					}
 					
-					// select the clone if one of the children is selected
-					if (selected) {
-						clone.setSelected(true);
-					}
+//					// select the clone if one of the children is selected
+//					if (selected) {
+//						clone.setSelected(true);
+//					}
+				}
+				else{
+					clone.getSubSelections().clear();
 				}
 			}
-			else if (sel instanceof OutputSelection) {
+			else if (sel instanceof OutputSelection || sel instanceof ExporterSelection) {
 				OutputVariable ovar = (OutputVariable) sel.getObjectSpec();
 				TableSelection outputTable = getTableSelectionFromOutputVariable(ovar);
 				if (outputTable != null && sel.isSelected()) {
 					selectList.getSelections().add(outputTable);
 				}
-				clone = new OutputSelection(ovar, sel.isSelected());
+				if(sel instanceof ExporterSelection){
+					clone = new ExporterSelection(ovar, sel.isSelected());
+					((ExporterSelection)clone).setExporter(((ExporterSelection)sel).getExporter());
+				}
+				else
+					clone = new OutputSelection(ovar, sel.isSelected());
 			}
 			
 			if (clone != null) {
@@ -442,6 +509,10 @@ public class QueryToolRunnable implements Runnable {
 
 	public boolean isRunning() {
 		return status == Status.RUNNING;
+	}
+	
+	public boolean isPostprocessing() {
+		return postProcessing;
 	}
 
 	public int getFastaEntries() {

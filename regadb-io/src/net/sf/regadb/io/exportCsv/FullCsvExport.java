@@ -12,15 +12,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.hibernate.Hibernate;
-import org.hibernate.LazyInitializationException;
-
+import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -31,11 +30,23 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.db.session.Login;
+import net.sf.regadb.db.tools.MutationHelper;
 import net.sf.regadb.io.export.ExportPatient;
+import net.sf.regadb.io.export.PatientExporter;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.args.Argument;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class FullCsvExport implements ExportPatient {
 	private Map<String, String> resistanceResults = new HashMap<String, String>();
@@ -55,7 +66,9 @@ public class FullCsvExport implements ExportPatient {
 	private List<String> resistanceTestDrugs;
 	private File zipFile;
 	
-	public FullCsvExport(long maxNumberSeqs, List<Attribute> attributes, List<String> resistanceTestDrugs, File zipFile) throws IOException {
+	boolean exportMutations;
+	
+	public FullCsvExport(long maxNumberSeqs, List<Attribute> attributes, List<String> resistanceTestDrugs, File zipFile, boolean exportMutations) throws IOException {
 		File patientFile = File.createTempFile("patients", "csv");
 		files.add(patientFile);
 		fileNames.add("patients.csv");
@@ -85,6 +98,7 @@ public class FullCsvExport implements ExportPatient {
 		this.attributes = attributes;
 		this.resistanceTestDrugs = resistanceTestDrugs;
 		this.zipFile = zipFile;
+		this.exportMutations = exportMutations;
 		
 		Collections.sort(attributes, new Comparator<Attribute>(){
 			public int compare(Attribute a0, Attribute a1) {
@@ -123,14 +137,18 @@ public class FullCsvExport implements ExportPatient {
 		formatField(header, "sample_date");
 		formatField(header, "sample_id");
 		for(int i = 0; i<maxNumberSeqs; i++) {
-			formatField(header, "sequence_"+(i+1), i!=maxNumberSeqs-1);
+			formatField(header, "sequence_"+(i+1));
 		}
+		
+		formatField(header, "mutations");
+		formatField(header, "evolution", false);
 		
 		fw.append(header.toString());
 	}
 	
-	private void viralIsolateRow(Patient p, ViralIsolate vi, FileWriter fw, long maxNumberSeqs) throws IOException {
+	private void viralIsolateRow(Patient p, ViralIsolate vi, ViralIsolate prev, FileWriter fw, long maxNumberSeqs) throws IOException {
 		StringBuilder row = new StringBuilder();
+		
 		
 		formatField(row, p.getPatientId());
 		formatField(row, vi.getSampleDate());
@@ -140,12 +158,63 @@ public class FullCsvExport implements ExportPatient {
 		
 		for(int i = 0; i<maxNumberSeqs; i++) {
 			if(i<ntseqs.size())
-				formatField(row, ntseqs.get(i).getNucleotides(), i!=maxNumberSeqs-1);
+				formatField(row, ntseqs.get(i).getNucleotides());
 			else 
-				formatField(row, "", i!=maxNumberSeqs-1);
+				formatField(row, "");
+		}
+		
+		if(exportMutations){
+			TreeSet<AaSequence> aaseqs = getSortedAaSequences(vi);
+			
+			StringBuilder sb = new StringBuilder();
+			for(AaSequence aaseq : aaseqs){
+				sb.append(aaseq.getProtein().getAbbreviation() +"("
+						+ MutationHelper.getNonSynonymousMutations(aaseq) +") ");
+			}
+			formatField(row, sb.toString());
+			
+			sb = new StringBuilder();
+			if(prev != null){
+				TreeSet<AaSequence> prevaaseqs = getSortedAaSequences(prev);
+				
+				for(AaSequence prevaaseq : prevaaseqs){
+					for(AaSequence aaseq : aaseqs){
+						String diff = MutationHelper.getAaMutationDifferenceList(prevaaseq, aaseq);
+						if(diff != null){
+							sb.append(aaseq.getProtein().getAbbreviation() +"("+ diff +") ");
+							continue;
+						}
+					}
+				}
+			}
+			formatField(row,sb.toString(),false);
+		}
+		else{
+			formatField(row,"");
+			formatField(row,"",false);
 		}
 		
 		fw.append(row.toString());
+	}
+
+	
+	private static final Comparator<AaSequence> aaSequenceComparator = new Comparator<AaSequence>() {
+		public int compare(AaSequence arg0, AaSequence arg1) {
+			int c;
+			if((c = arg0.getProtein().getOpenReadingFrame().getName().compareTo(
+					arg1.getProtein().getOpenReadingFrame().getName())) != 0)
+				return c;
+			
+			return arg0.getProtein().getStartPosition() - arg1.getProtein().getStartPosition();
+		}
+	};
+
+	private static TreeSet<AaSequence> getSortedAaSequences(ViralIsolate vi){
+		TreeSet<AaSequence> aaseqs = new TreeSet<AaSequence>(aaSequenceComparator);
+		for(NtSequence ntseq : vi.getNtSequences())
+			for(AaSequence aaseq : ntseq.getAaSequences())
+				aaseqs.add(aaseq);
+		return aaseqs;
 	}
 	
 	private void therapyHeader(FileWriter fw) throws IOException {
@@ -184,9 +253,19 @@ public class FullCsvExport implements ExportPatient {
 		formatField(row, tr.getTest().getTestType().getDescription());
 		formatField(row, tr.getTestDate());
 		formatField(row, tr.getSampleId());
-		formatField(row, tr.getValue()==null?tr.getTestNominalValue().getValue():tr.getValue(), false);
+		formatField(row, getValue(tr), false);
 		
 		fw.append(row.toString());
+	}
+	
+	private String getValue(TestResult tr){
+		if(tr.getValue() != null)
+			return tr.getValue();
+		if(tr.getTestNominalValue() != null)
+			return tr.getTestNominalValue().getValue();
+		if(tr.getData() != null)
+			return new String(tr.getData());
+		return "";
 	}
 
 	private void eventHeader(FileWriter fw) throws IOException {
@@ -272,7 +351,6 @@ public class FullCsvExport implements ExportPatient {
 		formatField(row, p.getPatientId());
 		formatField(row, vi.getSampleDate());
 		formatField(row, vi.getSampleId());
-		
 		for(TestResult tr : vi.getTestResults()) {
 			TestType tt = tr.getTest().getTestType();
 			if(tt.getDescription().equals(StandardObjects.getGssDescription())) {
@@ -315,6 +393,13 @@ public class FullCsvExport implements ExportPatient {
 			sb.append("\n");
 	}
 
+	private static final Comparator<ViralIsolate> viralIsolateComparator = new Comparator<ViralIsolate>() {
+		public int compare(ViralIsolate o1, ViralIsolate o2) {
+			int c = o1.getSampleDate().compareTo(o2.getSampleDate());
+			return c == 0 ? o1.getSampleId().compareTo(o2.getSampleId()) : c;
+		}
+	};
+	
 	public void exportPatient(Patient p) {
 		try {
 			patientRow(p, patientFileWriter, attributes);
@@ -328,9 +413,15 @@ public class FullCsvExport implements ExportPatient {
 			for (Therapy t : p.getTherapies()) {
 				therapyRow(p, t, therapyFileWriter);
 			}
-			for (ViralIsolate vi : p.getViralIsolates()) {
-				viralIsolateRow(p, vi, viralIsolateFileWriter, maxNumberSeqs);
+			TreeSet<ViralIsolate> vis = new TreeSet<ViralIsolate>(viralIsolateComparator);
+			for (ViralIsolate vi : p.getViralIsolates())
+				vis.add(vi);
+			
+			ViralIsolate prev = null;
+			for (ViralIsolate vi : vis) {
+				viralIsolateRow(p, vi, prev, viralIsolateFileWriter, maxNumberSeqs);
 				resistanceRow(resistanceFileWriter, p, vi, resistanceTestDrugs);
+				prev = vi;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -357,6 +448,7 @@ public class FullCsvExport implements ExportPatient {
 			testFileWriter.close();
 			therapyFileWriter.close();
 			viralIsolateFileWriter.close();
+			resistanceFileWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -393,5 +485,46 @@ public class FullCsvExport implements ExportPatient {
 	    for(File f : files) {
 	    	f.delete();
 	    }
+	}
+	
+	public static void main(String args[]) throws IOException, WrongUidException, WrongPasswordException, DisabledUserException{
+		Arguments as = new Arguments();
+    	ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
+    	PositionalArgument user = as.addPositionalArgument("user", true);
+    	PositionalArgument pass = as.addPositionalArgument("pass", true);
+    	PositionalArgument dataset = as.addPositionalArgument("dataset", true);
+    	PositionalArgument file = as.addPositionalArgument("output-file", true);
+    	Argument muts = as.addArgument("muts", false);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
+    	if(confDir.isSet())
+    		RegaDBSettings.createInstance(confDir.getValue());
+    	else
+    		RegaDBSettings.createInstance();
+    	
+        Login login = null;
+        login = Login.authenticate(user.getValue(), pass.getValue());
+
+        Transaction t = login.createTransaction();
+        
+        List<String> resistanceTestsDrugs = new ArrayList<String>();
+        for(Test test : t.getTests()) {
+            if(test.getTestType().getDescription().equals(StandardObjects.getGssDescription()) ) {
+                for(DrugClass dc : t.getDrugClassesSortedOnResistanceRanking()) {
+                	for(DrugGeneric dg : t.getDrugGenericSortedOnResistanceRanking(dc)) {
+                		resistanceTestsDrugs.add(test.getDescription() + "_" + dg.getGenericId()+"_"+test.getTestType().getGenome().getOrganismName());
+                	}
+                }
+            }
+        }
+        
+		FullCsvExport fullCsvExport = new FullCsvExport(t.getMaxAmountOfSequences(), t.getAttributes(), resistanceTestsDrugs,
+				new File(file.getValue()), muts.isSet());
+		t.commit();
+		
+        PatientExporter<Patient> csvExport = new PatientExporter<Patient>(login, dataset.getValue(), fullCsvExport);
+        csvExport.run();
 	}
 }

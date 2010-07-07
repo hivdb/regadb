@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
@@ -179,12 +180,12 @@ public class CsvWriteCodeGen {
         
         total+="public class ExportToCsv {\n";
         
-        for(Map.Entry<String, String> e : contentMethod.entrySet()) {
-            total += e.getValue() + "\n";
+        for(String value : new TreeSet<String>(contentMethod.values())) {
+            total += value + "\n";
         }
         
-        for(Map.Entry<String, String> e : headerMethod.entrySet()) {
-            total += e.getValue() + "\n";
+        for(String value : new TreeSet<String>(headerMethod.values())) {
+            total += value + "\n";
         }
         
         total += "public String getCsvLineSwitch(Object object, Set<Dataset> datasets, Set<Integer> accessiblePatients) throws IllegalAccessException {\n" + contentCallMethod + "\n return null;\n}\n";

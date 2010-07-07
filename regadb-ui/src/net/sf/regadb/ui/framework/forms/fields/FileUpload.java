@@ -1,5 +1,12 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import eu.webtoolkit.jwt.Signal;
@@ -11,10 +18,50 @@ import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WResource;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
 public class FileUpload extends WContainerWidget implements IFormField{
+	public static class FileBlob implements Serializable {
+		public String fileName;
+		public String data;
+		
+		public FileBlob(String fileName, String data) {
+			this.fileName = fileName;
+			this.data = data;
+		}
+
+		public static FileBlob loadBlob(byte[] blob) {
+			if (blob == null) 
+				return null;
+			try {
+				ObjectInputStream ois = 
+					new ObjectInputStream(new ByteArrayInputStream(blob));
+				FileBlob file = (FileBlob)ois.readObject();
+				ois.close();
+				return file;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			} 
+		}
+
+		public byte[] saveBlob() {
+			try {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+				oos.writeObject(this);
+				oos.close();
+				return bos.toByteArray();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+	}
+	
 	private WAnchor link;
 	private WFileUpload uploadFile;
 	private WPushButton uploadButton;
@@ -83,7 +130,7 @@ public class FileUpload extends WContainerWidget implements IFormField{
 	}
 
 	public WFormWidget getFormWidget() {
-		return uploadButton;
+		return null;
 	}
 
 	public WWidget getViewWidget() {

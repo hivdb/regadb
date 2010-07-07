@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.service.wts.client.WtsClientFactory;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.IWtsClient;
 
 public abstract class AbstractService {
@@ -32,7 +33,8 @@ public abstract class AbstractService {
         setStartTime(new Date());
         init();
         
-        IWtsClient client_ = WtsClientFactory.getWtsClient(url);
+        IWtsClient client_ = WtsClientFactory.getWtsClient(
+        		RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(url));
         
         String challenge;
         String ticket = null;

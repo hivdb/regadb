@@ -21,6 +21,7 @@ import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
 
 public class RunGroupBox extends WGroupContainer {
+	private QueryToolForm queryToolForm;
 	
 	private QueryEditor editor;
 	
@@ -29,9 +30,11 @@ public class RunGroupBox extends WGroupContainer {
 	private WTimer timer;
 	private WText warning;
 	
-	public RunGroupBox(QueryEditor editor, WContainerWidget parent) {
+	public RunGroupBox(QueryToolForm queryToolForm, QueryEditor editor, WContainerWidget parent) {
 		super(tr("form.query.querytool.group.run"), parent);
 		getStyleClasses().addStyle("resultfield");
+		this.queryToolForm = queryToolForm;
+		
 		this.editor = editor;
 		runningQueries = new ArrayList<QueryToolRunnable>();
 		
@@ -89,6 +92,18 @@ public class RunGroupBox extends WGroupContainer {
 						link = new WAnchor(res, tr("form.query.querytool.label.fasta").arg(qt.getFastaEntries()));
 						tc.addWidget(link);
 					}
+					if (qt.getSummaryFile() != null) {
+						tc.addWidget(new WText("   "));
+						
+						WText report = new WText(tr("form.query.querytool.label.report"));
+						report.setStyleClass("text-link");
+						report.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+							public void trigger(WMouseEvent arg) {
+								queryToolForm.addReportTab(new ReportContainer(qt.getSummaryFile()));
+							}
+						});
+						tc.addWidget(report);
+					}
 				}
 				else {
 					final WText status = new WText(qt.getStatusText());
@@ -119,7 +134,7 @@ public class RunGroupBox extends WGroupContainer {
 	}
 	
 	public void runQuery() {
-		QueryToolThread qt = new QueryToolThread(RegaDBMain.getApp().getLogin(), editor);
+		QueryToolThread qt = new QueryToolThread(RegaDBMain.getApp().getLogin(), editor, queryToolForm.getQueryDefinition());
 		qt.startQueryThread();
 		runningQueries.add(qt.getRun());
 		timer.start();

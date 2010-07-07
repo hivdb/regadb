@@ -6,6 +6,7 @@ import net.sf.regadb.ui.datatable.patient.IPatientDataTable;
 import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
+import net.sf.regadb.ui.form.singlePatient.custom.Nadir;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.action.ITreeAction;
@@ -24,6 +25,7 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	
 	private ActionItem custom;
 	private ContactItem contact;
+	private ActionItem nadir;
 	
 	public PatientTreeNode(WTreeNode root) {
 		super("patient", root);
@@ -47,6 +49,13 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		
 		custom = new ActionItem(getResource("custom"), getSelectedActionItem());
 		contact = new ContactItem(custom);
+		nadir = new ActionItem(getResource("custom.nadir"), custom, new ITreeAction()
+		{
+			public void performAction(TreeMenuNode node) 
+			{
+				RegaDBMain.getApp().getFormContainer().setForm(new Nadir());
+			}
+		});
 	}
 	
 	public ActionItem getChartActionItem(){

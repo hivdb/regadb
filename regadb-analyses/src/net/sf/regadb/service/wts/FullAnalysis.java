@@ -14,7 +14,6 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.IAnalysis;
-import net.sf.regadb.service.align.AlignmentAnalysis;
 
 public class FullAnalysis implements IAnalysis {
     private Date endTime, startTime;
@@ -80,7 +79,8 @@ public class FullAnalysis implements IAnalysis {
             {
                 if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
                 {
-                    if(test.getAnalysis()!=null)
+                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType())
+                    		|| Equals.isSameTestType(StandardObjects.getTDRTestType(genome),test.getTestType()))
                     {
                         launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
                     }

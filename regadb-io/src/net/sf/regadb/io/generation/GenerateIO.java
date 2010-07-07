@@ -74,6 +74,7 @@ public class GenerateIO
         rules.pointerClasses_.add(dbPackage + "Protein");
         rules.pointerClasses_.add(dbPackage + "DrugGeneric");
         rules.pointerClasses_.add(dbPackage + "DrugCommercial");
+        rules.pointerClasses_.add(dbPackage + "DrugClass");
         rules.pointerClasses_.add(dbPackage + "Genome");
         rules.pointerClasses_.add(dbPackage + "OpenReadingFrame");
         rules.pointerClasses_.add(dbPackage + "SplicingPosition");

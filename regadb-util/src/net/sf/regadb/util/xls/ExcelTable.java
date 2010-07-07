@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -89,7 +90,7 @@ public class ExcelTable {
 				return fullSimpleDateFormat.format(cell.getDateCellValue());
 			else {
 				double value = cell.getNumericCellValue();
-				int iValue = (int)value;
+				long iValue = (long)value;
 				value = (double)iValue;
 				if (value == cell.getNumericCellValue())
 					return iValue + "";
@@ -134,6 +135,16 @@ public class ExcelTable {
 			setCell(row, col, (Integer) value);
 		else
 			setCell(row, col, (String) value);
+	}
+	
+	public HSSFCellStyle getCellStyle(int row, int col) {
+		HSSFCell cell = sheet.getRow(row).getCell(col);
+		
+		if (cell == null) {
+			return null;
+		}
+		
+		return cell.getCellStyle();
 	}
 
 	public int columnCount() {

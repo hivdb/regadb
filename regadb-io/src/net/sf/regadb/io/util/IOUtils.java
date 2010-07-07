@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 
+import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.exportXML.ExportToXML;
@@ -36,7 +37,30 @@ public class IOUtils {
     	}
     }
     
-    public static void exportNTXML(Collection<ViralIsolate> viralIsolates, String fileName, ILogger logger) 
+    private static ViralIsolate cloneClean(ViralIsolate from){
+    	ViralIsolate to = new ViralIsolate();
+    	to.setPatient(from.getPatient());
+    	to.setSampleDate(from.getSampleDate());
+    	to.setSampleId(from.getSampleId());
+    	
+    	for(NtSequence ntfrom : from.getNtSequences()){
+    		NtSequence ntto = new NtSequence();
+    		ntto.setLabel(ntfrom.getLabel());
+    		ntto.setNucleotides(ntfrom.getNucleotides());
+    		ntto.setSequenceDate(ntfrom.getSequenceDate());
+    		
+    		ntto.setViralIsolate(to);
+    		to.getNtSequences().add(ntto);
+    	}
+    	
+    	return to;
+    }
+    
+    public static void exportNTXML(Collection<ViralIsolate> viralIsolates, String fileName, ILogger logger)
+    {
+    	exportNTXML(viralIsolates, fileName, true, logger);
+    }
+    public static void exportNTXML(Collection<ViralIsolate> viralIsolates, String fileName, boolean withAnalysis, ILogger logger) 
     {
     	try
     	{
@@ -47,7 +71,11 @@ public class IOUtils {
 	        {
 	            Element viralIsolateE = new Element("viralIsolates-el");
 	            root.addContent(viralIsolateE);
-	            l.writeViralIsolate(vi, viralIsolateE);            
+	            
+	            if(withAnalysis)
+	            	l.writeViralIsolate(vi, viralIsolateE);            
+	            else
+	            	l.writeViralIsolate(cloneClean(vi), viralIsolateE);
 	        }
 	        
 	        Document n = new Document(root);

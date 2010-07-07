@@ -30,6 +30,7 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
@@ -791,7 +792,10 @@ public class Utils {
      
      public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, String value){
          PatientAttributeValue pav = createPatientAttributeValue(attribute);
-         pav.setValue(value);
+         if(Equals.isSameValueType(attribute.getValueType(),StandardObjects.getNominalValueType()))
+        	 pav.setAttributeNominalValue(getNominalValue(attribute, value));
+         else
+        	 pav.setValue(value);
          return pav;
      }
      
@@ -940,7 +944,10 @@ public class Utils {
 			p.addPatientAttributeValue(pav);
 		}
 		else{
-			pav.setValue(value);
+			if(Equals.isSameValueType(a.getValueType(), StandardObjects.getNominalValueType()))
+				pav.setAttributeNominalValue(getNominalValue(a, value));
+			else
+				pav.setValue(value);
 		}
 		return pav;
 	}

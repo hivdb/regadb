@@ -172,7 +172,7 @@ public class ImportXML {
                 Patient p = t.getPatientBySampleId(dbvi.getSampleId());
                 List<TestResult> remove = new LinkedList<TestResult>();
                 for(TestResult tr : p.getTestResults()){
-                	if(tr.getViralIsolate() != null){
+                	if(tr.getViralIsolate() != null && tr.getTest().getAnalysis() != null){
                 		if(tr.getViralIsolate().getSampleId().equals(vi.getSampleId()))
                 			remove.add(tr);
                 		if(tr.getNtSequence() != null && tr.getViralIsolate().getSampleId().equals(vi.getSampleId()))
@@ -183,10 +183,12 @@ public class ImportXML {
                 remove.clear();
                 
                 for(TestResult tr : dbvi.getTestResults())
-                	p.addTestResult(tr);
+                	if(tr.getTest().getAnalysis() != null)
+                		p.addTestResult(tr);
                 for(NtSequence nt : dbvi.getNtSequences())
                 	for(TestResult tr : nt.getTestResults())
-                		p.addTestResult(tr);
+                		if(tr.getTest().getAnalysis() != null)
+                			p.addTestResult(tr);
                 
                 out.println(instance.getLog());
                 instance.getLog().delete(0, instance.getLog().length());

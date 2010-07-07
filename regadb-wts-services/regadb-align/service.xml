@@ -1,11 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <service>
-	<description>
-	RegaDB Alignment tool
-	</description>
-	<version>
-	1.0
-	</version>
+	<description>RegaDB Alignment tool</description>
+	<version>2.0</version>
 <inputs>
 	<input>
 		<name>
@@ -32,6 +28,7 @@
 		<description>
 		mutations file
 		</description>
+
 	</output>
 </outputs>
 </service>

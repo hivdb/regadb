@@ -1,0 +1,99 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE ALGORITHM SYSTEM 
+  "http://hivdb6.stanford.edu/asi/xml/ASI.dtd">
+
+<!-- SDRM algorithm for Resistance Surveillance (2009 PLoS): XML format made by myself on the base of the listed mutations on the paper of PLoS -->
+<!-- 
+History:
+04-May-09 BBE Creation
+04-April-10 Pieter Libin edited to work with RegaDB
+-->
+
+<ALGORITHM>
+    <ALGNAME>Resistance_Surveillance_Stanford</ALGNAME>
+    <ALGVERSION>WHO.2009</ALGVERSION>
+
+    <DEFINITIONS>
+        <LEVEL_DEFINITION>
+            <ORDER>1</ORDER>
+            <ORIGINAL>No transmission of resistance</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>2</ORDER>
+            <ORIGINAL>Transmission of resistance</ORIGINAL>
+            <SIR>R</SIR>
+        </LEVEL_DEFINITION>
+	
+        
+        <DRUGCLASS>
+            <NAME>PI</NAME>
+            <DRUGLIST>PI</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NRTI</NAME>
+            <DRUGLIST>NRTI</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NNRTI</NAME>
+            <DRUGLIST>NNRTI</DRUGLIST>
+        </DRUGCLASS>
+
+        
+    </DEFINITIONS>
+
+<!-- ********** Begin NRTI drugs ********** -->
+
+
+   <DRUG>
+        <NAME>NRTI</NAME>
+        <RULE>
+	    <CONDITION>
+	        SELECT ATLEAST 1 FROM
+	        (41L, 65R, 67G, 67N, 67E, 69i, 69D, 70R, 70E, 74V, 74I, 75A, 75M, 75S, 75T, 77L, 115F, 116Y, 151M, 184I, 184V, 210W, 215C, 215D, 215E, 215F, 215I, 215S, 215V, 215Y, 219E, 219Q, 219R, 219N)
+            </CONDITION>
+            <ACTIONS>
+	         <LEVEL>2</LEVEL>
+	    </ACTIONS>
+        </RULE>
+   </DRUG>   <!-- END NRTI -->
+    
+<!-- ********** End NRTI drugs ********** -->
+
+	<!-- ********** Begin NNRTI drugs ********** -->
+<DRUG>
+        <NAME>NNRTI</NAME>
+        <RULE>
+            <CONDITION>
+                SELECT ATLEAST 1 FROM (100I, 101E, 101P, 103N, 103S, 106A, 106M, 179F, 181C, 181I, 181V, 188C, 188H, 188L, 190A, 190E, 190S, 225H, 230L)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+        </RULE>
+        
+    </DRUG>    <!-- END NNRTI --> 
+    
+<!-- ********** End NNRTI drugs ********** -->
+
+<!-- ********** Begin PI drugs ********** -->
+
+<DRUG>
+        <NAME>PI</NAME>
+        <RULE>
+            <CONDITION>
+                SELECT ATLEAST 1 FROM (23I, 24I, 30N, 32I, 46I, 46L, 47A, 47V, 48V, 48M, 50L, 50V, 53L, 53Y, 54A, 54L, 54M, 54S, 54T, 54V, 73A, 73C, 73S, 73T, 76V, 82A, 82F, 82M, 82S, 82T, 82C, 82L, 83D, 84A, 84C, 84V, 85V, 88D, 88S, 90M)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>2</LEVEL>
+            </ACTIONS>
+	</RULE>
+        
+    </DRUG>	<!-- END PI -->
+
+    
+<!-- ********** End PI drugs ********** -->
+</ALGORITHM>	
