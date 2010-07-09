@@ -35,6 +35,7 @@ import eu.webtoolkit.jwt.WLength.Unit;
 import eu.webtoolkit.jwt.WPainter.RenderHint;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.AxisScale;
+import eu.webtoolkit.jwt.chart.AxisValue;
 import eu.webtoolkit.jwt.chart.ChartType;
 import eu.webtoolkit.jwt.chart.WAxis;
 import eu.webtoolkit.jwt.chart.WCartesianChart;
@@ -63,6 +64,8 @@ public class Chart extends WCartesianChart{
 		axis.setLabelFormat("%.2f");
 		axis.setVisible(true);
 		axis.setTitle("log10");
+		axis.setMinimum(0);
+		axis.setAutoLimits(AxisValue.MaximumValue);
 		
 		axis = getAxis(Axis.YAxis);
 		axis.setScale(AxisScale.LinearScale);
@@ -70,6 +73,8 @@ public class Chart extends WCartesianChart{
 		axis.setGridLinesEnabled(true);
 		axis.setVisible(true);
 		axis.setTitle("cells/ul");
+		axis.setMinimum(0);
+		axis.setAutoLimits(AxisValue.MaximumValue);
 
 		setLegendEnabled(true);
 		
