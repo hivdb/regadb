@@ -18,6 +18,13 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 	
 	private int aaCounter = 0;
 	private int lineCounter = 0;
+	
+	private int prevRefAaCounter = 0;
+	private int refAaCounter = 0;
+	
+	private int prevRefNtCounter = 0;
+	private int refNtCounter = 0;
+
 
 	private static final String newLine = "<br/>";
 
@@ -34,6 +41,9 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
         tarCodon.append(target);
         
 		diff.append(reference == target ? '|' : ' ');
+		
+		if(reference != '-')
+			++refNtCounter;
 		
         if(refCodon.length()==3) {
         	addAa();
@@ -54,6 +64,9 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 		refCodon.delete(0, 3);
 		tarCodon.delete(0, 3);
 		aaCounter++;
+		
+		if(!" - ".equals(ref))
+			++refAaCounter;
 
 		if (aaCounter == (LINE_SIZE / 3.0)) {
 			endOfAlignment();
@@ -61,13 +74,8 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 	}
 
 	private void endOfAlignment() {
-		int fromNt = ((LINE_SIZE * lineCounter) + 1);
-		int toNt = fromNt + (aaCounter * 3) - 1;
-		int fromAa = (((LINE_SIZE / 3) * lineCounter) + 1);
-		int toAa = fromAa + aaCounter - 1;
-
-		page.append("Going from " + fromNt + " to " + toNt + " (" + fromAa
-				+ " to " + toAa + ")" + newLine);
+		page.append("Going from " + (prevRefNtCounter+1) + " to " + refNtCounter 
+				+ " (" + (prevRefAaCounter+1) + " to " + refAaCounter + ")" + newLine);
 
 		appendLineToPage(refAa);
 		appendLineToPage(refNt);
@@ -76,6 +84,8 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 		appendLineToPage(tarAa);
 
 		aaCounter = 0;
+		prevRefAaCounter = refAaCounter;
+		prevRefNtCounter = refNtCounter;
 		lineCounter++;
 	}
 

@@ -18,22 +18,35 @@ import java.util.zip.ZipOutputStream;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.DrugClass;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
+import net.sf.regadb.db.session.Login;
 import net.sf.regadb.db.tools.MutationHelper;
 import net.sf.regadb.io.export.ExportPatient;
+import net.sf.regadb.io.export.PatientExporter;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.args.Argument;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class FullCsvExport implements ExportPatient {
 	private Map<String, String> resistanceResults = new HashMap<String, String>();
@@ -472,5 +485,46 @@ public class FullCsvExport implements ExportPatient {
 	    for(File f : files) {
 	    	f.delete();
 	    }
+	}
+	
+	public static void main(String args[]) throws IOException, WrongUidException, WrongPasswordException, DisabledUserException{
+		Arguments as = new Arguments();
+    	ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
+    	PositionalArgument user = as.addPositionalArgument("user", true);
+    	PositionalArgument pass = as.addPositionalArgument("pass", true);
+    	PositionalArgument dataset = as.addPositionalArgument("dataset", true);
+    	PositionalArgument file = as.addPositionalArgument("output-file", true);
+    	Argument muts = as.addArgument("muts", false);
+    	
+    	if(!as.handle(args))
+    		return;
+    	
+    	if(confDir.isSet())
+    		RegaDBSettings.createInstance(confDir.getValue());
+    	else
+    		RegaDBSettings.createInstance();
+    	
+        Login login = null;
+        login = Login.authenticate(user.getValue(), pass.getValue());
+
+        Transaction t = login.createTransaction();
+        
+        List<String> resistanceTestsDrugs = new ArrayList<String>();
+        for(Test test : t.getTests()) {
+            if(test.getTestType().getDescription().equals(StandardObjects.getGssDescription()) ) {
+                for(DrugClass dc : t.getDrugClassesSortedOnResistanceRanking()) {
+                	for(DrugGeneric dg : t.getDrugGenericSortedOnResistanceRanking(dc)) {
+                		resistanceTestsDrugs.add(test.getDescription() + "_" + dg.getGenericId()+"_"+test.getTestType().getGenome().getOrganismName());
+                	}
+                }
+            }
+        }
+        
+		FullCsvExport fullCsvExport = new FullCsvExport(t.getMaxAmountOfSequences(), t.getAttributes(), resistanceTestsDrugs,
+				new File(file.getValue()), muts.isSet());
+		t.commit();
+		
+        PatientExporter<Patient> csvExport = new PatientExporter<Patient>(login, dataset.getValue(), fullCsvExport);
+        csvExport.run();
 	}
 }

@@ -56,7 +56,17 @@ public class AaMutInsertion implements Comparable<AaMutInsertion>
     {
         int thisVal = this.getPosition();
         int anotherVal = a.getPosition();
-        return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+        int r = (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+        
+        if(r == 0){
+        	if(this.isInsertion() && !a.isInsertion())
+        		return 1;
+        	if(this.isInsertion() && a.isInsertion())
+        		return this.insertion_.getId().getInsertionOrder()
+        				- a.insertion_.getId().getInsertionOrder();
+        	return -1;
+        }
+        return r;
     }
     
     public static SortedSet<AaMutInsertion> getSortedMutInsertionList(AaSequence aaseq)
