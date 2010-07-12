@@ -31,10 +31,13 @@ import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRectF;
+import eu.webtoolkit.jwt.WFont.GenericFamily;
+import eu.webtoolkit.jwt.WFont.Size;
 import eu.webtoolkit.jwt.WLength.Unit;
 import eu.webtoolkit.jwt.WPainter.RenderHint;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.AxisScale;
+import eu.webtoolkit.jwt.chart.AxisValue;
 import eu.webtoolkit.jwt.chart.ChartType;
 import eu.webtoolkit.jwt.chart.WAxis;
 import eu.webtoolkit.jwt.chart.WCartesianChart;
@@ -60,6 +63,8 @@ public class Chart extends WCartesianChart{
 		axis.setLabelFormat("%.2f");
 		axis.setVisible(true);
 		axis.setTitle("log10");
+		axis.setMinimum(0);
+		axis.setAutoLimits(AxisValue.MaximumValue);
 		
 		axis = getAxis(Axis.YAxis);
 		axis.setScale(AxisScale.LinearScale);
@@ -67,14 +72,23 @@ public class Chart extends WCartesianChart{
 		axis.setGridLinesEnabled(true);
 		axis.setVisible(true);
 		axis.setTitle("cells/ul");
+		axis.setMinimum(0);
+		axis.setAutoLimits(AxisValue.MaximumValue);
 
 		setLegendEnabled(true);
 		
 		colors = generateColors(11);
 		
+		//don't show values before a certain date, most likely wrong/dummy value and mess up x-axis
 		Calendar cal = Calendar.getInstance();
 		cal.set(1900, 1, 1);
 		cutoffDate = cal.getTime();
+		
+		//prevent crash when no dates are set
+		WDate now = new WDate(new Date());
+		getAxis(Axis.XAxis).setRange(
+				now.addMonths(-1).toJulianDay(),
+				now.toJulianDay());
 	}
 	
 	public static WColor[] generateColors(int n){
@@ -157,60 +171,70 @@ public class Chart extends WCartesianChart{
 	
 	@Override
 	protected void paintEvent(WPaintDevice paintDevice) {
+		WPen pen;
+		WFont font;
+		double sy;
+		double width;
+		
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 		this.paint(painter);
 		
-		double sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
+		font = new WFont();
+		font.setSize(Size.XXSmall);
+		font.setFamily(GenericFamily.SansSerif);
+		painter.setFont(font);
 		
+		sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
+		width = getWidth().getValue() - getPlotAreaPadding(Side.Right) + 60;
 
-		double width = getWidth().getValue() - getPlotAreaPadding(Side.Right) + 60;
-
-		painter.setRenderHint(RenderHint.Antialiasing,false);
-		painter.drawLine(0, sy, width, sy);
-		painter.setRenderHint(RenderHint.Antialiasing,true);
-
-		for(String drug : drugsUsed.keySet()){
-			drugsUsed.put(drug, sy);
-
-			painter.drawText(new WRectF(0, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
-					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
-			painter.drawText(new WRectF(width-30, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
-					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
-			
-			sy += therapyHeight+therapyLineWidth+(therapySpacing*2);
-
+		if(drugsUsed.size() > 0){
 			painter.setRenderHint(RenderHint.Antialiasing,false);
 			painter.drawLine(0, sy, width, sy);
 			painter.setRenderHint(RenderHint.Antialiasing,true);
-		}
-
-		WPen pen = new WPen(WColor.transparent);
-		pen.setWidth(new WLength(therapyLineWidth,Unit.Pixel));
-		painter.setPen(pen);
-		
-		WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
-		WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
-		
-		painter.setRenderHint(RenderHint.Antialiasing,false);
-		for(Map.Entry<Therapy, TreeSet<String>> me : drugsMap.entrySet()){
-			double x1 = this.mapToDevice(new WDate(me.getKey().getStartDate()), 0).getX();
-			WDate stopDate;
-			if(me.getKey().getStopDate() == null){
-				stopDate = new WDate(maxDate);
-				painter.setBrush(openTherapyBrush);
-			} else {
-				stopDate = new WDate(me.getKey().getStopDate());
-				painter.setBrush(closedTherapyBrush);
+	
+			for(String drug : drugsUsed.keySet()){
+				drugsUsed.put(drug, sy);
+	
+				painter.drawText(new WRectF(0, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+						EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
+				painter.drawText(new WRectF(width-30, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+						EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
+				
+				sy += therapyHeight+therapyLineWidth+(therapySpacing*2);
+	
+				painter.setRenderHint(RenderHint.Antialiasing,false);
+				painter.drawLine(0, sy, width, sy);
+				painter.setRenderHint(RenderHint.Antialiasing,true);
 			}
-		
-			double x2 = this.mapToDevice(stopDate,0).getX();
+	
+			pen = new WPen(WColor.transparent);
+			pen.setWidth(new WLength(therapyLineWidth,Unit.Pixel));
+			painter.setPen(pen);
 			
-			for(String drug : me.getValue()){
-				double i = drugsUsed.get(drug);
-
-				painter.drawRect(x1 + therapyLineWidth, i + therapyLineWidth + therapySpacing, 
-						x2-x1 - therapyLineWidth, therapyHeight);
+			WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
+			WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
+			
+			painter.setRenderHint(RenderHint.Antialiasing,false);
+			for(Map.Entry<Therapy, TreeSet<String>> me : drugsMap.entrySet()){
+				double x1 = this.mapToDevice(new WDate(me.getKey().getStartDate()), 0).getX();
+				WDate stopDate;
+				if(me.getKey().getStopDate() == null){
+					stopDate = new WDate(maxDate);
+					painter.setBrush(openTherapyBrush);
+				} else {
+					stopDate = new WDate(me.getKey().getStopDate());
+					painter.setBrush(closedTherapyBrush);
+				}
+			
+				double x2 = this.mapToDevice(stopDate,0).getX();
+				
+				for(String drug : me.getValue()){
+					double i = drugsUsed.get(drug);
+	
+					painter.drawRect(x1 + therapyLineWidth, i + therapyLineWidth + therapySpacing, 
+							x2-x1 - therapyLineWidth, therapyHeight);
+				}
 			}
 		}
 		
