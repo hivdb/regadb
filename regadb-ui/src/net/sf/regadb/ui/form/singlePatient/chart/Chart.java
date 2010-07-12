@@ -217,7 +217,7 @@ public class Chart extends WCartesianChart{
 		//draw viral isolates
 		pen = new WPen(WColor.black);
 		pen.setStyle(PenStyle.DashLine);
-		paintDevice.getPainter().setPen(pen);
+		painter.setPen(pen);
 		
 		for(ViralIsolate vi : viralisolates){
 			double x1 = this.mapToDevice(new WDate(vi.getSampleDate()), 0).getX();
