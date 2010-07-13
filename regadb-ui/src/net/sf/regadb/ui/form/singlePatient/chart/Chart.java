@@ -52,6 +52,7 @@ public class Chart extends WCartesianChart{
 	
 	public Chart(WContainerWidget widget) {
 		super(ChartType.ScatterPlot, widget);
+		setPreferredMethod(Method.InlineSvgVml);
 		
 		WAxis axis = getAxis(Axis.XAxis);
 		axis.setScale(AxisScale.DateScale);
