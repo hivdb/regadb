@@ -18,9 +18,8 @@
 
 body {
 	margin:0 auto;
-	padding:0px 1em 1em;
+	padding:0px 1em 1em 0em;
 	text-align:center;
-	width:95%;	
 	background-color:#fbfbfb;
 }
 
@@ -67,6 +66,7 @@ td.header {
 {
 	cursor: pointer;
 	color: blue;
+	white-space: normal;
 }
 
 *.treemenu-disabledMenuItem
