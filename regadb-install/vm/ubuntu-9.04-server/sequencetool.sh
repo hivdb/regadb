@@ -12,7 +12,7 @@ make install
 
 #sequencetool
 rm -rf /tmp/sequencetool
-git clone http://regaweb.med.kuleuven.be/git/sequencetool /tmp/sequencetool
+git clone http://git.regaweb.med.kuleuven.be/sequencetool /tmp/sequencetool
 cd /tmp/sequencetool
 mkdir build
 cd build
