@@ -50,6 +50,7 @@ import net.sf.regadb.util.xml.XMLTools;
 import org.jdom.Element;
 import java.util.HashMap;
 import net.sf.regadb.db.meta.Ids;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class ExportToXML 
 {
@@ -467,6 +468,7 @@ public class ExportToXML
 		parentNode.addContent(testResultsEl);
 		for (TestResult TestResultloopvar : Patientvar.getTestResults())
 		{
+			if(TestResultloopvar.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;
 			Element testResults_elEl = new Element("testResults-el");
 			testResultsEl.addContent(testResults_elEl);
 			writeTestResult(TestResultloopvar,testResults_elEl);

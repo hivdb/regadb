@@ -9,6 +9,7 @@ import net.sf.regadb.db.AaInsertionId;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.util.hbm.InterpreteHbm;
 
 public class XMLWriteCodeGen 
@@ -88,6 +89,11 @@ public class XMLWriteCodeGen
         writeClassCode += "Element "+ fieldName+"El = new Element(\""+fieldName+"\");";
         writeClassCode += ""+xmlParentNode+".addContent("+fieldName+"El);";
         writeClassCode += "for (" + toWrite.getSimpleName() + " " +loopVarName+ " : " + generateGetterConstruct(id,null,fieldName,toWrite) +"){";
+        
+        if(toWrite == TestResult.class && varNameList_.get(id).equals("PatientImplvar")){
+        	writeClassCode += "if("+ loopVarName +".getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;";
+        }
+        
         writeClassCode += "Element "+ fieldName+"_elEl = new Element(\""+fieldName+"-el\");";
         writeClassCode += ""+fieldName+"El"+".addContent("+fieldName+"_elEl);";
         //temporarly saving otherwise callClassWriteMethod does not have the new content
@@ -376,6 +382,7 @@ public class XMLWriteCodeGen
         imports += "import org.jdom.Element;";
         imports += "import java.util.HashMap;";
         imports += "import net.sf.regadb.db.meta.Ids;";
+        imports += "import net.sf.regadb.io.util.StandardObjects;";
         
         total += imports +"\n";
         //imports
