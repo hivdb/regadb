@@ -2272,7 +2272,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(TestResult e : o.getTestResults()) {
-            if(e.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;
+            if(!e.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;
             if (dbo == null) {
                 if (syncPair(t, e, (TestResult)null, syncMode, simulate)) changed = true;
             } else {
@@ -2297,7 +2297,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (dbo != null && doDelete("TestResult")) {
             for(Iterator<TestResult> i = dbo.getTestResults().iterator(); i.hasNext();) {
                 TestResult dbe = i.next();
-                if(dbe.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;
+                if(!dbe.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;
                 TestResult e = null;
                 for(TestResult f : o.getTestResults()) {
                     if (Equals.isSameTestResult(dbe, f)) {

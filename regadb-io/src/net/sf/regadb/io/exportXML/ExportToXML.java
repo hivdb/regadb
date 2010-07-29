@@ -468,7 +468,7 @@ public class ExportToXML
 		parentNode.addContent(testResultsEl);
 		for (TestResult TestResultloopvar : Patientvar.getTestResults())
 		{
-			if(TestResultloopvar.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;
+			if(!TestResultloopvar.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;
 			Element testResults_elEl = new Element("testResults-el");
 			testResultsEl.addContent(testResults_elEl);
 			writeTestResult(TestResultloopvar,testResults_elEl);

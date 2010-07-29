@@ -592,7 +592,7 @@ public class XMLReadCodeGen {
                      */
                     write(2, "for(" + f.resolved.javaClass.getSimpleName() + " e : o." + f.getterName() + "()) {\n");
                     if(o.javaClass == Patient.class && f.resolved.javaClass == TestResult.class)
-                    	write(3, "if(e.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;\n");
+                    	write(3, "if(!e.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;\n");
                     write(3, "if (dbo == null) {\n");
                     write(4, "if (syncPair(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n");
                     write(3, "} else {\n");
@@ -631,7 +631,7 @@ public class XMLReadCodeGen {
                     write(3, "for(Iterator<" + f.resolved.javaClass.getSimpleName() + "> i = dbo." + f.getterName() + "().iterator(); i.hasNext();) {\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " dbe = i.next();\n");
                     if(o.javaClass == Patient.class && f.resolved.javaClass == TestResult.class)
-                    	write(4, "if(dbe.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;\n");
+                    	write(4, "if(!dbe.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " e = null;\n");
                     write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
                     write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(dbe, f)) {\n");

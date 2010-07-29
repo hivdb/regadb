@@ -91,7 +91,7 @@ public class XMLWriteCodeGen
         writeClassCode += "for (" + toWrite.getSimpleName() + " " +loopVarName+ " : " + generateGetterConstruct(id,null,fieldName,toWrite) +"){";
         
         if(toWrite == TestResult.class && varNameList_.get(id).equals("PatientImplvar")){
-        	writeClassCode += "if("+ loopVarName +".getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;";
+        	writeClassCode += "if(!"+ loopVarName +".getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;";
         }
         
         writeClassCode += "Element "+ fieldName+"_elEl = new Element(\""+fieldName+"-el\");";
