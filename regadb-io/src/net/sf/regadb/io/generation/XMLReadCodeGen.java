@@ -22,6 +22,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class XMLReadCodeGen {
     private enum Type { Primitive, ObjectSet, ObjectKey, ObjectPointer, ObjectPointerSet };
@@ -73,7 +74,8 @@ public class XMLReadCodeGen {
                 if (parent.javaClass == Patient.class) {
                     write(tabs, resolved.varName() + " = patient.createTestResult(fieldTestResult_test);\n");
                 } else {
-                    write(tabs, resolved.varName() + " = new TestResult(fieldTestResult_test);\n");
+                	write(tabs, resolved.varName() + " = new TestResult(fieldTestResult_test);\n");
+                    write(tabs, "patient.addTestResult("+ resolved.varName() +");\n");
                 }
                 write(tabs, memberName() + ".add(" + resolved.varName() + ");\n");
             } else if (javaClass == Therapy.class) {
@@ -245,6 +247,7 @@ public class XMLReadCodeGen {
                + "import org.xml.sax.*;\n"
                + "import org.xml.sax.helpers.XMLReaderFactory;\n"
                + "import java.io.IOException;\n"
+               + "import net.sf.regadb.io.util.StandardObjects;\n"
                + "\n"
                + "public class ImportFromXML extends ImportFromXMLBase {\n");
 
@@ -494,8 +497,13 @@ public class XMLReadCodeGen {
         
         for (String id : objectIdMap.keySet()) {
             ObjectInfo o = objectIdMap.get(id);
-            
+
+            if(o.javaClass == Patient.class)
+            	write(1, "Patient patientDbo = null;\n");
             write(1, "public boolean syncPair(Transaction t, " + o.javaClass.getSimpleName() + " o, " + o.javaClass.getSimpleName() + " dbo, SyncMode syncMode, boolean simulate) throws ImportException {\n");
+            if(o.javaClass == Patient.class)
+            	write(2, "patientDbo = dbo;\n");
+            	
             if (o.referenced) {
                 write(2, "if (synced" + o.javaClass.getSimpleName() + "Set.contains(o))\n");
                 write(3, "return false;\n");
@@ -583,6 +591,8 @@ public class XMLReadCodeGen {
                      * Synchronize the set
                      */
                     write(2, "for(" + f.resolved.javaClass.getSimpleName() + " e : o." + f.getterName() + "()) {\n");
+                    if(o.javaClass == Patient.class && f.resolved.javaClass == TestResult.class)
+                    	write(3, "if(e.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;\n");
                     write(3, "if (dbo == null) {\n");
                     write(4, "if (syncPair(t, e, (" + f.resolved.javaClass.getSimpleName() + ")null, syncMode, simulate)) changed = true;\n");
                     write(3, "} else {\n");
@@ -601,6 +611,8 @@ public class XMLReadCodeGen {
                     if (o.javaClass == Patient.class) {
                     	write(6, "dbo.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
                     } else {
+                    	if(f.resolved.javaClass == TestResult.class)
+                    		write(6, "patientDbo.addTestResult(e);\n");
                         write(6, "dbo." + f.getterName() + "().add(e);\n");
                         if (f.resolved.hasCompositeId)
                             write (6, "e.getId().");
@@ -618,6 +630,8 @@ public class XMLReadCodeGen {
                     write(2, "if (dbo != null && doDelete(\""+ f.resolved.javaClass.getSimpleName() +"\")) {\n");
                     write(3, "for(Iterator<" + f.resolved.javaClass.getSimpleName() + "> i = dbo." + f.getterName() + "().iterator(); i.hasNext();) {\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " dbe = i.next();\n");
+                    if(o.javaClass == Patient.class && f.resolved.javaClass == TestResult.class)
+                    	write(4, "if(dbe.getTest().getTestType().getTestObject().getTestObjectId() != StandardObjects.getPatientTestObject().getTestObjectId()) continue;\n");
                     write(4, f.resolved.javaClass.getSimpleName() + " e = null;\n");
                     write(4, "for(" + f.resolved.javaClass.getSimpleName() + " f : o." + f.getterName() + "()) {\n");
                     write(5, "if (Equals.isSame" + f.resolved.javaClass.getSimpleName() + "(dbe, f)) {\n");
