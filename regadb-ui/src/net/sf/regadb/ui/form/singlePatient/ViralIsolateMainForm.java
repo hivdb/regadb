@@ -200,7 +200,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		});
 
         for(NtSequence ntSequence : sortedSeqs){
-        	addSequenceForm(ntSequence);
+        	addSequenceForm(ntSequence, trans);
         }
         
         if (viralIsolateForm_.isEditable()) {
@@ -208,7 +208,9 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                {
 	                    public void trigger(WMouseEvent a) 
 	                    {
-	                    	addSequenceForm();
+	                    	Transaction t = RegaDBMain.getApp().createTransaction();
+	                    	addSequenceForm(t);
+	                    	t.commit();
 	                    }
 	                });
         }
@@ -260,21 +262,30 @@ public class ViralIsolateMainForm extends WContainerWidget
         return label;
     }
     
-    private NtSequenceForm addSequenceForm(NtSequence ntSequence){
-    	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence);
+    private NtSequenceForm addSequenceForm(NtSequence ntSequence, Transaction t){
+    	t = RegaDBMain.getApp().createTransaction();
+		List<Test> alltests = t.getTests(StandardObjects.getSequenceAnalysisTestObject());
+		List<Test> tests = new ArrayList<Test>();
+		for(Test test : alltests){
+			if(test.getAnalysis() == null){
+				tests.add(test);
+			}
+		}
+    	
+    	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence, tests);
     	ntSequenceForms.add(ntsf);
     	ntSequenceContainer.addWidget(ntsf);
     	
     	return ntsf;
     }
     
-    private NtSequenceForm addSequenceForm(){
+    private NtSequenceForm addSequenceForm(Transaction t){
 	    String label = getUniqueSequenceLabel(ntSequenceForms);
 	    NtSequence newSeq = new NtSequence(viralIsolateForm_.getViralIsolate());
 	    newSeq.setLabel(label);
 	    addSequence(newSeq);
 	    
-	    return addSequenceForm(newSeq);
+	    return addSequenceForm(newSeq, t);
     }
 	
     private void addSequence(NtSequence ntSequence){
@@ -299,7 +310,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     		removedSequences.add(ntSequence);
     }
     
-    public void confirmSequences(){
+    public void confirmSequences(Transaction t){
     	Set<String> trugeneAdded = new HashSet<String>();
     	if (RegaDBSettings.getInstance().getInstituteConfig().isTrugeneFix()) {
 	    	for(NtSequenceForm ntsf : ntSequenceForms) {
@@ -313,11 +324,13 @@ public class ViralIsolateMainForm extends WContainerWidget
     	}
     	
     	for (String ntSeq : trugeneAdded) {
-    		addSequenceForm().setNucleotides(ntSeq);
+    		addSequenceForm(t).setNucleotides(ntSeq);
     	}
     	
     	for(NtSequenceForm ntsf : ntSequenceForms){
         	ntsf.save();
+        	
+        	removedTestResults.addAll(ntsf.getRemovedTestResults());
         	
         	NtSequence nt = ntsf.getNtSequence();
         	ViralIsolate vi = viralIsolateForm_.getViralIsolate();
@@ -419,9 +432,11 @@ public class ViralIsolateMainForm extends WContainerWidget
 
     public boolean checkSampleId(){
     	Transaction tr = RegaDBMain.getApp().createTransaction();
-    	return ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), 
+    	boolean b = ViralIsolateFormUtils.checkSampleId(sampleIdTF.getFormText(), 
     			viralIsolateForm_.getViralIsolate(),
     			RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem().getDatasets(), tr);
+    	tr.commit();
+    	return b;
     }
     
     public void setSampleId(String sampleId){
@@ -431,3 +446,4 @@ public class ViralIsolateMainForm extends WContainerWidget
         sampleDateTF.setDate(sampleDate);
     }
 }
+

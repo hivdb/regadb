@@ -1737,7 +1737,7 @@ public class Transaction {
     {
         Query q = session.createQuery("from Test test " +
         		"where test.testType.testObject.description = :testObject " +
-        		"order by test.id");
+        		"order by test.description, test.id");
 
         q.setParameter("testObject", to.getDescription());
         

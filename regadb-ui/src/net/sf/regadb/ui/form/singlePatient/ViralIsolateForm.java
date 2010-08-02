@@ -109,7 +109,7 @@ public class ViralIsolateForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
 
-		_mainForm.confirmSequences();
+		_mainForm.confirmSequences(t);
 
 		Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
 		if(genome == null)
