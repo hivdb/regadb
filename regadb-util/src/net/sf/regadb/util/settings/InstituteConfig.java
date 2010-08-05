@@ -17,7 +17,11 @@ public class InstituteConfig implements IConfigParser {
 	private String dateFormat;
 	private int minYear;
 	private int maxDaysFuture;
+	
 	private String wtsUrl;
+	private boolean wtsUrlSubtyping = false;
+	private boolean wtsUrlUpdates = false;
+	
 	private boolean sampleDateMandatory = true;
 	private String logo;
 	private boolean trugeneFix = false;
@@ -107,8 +111,13 @@ public class InstituteConfig implements IConfigParser {
 		}
 		
 		ee = e.getChild("wts-url");
-		if(ee != null)
-				setWtsUrl(ee.getTextTrim());
+		if(ee != null){
+			setWtsUrl(ee.getTextTrim());
+			String v = ee.getAttributeValue("useForSubtyping");
+			setUseWtsUrlForSubtyping(v != null && v.toLowerCase().equals("true"));
+			v = ee.getAttributeValue("useForUpdates");
+			setUseWtsUrlForUpdates(v != null && v.toLowerCase().equals("true"));
+		}
 	}
 	
 	private void parseForm(RegaDBSettings settings, Element e){
@@ -205,6 +214,8 @@ public class InstituteConfig implements IConfigParser {
 		
 		e = new Element("wts-url");
 		e.setText(getWtsUrl().toString());
+		e.setAttribute("useForSubtyping", getUseWtsUrlForSubtyping()+"");
+		e.setAttribute("useForUpdates", getUseWtsUrlForUpdates()+"");
 		r.addContent(e);
 		
 		return r;
@@ -299,6 +310,22 @@ public class InstituteConfig implements IConfigParser {
 		this.importToolDir = importToolDir;
 	}
 
+	public boolean getUseWtsUrlForUpdates(){
+		return wtsUrlUpdates;
+	}
+	
+	public void setUseWtsUrlForUpdates(boolean b){
+		this.wtsUrlUpdates = b;
+	}
+
+	public boolean getUseWtsUrlForSubtyping(){
+		return wtsUrlSubtyping;
+	}
+	
+	public void setUseWtsUrlForSubtyping(boolean b){
+		this.wtsUrlSubtyping = b;
+	}
+	
 	public void setWtsUrl(String wtsUrl) {
 		if(!wtsUrl.endsWith("/"))
 			wtsUrl += '/';

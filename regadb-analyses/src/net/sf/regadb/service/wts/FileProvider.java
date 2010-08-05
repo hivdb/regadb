@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.WtsClient;
 
 public class FileProvider 
@@ -17,7 +18,9 @@ public class FileProvider
     
     public void getFile(String fileProvider, String fileName, File placeToDownload) throws RemoteException
     {
-        WtsClient client = new WtsClient(RegaDBWtsServer.getUrl());
+        WtsClient client = new WtsClient(
+        		RegaDBSettings.getInstance().getInstituteConfig().getUseWtsUrlForUpdates() ?
+            	RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl() : RegaDBWtsServer.getUrl());
 
         try
         {

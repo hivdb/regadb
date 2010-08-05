@@ -2,7 +2,6 @@ package net.sf.regadb.service.wts;
 
 import net.sf.regadb.db.AnalysisStatus;
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.service.IAnalysis;

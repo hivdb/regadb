@@ -34,7 +34,7 @@ public abstract class AbstractService {
         init();
         
         IWtsClient client_ = WtsClientFactory.getWtsClient(
-        		RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(url));
+        		RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(getUrl()));
         
         String challenge;
         String ticket = null;
