@@ -110,5 +110,8 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 	public void end() {
 		if(refAa.length()!=0)
 			endOfAlignment();
+		
+		prevRefAaCounter = refAaCounter = 0;
+		prevRefNtCounter = refNtCounter = 0;
 	}
 }
