@@ -195,6 +195,13 @@ public class ViralIsolateForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
+        
+        for(TestResult tr : viralIsolate_.getTestResults())
+        	p.getTestResults().remove(tr);
+        for(NtSequence nt : viralIsolate_.getNtSequences())
+        	for(TestResult tr : nt.getTestResults())
+        		p.getTestResults().remove(tr);
+        
         p.getViralIsolates().remove(viralIsolate_);
         
         t.delete(viralIsolate_);
