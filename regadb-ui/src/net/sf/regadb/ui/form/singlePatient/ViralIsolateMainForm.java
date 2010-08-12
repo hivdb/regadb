@@ -373,6 +373,7 @@ public class ViralIsolateMainForm extends WContainerWidget
         {
             ntseqref = tr.getNtSequence();
             ntseqref.getTestResults().remove(tr);
+            RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
             t.delete(tr);
         }
         
@@ -401,6 +402,7 @@ public class ViralIsolateMainForm extends WContainerWidget
                 }
                 else if(tr != null){
                 	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);
+                	RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
                 	t.delete(tr);
                 }
             }

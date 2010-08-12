@@ -131,6 +131,7 @@ public class ViralIsolateForm extends FormWidget
 			if (description.equals(StandardObjects.getGssDescription()) ||
 					description.equals(StandardObjects.getTDRDescription())) {
 				i.remove();
+				RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(test);
 				t.delete(test);
 			}
 		}
