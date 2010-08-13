@@ -21,7 +21,6 @@ import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
-import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -52,6 +51,7 @@ public class StandardObjects {
     private static String subtypeTestDescription = "Rega Subtype Tool";
     private static String subtypeTestTypeDescription = "Subtype Test";
     private static TestType subtypeTestType;
+    private static Test manualSubtypeTest;
     
     private static Genome hiv1Genome;
     private static Genome hiv2aGenome;
@@ -203,6 +203,7 @@ public class StandardObjects {
         contactTest             = createTest(createTestType(dateValueType, null, patientTestObject,"Contact",new TreeSet<TestNominalValue>()), "General contact");
         
         subtypeTestType			= createTestType(stringValueType, null, sequenceAnalysisTestObject, getSubtypeTestTypeDescription(), new TreeSet<TestNominalValue>());
+        manualSubtypeTest		= createTest(subtypeTestType, "Manual Subtype");
         
         genericHBVViralLoadTest = createGenericTest("HBV Viral Load", getLimitedNumberValueType(), null, getPatientTestObject());
         genericHCVAbTest 		= createGenericTest("HCVAb", getNumberValueType(), null, getPatientTestObject());
@@ -383,6 +384,9 @@ public class StandardObjects {
     }
     public static TestType getSubtypeTestType(){
     	return subtypeTestType;
+    }
+    public static Test getManualSubtypeTest(){
+    	return manualSubtypeTest;
     }
     
     public static Genome getHiv1Genome(){
