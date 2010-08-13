@@ -2,7 +2,6 @@ package net.sf.regadb.io.db.cuba;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,8 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
@@ -60,6 +57,8 @@ public class ParseAll extends Parser{
 		PositionalArgument mapDir = as.addPositionalArgument("mapping-directory", true);
 		PositionalArgument xmlDir = as.addPositionalArgument("xml-output-directory", true);
 		ValueArgument confDir = as.addValueArgument("c", "configuration-directory", false);
+		ValueArgument seqCsv = as.addValueArgument("seq-csv", "sequence-csv", false);
+		ValueArgument seqFasta = as.addValueArgument("seq-fasta", "sequence-fasta", false);
 		
 		if(!as.handle(args))
 			return;
@@ -70,7 +69,9 @@ public class ParseAll extends Parser{
 			RegaDBSettings.createInstance();
 		
 		ParseAll pa = new ParseAll();
-		pa.run(new File(csvDir.getValue()),new File(mapDir.getValue()),new File(xmlDir.getValue()));
+		pa.run(new File(csvDir.getValue()),new File(mapDir.getValue()),new File(xmlDir.getValue()),
+				seqCsv.isSet() ? new File(seqCsv.getValue()) : null,
+				seqFasta.isSet() ? new File(seqFasta.getValue()) : null);
 	}
 	
 	public ParseAll(){
@@ -78,7 +79,7 @@ public class ParseAll extends Parser{
 		setLogger(new ConsoleLogger());
 	}
 	
-	public void run(File csvDir, File mapDir, File xmlDir){
+	public void run(File csvDir, File mapDir, File xmlDir, File seqCsv, File seqFasta){
 		if(!xmlDir.canWrite()){
 			System.err.println("unable to write to "+ xmlDir.getAbsolutePath());
 			return;
@@ -89,14 +90,14 @@ public class ParseAll extends Parser{
 		File pvihsFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "pvihtext.txt");
 		File therapyFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "ttotext.txt");
 		File vlFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "cvtext.txt");
-//		File seqsDir = new File(csvDir.getAbsolutePath() + File.separatorChar + "seqs");
 		
 		if(!(	   check(cd4File) 
 				&& check(drugsFile) 
 				&& check(pvihsFile) 
 				&& check(therapyFile) 
 				&& check(vlFile)
-//				&& check(seqsDir)
+				&& (seqCsv == null || check(seqCsv))
+				&& (seqFasta == null || check(seqFasta))
 			))
 			return;
 		
@@ -115,11 +116,13 @@ public class ParseAll extends Parser{
 		System.out.println("parse viral load");
 		parseViralLoad(vlFile);
 		
-//		System.out.println("parse sequences");
-//		parseSequences(seqsDir);
+		if(seqCsv != null && seqFasta != null){
+			System.out.println("parse sequences");
+			parseSequences(seqCsv, seqFasta);
+			IOUtils.exportNTXMLFromPatients(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"viral-isolates.xml", ConsoleLogger.getInstance());
+		}
 		
 		IOUtils.exportPatientsXML(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"patients.xml", ConsoleLogger.getInstance());
-//		IOUtils.exportNTXMLFromPatients(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"viral-isolates.xml", ConsoleLogger.getInstance());
 		System.out.println("done");
 	}
 	
@@ -368,87 +371,54 @@ public class ParseAll extends Parser{
 		}
 	}
 	
-	private void parseSequences(File seqsDir){
-		File info = new File(seqsDir.getAbsolutePath() + File.separatorChar +"Fecha de Muestra.xls");
+	private void parseSequences(File info, File fasta){
 		Map<String, ViralIsolate> vis = new HashMap<String, ViralIsolate>();
 		Map<String, Patient> visps = new HashMap<String, Patient>();
+		
+		Test manualSubtype = getObjectStore().createTest(
+				getObjectStore().getTestType(StandardObjects.getSubtypeTestType()),
+				"Manual Subtype");
 
 		//create empty viral isolates
-		Workbook wb;
+
 		try {
-			wb = Workbook.getWorkbook(info);
-			Sheet sh = wb.getSheet(0);
+			DelimitedReader dr = new DelimitedReader(info, ",", "\"");
+		
+			FastaFile ff = new FastaFile(fasta);
 			
-			int iSampleId = find(sh,0,"NUMERO");
-			int iPatientId = find(sh,0,"CIND");
-			int iSampleDate = find(sh,0,"FechaMuestra");
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
-			for(int i=1; i<sh.getRows(); ++i){
-				Patient p = getObjectStore().getPatient(null, sh.getCell(iPatientId,i).getContents().trim());
+			while(dr.readLine() != null){
+				String patientId = dr.get("casoind");
+				String sampleId = dr.get("Entrada");
+				String subtype = dr.get("SUBTIPO");
+				
+				Patient p = getObjectStore().getPatient(null, patientId);
 				if(p == null)
-					continue;
+					p = getObjectStore().createPatient(null, patientId);
 				
-				Date d = null;
-				try {
-					d = sdf.parse(sh.getCell(iSampleDate,i).getContents().trim());
-				} catch (ParseException e) {
-					e.printStackTrace();
+				NtSequence nt = ff.get(sampleId);
+				if(nt != null){
+					ViralIsolate vi = p.createViralIsolate();
+					vi.setSampleId(sampleId);
+					vi.setSampleDate(null);
+					
+					nt.setViralIsolate(vi);
+					vi.getNtSequences().add(nt);
+					
+//					if(subtype != null && subtype.length() != 0){
+//						TestResult tr = p.createTestResult(manualSubtype);
+//						tr.setNtSequence(nt);
+//						nt.getTestResults().add(tr);
+//						tr.setValue(subtype);
+//					}
 				}
-				if(d == null)
-					continue;
-				
-				String sSampleId = sh.getCell(iSampleId,i).getContents().trim();
-				
-				ViralIsolate vi = new ViralIsolate();
-				vi.setSampleId(sSampleId);
-				vi.setSampleDate(d);
-				
-				vis.put(sSampleId,vi);
-				visps.put(sSampleId,p);
+				else{
+					System.err.println("sample id not in fasta file: "+ sampleId);
+				}
 			}
 
-		} catch (BiffException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		
-		//parse the sequence files
-		for(File fasta : seqsDir.listFiles()){
-			if(!fasta.getName().endsWith(".fas"))
-				continue;
-			
-			try {
-				FastaFile ff = new FastaFile(fasta);
-				
-				//try to connect the sequences with a viral isolate
-				for(NtSequence nt : ff.values()){
-					for(String sampleid : vis.keySet()){
-						if(nt.getLabel().toLowerCase().contains(sampleid.toLowerCase())){
-							ViralIsolate vi = vis.get(sampleid);
-							
-							if(!containsSequence(vi,nt)){
-								vi.getNtSequences().add(nt);
-								nt.setViralIsolate(vi);
-							}
-							break;
-						}
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		//add the not-empty viral isolates to the patients
-		for(Map.Entry<String, ViralIsolate> me : vis.entrySet()){
-			if(me.getValue().getNtSequences().size() > 0){
-				visps.get(me.getKey()).addViralIsolate(me.getValue());
-			}
-		}
+		}		
 	}
 	
 	private boolean containsSequence(ViralIsolate vi, NtSequence nt) throws Exception{
