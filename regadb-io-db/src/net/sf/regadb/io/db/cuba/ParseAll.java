@@ -148,7 +148,8 @@ public class ParseAll extends Parser{
 				String s;
 				
 				s = dr.get("sexo");
-				p.createPatientAttributeValue(gender).setAttributeNominalValue(s.equals("F") ? female:male);
+				if(s != null && s.length() > 0)
+					p.createPatientAttributeValue(gender).setAttributeNominalValue(s.equals("F") ? female:male);
 				
 				s = dr.get("fnac");
 				if(s != null && s.length() > 0){
@@ -156,11 +157,15 @@ public class ParseAll extends Parser{
 					
 					if(d != null)
 						Utils.setBirthDate(p, d);
-						
-					d = getDate(dr.get("fechadiag"));
+				}
+				
+				s = dr.get("fechadiag");
+				if(s != null && s.length() > 0){
+					Date d = getDate(dr.get("fechadiag"));
 					if(d != null)
 						p.createPatientAttributeValue(aids).setValue(d.getTime()+"");
 				}
+
 			}
 			
 			dr.close();
@@ -404,12 +409,12 @@ public class ParseAll extends Parser{
 					nt.setViralIsolate(vi);
 					vi.getNtSequences().add(nt);
 					
-//					if(subtype != null && subtype.length() != 0){
-//						TestResult tr = p.createTestResult(manualSubtype);
-//						tr.setNtSequence(nt);
-//						nt.getTestResults().add(tr);
-//						tr.setValue(subtype);
-//					}
+					if(subtype != null && subtype.length() != 0){
+						TestResult tr = p.createTestResult(manualSubtype);
+						tr.setNtSequence(nt);
+						nt.getTestResults().add(tr);
+						tr.setValue(subtype);
+					}
 				}
 				else{
 					System.err.println("sample id not in fasta file: "+ sampleId);
