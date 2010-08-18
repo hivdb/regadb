@@ -111,6 +111,7 @@ public class GenerateReport
         
         replace("$ORGANISM", getOrganismName(vi));
         replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
+        replace("$MANUAL_SUBTYPE", getType(vi, StandardObjects.getManualSubtypeTest().getDescription()));
         
         replace("$ASI_ALGORITHMS", algorithmsToString(algorithms));
         loadGssTestResults(vi);

@@ -2,9 +2,7 @@ package net.sf.regadb.io.db.cuba;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.DrugCommercial;
@@ -22,13 +18,14 @@ import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.DelimitedReader;
 import net.sf.regadb.io.db.util.DrugMap;
@@ -42,7 +39,10 @@ import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.frequency.Frequency;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class ParseAll extends Parser{
 	private OfflineObjectStore objstore = new OfflineObjectStore();
@@ -56,38 +56,49 @@ public class ParseAll extends Parser{
 		PositionalArgument csvDir = as.addPositionalArgument("csv-directory", true);
 		PositionalArgument mapDir = as.addPositionalArgument("mapping-directory", true);
 		PositionalArgument xmlDir = as.addPositionalArgument("xml-output-directory", true);
+		ValueArgument confDir = as.addValueArgument("c", "configuration-directory", false);
+		ValueArgument seqCsv = as.addValueArgument("seq-csv", "sequence-csv", false);
+		ValueArgument seqFasta = as.addValueArgument("seq-fasta", "sequence-fasta", false);
 		
 		if(!as.handle(args))
 			return;
 		
+		if(confDir.isSet())
+			RegaDBSettings.createInstance(confDir.getValue());
+		else
+			RegaDBSettings.createInstance();
+		
 		ParseAll pa = new ParseAll();
-		pa.run(new File(csvDir.getValue()),new File(mapDir.getValue()),new File(xmlDir.getValue()));
+		pa.run(new File(csvDir.getValue()),new File(mapDir.getValue()),new File(xmlDir.getValue()),
+				seqCsv.isSet() ? new File(seqCsv.getValue()) : null,
+				seqFasta.isSet() ? new File(seqFasta.getValue()) : null);
 	}
 	
 	public ParseAll(){
-		setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
+		setDateFormat(new SimpleDateFormat("dd/MM/yyyy"));
 		setLogger(new ConsoleLogger());
 	}
 	
-	public void run(File csvDir, File mapDir, File xmlDir){
+	public void run(File csvDir, File mapDir, File xmlDir, File seqCsv, File seqFasta){
 		if(!xmlDir.canWrite()){
 			System.err.println("unable to write to "+ xmlDir.getAbsolutePath());
 			return;
 		}
 		
-		File cd4File = new File(csvDir.getAbsolutePath() + File.separatorChar + "CD4_COUNTS.csv");
-		File drugsFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "COMB_MED.csv");
-		File pvihsFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "PVIHS.csv");
-		File therapyFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "TREATMENTS.csv");
-		File vlFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "VIRAL_LOAD.csv");
-		File seqsDir = new File(csvDir.getAbsolutePath() + File.separatorChar + "seqs");
+		File cd4File = new File(csvDir.getAbsolutePath() + File.separatorChar + "cd4text.txt");
+		File drugsFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "combtext.txt");
+		File pvihsFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "pvihtext.txt");
+		File therapyFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "ttotext.txt");
+		File vlFile = new File(csvDir.getAbsolutePath() + File.separatorChar + "cvtext.txt");
 		
 		if(!(	   check(cd4File) 
 				&& check(drugsFile) 
 				&& check(pvihsFile) 
 				&& check(therapyFile) 
 				&& check(vlFile)
-				&& check(seqsDir)))
+				&& (seqCsv == null || check(seqCsv))
+				&& (seqFasta == null || check(seqFasta))
+			))
 			return;
 		
 		System.out.println("parse patients");
@@ -105,40 +116,26 @@ public class ParseAll extends Parser{
 		System.out.println("parse viral load");
 		parseViralLoad(vlFile);
 		
-		System.out.println("parse sequences");
-		parseSequences(seqsDir);
+		if(seqCsv != null && seqFasta != null){
+			System.out.println("parse sequences");
+			parseSequences(seqCsv, seqFasta);
+			IOUtils.exportNTXMLFromPatients(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"viral-isolates.xml", ConsoleLogger.getInstance());
+		}
 		
 		IOUtils.exportPatientsXML(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"patients.xml", ConsoleLogger.getInstance());
-		IOUtils.exportNTXMLFromPatients(getObjectStore().getPatients(), xmlDir.getAbsolutePath() + File.separatorChar +"viral-isolates.xml", ConsoleLogger.getInstance());
 		System.out.println("done");
 	}
 	
 	public void parsePatients(File patFile){
 		try {
 			
-			Test seroconv = StandardObjects.getGenericTest(
-					StandardObjects.getSeroconversionDescription(),
-					StandardObjects.getHiv1Genome());
-			seroconv = getObjectStore().getTest(
-					seroconv.getDescription(),
-					seroconv.getTestType().getDescription(),
-					seroconv.getTestType().getGenome().getOrganismName());
-			TestNominalValue seroconvPositive = getObjectStore().getTestNominalValue(seroconv.getTestType(), "Positive");
-			
 			Attribute aids = getObjectStore().createAttribute(
 					getObjectStore().getAttributeGroup(StandardObjects.getClinicalAttributeGroup().getGroupName()),
 					getObjectStore().getValueType(StandardObjects.getDateValueType().getDescription()),
-					"AIDS status");
+					"Diagnosis");
 							
 			DelimitedReader dr = new DelimitedReader(patFile,separator,delimiter);
 
-			Attribute municipart = getObjectStore().createAttribute(StandardObjects.getDemographicsAttributeGroup(),
-																	StandardObjects.getNominalValueType(),
-																	"municipart");
-			Attribute provpart = getObjectStore().createAttribute(	StandardObjects.getDemographicsAttributeGroup(),
-																	StandardObjects.getNominalValueType(),
-																	"provpart");
-			
 			Attribute gender = getObjectStore().getAttribute(
 					StandardObjects.getGenderAttribute().getName(),
 					StandardObjects.getPersonalAttributeGroup().getGroupName());
@@ -148,50 +145,27 @@ public class ParseAll extends Parser{
 
 			while(dr.readLine() != null){
 				Patient p = getObjectStore().createPatient(null, dr.get("casoind"));
-				AttributeNominalValue anv;
 				String s;
 				
 				s = dr.get("sexo");
-				p.createPatientAttributeValue(gender).setAttributeNominalValue(s.equals("F") ? female:male);
+				if(s != null && s.length() > 0)
+					p.createPatientAttributeValue(gender).setAttributeNominalValue(s.equals("F") ? female:male);
 				
-				
-				s = dr.get("municipart");
+				s = dr.get("fnac");
 				if(s != null && s.length() > 0){
-					anv = getObjectStore().getAttributeNominalValue(municipart, s);
-					if(anv == null)
-						anv = getObjectStore().createAttributeNominalValue(municipart, s);
-					p.addPatientAttributeValue(Utils.createPatientAttributeValue(anv));
-				}
-				
-				s = dr.get("provpart");
-				if(s != null && s.length() > 0){
-					anv = getObjectStore().getAttributeNominalValue(provpart, s);
-					if(anv == null)
-						anv = getObjectStore().createAttributeNominalValue(provpart, dr.get("provpart"));
-					p.addPatientAttributeValue(Utils.createPatientAttributeValue(anv));
+					Date d = getDate(s);
+					
+					if(d != null)
+						Utils.setBirthDate(p, d);
 				}
 				
 				s = dr.get("fechadiag");
 				if(s != null && s.length() > 0){
-					Date d = getDate(s);
-					
-					if(d != null){
-						try{
-							Calendar cal = Calendar.getInstance();
-							cal.setTime(d);
-							cal.add(Calendar.YEAR, - Integer.parseInt(dr.get("edaddiag")));
-							cal.set(Calendar.MONTH, 1);
-							cal.set(Calendar.DAY_OF_MONTH, 1);
-							Utils.setBirthDate(p, cal.getTime());
-						}catch(NumberFormatException e){
-						}
-						p.createTestResult(seroconv,null,d,seroconvPositive);
-					}
-						
-					d = getDate(dr.get("fechafall"));
+					Date d = getDate(dr.get("fechadiag"));
 					if(d != null)
 						p.createPatientAttributeValue(aids).setValue(d.getTime()+"");
 				}
+
 			}
 			
 			dr.close();
@@ -217,7 +191,7 @@ public class ParseAll extends Parser{
 				Date d = getDate(dr.get("fecha"));
 				
 				addTestResult(p, cd4, d, dr.get("cd4abs"));
-				addTestResult(p, cd4p, d, dr.get("cd4proc"));
+				addTestResult(p, cd4p, d, dr.get("cd4porc"));
 			}
 			
 			dr.close();
@@ -227,8 +201,35 @@ public class ParseAll extends Parser{
 	}
 	
 	private void addTestResult(Patient p, Test t, Date d, String value){
-		if(value != null && value.length() > 0)
+		if(value != null && value.length() > 0){
+			
+			//check duplicate results, keep worst case value
+			for(TestResult tr : p.getTestResults()){
+				if(tr.getTestDate().equals(d) && Equals.isSameTest(tr.getTest(), t)){
+					if(t.getTestType().getDescription().contains("CD4")){
+						double oldValue = Double.parseDouble(tr.getValue());
+						double newValue = Double.parseDouble(value);
+						
+						if(oldValue > newValue)
+							tr.setValue(value);
+					}
+					else if(t.getTestType().getDescription().contains("Viral")){
+						double oldValue = Double.parseDouble(tr.getValue().substring(1));
+						double newValue = Double.parseDouble(value.substring(1));
+						
+						if(oldValue < newValue)
+							tr.setValue(value);
+					}
+					else{
+						System.err.println("Duplicate test result: "+ p.getPatientId() +","+ t.getDescription() +","+ DateUtils.format(d));
+					}
+					return;
+				}
+			}
+			
+			//no duplicate
 			p.createTestResult(t, null, d, value);
+		}
 	}
 	
 	private static class Drugs{
@@ -253,7 +254,7 @@ public class ParseAll extends Parser{
 			
 			while(dr.readLine() != null){
 				String combina = dr.get("combina");
-				String med = dr.get("med");
+				String med = dr.get("medicam");
 				
 				Drugs ds = therapyMap.get(combina);
 				if(ds == null){
@@ -337,17 +338,12 @@ public class ParseAll extends Parser{
 												StandardObjects.getHiv1ViralLoadTestType().getDescription(),
 												StandardObjects.getHiv1Genome().getOrganismName());
 
-			Test vll = getObjectStore().getTest(StandardObjects.getGenericHiv1ViralLoadLog10Test().getDescription(),
-												StandardObjects.getHiv1ViralLoadLog10TestType().getDescription(),
-												StandardObjects.getHiv1Genome().getOrganismName());
-
 			while(dr.readLine() != null){
 				Patient p = getObjectStore().getPatient(null, dr.get("casoind"));
 				
 				Date d = getDate(dr.get("fecha"));
 				
 				addTestResult(p, vl, d, '='+ dr.get("copias"));
-				addTestResult(p, vll, d, '='+ dr.get("logar"));
 			}
 			
 			dr.close();
@@ -380,87 +376,54 @@ public class ParseAll extends Parser{
 		}
 	}
 	
-	private void parseSequences(File seqsDir){
-		File info = new File(seqsDir.getAbsolutePath() + File.separatorChar +"Fecha de Muestra.xls");
+	private void parseSequences(File info, File fasta){
 		Map<String, ViralIsolate> vis = new HashMap<String, ViralIsolate>();
 		Map<String, Patient> visps = new HashMap<String, Patient>();
+		
+		Test manualSubtype = getObjectStore().createTest(
+				getObjectStore().getTestType(StandardObjects.getSubtypeTestType()),
+				"Manual Subtype");
 
 		//create empty viral isolates
-		Workbook wb;
-		try {
-			wb = Workbook.getWorkbook(info);
-			Sheet sh = wb.getSheet(0);
-			
-			int iSampleId = find(sh,0,"NUMERO");
-			int iPatientId = find(sh,0,"CIND");
-			int iSampleDate = find(sh,0,"FechaMuestra");
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
-			for(int i=1; i<sh.getRows(); ++i){
-				Patient p = getObjectStore().getPatient(null, sh.getCell(iPatientId,i).getContents().trim());
-				if(p == null)
-					continue;
-				
-				Date d = null;
-				try {
-					d = sdf.parse(sh.getCell(iSampleDate,i).getContents().trim());
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				if(d == null)
-					continue;
-				
-				String sSampleId = sh.getCell(iSampleId,i).getContents().trim();
-				
-				ViralIsolate vi = new ViralIsolate();
-				vi.setSampleId(sSampleId);
-				vi.setSampleDate(d);
-				
-				vis.put(sSampleId,vi);
-				visps.put(sSampleId,p);
-			}
 
-		} catch (BiffException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		try {
+			DelimitedReader dr = new DelimitedReader(info, ",", "\"");
 		
-		//parse the sequence files
-		for(File fasta : seqsDir.listFiles()){
-			if(!fasta.getName().endsWith(".fas"))
-				continue;
+			FastaFile ff = new FastaFile(fasta);
 			
-			try {
-				FastaFile ff = new FastaFile(fasta);
+			while(dr.readLine() != null){
+				String patientId = dr.get("casoind");
+				String sampleId = dr.get("Entrada");
+				String subtype = dr.get("SUBTIPO");
 				
-				//try to connect the sequences with a viral isolate
-				for(NtSequence nt : ff.values()){
-					for(String sampleid : vis.keySet()){
-						if(nt.getLabel().toLowerCase().contains(sampleid.toLowerCase())){
-							ViralIsolate vi = vis.get(sampleid);
-							
-							if(!containsSequence(vi,nt)){
-								vi.getNtSequences().add(nt);
-								nt.setViralIsolate(vi);
-							}
-							break;
-						}
+				Patient p = getObjectStore().getPatient(null, patientId);
+				if(p == null)
+					p = getObjectStore().createPatient(null, patientId);
+				
+				NtSequence nt = ff.get(sampleId);
+				if(nt != null){
+					ViralIsolate vi = p.createViralIsolate();
+					vi.setSampleId(sampleId);
+					vi.setSampleDate(null);
+					
+					nt.setViralIsolate(vi);
+					vi.getNtSequences().add(nt);
+					
+					if(subtype != null && subtype.length() != 0){
+						TestResult tr = p.createTestResult(manualSubtype);
+						tr.setNtSequence(nt);
+						nt.getTestResults().add(tr);
+						tr.setValue(subtype);
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
+				else{
+					System.err.println("sample id not in fasta file: "+ sampleId);
+				}
 			}
-		}
-		
-		//add the not-empty viral isolates to the patients
-		for(Map.Entry<String, ViralIsolate> me : vis.entrySet()){
-			if(me.getValue().getNtSequences().size() > 0){
-				visps.get(me.getKey()).addViralIsolate(me.getValue());
-			}
-		}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	private boolean containsSequence(ViralIsolate vi, NtSequence nt) throws Exception{

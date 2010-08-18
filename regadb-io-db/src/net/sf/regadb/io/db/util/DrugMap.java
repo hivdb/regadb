@@ -2,6 +2,8 @@ package net.sf.regadb.io.db.util;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,14 +43,19 @@ public class DrugMap {
 	public void toBoosted(Set<DrugGeneric> dgs){
 		for(DrugGeneric rtv : dgs){
 			if(isRTV(rtv)){
+				List<DrugGeneric> toRemove = new LinkedList<DrugGeneric>();
+				List<DrugGeneric> toAdd = new LinkedList<DrugGeneric>();
 				for(DrugGeneric pi : dgs){
 					DrugGeneric bpi = getBoosted(pi);
 					if(bpi != null){
-						dgs.remove(pi);
-						dgs.remove(rtv);
-						dgs.add(bpi);
+						toRemove.add(pi);
+						toRemove.add(rtv);
+						toAdd.add(bpi);
 					}
 				}
+				dgs.removeAll(toRemove);
+				dgs.addAll(toAdd);
+				
 				return;
 			}
 		}
