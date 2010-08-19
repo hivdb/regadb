@@ -1,1 +1,4 @@
 use pdflatex to generate pdf file
+
+ubuntu:
+sudo apt-get install pdflatex texlive-latex-extra texlive-fonts-recommended
