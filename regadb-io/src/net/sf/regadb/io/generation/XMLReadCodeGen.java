@@ -75,7 +75,7 @@ public class XMLReadCodeGen {
                     write(tabs, resolved.varName() + " = patient.createTestResult(fieldTestResult_test);\n");
                 } else {
                 	write(tabs, resolved.varName() + " = new TestResult(fieldTestResult_test);\n");
-                    write(tabs, "patient.addTestResult("+ resolved.varName() +");\n");
+                    write(tabs, "if(patient != null) patient.addTestResult("+ resolved.varName() +");\n");
                 }
                 write(tabs, memberName() + ".add(" + resolved.varName() + ");\n");
             } else if (javaClass == Therapy.class) {
@@ -612,7 +612,7 @@ public class XMLReadCodeGen {
                     	write(6, "dbo.add" + f.resolved.javaClass.getSimpleName() + "(e);\n");
                     } else {
                     	if(f.resolved.javaClass == TestResult.class)
-                    		write(6, "patientDbo.addTestResult(e);\n");
+                    		write(6, "if(patientDbo != null) patientDbo.addTestResult(e);\n");
                         write(6, "dbo." + f.getterName() + "().add(e);\n");
                         if (f.resolved.hasCompositeId)
                             write (6, "e.getId().");

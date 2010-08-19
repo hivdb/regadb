@@ -506,11 +506,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                     fieldPatient_testResults.add(elTestResult);
                 } else if (currentState() == ParseState.stateViralIsolate) {
                     elTestResult = new TestResult(fieldTestResult_test);
-                    patient.addTestResult(elTestResult);
+                    if(patient != null) patient.addTestResult(elTestResult);
                     fieldViralIsolate_testResults.add(elTestResult);
                 } else if (currentState() == ParseState.stateNtSequence) {
                     elTestResult = new TestResult(fieldTestResult_test);
-                    patient.addTestResult(elTestResult);
+                    if(patient != null) patient.addTestResult(elTestResult);
                     fieldNtSequence_testResults.add(elTestResult);
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
@@ -3488,7 +3488,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
-                        patientDbo.addTestResult(e);
+                        if(patientDbo != null) patientDbo.addTestResult(e);
                         dbo.getTestResults().add(e);
                         e.setViralIsolate(dbo);
                     }
@@ -3608,7 +3608,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
-                        patientDbo.addTestResult(e);
+                        if(patientDbo != null) patientDbo.addTestResult(e);
                         dbo.getTestResults().add(e);
                         e.setNtSequence(dbo);
                     }
