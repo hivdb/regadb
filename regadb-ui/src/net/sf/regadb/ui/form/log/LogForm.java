@@ -87,9 +87,10 @@ public class LogForm extends FormWidget {
             fileDateDF.setDate(new Date(logFile.lastModified()));
             fileSizeTF.setText(FileUtils.getHumanReadableFileSize(logFile));
             
-            fileDownloadA.setText(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
-            fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath()).generateUrl());
-            
+            if(!logFile.isDirectory()){
+	            fileDownloadA.setText(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
+	            fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath()).generateUrl());
+            }
             try{
                 fileContentTA.setText(parseContent(logFile));
             }
@@ -105,11 +106,21 @@ public class LogForm extends FormWidget {
     
     private String parseContent(File f){
         String content = null;
-        try{
-            content = org.apache.commons.io.FileUtils.readFileToString(f, null);
+        if(!f.isDirectory()){
+	        try{
+	            content = org.apache.commons.io.FileUtils.readFileToString(f, null);
+	        }
+	        catch(Exception e){
+	            e.printStackTrace();
+	        }
         }
-        catch(Exception e){
-            e.printStackTrace();
+        else{
+        	StringBuilder sb = new StringBuilder("directory listing:\n");
+        	for(File ff : f.listFiles())
+        		sb.append(ff.isDirectory() ? "+  " : "-  ")
+        		  .append(ff.getName())
+        		  .append("\n");
+        	content = sb.toString();
         }
         return content;
     }
