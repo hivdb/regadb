@@ -1,4 +1,4 @@
-package net.sf.regadb.analysis.functions;
+package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,19 +34,20 @@ import net.sf.regadb.db.tools.MutationHelper;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import eu.webtoolkit.jwt.WString;
 
 public class GenerateReport 
 {
 	private static class RIResult{
-		public String gss="N/A",
-			mutations="N/A",
-			remarks="N/A",
-			sir="N/A",
-			level="N/A",
-			description="N/A";
+		public String gss,mutations,remarks,sir,level,description;
 		
 		public RIResult(){
-			
+			gss = WString.tr("report.asi.na.gss").getValue();
+			mutations = WString.tr("report.asi.na.mutations").getValue();
+			remarks = WString.tr("report.asi.na.remarks").getValue();
+			sir = WString.tr("report.asi.na.sir").getValue();
+			level = WString.tr("report.asi.na.level").getValue();
+			description = WString.tr("report.asi.na.description").getValue();
 		}
 		
 		public RIResult(String xml){
@@ -64,17 +65,32 @@ public class GenerateReport
 		}
 	}
 	
+	@SuppressWarnings("serial")
+	private static class RIResults extends HashMap<String,RIResult> {
+		private boolean tdr;
+		
+		public RIResults(boolean tdr){
+			this.tdr = tdr;
+		}
+		
+		public boolean isTdr(){
+			return tdr;
+		}
+	}
+	
 	private static final RIResult emptyRIResult = new RIResult();
 	
-	private Map<String,Map<String,RIResult>> riresults = new HashMap<String,Map<String,RIResult>>();
+	private Map<String,RIResults> riresults = new HashMap<String,RIResults>();
+	
+	private List<String> tdrDrugs;
 	
     private StringBuffer rtfBuffer_;
     private static final long MILLISECS_PER_DAY = 1000*60*60*24;
     
-    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile){
+    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> asiAlgorithms, Collection<String> drugClasses, Transaction t, File chartFile){
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        init(vi, patient, algorithms, drugClasses, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
+        init(vi, patient, asiAlgorithms, drugClasses, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
     }
     
     public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile, int dateTolerance)
@@ -240,11 +256,11 @@ public class GenerateReport
         for(Therapy t : therapies){
         	TreeSet<String> combination = new TreeSet<String>();
             for(TherapyGeneric tg : t.getTherapyGenerics()){
-                combination.add(tg.getId().getDrugGeneric().getGenericId());
+                combination.add(getDrugName(tg.getId().getDrugGeneric().getGenericId()));
             }
             for(TherapyCommercial tc : t.getTherapyCommercials()){
                 for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
-                    combination.add(dg.getGenericId());
+                    combination.add(getDrugName(dg.getGenericId()));
                 }
             }
             String curr = combination.toString().replace(", ", "+");
@@ -262,16 +278,18 @@ public class GenerateReport
         try{
             Genome g = vi.getGenome();
             TestType gssTestType = StandardObjects.getGssTestType(g);
+            TestType tdrTestType = StandardObjects.getTDRTestType(g);
             
             for(TestResult tr : vi.getTestResults())
             {
-                if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType)) {
+                if(Equals.isSameTestType(tr.getTest().getTestType(), gssTestType)
+                		|| Equals.isSameTestType(tr.getTest().getTestType(), tdrTestType)) {
                 	String genericName = tr.getDrugGeneric().getGenericName();
                 	String algorithm = tr.getTest().getDescription();
                 	
-                    Map<String,RIResult> ariresults = riresults.get(algorithm);
+                    RIResults ariresults = riresults.get(algorithm);
                     if(ariresults == null){
-                    	ariresults = new HashMap<String,RIResult>();
+                    	ariresults = new RIResults(Equals.isSameTestType(tr.getTest().getTestType(), tdrTestType));
                     	riresults.put(algorithm, ariresults);
                     }
                     ariresults.put(genericName,new RIResult(new String(tr.getData())));
@@ -325,7 +343,7 @@ public class GenerateReport
                 }
             }
             if(!foundMatchinqSeq){
-                replace(tplMut, "undetermined");
+                replace(tplMut, WString.tr("report.alignment.undetermined").getValue());
                 replace(tplStart, "-");
                 replace(tplStop, "-");
             }
@@ -413,7 +431,10 @@ public class GenerateReport
     	String line = asiString.substring(bpos,epos);
     	StringBuilder result = new StringBuilder(asiString.substring(0, bpos));
     	
-    	Map<String,RIResult> ariresults = riresults.get(algorithm);
+    	RIResults ariresults = riresults.get(algorithm);
+    	if(ariresults.isTdr())
+    		drugs = tdrDrugs;
+    	
     	int i = 0;
     	int n = 1;
     	for(String drug : drugs){
@@ -427,15 +448,20 @@ public class GenerateReport
     			line = asiString.substring(epos);
     			n = 2;
     		}
-    			
+    		
+    		
+    		String customString = "report.asi."+ (ariresults.isTdr() ? "tdr" : "gss") +".custom.value"+ riresult.gss;
+    		String custom = WString.tr(customString).getValue();
+    		
     		result.append(line
-    				.replace("$ASI_DRUG"+n, drug)
+    				.replace("$ASI_DRUG"+n, getDrugName(drug))
     				.replace("$ASI_MUTATIONS"+n, riresult.mutations)
     				.replace("$ASI_GSS"+n, riresult.gss)
     				.replace("$ASI_LEVEL"+n, riresult.level)
     				.replace("$ASI_SIR"+n, riresult.sir)
     				.replace("$ASI_REMARKS"+n, riresult.remarks)
     				.replace("$ASI_DESCRIPTION"+n, riresult.description)
+    				.replace("$ASI_CUSTOM"+n, custom == null ? customString : custom)
     				);
     	}
     	
@@ -463,6 +489,11 @@ public class GenerateReport
                 drugs.add(dg.getGenericName());
             }
         }
+        
+        tdrDrugs = new ArrayList<String>();
+        tdrDrugs.add("unknown PI");
+        tdrDrugs.add("unknown NRTI");
+        tdrDrugs.add("unknown NNRTI");
         
         int bpos = 0;
         SubString asiString;
@@ -532,7 +563,7 @@ public class GenerateReport
 				String reportInterpretation = "$INTERPRETATION"
 						+ (Math.min(ii, 3));
 
-				replace("$DRUG" + (Math.min(ii, 3)), drug);
+				replace("$DRUG" + (Math.min(ii, 3)), getDrugName(drug));
 				replace(reportMutations, riresult.mutations);
 
 				replace(reportInterpretation,riresult.sir +" ("+ riresult.gss +")");
@@ -653,12 +684,15 @@ public class GenerateReport
     			else
     				row = rowtpl;
     			
-    			row = row.replaceAll("\\$ASI_DRUG[12]", drug);
+    			row = row.replaceAll("\\$ASI_DRUG[12]", getDrugName(drug));
     			
     			for(String algorithm : usedalgorithms){
     				RIResult rir = riresults.get(algorithm).get(drug);
     				if(rir == null)
     					rir = emptyRIResult;
+    				
+    				String customString = "report.asi."+ (riresults.get(algorithm).isTdr() ? "tdr" : "gss") +".custom.value"+ rir.gss;
+    				String custom = WString.tr(customString).getValue();
     				
     				row = row
     					.replaceAll("\\$ASI_DESRIPTION[12]\\("+ algorithm +"\\)", rir.description)
@@ -666,7 +700,8 @@ public class GenerateReport
     					.replaceAll("\\$ASI_LEVEL[12]\\("+ algorithm +"\\)", rir.level)
     					.replaceAll("\\$ASI_MUTATIONS[12]\\("+ algorithm +"\\)", rir.mutations)
     					.replaceAll("\\$ASI_REMARKS[12]\\("+ algorithm +"\\)", rir.remarks)
-    					.replaceAll("\\$ASI_SIR[12]\\("+ algorithm +"\\)", rir.sir);
+    					.replaceAll("\\$ASI_SIR[12]\\("+ algorithm +"\\)", rir.sir)
+    					.replaceAll("\\$ASI_CUSTOM[12]\\("+ algorithm +"\\)", custom == null ? customString : custom);
     			}
     			
     			result.append(row);
@@ -676,5 +711,20 @@ public class GenerateReport
     	}
     	
     	return tableString;
+	}
+	
+	private Map<String,String> translation = null;
+	private String getDrugName(String name){
+		if(translation == null){
+			translation = new HashMap<String,String>();
+			translation.put("unknown PI", "PI");
+			translation.put("unknown NNRTI", "NNRTI");
+			translation.put("unknown NRTI", "NRTI");
+			translation.put("RTG", "RAL");
+			translation.put("ETV", "ETR");
+		}
+		
+		String tr = translation.get(name);
+		return tr == null ? name : tr;
 	}
 }
