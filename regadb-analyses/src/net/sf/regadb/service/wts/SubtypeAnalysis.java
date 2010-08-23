@@ -3,6 +3,7 @@ package net.sf.regadb.service.wts;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class SubtypeAnalysis extends TestNtSequenceAnalysis{    
     private Genome genome=null;
@@ -28,5 +29,13 @@ public class SubtypeAnalysis extends TestNtSequenceAnalysis{
 
     public Genome getGenome() {
         return genome;
+    }
+    
+    @Override
+    public String getUrl(){
+    	if(RegaDBSettings.getInstance().getInstituteConfig().getUseWtsUrlForSubtyping())
+    		return RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl();
+    	else
+    		return super.getUrl();
     }
 }

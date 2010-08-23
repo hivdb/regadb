@@ -158,19 +158,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 
     public FormField getTextField(ValueTypes type)
     {
-        switch(type)
-        {
-        case STRING:
-        	return new TextField(getInteractionState(), this);
-        case NUMBER:
-        	return new TextField(getInteractionState(), this, FieldType.DOUBLE);
-        case LIMITED_NUMBER:
-        	return new LimitedNumberField(getInteractionState(), this, FieldType.DOUBLE);
-        case DATE:
-            return new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
-        }
-        
-        return null;
+    	return FormField.getTextField(type, getInteractionState(), this);
     }
     
     public abstract void saveData();

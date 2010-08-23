@@ -56,6 +56,9 @@ public class DelimitedReader{
 		String line = getReader().readLine();
 		if(line == null)
 			return null;
+		if(line.trim().length() == 0)
+			return readLine();
+		
 		String[] fields = split(line);
 		setRow(fields);
 		return fields;

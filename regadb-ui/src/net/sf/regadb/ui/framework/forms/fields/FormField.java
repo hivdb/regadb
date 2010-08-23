@@ -1,6 +1,9 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -148,5 +151,25 @@ public abstract class FormField extends WContainerWidget implements IFormField
     
     public IForm getForm() {
     	return form;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static FormField getTextField(ValueTypes type, InteractionState state, IForm form)
+    {
+        switch(type)
+        {
+        case STRING:
+        	return new TextField(state,form);
+        case NUMBER:
+        	return new TextField(state, form, FieldType.DOUBLE);
+        case LIMITED_NUMBER:
+        	return new LimitedNumberField(state, form, FieldType.DOUBLE);
+        case DATE:
+            return new DateField(state, form, RegaDBSettings.getInstance().getDateFormat());
+        case NOMINAL_VALUE:
+            return new ComboBox(state, form);
+        }
+        
+        return null;
     }
 }

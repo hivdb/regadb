@@ -109,7 +109,7 @@ public class ViralIsolateForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
 
-		_mainForm.confirmSequences();
+		_mainForm.confirmSequences(t);
 
 		Genome genome = blast(_mainForm.ntSequenceForms.get(0).getNtSequence());
 		if(genome == null)
@@ -131,6 +131,7 @@ public class ViralIsolateForm extends FormWidget
 			if (description.equals(StandardObjects.getGssDescription()) ||
 					description.equals(StandardObjects.getTDRDescription())) {
 				i.remove();
+				RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(test);
 				t.delete(test);
 			}
 		}
@@ -194,6 +195,13 @@ public class ViralIsolateForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
+        
+        for(TestResult tr : viralIsolate_.getTestResults())
+        	p.getTestResults().remove(tr);
+        for(NtSequence nt : viralIsolate_.getNtSequences())
+        	for(TestResult tr : nt.getTestResults())
+        		p.getTestResults().remove(tr);
+        
         p.getViralIsolates().remove(viralIsolate_);
         
         t.delete(viralIsolate_);

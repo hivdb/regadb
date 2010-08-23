@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.sf.regadb.analysis.functions.GenerateReport;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;

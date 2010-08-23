@@ -5,6 +5,7 @@ import net.sf.regadb.db.meta.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.IOException;
+import net.sf.regadb.io.util.StandardObjects;
 
 public class ImportFromXML extends ImportFromXMLBase {
     enum ParseState { TopLevel, statePatient, stateDataset, stateTestResult, stateTest, stateAnalysis, stateAnalysisData, statePatientEventValue, stateTestType, stateTestObject, stateTestNominalValue, statePatientAttributeValue, stateAttribute, stateAttributeGroup, stateAttributeNominalValue, stateViralIsolate, stateNtSequence, stateAaSequence, stateEvent, stateProtein, stateOpenReadingFrame, stateAaMutation, stateAaInsertion, stateTherapy, stateTherapyCommercial, stateTherapyGeneric, stateValueType, stateEventNominalValue };
@@ -505,9 +506,11 @@ public class ImportFromXML extends ImportFromXMLBase {
                     fieldPatient_testResults.add(elTestResult);
                 } else if (currentState() == ParseState.stateViralIsolate) {
                     elTestResult = new TestResult(fieldTestResult_test);
+                    if(patient != null) patient.addTestResult(elTestResult);
                     fieldViralIsolate_testResults.add(elTestResult);
                 } else if (currentState() == ParseState.stateNtSequence) {
                     elTestResult = new TestResult(fieldTestResult_test);
+                    if(patient != null) patient.addTestResult(elTestResult);
                     fieldNtSequence_testResults.add(elTestResult);
                 } else {
                     throw new SAXException(new ImportException("Nested object problem: " + qName));
@@ -2173,7 +2176,9 @@ public class ImportFromXML extends ImportFromXMLBase {
         xmlReader.parse(source);
     }
 
+    Patient patientDbo = null;
     public boolean syncPair(Transaction t, Patient o, Patient dbo, SyncMode syncMode, boolean simulate) throws ImportException {
+        patientDbo = dbo;
         boolean changed = false;
         if (o == null)
             return changed;
@@ -2267,6 +2272,7 @@ public class ImportFromXML extends ImportFromXMLBase {
             }
         }
         for(TestResult e : o.getTestResults()) {
+            if(!e.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;
             if (dbo == null) {
                 if (syncPair(t, e, (TestResult)null, syncMode, simulate)) changed = true;
             } else {
@@ -2291,6 +2297,7 @@ public class ImportFromXML extends ImportFromXMLBase {
         if (dbo != null && doDelete("TestResult")) {
             for(Iterator<TestResult> i = dbo.getTestResults().iterator(); i.hasNext();) {
                 TestResult dbe = i.next();
+                if(!dbe.getTest().getTestType().getTestObject().getTestObjectId().equals(StandardObjects.getPatientTestObject().getTestObjectId())) continue;
                 TestResult e = null;
                 for(TestResult f : o.getTestResults()) {
                     if (Equals.isSameTestResult(dbe, f)) {
@@ -3481,6 +3488,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
+                        if(patientDbo != null) patientDbo.addTestResult(e);
                         dbo.getTestResults().add(e);
                         e.setViralIsolate(dbo);
                     }
@@ -3600,6 +3608,7 @@ public class ImportFromXML extends ImportFromXMLBase {
                     syncPair(t, e, null, syncMode, simulate);
                     changed = true;
                     if (!simulate) {
+                        if(patientDbo != null) patientDbo.addTestResult(e);
                         dbo.getTestResults().add(e);
                         e.setNtSequence(dbo);
                     }

@@ -23,6 +23,17 @@ public class FormTable extends WTable {
         return numRows;
     }
     
+    public int addLineToTable(int row, Label label, IFormField field)
+    {
+    	insertRow(row);
+        getElementAt(row, 0).setStyleClass("form-label-area");
+        putElementAt(row, 0, label);
+        putElementAt(row, 1, field.getWidget());
+        getElementAt(row, 1).setStyleClass("form-value-area");
+        label.setBuddy(field);
+        return row;
+    }
+    
     public int addLineToTable(WWidget... widgets)
     {
         int numRows = getRowCount();

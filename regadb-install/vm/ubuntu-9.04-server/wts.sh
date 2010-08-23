@@ -6,7 +6,7 @@ cd `echo $0 | sed 's/\/[^\/]*$/\//g'`
 mkdir -p "$WTSDIR"
 cp wts.xml "$WTSDIR"
 
-git clone http://regaweb.med.kuleuven.be/git/wts /tmp/wts
+git clone http://git.regaweb.med.kuleuven.be/wts /tmp/wts
 cd /tmp/wts/wts
 mkdir build
 ant clean
