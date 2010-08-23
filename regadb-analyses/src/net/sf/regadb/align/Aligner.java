@@ -102,8 +102,8 @@ public class Aligner {
                     result.add(s);
 
                     s.setProtein(protein);
-                    s.setFirstAaPos((short) Math.max(1, posInProtein(protein, aligned.getFirstAa())));
-                    s.setLastAaPos((short) Math.min(getAaLength(protein), posInProtein(protein, aligned.getLastAa())));
+                    s.setFirstAaPos((short) Math.max(1, posInProtein(protein, aligned.getFirstRefAa())));
+                    s.setLastAaPos((short) Math.min(getAaLength(protein), posInProtein(protein, aligned.getLastRefAa())));
 
                     Set<AaMutation> mutations = s.getAaMutations();
                     Set<AaInsertion> insertions = s.getAaInsertions();
