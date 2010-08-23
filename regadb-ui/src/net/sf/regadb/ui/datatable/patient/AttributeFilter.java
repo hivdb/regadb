@@ -17,7 +17,6 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WString;
 
 public class AttributeFilter extends WContainerWidget implements IFilter 
 {
@@ -179,5 +178,10 @@ public class AttributeFilter extends WContainerWidget implements IFilter
 			return filter_.getConstraint(varName, filterIndex);
 		else
 			return null;
+	}
+
+	@Override
+	public boolean isValid() {
+		return filter_ == null || filter_.isValid();
 	}
 }

@@ -7,4 +7,5 @@ public interface IFilter
 {
 	public WContainerWidget getFilterWidget();
 	public HibernateFilterConstraint getConstraint(String varName, int filterIndex);
+	public boolean isValid();
 }

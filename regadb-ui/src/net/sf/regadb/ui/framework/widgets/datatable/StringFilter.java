@@ -4,6 +4,7 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.pair.Pair;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WValidator;
 
 public class StringFilter extends WContainerWidget implements IFilter 
 {
@@ -76,5 +77,10 @@ public class StringFilter extends WContainerWidget implements IFilter
 		}
 		
 		return constraint;
+	}
+
+	@Override
+	public boolean isValid() {
+		return tf_.validate() == WValidator.State.Valid;
 	}
 }

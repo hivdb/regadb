@@ -6,9 +6,9 @@ import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WDatePicker;
-import eu.webtoolkit.jwt.WDateValidator;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WValidator;
 
 public class DateFilter extends WContainerWidget implements IFilter 
 {
@@ -173,5 +173,11 @@ public class DateFilter extends WContainerWidget implements IFilter
 		}
 			
 		return constraint;
+	}
+
+	@Override
+	public boolean isValid() {
+		return getDateField1().validate() == WValidator.State.Valid
+			&& getDateField2().validate() == WValidator.State.Valid;
 	}
 }

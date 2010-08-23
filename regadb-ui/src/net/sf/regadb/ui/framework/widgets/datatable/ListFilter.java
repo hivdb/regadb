@@ -82,4 +82,8 @@ public abstract class ListFilter extends WContainerWidget implements IFilter
 		
 		return constraint;
 	}
+	
+	public boolean isValid(){
+		return true;
+	}
 }
