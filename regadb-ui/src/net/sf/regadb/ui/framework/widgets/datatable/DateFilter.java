@@ -6,6 +6,7 @@ import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WDatePicker;
+import eu.webtoolkit.jwt.WDateValidator;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WValidator;
