@@ -304,7 +304,7 @@ public class CodonAlign {
 
         if (seq2ORFLead != null)
             for (int i = 1; i <= seq2ORFLead.length(); ++i)
-                if ((firstNonGap - seq2ORFLead.length() + i) >= 1)
+                if ((firstNonGap - seq2ORFLead.length() + i -1) >= 1)
                     seq2.edit(new Edit(firstNonGap - seq2ORFLead.length() + i -1,
                             seq2ORFLead.getAlphabet(), seq2ORFLead.symbolAt(i)));
 
