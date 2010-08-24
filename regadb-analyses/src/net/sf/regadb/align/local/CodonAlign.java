@@ -118,9 +118,14 @@ public class CodonAlign {
 
             Alignment aaAlignment = bestAlignment.getAlignment();
             
+//            System.err.println(toString(bestAlignment.getAlignment(),true));
+//            System.err.println(" "+ toString(ntAlignment.getAlignment()));
+
             ScoredAlignment ntCodonAlignment = alignLikeAA(ref, target, bestFrameShift,
                     aaAlignment.symbolListForLabel("refAA"),
                     aaAlignment.symbolListForLabel("targetAA"));
+            
+//            System.err.println(" "+ toString(ntCodonAlignment.getAlignment()));
 
             System.err.println("Scores: " + ntAlignment.getScore() + " " + ntCodonAlignment.getScore());
             
@@ -249,7 +254,7 @@ public class CodonAlign {
                 return ntCodonAlignment.getAlignment();
             }
         } catch (IndexOutOfBoundsException e) {
-            throw new RuntimeException(e);
+            throw e;
         } catch (BioRuntimeException e) {
             throw new RuntimeException(e);
         } catch (NoSuchElementException e) {
@@ -334,8 +339,12 @@ public class CodonAlign {
         }
     }
     
-    @SuppressWarnings("unchecked")
     public static String toString(Alignment alignment){
+    	return toString(alignment,false);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static String toString(Alignment alignment, boolean aa){
         StringBuilder sb = new StringBuilder();
         
         java.util.Iterator<SymbolList> iter = alignment.symbolListIterator();
@@ -343,7 +352,9 @@ public class CodonAlign {
             SymbolList sl = iter.next();
             String s = sl.seqString();
             for(int i = 0; i<s.length(); ++i){
-                if((i % 3) == 0)
+            	if(aa)
+            		sb.append("   ");
+            	else if((i % 3) == 0)
                     sb.append(' ');
                 sb.append(s.charAt(i));
             }
