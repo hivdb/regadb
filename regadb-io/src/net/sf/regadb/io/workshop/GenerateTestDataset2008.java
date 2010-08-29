@@ -54,7 +54,7 @@ public class GenerateTestDataset2008 {
         for(Object o: l) {
         	Patient p = PatientImplHelper.castPatientImplToPatient(o, datasetsS);
             int therapies = p.getTherapies().size();
-            if(therapies>3 && p.getViralIsolates().size()==1) {
+            if(therapies>3 && p.getViralIsolates().size()>2) {
             	pList.add(p);
             }
         }
