@@ -14,8 +14,8 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WAnchor;
-import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFileResource;
+import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
@@ -28,7 +28,7 @@ public abstract class CustomQuery extends FormWidget{
 
 	private WPushButton run;
 	private WAnchor download;
-	private WText error;
+	private WText status;
 	
 	private DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -46,15 +46,20 @@ public abstract class CustomQuery extends FormWidget{
 	protected abstract void init();
 	
 	protected void doInit(){
-		WContainerWidget gDescr = new WContainerWidget(this);
-//		gDescr.setTitle(getName());
+		WGroupBox gDescr = new WGroupBox(this);
+		gDescr.setTitle(WString.tr("form.query.custom.description"));
 		gDescr.addWidget(new WText(getDescription(),TextFormat.XHTMLText));
 		
-		FormTable tParams = new FormTable(gDescr);
+		WGroupBox gParams = new WGroupBox(this);
+		gParams.setTitle(WString.tr("form.query.custom.parameters"));
+		FormTable tParams = new FormTable(gParams);
 		for(Parameter p : parameters){
 			tParams.addLineToTable(new WLabel(p.getDescription()), p.getWidget());
 		}
 		
+		WGroupBox gRun = new WGroupBox(this);
+		gRun.setTitle(WString.tr("form.query.custom.run"));
+		FormTable tRun = new FormTable(gRun);
 		run = new WPushButton(WString.tr("form.query.custom.run"));
 		run.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg0) {
@@ -63,12 +68,11 @@ public abstract class CustomQuery extends FormWidget{
 		});
 		
 		download = new WAnchor();
-		error = new WText();
+		status = new WText();
 		
-		addWidget(run);
-		addWidget(new WText(" "));
-		addWidget(download);
-		addWidget(error);
+		tRun.addLineToTable(new WLabel(WString.tr("form.query.custom.start")),run);
+		tRun.addLineToTable(new WLabel(WString.tr("form.query.custom.status")),status);
+		tRun.addLineToTable(new WLabel(WString.tr("form.query.custom.download")),download);
 	}
 	
 	@Override
@@ -139,19 +143,19 @@ public abstract class CustomQuery extends FormWidget{
 	}
 	
 	private void showDownload(File result){
-		error.hide();
+		status.hide();
 		download.show();
 		
-		download.setText("Download Result [" + df.format(new Date()) + "]");
+		download.setText(getFileName() +" [" + df.format(new Date()) + "]");
         WFileResource res = new WFileResource(getMimeType(), result.getAbsolutePath());
         res.suggestFileName(getFileName());
         download.setResource(res);
 	}
 	private void showError(String msg){
 		download.hide();
-		error.show();
+		status.show();
 		
-		error.setText(msg);
+		status.setText(msg);
 	}
 	
 	public String getFileName(){
