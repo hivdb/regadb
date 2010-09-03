@@ -6,4 +6,5 @@ public interface Parameter {
 	public abstract WWidget getWidget();
 	public String getDescription();
 	public boolean isMandatory();
+	public boolean isValid();
 }

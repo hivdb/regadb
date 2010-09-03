@@ -60,7 +60,7 @@ public class NadirQuery extends CustomQuery {
 
 		TestType tt = pTestType.getTestTypeComboBox().currentValue();
 		ValueTypes vt = ValueTypes.getValueType(tt.getValueType());
-		String hql = "select tr.patient.patientId, tr.testDate, tr.value from TestResult tr join tr.patient.patientDatasets patient_dataset" +
+		String hql = "select tr.patient.patientId, tr.test.description, tr.testDate, tr.value from TestResult tr join tr.patient.patientDatasets patient_dataset" +
 				" where patient_dataset.id.dataset.datasetIi = :var_dataset" +
 				" and tr.testDate <= :var_date" +
 				" and tr.test.testIi in (select testIi from Test t where t.testType.testTypeIi = :var_testtype)" +
@@ -77,18 +77,19 @@ public class NadirQuery extends CustomQuery {
 		q.setParameter("var_date", pDate.getDate());
 		q.setParameter("var_testtype", tt.getTestTypeIi());
 		
-		out.println("patient_id,test_date,value");
+		out.println("patient_id,test,test_date,value");
 		
 		List r = q.list();
 		String prevPatientId = null;
 		for(Object o : r){
 			Object[] oo = (Object[])o;
 			String patientId = (String)oo[0];
-			Date testDate = (Date)oo[1];
-			String value = (String)oo[2];
+			String test = (String)oo[1];
+			Date testDate = (Date)oo[2];
+			String value = (String)oo[3];
 			
 			if(!patientId.equals(prevPatientId)){
-				out.println('"'+ patientId +"\",\""+ DateUtils.format(testDate) +"\",\""+ value +'"');
+				out.println('"'+ patientId +"\",\""+ test +"\",\""+ DateUtils.format(testDate) +"\",\""+ value +'"');
 				prevPatientId = patientId;
 			}
 		}

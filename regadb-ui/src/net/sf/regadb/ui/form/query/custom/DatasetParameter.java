@@ -42,4 +42,9 @@ public class DatasetParameter extends BasicParameter{
 	public Dataset getDataset(){
 		return datasets.currentValue();
 	}
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
 }

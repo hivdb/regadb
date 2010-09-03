@@ -121,7 +121,21 @@ public abstract class CustomQuery extends FormWidget{
         return RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir();
     }
 	
+	protected boolean isValid(){
+		for(Parameter p : parameters){
+			if(!p.isValid()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private void doRun(){
+		if(!isValid()){
+			showStatus("invalid parameter value(s)");
+			return;
+		}
+		
 		run.disable();
 		
 		try{
@@ -129,32 +143,27 @@ public abstract class CustomQuery extends FormWidget{
 			
 			if(result != null){
 				showDownload(result);
+				showStatus("done");
 			}else{
-				showError("No results.");
+				showStatus("No results.");
 			}
 		}
 		catch(Exception e){
 			e.printStackTrace();
 
-			showError(e.getMessage());
+			showStatus(e.getMessage());
 		}
 		
 		run.enable();
 	}
 	
 	private void showDownload(File result){
-		status.hide();
-		download.show();
-		
 		download.setText(getFileName() +" [" + df.format(new Date()) + "]");
         WFileResource res = new WFileResource(getMimeType(), result.getAbsolutePath());
         res.suggestFileName(getFileName());
         download.setResource(res);
 	}
-	private void showError(String msg){
-		download.hide();
-		status.show();
-		
+	private void showStatus(String msg){
 		status.setText(msg);
 	}
 	

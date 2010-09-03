@@ -14,6 +14,7 @@ public class DateParameter extends BasicParameter {
 		super(description, mandatory);
 		
 		df = new DateField(InteractionState.Adding, form);
+		df.setMandatory(mandatory);
 	}
 
 	@Override
@@ -27,5 +28,10 @@ public class DateParameter extends BasicParameter {
 	
 	public Date getDate(){
 		return df.getDate();
+	}
+
+	@Override
+	public boolean isValid() {
+		return df.validate() && (!isMandatory() || df.getDate() != null);
 	}
 }
