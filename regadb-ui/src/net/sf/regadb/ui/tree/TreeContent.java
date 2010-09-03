@@ -36,6 +36,7 @@ import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionRunForm;
+import net.sf.regadb.ui.form.query.custom.NadirQuery;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcCd4Form;
 import net.sf.regadb.ui.form.query.wiv.WivArcDeathsForm;
@@ -469,7 +470,19 @@ public class TreeContent
 	                    RegaDBMain.getApp().getFormContainer().setForm(new WivArcDeathsForm());
 	                }
 	            });
+	            
         }
+        
+        QueryItem queryCustom = new QueryItem(WResource.tr("menu.query.custom"),queryMain);
+    	
+        ActionItem queryNadir = new ActionItem(WResource.tr("form.query.custom.nadir.name"), queryCustom, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new NadirQuery());
+            }
+        });
+
            
         myAccountMain = new MyAccountItem(rootItem);
             myAccountLogin = new LoginItem(myAccountMain);
