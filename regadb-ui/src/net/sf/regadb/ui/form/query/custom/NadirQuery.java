@@ -67,7 +67,7 @@ public class NadirQuery extends CustomQuery {
 				" order by tr.patient.patientId, ";
 		
 		if(vt == ValueTypes.LIMITED_NUMBER)
-			hql += "cast(substring(tr.value, 2) as double)";
+			hql += "cast(substring(tr.value, 2, length(tr.value)) as double)";
 		else
 			hql += "cast(tr.value as double)";
 		
