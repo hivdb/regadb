@@ -35,6 +35,7 @@ import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
+import net.sf.regadb.tools.FastaFile;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
@@ -43,7 +44,6 @@ import org.xml.sax.SAXException;
 public class Utils {
     private static DateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
-    private static String possibleNucleotides  = "ACGTMRWSYKVHDBN";
     
     public static Table readTable(String filename, String charset, char delim) {
         try {
@@ -603,14 +603,7 @@ public class Utils {
 
      public static String clearNucleotides(String nucleotides) 
      {
-         StringBuffer toReturn = new StringBuffer();
-         for(char c : nucleotides.toCharArray()) 
-         {
-             if(possibleNucleotides.contains(Character.toUpperCase(c)+"")) {
-                 toReturn.append(c);
-             }
-         }
-         return toReturn.toString().toLowerCase();
+         return FastaFile.clearNucleotides(nucleotides);
      }
      
      //TODO: Use more sophisticated algorithms to find a string match...
