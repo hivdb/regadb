@@ -850,7 +850,7 @@ public class Utils {
              PatientAttributeValue v = p.createPatientAttributeValue(na.attribute);
              v.setAttributeNominalValue(gnv);
          } else {
-             ConsoleLogger.getInstance().logError("No mapping for nominal value: " + na.attribute.getName() + " -> " + nominalVal);
+             ConsoleLogger.getInstance().logWarning("No mapping for nominal value: " + na.attribute.getName() + " -> " + nominalVal);
          }
      }
      
