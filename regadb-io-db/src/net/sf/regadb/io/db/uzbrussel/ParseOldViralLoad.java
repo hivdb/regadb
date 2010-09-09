@@ -59,7 +59,7 @@ public class ParseOldViralLoad {
 				System.err.println("Importing: " + eF);
 				parseSheet(s, parseIds, patients);
 			} else {
-				ConsoleLogger.getInstance().logError("Excel workbook doesn't  contain a 'kweken' sheet: " + eF.getName());
+				ConsoleLogger.getInstance().logWarning("Excel workbook doesn't  contain a 'kweken' sheet: " + eF.getName());
 			}
 		}
 		
@@ -181,7 +181,7 @@ public class ParseOldViralLoad {
 				return c1.getColumn();
 			}
 		}
-		ConsoleLogger.getInstance().logError("Cannot find col " + colName);
+		ConsoleLogger.getInstance().logWarning("Cannot find col " + colName);
 		return -1;
 	}
 	
@@ -200,7 +200,7 @@ public class ParseOldViralLoad {
 					if(kwekenSheet==null) {
 						kwekenSheet = wb.getSheet(i);
 					} else {
-						ConsoleLogger.getInstance().logError("Excel workbook contains multiple 'kweken' sheets: " + excelFile.getName());
+						ConsoleLogger.getInstance().logWarning("Excel workbook contains multiple 'kweken' sheets: " + excelFile.getName());
 					}
 				}
 			}

@@ -144,14 +144,14 @@ public class ParseConsultDB {
 	            	} else if(followup.equals("extern")) {
 	            		WivObjects.createPatientAttributeNominalValue("FOLLOW-UP", '3', p);
 	            	} else {
-	            		ConsoleLogger.getInstance().logError("Illegal followup information for patient: " + p.getPatientId());
+	            		ConsoleLogger.getInstance().logWarning("Illegal followup information for patient: " + p.getPatientId());
 	            	}
             	} else {
             		if(followup.equals("intern"))
             			pav.setAttributeNominalValue(WivObjects.getANVFromAbbrev(pav.getAttribute(), "1"));
             	}
             } else {
-            	ConsoleLogger.getInstance().logError("No followup information for patient: " + p.getPatientId());
+            	ConsoleLogger.getInstance().logWarning("No followup information for patient: " + p.getPatientId());
             }
             
             if(consultId != null){
@@ -253,7 +253,7 @@ public class ParseConsultDB {
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
-                ConsoleLogger.getInstance().logError("Cannot parse CD4 value: " + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse CD4 value: " + value);
                 return null;
             }
             TestResult tr = p.createTestResult(StandardObjects.getGenericCD4Test());
@@ -263,7 +263,7 @@ public class ParseConsultDB {
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
-                ConsoleLogger.getInstance().logError("Cannot parse CD4% value: " + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse CD4% value: " + value);
                 return null;
             }
             TestResult tr = p.createTestResult(StandardObjects.getGenericCD4PercentageTest());
@@ -273,7 +273,7 @@ public class ParseConsultDB {
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
-                ConsoleLogger.getInstance().logError("Cannot parse CD8 value: " + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse CD8 value: " + value);
                 return null;
             }
             TestResult tr = p.createTestResult(StandardObjects.getGenericCD8Test());
@@ -283,7 +283,7 @@ public class ParseConsultDB {
             try {
                 Double.parseDouble(value);
             } catch(NumberFormatException nfe) {
-                ConsoleLogger.getInstance().logError("Cannot parse CD8% value: " + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse CD8% value: " + value);
                 return null;
             }
             TestResult tr = p.createTestResult(StandardObjects.getGenericCD8PercentageTest());
@@ -343,7 +343,7 @@ public class ParseConsultDB {
                 Double.parseDouble(value.substring(1));
                 val = value;
             } catch(NumberFormatException nfe) {
-                ConsoleLogger.getInstance().logError("Cannot parse Viral Load value: " + value);
+                ConsoleLogger.getInstance().logWarning("Cannot parse Viral Load value: " + value);
                 return null;
             }
         }

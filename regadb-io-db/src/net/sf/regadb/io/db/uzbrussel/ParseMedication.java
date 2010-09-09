@@ -228,13 +228,13 @@ public class ParseMedication {
         try {
             med.start = dateFormatter.parse(startDate);
         } catch (ParseException e) {
-            ConsoleLogger.getInstance().logError("Cannot parse therapy startdate: " + startDate);
+            ConsoleLogger.getInstance().logWarning("Cannot parse therapy startdate: " + startDate);
         }
         if(stopDate!=null) {
             try {
                 med.stop = dateFormatter.parse(stopDate);
             } catch (ParseException e) {
-                ConsoleLogger.getInstance().logError("Cannot parse therapy stopdate: " + stopDate);
+                ConsoleLogger.getInstance().logWarning("Cannot parse therapy stopdate: " + stopDate);
             }
         }
         med.dc = dc;
