@@ -76,7 +76,7 @@ public class AutoImport {
 	public void removeOldDatabase() {
         Connection c = HibernateUtil.getJDBCConnection();
         try {
-            c.createStatement().execute("truncate patient cascade");
+            c.createStatement().execute("truncate regadbschema.patient cascade");
         } catch (SQLException e) {
             e.printStackTrace();
         }
