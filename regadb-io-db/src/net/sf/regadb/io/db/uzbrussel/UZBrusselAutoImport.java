@@ -13,12 +13,15 @@ import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.autoImport.AutoImport;
 import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.xls.Xls2Csv;
 
 import org.xml.sax.SAXException;
 
 public class UZBrusselAutoImport {
 	public static void main(String [] args) {
+		RegaDBSettings.createInstance();
+		
 		int obligatoryArguments = 4;
 		if(args.length<obligatoryArguments) {
 			System.err.println("Usage baseDir mappingDir user password [proxyHost proxyPort]");
