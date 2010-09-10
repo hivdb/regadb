@@ -24,7 +24,7 @@ public class DataSensitiveMenuNode extends TreeMenuNode {
 	}
 	
 	@Override
-	public boolean isEnabled() {
+	public boolean isDisabled() {
 		Login login = RegaDBMain.getApp().getLogin();
         if(login!=null)
         {
@@ -32,16 +32,16 @@ public class DataSensitiveMenuNode extends TreeMenuNode {
             
             if( ds != null )
             {
-                return ds.getSettingsUser().getUid().equals(login.getUid());
+                return !ds.getSettingsUser().getUid().equals(login.getUid());
             }
             else
             {
-                return false;
+                return true;
             }
         }
         else
         {
-            return false;
+            return true;
         }
 	}
 

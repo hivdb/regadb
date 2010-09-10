@@ -25,9 +25,9 @@ public class AdministratorItem extends TreeMenuNode
     }
 
     @Override
-    public boolean isEnabled()
+    public boolean isDisabled()
     {
-        return RegaDBMain.getApp().getLogin()!=null
-            && RegaDBMain.getApp().getRole().isAdmin();
+        return RegaDBMain.getApp().getLogin()==null
+            || !RegaDBMain.getApp().getRole().isAdmin();
     }
 }

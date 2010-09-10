@@ -188,7 +188,7 @@ public class IPatientDataTable implements IDataTable<Object[]>
     public void selectAction(Object[] selectedItem) 
     {
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem((Patient)selectedItem[0]);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.refresh();
     
         clearItems();
     }

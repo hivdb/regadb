@@ -64,7 +64,7 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     {
         RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateView.selectNode();
     }
 

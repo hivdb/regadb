@@ -63,7 +63,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 
 		div = new WContainerWidget(this);
 		div.addWidget(getDateField1());
-		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1(), false));
+		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1()));
 		dp.setFormat(dateFormat);
 		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
@@ -76,7 +76,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 
 		div = new WContainerWidget(this);
 		div.addWidget(getDateField2());
-		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2(), false));
+		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2()));
 		dp.setFormat(dateFormat);
 		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
 		{

@@ -75,7 +75,7 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
     {
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView.selectNode();
     }
 

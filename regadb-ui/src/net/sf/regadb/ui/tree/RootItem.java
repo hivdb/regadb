@@ -16,10 +16,4 @@ public class RootItem extends TreeMenuNode
 	{
 		return null;
 	}
-
-	@Override
-	public boolean isEnabled()
-	{
-		return true;
-	}
 }

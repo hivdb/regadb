@@ -45,7 +45,7 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
 			.getSelectActionItem().expand();
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectedActionItem().refreshAllChildren();
+			.getSelectedActionItem().refresh();
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
 			.getViewActionItem().selectNode();
 	}

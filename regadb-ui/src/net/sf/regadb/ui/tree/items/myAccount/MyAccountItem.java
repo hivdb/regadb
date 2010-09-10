@@ -26,8 +26,8 @@ public class MyAccountItem extends TreeMenuNode
 	}
 
 	@Override
-	public boolean isEnabled()
+	public boolean isDisabled()
 	{
-		return RegaDBSettings.getInstance().getAccessPolicyConfig().getAccessMode() != AccessMode.INTEGRATED;
+		return RegaDBSettings.getInstance().getAccessPolicyConfig().getAccessMode() == AccessMode.INTEGRATED;
 	}
 }

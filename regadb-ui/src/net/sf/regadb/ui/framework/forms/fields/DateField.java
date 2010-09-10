@@ -33,7 +33,7 @@ public class DateField extends FormField
 			_fieldEdit = new WLineEdit();
             ConfirmUtils.addConfirmAction(form, _fieldEdit);
 			addWidget(_fieldEdit);
-			WDatePicker dp = new WDatePicker(calendarIcon_, _fieldEdit, false, this);
+			WDatePicker dp = new WDatePicker(calendarIcon_, _fieldEdit, this);
 			dp.setFormat(RegaDBSettings.getInstance().getDateFormat());
 			flagValid();
 		}

@@ -72,13 +72,7 @@ public abstract class TreeMenuNode extends WTreeNode
 			expand();
 			}
 			
-			for(WTreeNode node : getChildNodes())
-			{
-				if(node instanceof TreeMenuNode)
-				{
-					((TreeMenuNode)node).refresh();
-				}
-			}
+			this.refresh();
 			
 			ITreeAction treeAction = getFormAction();
 			if(treeAction!=null)
@@ -189,24 +183,13 @@ public abstract class TreeMenuNode extends WTreeNode
 	public void refresh()
 	{
 		super.refresh();
+		setDisabled(isDisabled());
 		setStyle();
 		if(RegaDBMain.getApp().getTree().getSelectedTreeNode()==this)
 		{
 			select();
 		}
 	}
-    
-    public void refreshAllChildren()
-    {
-        for(WTreeNode node : getChildNodes())
-        {
-            node.refresh();
-            if(node instanceof TreeMenuNode)
-            {
-                ((TreeMenuNode)node).refreshAllChildren();
-            }
-        }
-    }
 	
 	public void openOnlyOneMenuPath()
 	{
@@ -227,8 +210,4 @@ public abstract class TreeMenuNode extends WTreeNode
 	}
 
 	public abstract ITreeAction getFormAction();
-	
-	public boolean isEnabled(){
-		return !super.isDisabled() && super.isEnabled();
-	}
 }

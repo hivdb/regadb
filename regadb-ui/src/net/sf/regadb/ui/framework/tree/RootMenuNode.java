@@ -22,8 +22,8 @@ public class RootMenuNode extends TreeMenuNode {
 	}
 	
 	@Override
-	public boolean isEnabled() {
-		return (RegaDBMain.getApp().getLogin() != null);
+	public boolean isDisabled() {
+		return (RegaDBMain.getApp().getLogin() == null);
 	}
 	
 }

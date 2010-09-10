@@ -16,7 +16,7 @@ public class SelectQueryToolQueryDefinitionDatatable extends
 	public void selectAction(QueryDefinition selectedItem) {
     	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView.selectNode();
 	}
 }

@@ -64,7 +64,7 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
     {
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView.selectNode();
     }
 
