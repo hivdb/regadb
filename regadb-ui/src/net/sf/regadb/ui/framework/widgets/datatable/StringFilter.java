@@ -79,7 +79,6 @@ public class StringFilter extends WContainerWidget implements IFilter
 		return constraint;
 	}
 
-	@Override
 	public boolean isValid() {
 		return tf_.validate() == WValidator.State.Valid;
 	}

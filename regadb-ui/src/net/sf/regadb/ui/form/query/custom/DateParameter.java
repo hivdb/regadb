@@ -30,7 +30,6 @@ public class DateParameter extends BasicParameter {
 		return df.getDate();
 	}
 
-	@Override
 	public boolean isValid() {
 		return df.validate() && (!isMandatory() || df.getDate() != null);
 	}

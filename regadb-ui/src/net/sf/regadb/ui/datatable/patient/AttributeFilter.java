@@ -180,7 +180,6 @@ public class AttributeFilter extends WContainerWidget implements IFilter
 			return null;
 	}
 
-	@Override
 	public boolean isValid() {
 		return filter_ == null || filter_.isValid();
 	}

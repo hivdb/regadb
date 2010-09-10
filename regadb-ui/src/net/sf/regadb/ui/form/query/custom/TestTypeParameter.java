@@ -42,7 +42,6 @@ public class TestTypeParameter extends BasicParameter {
 		return testtypes.currentValue();
 	}
 
-	@Override
 	public boolean isValid() {
 		return true;
 	}

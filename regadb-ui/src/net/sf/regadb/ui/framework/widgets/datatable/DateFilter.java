@@ -176,7 +176,6 @@ public class DateFilter extends WContainerWidget implements IFilter
 		return constraint;
 	}
 
-	@Override
 	public boolean isValid() {
 		return getDateField1().validate() == WValidator.State.Valid
 			&& getDateField2().validate() == WValidator.State.Valid;
