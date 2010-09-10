@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -240,7 +239,7 @@ public class PatientToAlgorithm {
 			for (int i = mutCh.length-1; i >= 0; i--) {
 				char c = mutCh[i];
 				if(Character.isDigit(c)){
-					int position = Integer.parseInt(new String(Arrays.copyOfRange(mutCh, 0, i+1)));
+					int position = Integer.parseInt(new String(copyOfRange(mutCh, 0, i+1)));
 					if(i == mutCh.length-2){
 						smut = new SimpleMutation(position, mutCh[i+1]);
 					} else {
@@ -257,5 +256,18 @@ public class PatientToAlgorithm {
 			}
 		}
 		return mutlist;
+	}
+	
+	public static char[] copyOfRange(char[] original, int from, int to){
+		char[] r = new char[to-from];
+		
+		for(int i=0; i<to-from; ++i){
+			if(i < original.length)
+				r[i] = original[i+from];
+			else
+				r[i] = '\0';
+		}
+		
+		return r;
 	}
 }
