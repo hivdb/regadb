@@ -79,8 +79,18 @@ public class LocalAlignmentService implements AlignmentService {
 
             int ins = -1;
 
-            result.setFirstAa((firstNonGap(alignedTarget) - 1) / 3 + 1); // stupid !! BioJava idiots !!
-            result.setLastAa((lastNonGap(alignedTarget) - 1) / 3 + 1);   // stupid !! BioJava idiots !!
+            int firstNt = firstNonGap(alignedTarget);
+            int lastNt = lastNonGap(alignedTarget);
+            result.setFirstAa((firstNt - 1) / 3 + 1); // stupid !! BioJava idiots !!
+            result.setLastAa((lastNt - 1) / 3 + 1);   // stupid !! BioJava idiots !!
+            
+            int firstRefAa = result.getFirstAa();
+            int lastRefAa = result.getLastAa();
+            if(firstNt % 3 != 0)
+            	++firstRefAa;
+            if(lastNt % 3 != 0)
+            	--lastRefAa;
+            
 
             int refAaPos = result.getFirstAa() - 1;
 
@@ -90,8 +100,10 @@ public class LocalAlignmentService implements AlignmentService {
                 SymbolList refCodon = alignedRef.subList(codonStart, codonEnd);
                 SymbolList targetCodon = alignedTarget.subList(codonStart, codonEnd);
 
-                if (refCodon.seqString().equals("---"))
+                if (refCodon.seqString().equals("---")){
                     ++ins;
+                    --lastRefAa;
+                }
                 else {
                     ins = -1;
                     ++refAaPos;
@@ -105,6 +117,9 @@ public class LocalAlignmentService implements AlignmentService {
                     }
                 }
             }
+            
+            result.setFirstRefAa(firstRefAa);
+            result.setLastRefAa(lastRefAa);
             
             return result;
         } catch (NoSuchElementException e) {

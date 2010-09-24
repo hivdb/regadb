@@ -26,7 +26,7 @@ public class IEventDataTable implements IDataTable<Event> {
 	
 	public void selectAction(Event selectedItem) {
 		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.setSelectedItem(selectedItem);
-		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.refreshAllChildren();
+		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.refresh();
 	}
 	
 	public List<Event> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending) {

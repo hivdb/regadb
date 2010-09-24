@@ -16,7 +16,7 @@ public class SelectHqlQueryDefinitionDatatable extends
 	public void selectAction(QueryDefinition selectedItem) {
     	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView.selectNode();
 	}
 	

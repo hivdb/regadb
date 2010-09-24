@@ -123,7 +123,7 @@ public class ILogDataTable implements IDataTable<File> {
     public void selectAction(File selectedItem) {
         RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().logView.selectNode();
     }
 

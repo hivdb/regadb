@@ -32,7 +32,7 @@ public class LogoutItem extends TreeMenuNode
                             RegaDBMain.getApp().getFormContainer().setForm(new LoginForm());
                             RegaDBMain.getApp().logout();
                             RegaDBMain.getApp().getWindow().newTree();
-                            RegaDBMain.getApp().getTree().getRootTreeNode().refreshAllChildren();
+                            RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
                             RegaDBMain.getApp().getTree().getTreeContent().myAccountMain.expand();
     					}
     				}
@@ -43,8 +43,8 @@ public class LogoutItem extends TreeMenuNode
     }
 
     @Override
-    public boolean isEnabled()
+    public boolean isDisabled()
     {
-        return RegaDBMain.getApp().getLogin()!=null;
+        return RegaDBMain.getApp().getLogin()==null;
     }
 }

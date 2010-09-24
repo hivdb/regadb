@@ -71,7 +71,7 @@ public class ITestDataTable implements IDataTable<Test>
 	{
 		RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().testSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().testSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().testView.selectNode();
 	}
 

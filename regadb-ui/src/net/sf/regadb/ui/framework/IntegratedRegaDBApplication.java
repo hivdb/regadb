@@ -44,7 +44,7 @@ public class IntegratedRegaDBApplication extends RegaDBApplication{
 	        getTree().getTreeContent().patientTreeNode.expand();
 	        getTree().getTreeContent().patientTreeNode.getViewActionItem().selectNode();
 		}
-        getTree().getRootTreeNode().refreshAllChildren();
+        getTree().getRootTreeNode().refresh();
 	}
 
 	public void login(String uid){

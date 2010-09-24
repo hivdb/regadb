@@ -109,7 +109,7 @@ public class GenerateReport
         replace("$PATIENT_CLINICAL_FILE_NR", getPatientAttributeValue(patient,StandardObjects.getClinicalFileNumberAttribute().getName()));
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
-        replace("$ART_EXPERIENCE", getARTExperience(patient));
+        replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate()));
         
         int bpos;
         while((bpos = rtfBuffer_.indexOf("$ATTRIBUTE(")) > -1){
@@ -237,7 +237,7 @@ public class GenerateReport
         return resultSample==null?resultDate:resultSample;
     }
     
-    private String getARTExperience(Patient p){
+    private String getARTExperience(Patient p, Date upto){
         StringBuilder result = new StringBuilder();
         
         TreeSet<Therapy> therapies = new TreeSet<Therapy>(new Comparator<Therapy>() {
@@ -247,7 +247,8 @@ public class GenerateReport
 		});
         
         for(Therapy t : p.getTherapies())
-        	therapies.add(t);
+        	if(t.getStartDate().before(upto))
+        		therapies.add(t);
 
         if(therapies.size() == 0)
         	return "";
@@ -442,7 +443,7 @@ public class GenerateReport
 
     		RIResult riresult = ariresults.get(drug);
     		if(riresult == null)
-    			riresult = emptyRIResult;
+    			continue;
     		
     		if(i == drugs.size()){
     			line = asiString.substring(epos);

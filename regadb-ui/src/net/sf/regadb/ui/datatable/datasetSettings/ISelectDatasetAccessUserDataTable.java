@@ -78,7 +78,7 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
     {
         RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().datasetAccessView.selectNode();
     }
 

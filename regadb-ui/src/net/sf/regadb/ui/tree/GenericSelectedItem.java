@@ -37,7 +37,7 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
         return null;
     }
     
-	public boolean isEnabled(){
-		return super.isEnabled() && getSelectedItem() != null;
+	public boolean isDisabled(){
+		return getSelectedItem() == null;
 	}
 }

@@ -93,7 +93,7 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
 	public void selectAction(ImportDefinition selectedItem) {
         RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView.selectNode();
 	}
 

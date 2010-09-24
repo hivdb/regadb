@@ -14,6 +14,8 @@ public class AlignmentResult {
 
     private int firstAa;
     private int lastAa;
+    private int firstRefAa;
+    private int lastRefAa;
 
     public int getFirstAa() {
         return firstAa;
@@ -33,5 +35,18 @@ public class AlignmentResult {
     }
     public void addMutation(Mutation mutation) {
         mutations.add(mutation);
-    }    
+    }
+    
+    public int getFirstRefAa(){
+    	return firstRefAa;
+    }
+    public int getLastRefAa(){
+    	return lastRefAa;
+    }
+    public void setFirstRefAa(int firstRefAa){
+    	this.firstRefAa = firstRefAa;
+    }
+    public void setLastRefAa(int lastRefAa){
+    	this.lastRefAa = lastRefAa;
+    }
 }

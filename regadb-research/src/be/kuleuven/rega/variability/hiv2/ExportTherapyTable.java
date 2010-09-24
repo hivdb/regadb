@@ -22,7 +22,6 @@ public class ExportTherapyTable extends TableQueryOutput<Patient> {
 		super(out, file, type);
 	}
 
-	@Override
 	public void process(Patient p) {
 		for (ViralIsolate vi : p.getViralIsolates()) {
 			if (vi.getNtSequences().size() > 1)

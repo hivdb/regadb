@@ -80,7 +80,7 @@ public class IDatasetDataTable implements IDataTable<Dataset>
 	{
 		RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().datasetView.selectNode();
 	}
 

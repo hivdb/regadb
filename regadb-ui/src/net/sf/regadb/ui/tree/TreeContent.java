@@ -36,6 +36,7 @@ import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.log.LogSelectedItem;
 import net.sf.regadb.ui.form.query.QueryDefinitionForm;
 import net.sf.regadb.ui.form.query.QueryDefinitionRunForm;
+import net.sf.regadb.ui.form.query.custom.NadirQuery;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.form.query.wiv.WivArcCd4Form;
 import net.sf.regadb.ui.form.query.wiv.WivArcDeathsForm;
@@ -269,15 +270,15 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
                 	if((RegaDBMain.getApp().getLogin() != null) && (queryToolSelected.getSelectedItem() != null))
                 	{
-                		return ((RegaDBMain.getApp().getLogin().getUid()).equals(queryToolSelected.getQueryDefinitionCreator(queryToolSelected.getSelectedItem())));
+                		return !((RegaDBMain.getApp().getLogin().getUid()).equals(queryToolSelected.getQueryDefinitionCreator(queryToolSelected.getSelectedItem())));
                 	}
                 	else
                 	{
-                		return false;
+                		return true;
                 	}
                 	
                 }
@@ -291,15 +292,15 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
                 	if((RegaDBMain.getApp().getLogin() != null) && (queryToolSelected.getSelectedItem() != null))
                 	{
-                		return ((RegaDBMain.getApp().getLogin().getUid()).equals(queryToolSelected.getQueryDefinitionCreator(queryToolSelected.getSelectedItem())));
+                		return !((RegaDBMain.getApp().getLogin().getUid()).equals(queryToolSelected.getQueryDefinitionCreator(queryToolSelected.getSelectedItem())));
                 	}
                 	else
                 	{
-                		return false;
+                		return true;
                 	}
                 }
             };
@@ -336,15 +337,15 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
                 	if((RegaDBMain.getApp().getLogin() != null) && (queryDefinitionSelected.getSelectedItem() != null))
                 	{
-                		return ((RegaDBMain.getApp().getLogin().getUid()).equals(queryDefinitionSelected.getQueryDefinitionCreator(queryDefinitionSelected.getSelectedItem())));
+                		return !((RegaDBMain.getApp().getLogin().getUid()).equals(queryDefinitionSelected.getQueryDefinitionCreator(queryDefinitionSelected.getSelectedItem())));
                 	}
                 	else
                 	{
-                		return false;
+                		return true;
                 	}
                 	
                 }
@@ -358,15 +359,15 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
                 	if((RegaDBMain.getApp().getLogin() != null) && (queryDefinitionSelected.getSelectedItem() != null))
                 	{
-                		return ((RegaDBMain.getApp().getLogin().getUid()).equals(queryDefinitionSelected.getQueryDefinitionCreator(queryDefinitionSelected.getSelectedItem())));
+                		return !((RegaDBMain.getApp().getLogin().getUid()).equals(queryDefinitionSelected.getQueryDefinitionCreator(queryDefinitionSelected.getSelectedItem())));
                 	}
                 	else
                 	{
-                		return false;
+                		return true;
                 	}
                 }
             };
@@ -469,7 +470,19 @@ public class TreeContent
 	                    RegaDBMain.getApp().getFormContainer().setForm(new WivArcDeathsForm());
 	                }
 	            });
+	            
         }
+        
+        QueryItem queryCustom = new QueryItem(WResource.tr("menu.query.custom"),queryMain);
+    	
+        ActionItem queryNadir = new ActionItem(WResource.tr("form.query.custom.nadir.name"), queryCustom, new ITreeAction()
+        {
+            public void performAction(TreeMenuNode node) 
+            {
+                RegaDBMain.getApp().getFormContainer().setForm(new NadirQuery());
+            }
+        });
+
            
         myAccountMain = new MyAccountItem(rootItem);
             myAccountLogin = new LoginItem(myAccountMain);
@@ -482,9 +495,9 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
-                    return RegaDBMain.getApp().getLogin()==null;
+                    return RegaDBMain.getApp().getLogin()!=null;
                 }
             };
             myAccountView = new ActionItem(WResource.tr("menu.myAccount.view"), myAccountMain, new ITreeAction()
@@ -496,9 +509,9 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
-                    return RegaDBMain.getApp().getLogin()!=null;
+                    return RegaDBMain.getApp().getLogin()==null;
                 }
             };
             myAccountEdit = new ActionItem(WResource.tr("menu.myAccount.edit"), myAccountMain, new ITreeAction()
@@ -510,9 +523,9 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
-                    return RegaDBMain.getApp().getLogin()!=null;
+                    return RegaDBMain.getApp().getLogin()==null;
                 }
             };
             myAccountEditPassword = new ActionItem(WResource.tr("menu.myAccount.passwordForm"), myAccountMain, new ITreeAction()
@@ -524,9 +537,9 @@ public class TreeContent
             })
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
-                    return RegaDBMain.getApp().getLogin()!=null;
+                    return RegaDBMain.getApp().getLogin()==null;
                 }
             };
             myAccountLogout = new LogoutItem(myAccountMain);
@@ -536,9 +549,9 @@ public class TreeContent
         attributesSettings = new ActionItem(WResource.tr("menu.attributeSettings.attributeSettings"), administratorMain)
         {
              @Override
-             public boolean isEnabled()
+             public boolean isDisabled()
              {
-                 return RegaDBMain.getApp().getLogin()!=null;
+                 return RegaDBMain.getApp().getLogin()==null;
              }
         };
             attributes = new ActionItem(WResource.tr("menu.attributeSettings.attributes"), attributesSettings);
@@ -622,9 +635,9 @@ public class TreeContent
            testSettings = new ActionItem(WResource.tr("menu.testSettings.testSettings"), administratorMain)
             {
                  @Override
-                 public boolean isEnabled()
+                 public boolean isDisabled()
                  {
-                     return RegaDBMain.getApp().getLogin()!=null;
+                     return RegaDBMain.getApp().getLogin()==null;
                  }
             };
            
@@ -750,9 +763,9 @@ public class TreeContent
             event = new ActionItem(RootItem.tr("menu.event"), administratorMain)
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
-                    return RegaDBMain.getApp().getLogin()!=null;
+                    return RegaDBMain.getApp().getLogin()==null;
                 }
             };
             
@@ -802,9 +815,9 @@ public class TreeContent
     	        datasetSettings = new ActionItem(WResource.tr("menu.datasetSettings.datasetSettings"), administratorMain)
     	        {
     	             @Override
-    	             public boolean isEnabled()
+    	             public boolean isDisabled()
     	             {
-    	                 return RegaDBMain.getApp().getLogin()!=null;
+    	                 return RegaDBMain.getApp().getLogin()==null;
     	             }
     	        }; 
     	        
@@ -841,9 +854,9 @@ public class TreeContent
     	        })
     	        {
     	            @Override
-    	            public boolean isEnabled()
+    	            public boolean isDisabled()
     	            {
-    	                return setDatasetSensitivity();
+    	                return !setDatasetSensitivity();
     	            }
     	        };
     	        datasetDelete = new ActionItem(WResource.tr("menu.datasetSettings.dataset.delete"), datasetSelected, new ITreeAction()
@@ -855,17 +868,17 @@ public class TreeContent
     	        })
     	        {
     	            @Override
-    	            public boolean isEnabled()
+    	            public boolean isDisabled()
     	            {
-    	                return setDatasetSensitivity();
+    	                return !setDatasetSensitivity();
     	            }
     	        };
     	        datasetAccess = new ActionItem(WResource.tr("menu.dataset.access"), datasetSettings)
     	        {
     	            @Override
-    	            public boolean isEnabled()
+    	            public boolean isDisabled()
     	            {
-    	                return RegaDBMain.getApp().getLogin()!=null;
+    	                return RegaDBMain.getApp().getLogin()==null;
     	            }
     	        };
     	        datasetAccessSelect = new ActionItem(WResource.tr("menu.dataset.access.select"), datasetAccess, new ITreeAction()
@@ -951,9 +964,9 @@ public class TreeContent
             importTool = new ActionItem(RootItem.tr("menu.importTool"), administratorMain)
             {
                 @Override
-                public boolean isEnabled()
+                public boolean isDisabled()
                 {
-                    return RegaDBMain.getApp().getLogin()!=null;
+                    return RegaDBMain.getApp().getLogin()==null;
                 }
             };
             
@@ -1072,6 +1085,9 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new VersionForm());
                 }
             });
+            
+            
+            rootItem.refresh();
             
 		if(patientTreeNode.isEnabled())
 		{

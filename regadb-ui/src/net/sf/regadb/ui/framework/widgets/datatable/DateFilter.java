@@ -9,6 +9,7 @@ import eu.webtoolkit.jwt.WDatePicker;
 import eu.webtoolkit.jwt.WDateValidator;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WValidator;
 
 public class DateFilter extends WContainerWidget implements IFilter 
 {
@@ -62,7 +63,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 
 		div = new WContainerWidget(this);
 		div.addWidget(getDateField1());
-		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1(), false));
+		div.addWidget(dp = new WDatePicker(calendarIcon1, getDateField1()));
 		dp.setFormat(dateFormat);
 		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
@@ -75,7 +76,7 @@ public class DateFilter extends WContainerWidget implements IFilter
 
 		div = new WContainerWidget(this);
 		div.addWidget(getDateField2());
-		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2(), false));
+		div.addWidget(dp = new WDatePicker(calendarIcon2, getDateField2()));
 		dp.setFormat(dateFormat);
 		dp.getCalendar().selectionChanged().addListener(this, new Signal.Listener()
 		{
@@ -173,5 +174,10 @@ public class DateFilter extends WContainerWidget implements IFilter
 		}
 			
 		return constraint;
+	}
+
+	public boolean isValid() {
+		return getDateField1().validate() == WValidator.State.Valid
+			&& getDateField2().validate() == WValidator.State.Valid;
 	}
 }

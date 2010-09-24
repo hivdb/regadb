@@ -25,8 +25,8 @@ public class QueryDefinitionRunItem extends TreeMenuNode
 	}
     
     @Override
-    public boolean isEnabled()
+    public boolean isDisabled()
     {
-        return RegaDBMain.getApp().getLogin() != null;
+        return RegaDBMain.getApp().getLogin() == null;
     }
 }

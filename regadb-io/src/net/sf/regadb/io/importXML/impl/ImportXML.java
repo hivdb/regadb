@@ -123,9 +123,10 @@ public class ImportXML {
 
             ++patientsRead;
 
-            if (patientsRead % 50 == 0) {
+            if (patientsRead % 10 == 0) {
                 t.commit();
                 t.clearCache();
+                t.flush();
                 t = login.createTransaction();
                 instance.loadDatabaseObjects(t);
                 if(dataset != null)

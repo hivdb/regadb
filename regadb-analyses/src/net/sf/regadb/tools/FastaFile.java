@@ -1,4 +1,4 @@
-package net.sf.regadb.io.db.util;
+package net.sf.regadb.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,7 @@ import net.sf.regadb.db.NtSequence;
 
 @SuppressWarnings("serial")
 public class FastaFile extends TreeMap<String, NtSequence>{
-
+	private static String possibleNucleotides  = "ACGTMRWSYKVHDBN";
 	
 	public FastaFile(File input) throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(input));
@@ -46,7 +46,7 @@ public class FastaFile extends TreeMap<String, NtSequence>{
 	public void add(String label, String nucleotides){
 		NtSequence nt = new NtSequence();
 		nt.setLabel(label);
-		nt.setNucleotides(Utils.clearNucleotides(nucleotides));
+		nt.setNucleotides(clearNucleotides(nucleotides));
 		put(label, nt);
 	}
 	
@@ -65,5 +65,16 @@ public class FastaFile extends TreeMap<String, NtSequence>{
 		PrintStream out = new PrintStream(new FileOutputStream(output));
 		print(out);
 		out.close();
+	}
+	
+	public static String clearNucleotides(String nucleotides){
+		StringBuffer toReturn = new StringBuffer();
+	    for(char c : nucleotides.toCharArray()) 
+	    {
+	        if(possibleNucleotides.contains(Character.toUpperCase(c)+"")) {
+	            toReturn.append(c);
+	        }
+	    }
+	    return toReturn.toString().toLowerCase();
 	}
 }

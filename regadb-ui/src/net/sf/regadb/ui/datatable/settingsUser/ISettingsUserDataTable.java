@@ -81,7 +81,7 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
     {
     	RegaDBMain.getApp().getTree().getTreeContent().userSelected.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().userSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().userSelected.refreshAllChildren();
+        RegaDBMain.getApp().getTree().getTreeContent().userSelected.refresh();
         RegaDBMain.getApp().getTree().getTreeContent().usersView.selectNode();
     }
 
