@@ -80,7 +80,7 @@
         <GLOBALRANGE>
             (-INF TO 10  => 1, 
              10 TO 15   => 2, 
-             15 TO 20   => 3,
+             15 TO 30   => 3,
              30 TO 60   => 4,
              60 TO INF  => 5)
         </GLOBALRANGE>
