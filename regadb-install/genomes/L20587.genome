@@ -1,0 +1,11 @@
+orf
+pol,polymerase,2098-5182
+protease,PR,2308-2605
+reverse transcriptase,RT,2605-3925
+Rnase H,p15,3925-4285
+integrase,IN,4285-5152
+
+orf
+env,envelope,6273-8865
+surface,gp120,6273-7812
+transmembrane,gp41,7812-8862
