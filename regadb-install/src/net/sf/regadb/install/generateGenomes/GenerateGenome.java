@@ -53,7 +53,7 @@ public class GenerateGenome {
         }
         orf.setReferenceSequence(seq);
         
-        int mod = (seq.length())%3;;
+        int mod = (seq.length())%3;
         if(mod != 0)
             System.err.println(name+ " length%3 "+mod);
         
