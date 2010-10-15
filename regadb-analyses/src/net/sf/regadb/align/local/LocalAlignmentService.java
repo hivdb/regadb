@@ -86,9 +86,9 @@ public class LocalAlignmentService implements AlignmentService {
             
             int firstRefAa = result.getFirstAa();
             int lastRefAa = result.getLastAa();
-            if(firstNt % 3 != 0)
+            if((firstNt-1) % 3 != 0)
             	++firstRefAa;
-            if(lastNt % 3 != 0)
+            if((lastNt-1) % 3 != 0)
             	--lastRefAa;
             
 
