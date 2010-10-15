@@ -57,6 +57,7 @@ public class StandardObjects {
     private static Genome hiv2aGenome;
     private static Genome hiv2bGenome;
     private static Genome hcvGenome;
+    private static Genome hiv1oGenome;
     
     private static TestObject patientTestObject;
     private static TestObject resistanceTestObject;
@@ -130,6 +131,7 @@ public class StandardObjects {
         hiv2aGenome = createGenome("HIV-2A", "");
         hiv2bGenome = createGenome("HIV-2B", "");
         hcvGenome = createGenome("HCV","");
+        hiv1oGenome = createGenome("HIV-1 O", "");
         
         numberValueType         = createValueType("number");
         limitedNumberValueType  = createValueType("limited number (<,=,>)");
@@ -400,6 +402,9 @@ public class StandardObjects {
     }
     public static Genome getHcvGenome(){
         return hcvGenome;
+    }
+    public static Genome getHiv1OGenome(){
+    	return hiv1oGenome;
     }
 
 
