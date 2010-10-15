@@ -70,7 +70,7 @@ public class AlignService extends AbstractService implements IAnalysis{
 				String protein = f[0].substring("protein=".length());
 				String start = f[1].substring("start=".length());
 				String stop = f[2].substring("end=".length());
-				String muts[] = f[3].substring("mutations=".length()).split(" ");
+				String muts[] = f[3].substring("mutations=".length()).trim().split(" ");
 				
 				Protein pr = null;
 				for(OpenReadingFrame orf : g.getOpenReadingFrames()){
@@ -92,6 +92,8 @@ public class AlignService extends AbstractService implements IAnalysis{
 					
 					for(String mut : muts){
 						int pos = mut.indexOf(';');
+						if(pos == -1)
+							continue;
 						String aaMut = mut.substring(0,pos);
 						String ntMut = mut.substring(pos+1);
 						
