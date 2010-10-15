@@ -34,6 +34,7 @@ import net.sf.regadb.db.tools.MutationHelper;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import eu.webtoolkit.jwt.WString;
 
 public class GenerateReport 
@@ -130,6 +131,20 @@ public class GenerateReport
         replace("$MANUAL_SUBTYPE", getType(vi, StandardObjects.getManualSubtypeTest().getDescription()));
         
         replace("$ASI_ALGORITHMS", algorithmsToString(algorithms));
+        
+    	//replace $ASI_...($1) with config algorithm
+    	ViralIsolateFormConfig vifc = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+    	String rtfString = rtfBuffer_.toString();
+    	if(vifc != null){
+    		int ai = 1;
+    		for(String alg : vifc.getAlgorithms()){
+    			rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg +"\\)");
+    			rtfString = rtfString.replaceAll("\\$ASI_ALGORITHM\\(\\$"+ ai +"\\)", alg);
+    			++ai;
+    		}
+    	}
+    	rtfBuffer_.replace(0, rtfBuffer_.length(), rtfString);
+        
         loadGssTestResults(vi);
         setRITable(algorithms, drugClasses, t);
         
@@ -579,7 +594,7 @@ public class GenerateReport
     	int i;
     	int bpos1,epos1,bpos2,epos2;
     	StringBuilder result;
-
+    	
     	//expand u
     	
     	//expand algorithm names
