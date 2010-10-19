@@ -23,10 +23,10 @@ import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
-import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.util.settings.ContactFormConfig.EventItem;
 import net.sf.regadb.util.settings.ContactFormConfig.TestItem;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -37,7 +37,7 @@ import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WWidget;
 
 public class GridForm extends FormWidget{
-	private ActionItem lastItem;
+	private TreeMenuNode lastItem;
 	
 	private List<Test> tests = new ArrayList<Test>();
 	private List<Event> events = new ArrayList<Event>();
@@ -74,7 +74,7 @@ public class GridForm extends FormWidget{
 		}
 	}
 
-	public GridForm(InteractionState interactionState, ActionItem lastItem) {
+	public GridForm(InteractionState interactionState, TreeMenuNode lastItem) {
 		super(tr("form.custom.grid"), interactionState);
 		this.lastItem = lastItem;
 		init();

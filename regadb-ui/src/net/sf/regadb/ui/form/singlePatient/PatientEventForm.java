@@ -156,13 +156,13 @@ public class PatientEventForm extends FormWidget
         {
             redirectToSelect(
             		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectActionItem());
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectNavigationNode());
         }
         else
         {
             redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewActionItem());
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedItemNavigationNode(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewNavigationNode());
         }
 	}
 	
@@ -182,7 +182,7 @@ public class PatientEventForm extends FormWidget
 	@Override
 	public void redirectAfterDelete() {
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectActionItem().selectNode();
+			.getSelectNavigationNode().selectNode();
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
         	.setSelectedItem(null);
 	}
@@ -224,8 +224,8 @@ public class PatientEventForm extends FormWidget
 			
 	        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().setSelectedItem(patientEvent_);
 	        redirectToView(
-	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedActionItem(),
-	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewActionItem());
+	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedItemNavigationNode(),
+	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewNavigationNode());
 		}
 	}
 	

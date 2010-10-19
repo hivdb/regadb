@@ -408,14 +408,12 @@ public class AccountForm extends FormWidget
                 t.commit();
             }
             
-            redirectToView(expandNode_, selectNode_);
         }
     }
     
     @Override
     public void cancel()
     {
-        redirectToView(expandNode_, selectNode_);
     }
 
     @Override
@@ -433,7 +431,5 @@ public class AccountForm extends FormWidget
     @Override
     public void redirectAfterDelete() 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().usersSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().userSelected.setSelectedItem(null);
     }
 }

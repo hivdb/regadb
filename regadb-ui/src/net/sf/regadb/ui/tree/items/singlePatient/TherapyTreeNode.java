@@ -6,32 +6,39 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.tree.FormNavigationNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
-import eu.webtoolkit.jwt.WTreeNode;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
 public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
-	private ActionItem copyLast;
+	private FormNavigationNode copyLast;
 
-	public TherapyTreeNode(WTreeNode root) {
-		super("patient.therapy", root);
+	public TherapyTreeNode(TreeMenuNode parent) {
+		super("patient.therapy", parent);
 	}
 	
 	@Override
 	protected void init(){
 		super.init();
 		
-      copyLast = new ActionItem(getResource("copylast"), this, new ITreeAction()
+      copyLast = new FormNavigationNode(getMenuResource("copylast"), this)
       {
-          public void performAction(TreeMenuNode node)
+          public IForm createForm()
           {
-        	  copyLast();
+        	  Patient p = RegaDBMain.getApp().getSelectedPatient();
+              Therapy lastTherapy = null;
+              for(Therapy therapy : p.getTherapies()){
+                  if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
+                      lastTherapy = therapy;
+              }
+        	  return new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy);
           }
-      });
+      };
 	}
 	
 	protected void copyLast(){
@@ -44,34 +51,8 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
         RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy));
 	}
 	
-	public ActionItem getCopyLastActionItem(){
+	public FormNavigationNode getCopyLastNode(){
 		return copyLast;
-	}
-
-	@Override
-	protected void doAdd() {
-		setSelectedItem(null);
-		RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), null));		
-	}
-
-	@Override
-	protected void doDelete() {
-		RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Deleting, WWidget.tr("form.therapy.delete"), getSelectedItem()));		
-	}
-
-	@Override
-	protected void doEdit() {
-		RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Editing, WWidget.tr("form.therapy.edit"), getSelectedItem()));		
-	}
-
-	@Override
-	protected void doSelect() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SelectTherapyForm());		
-	}
-
-	@Override
-	protected void doView() {
-		RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Viewing, WWidget.tr("form.therapy.view"), getSelectedItem()));
 	}
 
 	@Override
@@ -86,5 +67,15 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 	public void applyPrivileges(Privileges priv){
 		super.applyPrivileges(priv);
 		copyLast.setDisabled(priv != Privileges.READWRITE);
+	}
+
+	@Override
+	protected IForm createForm(WString name, InteractionState interactionState, Therapy selectedObject) {
+		return new TherapyForm(interactionState, name, selectedObject);
+	}
+
+	@Override
+	protected IForm createSelectionForm() {
+		return new SelectTherapyForm();
 	}
 }

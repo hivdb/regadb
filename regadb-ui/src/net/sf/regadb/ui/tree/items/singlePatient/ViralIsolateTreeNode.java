@@ -8,91 +8,63 @@ import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateMutationEvolution;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateResistanceEvolutionForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.tree.DefaultNavigationNode;
+import net.sf.regadb.ui.tree.FormNavigationNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
-import eu.webtoolkit.jwt.WTreeNode;
-import eu.webtoolkit.jwt.WWidget;
+import eu.webtoolkit.jwt.WString;
 
 public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
-	private ActionItem evolution;
-	private ActionItem mutationEvolution;
-	private ActionItem resistanceEvolution;
-	private ActionItem cumulatedResistance;
+	private DefaultNavigationNode evolution;
+	private FormNavigationNode mutationEvolution;
+	private FormNavigationNode resistanceEvolution;
+	private FormNavigationNode cumulatedResistance;
 
-	public ViralIsolateTreeNode(WTreeNode root) {
-		super("patient.viralisolate", root);
+	public ViralIsolateTreeNode(TreeMenuNode parent) {
+		super("patient.viralisolate", parent);
 	}
 	
 	@Override
 	protected void init(){
 		super.init();
 		
-		evolution = new ActionItem(getResource("evolution"), this);
-        mutationEvolution = new ActionItem(getResource("evolution.mutation"), evolution, new ITreeAction()
+		evolution = new DefaultNavigationNode(getMenuResource("evolution"), this);
+        mutationEvolution = new FormNavigationNode(getMenuResource("evolution.mutation"), evolution)
         {
-            public void performAction(TreeMenuNode node)
+            public IForm createForm()
             {
-                RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateMutationEvolution(WWidget.tr("form.viralIsolate.evolution.mutation"), 
-                        RegaDBMain.getApp().getSelectedPatient()));
+                return new ViralIsolateMutationEvolution(getFormResource("evolution.mutation"),RegaDBMain.getApp().getSelectedPatient());
             }
-        });
-        resistanceEvolution = new ActionItem(getResource("evolution.resistance"), evolution, new ITreeAction()
+        };
+        resistanceEvolution = new FormNavigationNode(getMenuResource("evolution.resistance"), evolution)
         {
-            public void performAction(TreeMenuNode node)
+            public IForm createForm()
             {
-                RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateResistanceEvolutionForm(WWidget.tr("form.viralIsolate.evolution.resistance"), 
-                        RegaDBMain.getApp().getSelectedPatient()));
+                return new ViralIsolateResistanceEvolutionForm(getFormResource("evolution.resistance"),RegaDBMain.getApp().getSelectedPatient());
             }
-        });
-        cumulatedResistance = new ActionItem(getResource("cumulatedresistance"), this, new ITreeAction()
+        };
+        cumulatedResistance = new FormNavigationNode(getMenuResource("cumulatedresistance"), this)
         {
-            public void performAction(TreeMenuNode node)
+            public IForm createForm()
             {
-                RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateCumulatedResistance(WWidget.tr("form.viralIsolate.cumulatedResistance"), 
-                        RegaDBMain.getApp().getSelectedPatient()));
+                return new ViralIsolateCumulatedResistance(getFormResource("cumulatedResistance"),RegaDBMain.getApp().getSelectedPatient());
             }
-        });
+        };
 	}
 	
-	public ActionItem getEvolutionActionItem(){
+	public DefaultNavigationNode getEvolutionNode(){
 		return evolution;
 	}
-	public ActionItem getMutationEvolutionActionItem(){
+	public FormNavigationNode getMutationEvolutionNode(){
 		return mutationEvolution;
 	}
-	public ActionItem getResistanceEvolutionActionItem(){
+	public FormNavigationNode getResistanceEvolutionNode(){
 		return resistanceEvolution;
 	}
-	public ActionItem getCumulatedResistanceActionItem(){
+	public FormNavigationNode getCumulatedResistanceNode(){
 		return cumulatedResistance;
-	}
-
-	@Override
-	protected void doAdd() {
-		setSelectedItem(null);
-		RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), null));
-	}
-
-	@Override
-	protected void doDelete() {
-		RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Deleting, WWidget.tr("form.viralIsolate.delete"), getSelectedItem()));		
-	}
-
-	@Override
-	protected void doEdit() {
-		RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Editing, WWidget.tr("form.viralIsolate.edit"), getSelectedItem()));		
-	}
-
-	@Override
-	protected void doSelect() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SelectViralIsolateForm());		
-	}
-
-	@Override
-	protected void doView() {
-		RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Viewing, WWidget.tr("form.viralIsolate.view"), getSelectedItem()));		
 	}
 
 	@Override
@@ -113,5 +85,15 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 		cumulatedResistance.setDisabled(disabled);
 		
 		super.refresh();
+	}
+
+	@Override
+	protected IForm createForm(WString name, InteractionState interactionState, ViralIsolate selectedObject) {
+		return new ViralIsolateForm(interactionState, name, selectedObject);
+	}
+
+	@Override
+	protected IForm createSelectionForm() {
+		return new SelectViralIsolateForm();
 	}
 }

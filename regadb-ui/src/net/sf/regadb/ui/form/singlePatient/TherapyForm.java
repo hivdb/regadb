@@ -317,8 +317,8 @@ public class TherapyForm extends FormWidget
             
             RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().setSelectedItem(therapy_);
             redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getViewActionItem());
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedItemNavigationNode(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getViewNavigationNode());
         }
     }
     
@@ -329,13 +329,13 @@ public class TherapyForm extends FormWidget
         {
             redirectToSelect(
             		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectActionItem());
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectNavigationNode());
         }
         else
         {
             redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getViewActionItem());
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedItemNavigationNode(),
+            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getViewNavigationNode());
         } 
     }
     
@@ -358,7 +358,7 @@ public class TherapyForm extends FormWidget
     public void redirectAfterDelete() 
     {
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.getSelectActionItem().selectNode();
+        	.getSelectNavigationNode().selectNode();
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
         	.setSelectedItem(null);
     }

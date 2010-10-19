@@ -10,4 +10,6 @@ public interface IForm
 	public void addFormField(IFormField field);
 	public void removeFormField(IFormField field);
     public WString leaveForm();
+    
+    public void setListener(FormListener listener);
 }

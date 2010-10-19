@@ -22,7 +22,6 @@ import net.sf.regadb.util.settings.Role;
 
 import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
 import eu.webtoolkit.jwt.TextFormat;
@@ -50,6 +49,26 @@ public class RegaDBApplication extends WApplication
 		window_ = new RegaDBWindow();
 		window_.init();
 		getRoot().addWidget(window_);
+		
+//		internalPathChanged().addListener(this.getRoot(), new Signal1.Listener<String>(){
+//			public void trigger(String ip) {
+//                if (!getNavigation().getSelectedNode().canLeaveNode())
+//                	return;
+//				
+//				String[] paths = ip.split("/");
+//				
+//				NavigationNode currentNode = navigation.getRootNode();
+//				for (String path : paths) {
+//					if (!path.equals(""))
+//						for (WTreeNode tn : currentNode.getChildNodes()) {
+//							if (((NavigationNode) tn).selectNode(path)) {
+//								currentNode = (NavigationNode) tn;
+//								break;
+//							}
+//						}
+//				}
+//			}
+//		});
 	}
 
 	public RegaDBWindow getWindow()

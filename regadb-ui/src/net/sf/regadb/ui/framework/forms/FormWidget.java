@@ -7,16 +7,10 @@ import java.util.List;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
-import net.sf.regadb.ui.framework.forms.fields.DateField;
-import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
-import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
-import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
-import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -33,6 +27,8 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     private WFormValidation formValidation_ = new WFormValidation();
     
     private InteractionState interactionState_;
+    
+    private FormListener listener;
     
     //control buttons
     private WPushButton _okButton = new WPushButton(tr("form.general.button.ok"));
@@ -82,6 +78,19 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 		return interactionState_== InteractionState.Adding || interactionState_== InteractionState.Editing; 
 	}
 	
+	public void setListener(FormListener listener){
+		this.listener = listener;
+	}
+	protected void notifyConfirmed(){
+		if(listener != null)
+			listener.confirmed(this, getInteractionState());
+	}
+	protected void notifyCanceled(){
+		if(listener != null)
+			listener.canceled(this, getInteractionState());
+		
+	}
+	
     protected void addControlButtons()
     {
         WContainerWidget buttonContainer = new WContainerWidget(this);
@@ -103,6 +112,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         					cmb.remove();
         					if(sb==StandardButton.Yes) {
         						deleteAction();
+        						notifyConfirmed();
         					}
         				}
                     });
@@ -118,6 +128,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 public void trigger(WMouseEvent a) 
                 {
                     confirmAction();
+                    notifyConfirmed();
                 }
             });
             buttonContainer.addWidget(_cancelButton);
@@ -126,6 +137,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 public void trigger(WMouseEvent a) 
                 {
                     cancel();
+                    notifyCanceled();
                 }
             });
 
@@ -214,19 +226,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         {
             formValidation_.setHidden(false);
         }
-    }
-    
-    protected void redirectToView(TreeMenuNode expandNode, TreeMenuNode selectNode)
-    {
-        expandNode.expand();
-        expandNode.refresh();
-        selectNode.selectNode();
-    }
-    
-    protected void redirectToSelect(TreeMenuNode expandNode, TreeMenuNode selectNode)
-    {
-        expandNode.refresh();
-        selectNode.selectNode();
     }
     
     public void enableOkButton(boolean enable)

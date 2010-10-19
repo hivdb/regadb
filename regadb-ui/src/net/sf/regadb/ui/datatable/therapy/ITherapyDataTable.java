@@ -112,8 +112,7 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 	{
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
         	.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.getSelectedActionItem().refresh();
+        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedItemNavigationNode().refresh();
 	}
 
 	public boolean[] sortableFields()

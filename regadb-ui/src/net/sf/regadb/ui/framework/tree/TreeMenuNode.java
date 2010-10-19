@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -74,13 +73,12 @@ public abstract class TreeMenuNode extends WTreeNode
 			
 			this.refresh();
 			
-			ITreeAction treeAction = getFormAction();
-			if(treeAction!=null)
-				treeAction.performAction(TreeMenuNode.this);
+			doAction();
+			
+			RegaDBMain.getApp().setInternalPath(getInternalPath());
 		}
 	}
-	
-	
+
 	
 	private void setStyle()
 	{
@@ -209,5 +207,19 @@ public abstract class TreeMenuNode extends WTreeNode
 		}
 	}
 
-	public abstract ITreeAction getFormAction();
+	public String getMyInternalPath(){
+		return getLabel().getText().getValue().replace(' ', '_').toLowerCase();
+	}
+	public String getInternalPath() {
+		TreeMenuNode node = (TreeMenuNode)this.getParentNode();
+		return node==null?"":node.getInternalPath() + "/" + getMyInternalPath();
+	}
+	
+	public abstract void doAction();
+	
+	public void reset(){
+		for(WTreeNode n : getChildNodes())
+			if(n instanceof TreeMenuNode)
+				((TreeMenuNode)n).reset();
+	}
 }

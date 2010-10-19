@@ -26,13 +26,13 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ContactFormConfig.EventItem;
 import net.sf.regadb.util.settings.ContactFormConfig.TestItem;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
@@ -61,12 +61,12 @@ public class MultipleTestResultForm extends FormWidget {
     
     private List<Test> tests_;
     private List<Event> events_;
-    private ActionItem lastItem_;
+    private TreeMenuNode lastItem_;
     
     private WPushButton addViralIsolate;
     
 
-    public MultipleTestResultForm(WString name, InteractionState state, ActionItem lastItem) {
+    public MultipleTestResultForm(WString name, InteractionState state, TreeMenuNode lastItem) {
         super(name, state);
 
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -390,7 +390,7 @@ public class MultipleTestResultForm extends FormWidget {
     	
         save();
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
-        	.getViralIsolateTreeNode().getAddActionItem().prograSelectNode();
+        	.getViralIsolateTreeNode().getAddNavigationNode().selectNode();
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
         	.getViralIsolateTreeNode().setSelectedItem(null);
         RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), sampleIdTF_.text(), dateTF_.getDate()));

@@ -132,15 +132,12 @@ public class PasswordForm extends FormWidget
             t.commit();
             
             UIUtils.showWarningMessageBox(this, tr("form.settings.user.password.message"));
-            
-            redirectToView(expandNode_, selectNode_);
         }
     }
     
     @Override
     public void cancel()
     {
-        redirectToView(expandNode_, selectNode_);
     }
     
     @Override

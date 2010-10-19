@@ -46,10 +46,10 @@ public class Tree extends WContainerWidget
 	
 	public void init()
 	{
-		selectedTreeNode_ = treeContent_.setContent(rootItem);
+		selectedTreeNode_ = treeContent_.createNavigation(rootItem);
 		setStyleClass("main-tree-content");
 		
 		//selecting the initial treenode
-		selectedTreeNode_.prograSelectNode();
+		selectedTreeNode_.selectNode();
 	}
 }

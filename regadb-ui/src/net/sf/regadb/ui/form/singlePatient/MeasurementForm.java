@@ -213,26 +213,12 @@ public class MeasurementForm extends FormWidget
 		t.commit();
 		
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().setSelectedItem(testResult_);
-        redirectToView(
-        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getSelectedActionItem(),
-        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getViewActionItem());
 	}
     
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getSelectActionItem());
-        }
-        else
-        {
-            redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().getViewActionItem());
-        } 
+
     }
     
     @Override
@@ -253,9 +239,5 @@ public class MeasurementForm extends FormWidget
     @Override
     public void redirectAfterDelete() 
     {
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
-        	.getSelectActionItem().selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
-        	.setSelectedItem(null);
     }
 }

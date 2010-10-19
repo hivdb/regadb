@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.tree;
 
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import eu.webtoolkit.jwt.WTreeNode;
 
@@ -31,12 +30,6 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
     
     public abstract String getArgument(DataType type);
 
-    @Override
-    public ITreeAction getFormAction()
-    {
-        return null;
-    }
-    
 	public boolean isDisabled(){
 		return getSelectedItem() == null;
 	}

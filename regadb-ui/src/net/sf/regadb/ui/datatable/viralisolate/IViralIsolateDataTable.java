@@ -106,7 +106,7 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
         	.setSelectedItem(selectedItem);
         RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
-        	.getSelectedActionItem().refresh();
+        	.getSelectedItemNavigationNode().refresh();
 	}
 
 	public boolean[] sortableFields()

@@ -7,6 +7,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.FormListener;
 import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -17,8 +18,8 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ProxyConfig.ProxyServer;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
@@ -47,6 +48,8 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 	//control
 	private WPushButton _loginButton = new WPushButton(tr("form.login.button.login"));
 	private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
+	
+	private FormListener listener = null;
 	
 	public LoginForm()
 	{
@@ -89,7 +92,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         {
             public void trigger(WMouseEvent me)
             {
-                RegaDBMain.getApp().getTree().getTreeContent().myAccountCreate.selectNode();
+//                RegaDBMain.getApp().getTree().getTreeContent().myAccountCreate.selectNode();
             }
         });
         createAccountContainer.addWidget(createAccountLink_);
@@ -155,8 +158,9 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         {
             if(validateLogin())
             {
-                RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
-                RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.prograSelectNode();
+            	RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
+                RegaDBMain.getApp().getTree().getRootTreeNode().selectNode();
+                RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.selectNode();
                 
                 if(proxyCB!=null)
                 {
@@ -180,5 +184,10 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 
 	public void removeFormField(IFormField field) {
 		
+	}
+
+	@Override
+	public void setListener(FormListener listener) {
+		this.listener = listener;
 	}
 }

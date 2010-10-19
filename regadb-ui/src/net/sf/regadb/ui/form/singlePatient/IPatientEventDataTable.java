@@ -43,11 +43,7 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
 			.setSelectedItem(selectedItem);
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectActionItem().expand();
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectedActionItem().refresh();
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getViewActionItem().selectNode();
+			.getViewNavigationNode().selectNode();
 	}
 	
 	public String[] getRowData(PatientEventValue pev) {
