@@ -28,8 +28,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     private InteractionState interactionState_;
     
-    private FormListener listener;
-    
     //control buttons
     private WPushButton _okButton = new WPushButton(tr("form.general.button.ok"));
     private WPushButton _cancelButton = new WPushButton(tr("form.general.button.cancel"));
@@ -78,19 +76,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 		return interactionState_== InteractionState.Adding || interactionState_== InteractionState.Editing; 
 	}
 	
-	public void setListener(FormListener listener){
-		this.listener = listener;
-	}
-	protected void notifyConfirmed(){
-		if(listener != null)
-			listener.confirmed(this, getInteractionState());
-	}
-	protected void notifyCanceled(){
-		if(listener != null)
-			listener.canceled(this, getInteractionState());
-		
-	}
-	
     protected void addControlButtons()
     {
         WContainerWidget buttonContainer = new WContainerWidget(this);
@@ -112,7 +97,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         					cmb.remove();
         					if(sb==StandardButton.Yes) {
         						deleteAction();
-        						notifyConfirmed();
         					}
         				}
                     });
