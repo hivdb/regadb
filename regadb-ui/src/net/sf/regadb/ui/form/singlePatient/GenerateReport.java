@@ -135,7 +135,7 @@ public class GenerateReport
     	//replace $ASI_...($1) with config algorithm
     	ViralIsolateFormConfig vifc = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
     	String rtfString = rtfBuffer_.toString();
-    	if(vifc != null){
+    	if(vifc != null && vifc.getAlgorithms() != null){
     		int ai = 1;
     		for(String alg : vifc.getAlgorithms()){
     			rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg +"\\)");
