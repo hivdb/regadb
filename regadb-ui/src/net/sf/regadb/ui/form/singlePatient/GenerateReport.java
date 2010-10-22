@@ -88,20 +88,17 @@ public class GenerateReport
     private StringBuffer rtfBuffer_;
     private static final long MILLISECS_PER_DAY = 1000*60*60*24;
     
+    private Transaction transaction;
+    
     public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> asiAlgorithms, Collection<String> drugClasses, Transaction t, File chartFile){
         rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
         
-        init(vi, patient, asiAlgorithms, drugClasses, t, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
-    }
-    
-    public GenerateReport(byte[] rtfFileContent, ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile, int dateTolerance)
-    {
-        rtfBuffer_ = new StringBuffer(new String(rtfFileContent));
+        this.transaction = t;
         
-        init(vi, patient, algorithms, drugClasses, t, chartFile, dateTolerance);
+        init(vi, patient, asiAlgorithms, drugClasses, chartFile, RegaDBSettings.getInstance().getInstituteConfig().getReportDateTolerance()); //default tolerance to two weeks
     }
     
-    public void init(ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, Transaction t, File chartFile, int dateTolerance)
+    public void init(ViralIsolate vi, Patient patient, Collection<String> algorithms, Collection<String> drugClasses, File chartFile, int dateTolerance)
     {
         replace("$REPORT_GENERATION_DATE", DateUtils.format(new Date()));
         replace("$PATIENT_NAME", patient.getFirstName());
@@ -146,9 +143,9 @@ public class GenerateReport
     	rtfBuffer_.replace(0, rtfBuffer_.length(), rtfString);
         
         loadGssTestResults(vi);
-        setRITable(algorithms, drugClasses, t);
+        setRITable(algorithms, drugClasses);
         
-        setMutations(vi, t);
+        setMutations(vi);
         
         try {
             writePicture("$PATIENT_HISTORY_CHART", chartFile);
@@ -317,7 +314,7 @@ public class GenerateReport
         }
     }
     
-    private void setMutations(ViralIsolate vi, Transaction t)
+    private void setMutations(ViralIsolate vi)
     {
         List<AaSequence> aaSeqs = new ArrayList<AaSequence>();
         for(NtSequence ntSequence : vi.getNtSequences())
@@ -335,7 +332,7 @@ public class GenerateReport
         
         Genome g = vi.getGenome();
         
-        for(Protein protein : t.getProteins(g))
+        for(Protein protein : transaction.getProteins(g))
         {   
             foundMatchinqSeq = false;
             tplMut = "$"+protein.getAbbreviation().toUpperCase()+"_MUTATIONS";
@@ -484,10 +481,10 @@ public class GenerateReport
     	return result.toString();
     }
     
-    public void setRITable(Collection<String> algorithms, Collection<String> drugClasses, Transaction t)
+    public void setRITable(Collection<String> algorithms, Collection<String> drugClasses)
     {
         List<String> drugs = new ArrayList<String>();
-        List<DrugClass> sortedDrugClasses_  = t.getDrugClassesSortedOnResistanceRanking();
+        List<DrugClass> sortedDrugClasses_  = transaction.getDrugClassesSortedOnResistanceRanking();
         
         List<DrugGeneric> genericDrugs;
 //        boolean addedAmprenavir = false;
@@ -495,7 +492,7 @@ public class GenerateReport
         	if(!drugClasses.contains(dc.getClassId()))
         		continue;
         	
-            genericDrugs = t.getDrugGenericSortedOnResistanceRanking(dc);
+            genericDrugs = transaction.getDrugGenericSortedOnResistanceRanking(dc);
             for(DrugGeneric dg : genericDrugs) {
 //                if(!addedAmprenavir && dg.getGenericId().startsWith("FPV")) {
 //                    new DrugGeneric(dg.getDrugClass(), "APV", "amprenavir"));
@@ -536,7 +533,33 @@ public class GenerateReport
         //multi asi tables
         bpos = 0;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_MULTIASI", "$END_MULTIASI", bpos)) != null){
-        	String result = getMultiAsiTable(algorithms, drugs, asiString.result);
+        	SubString paramString = getSubString(asiString.result,"(",")");
+        	DrugFormat drugFormat = DrugFormat.Name;
+        	if(paramString.result.length() > 0){
+        		asiString.result = asiString.result.substring(paramString.epos);
+        		
+        		String [] parameters = paramString.result.split(",");
+        		List<String> drugParams = new ArrayList<String>();
+        		for (String parameter : parameters) {
+        			parameter = parameter.trim();
+        			
+        			if (parameter.equals("format=id"))
+        				drugFormat = DrugFormat.Id;
+        			else {
+        				String genericName = parameter.toUpperCase();
+        				if (genericName.endsWith("/R"))
+        					genericName = genericName.replace("/R", "/r");
+        				DrugGeneric dg = transaction.getDrugGeneric(genericName);
+        				if (dg == null)
+        					System.err.println("Drug \"" + parameter + "\" cannot be found.");
+        				else
+        					drugParams.add(dg.getGenericName());
+        			}
+        		}
+        		if (drugParams.size() > 0)
+        			drugs = drugParams;
+        	}
+        	String result = getMultiAsiTable(algorithms, drugs, asiString.result, drugFormat);
         	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
         	bpos = asiString.bpos + asiString.result.length();
         }
@@ -590,7 +613,11 @@ public class GenerateReport
 		replace(line, "");
 	}
 	
-	public String getMultiAsiTable(Collection<String> algorithms, Collection<String> drugs, String tableString){
+	enum DrugFormat {
+		Id,
+		Name
+	}
+	public String getMultiAsiTable(Collection<String> algorithms, Collection<String> drugs, String tableString, DrugFormat drugFormat){
     	int i;
     	int bpos1,epos1,bpos2,epos2;
     	StringBuilder result;
@@ -700,7 +727,7 @@ public class GenerateReport
     			else
     				row = rowtpl;
     			
-    			row = row.replaceAll("\\$ASI_DRUG[12]", getDrugName(drug));
+    			row = row.replaceAll("\\$ASI_DRUG[12]", getDrugName(drug, drugFormat));
     			
     			for(String algorithm : usedalgorithms){
     				RIResult rir = riresults.get(algorithm).get(drug);
@@ -730,7 +757,7 @@ public class GenerateReport
 	}
 	
 	private Map<String,String> translation = null;
-	private String getDrugName(String name){
+	private String getDrugName(String name, DrugFormat drugFormat){
 		if(translation == null){
 			translation = new HashMap<String,String>();
 			translation.put("unknown PI", "PI");
@@ -740,7 +767,15 @@ public class GenerateReport
 			translation.put("ETV", "ETR");
 		}
 		
-		String tr = translation.get(name);
-		return tr == null ? name : tr;
+		if (drugFormat == DrugFormat.Name) {
+			String tr = translation.get(name);
+			return tr == null ? name : tr;			
+		} else {
+			return transaction.getGenericDrugByName(name).getGenericId();
+		}
+	}
+	
+	private String getDrugName(String name){
+		return getDrugName(name, DrugFormat.Name);
 	}
 }
