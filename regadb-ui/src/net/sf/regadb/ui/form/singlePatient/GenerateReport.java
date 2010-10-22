@@ -514,31 +514,43 @@ public class GenerateReport
         int bpos = 0;
         SubString asiString;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_ASI", "$END_ASI", bpos)) != null){
-        	String result;
-        	SubString paramString = getSubString(asiString.result,"(",")");
-        	asiString.result = asiString.result.substring(paramString.epos);
-
-        	if(paramString.result.length() == 0){
-        		StringBuilder sb = new StringBuilder();
-        		for(String algorithm : algorithms)
-        			sb.append(getRITable(algorithm, drugs, asiString.result));
-        		result = sb.toString();
+        	try{
+	        	String result;
+	        	SubString paramString = getSubString(asiString.result,"(",")");
+	        	asiString.result = asiString.result.substring(paramString.epos);
+	
+	        	if(paramString.result.length() == 0){
+	        		StringBuilder sb = new StringBuilder();
+	        		for(String algorithm : algorithms)
+	        			sb.append(getRITable(algorithm, drugs, asiString.result));
+	        		result = sb.toString();
+	        	}
+	        	else{
+	        		String [] params = paramString.result.split(",");
+	        		result = getRITable(params[1], drugs, asiString.result);
+	        	}
+	        	
+	        	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
+	        	bpos = asiString.bpos + asiString.result.length();
         	}
-        	else{
-        		String [] params = paramString.result.split(",");
-        		result = getRITable(params[1], drugs, asiString.result);
+        	catch(Exception e){
+        		e.printStackTrace();
+        		bpos = asiString.epos;
         	}
-        	
-        	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
-        	bpos = asiString.bpos + asiString.result.length();
         }
         
         //multi asi tables
         bpos = 0;
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_MULTIASI", "$END_MULTIASI", bpos)) != null){
-        	String result = getMultiAsiTable(algorithms, drugs, asiString.result);
-        	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
-        	bpos = asiString.bpos + asiString.result.length();
+        	try{
+	        	String result = getMultiAsiTable(algorithms, drugs, asiString.result);
+	        	rtfBuffer_.replace(asiString.bpos, asiString.epos,result);
+	        	bpos = asiString.bpos + asiString.result.length();
+        	}
+        	catch(Exception e){
+        		e.printStackTrace();
+        		bpos = asiString.epos;
+        	}
         }
         
         //legacy rtf templates
