@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
@@ -28,10 +27,10 @@ public class ScriptForm extends WDialog {
 	public ScriptForm(ImportToolForm form) {
 		super(tr("form.importTool.details.script.title"));
 		
-		if (form.getDefinition() == null || form.getDefinition().getScript() == null) {
+		if (form.getObject() == null || form.getObject().getScript() == null) {
 			this.script = new ScriptDefinition();
 		} else {
-			this.script = form.getDefinition().getScript();
+			this.script = form.getObject().getScript();
 		}
 		
 		newColumnsL = new Label(tr("form.importTool.details.script.newColumns"));

@@ -151,4 +151,12 @@ public class PasswordForm extends FormWidget
     {
         
     }
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+	}
 }

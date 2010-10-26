@@ -7,8 +7,9 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
@@ -16,8 +17,12 @@ import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
-public class IMeasurementDataTable implements IDataTable<TestResult>
+public class IMeasurementDataTable extends DefaultDataTable<TestResult>
 {
+	public IMeasurementDataTable(SelectForm<TestResult> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
 	    WString.tr("dataTable.test.colName.date"),
 	    WString.tr("dataTable.test.colName.testType"),
@@ -32,11 +37,6 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 	private static int[] colWidths = {20,30,10,20,20};
 	
 	private IFilter[] filters_ = new IFilter[5];
-	
-	public IMeasurementDataTable()
-	{
-		
-	}
 	
 	public CharSequence[] getColNames()
 	{
@@ -95,14 +95,6 @@ public class IMeasurementDataTable implements IDataTable<TestResult>
 		filters_[2] = new StringFilter();
 		filters_[3] = new StringFilter();
 		filters_[4] = new StringFilter();
-	}
-
-	public void selectAction(TestResult selectedItem)
-	{
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
-        	.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode()
-        	.getSelectedItemNavigationNode().refresh();
 	}
 
     public boolean[] sortableFields()

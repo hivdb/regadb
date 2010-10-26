@@ -12,13 +12,14 @@ import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
@@ -27,11 +28,9 @@ import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.Signal1.Listener;
 
-public class DatasetForm extends FormWidget 
+public class DatasetForm extends ObjectForm<Dataset>
 {
-	private Dataset dataset_;
 	//dataset group
 	private WGroupBox datasetGroup_;
 	private FormTable mainGroupTable_;
@@ -45,10 +44,9 @@ public class DatasetForm extends FormWidget
 	private Label revisionL;
 	private TextField revisionTF;
 	
-	public DatasetForm(InteractionState interactionState, WString formName,  Dataset dataset) 
+	public DatasetForm(WString formName, InteractionState interactionState, ObjectTreeNode<Dataset> node, Dataset dataset) 
 	{
-		super(formName, interactionState);
-		dataset_ = dataset;
+		super(formName, interactionState, node, dataset);
 		init();
 		fillData();
 	}
@@ -85,7 +83,7 @@ public class DatasetForm extends FormWidget
 					public void trigger(StandardButton sb) {
 						if (sb == StandardButton.Yes) {
 							Transaction t = RegaDBMain.getApp().createTransaction();
-							List<Patient> patients = t.getPatients(dataset_);
+							List<Patient> patients = t.getPatients(getObject());
 							for (Patient p : patients) {
 								t.delete(p);
 							}
@@ -105,18 +103,18 @@ public class DatasetForm extends FormWidget
     {        
     	if(getInteractionState()==InteractionState.Adding)
         {
-			dataset_=new Dataset();
+    		setObject(new Dataset());
         }
     	else
         {
     		Transaction t = RegaDBMain.getApp().createTransaction();
-    		t.attach(dataset_);
-    		descriptionTF.setText(dataset_.getDescription());
+    		t.attach(getObject());
+    		descriptionTF.setText(getObject().getDescription());
     		if (getInteractionState() != InteractionState.Adding && getInteractionState() != InteractionState.Editing)
     		{
-        	creationDateDF.setDate(dataset_.getCreationDate());
-        	closedDateDF.setDate(dataset_.getClosedDate());
-        	revisionTF.setText(String.valueOf(dataset_.getRevision()));
+        	creationDateDF.setDate(getObject().getCreationDate());
+        	closedDateDF.setDate(getObject().getClosedDate());
+        	revisionTF.setText(String.valueOf(getObject().getRevision()));
     		}
         	t.commit();
     	}
@@ -128,52 +126,41 @@ public class DatasetForm extends FormWidget
 		Transaction t = RegaDBMain.getApp().createTransaction();
         if(!(getInteractionState()==InteractionState.Adding))
         {
-            t.attach(dataset_);
+            t.attach(getObject());
         }
         
         SettingsUser user_ = t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid());
-        dataset_.setDescription(descriptionTF.text());
-        dataset_.setRevision(1);
-        dataset_.setCreationDate(new Date(System.currentTimeMillis()));
-        dataset_.setSettingsUser(user_);
+        getObject().setDescription(descriptionTF.text());
+        getObject().setRevision(1);
+        getObject().setCreationDate(new Date(System.currentTimeMillis()));
+        getObject().setSettingsUser(user_);
         
         if(getInteractionState()==InteractionState.Adding){
-        	DatasetAccess da = new DatasetAccess(new DatasetAccessId(user_, dataset_), Privileges.READWRITE.getValue(),user_.getUid());
+        	DatasetAccess da = new DatasetAccess(new DatasetAccessId(user_, getObject()), Privileges.READWRITE.getValue(),user_.getUid());
         	user_.getDatasetAccesses().add(da);
-        	dataset_.getDatasetAccesses().add(da);
+        	getObject().getDatasetAccesses().add(da);
         }
         
-        update(dataset_, t);
+        update(getObject(), t);
         update(user_, t);
         
         t.commit();
-        
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(dataset_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetView);
 	}
 
 	@Override
 	public void cancel() 
 	{
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().datasets, RegaDBMain.getApp().getTree().getTreeContent().datasetSelect);
-        }
-        else
-        {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().datasetSelected, RegaDBMain.getApp().getTree().getTreeContent().datasetView);
-        } 
 	}
 
 	@Override
 	public WString deleteObject() 
 	{
-    	Set<DatasetAccess> datasetAccess = dataset_.getDatasetAccesses();
+    	Set<DatasetAccess> datasetAccess = getObject().getDatasetAccesses();
     	
     	if (datasetAccess.size() <= 1) {
     		Transaction t = RegaDBMain.getApp().createTransaction();
     		
-    		final List<Patient> patients = t.getPatients(dataset_);
+    		final List<Patient> patients = t.getPatients(getObject());
     		if (patients.size() > 0) {
     			return tr("form.delete.dataset.containsPatients");
     		}
@@ -187,7 +174,7 @@ public class DatasetForm extends FormWidget
     	    		t.delete(da);
     	    	}
     	    	
-    	    	t.delete(dataset_);
+    	    	t.delete(getObject());
     	        
     	        t.commit();
     	        
@@ -205,12 +192,5 @@ public class DatasetForm extends FormWidget
     	else {
     		return tr("form.delete.restriction");
     	}
-	}
-
-	@Override
-	public void redirectAfterDelete() 
-	{
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(null);
 	}
 }

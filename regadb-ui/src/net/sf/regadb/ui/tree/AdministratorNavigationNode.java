@@ -13,7 +13,6 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
-import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.importTool.SelectImportToolForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
@@ -27,7 +26,6 @@ import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
-import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
 import net.sf.regadb.ui.form.impex.ExportForm;
@@ -42,6 +40,7 @@ import net.sf.regadb.ui.form.testTestTypes.TestTypeForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.events.SelectEventForm;
 import eu.webtoolkit.jwt.WResource;
@@ -51,6 +50,8 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 	
 	private SelectedItemNavigationNode<DatasetAccess> datasetAccessSelected;
 	private FormNavigationNode datasetAccessSelect;
+	
+	private FormNavigationNode updateForm;
 
 	public AdministratorNavigationNode(TreeMenuNode parent) {
 		super(WString.tr("menu.administrator.administrator"), parent);
@@ -59,13 +60,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		new ObjectTreeNode<Attribute>("attributeSettings.attributes", attributeSettings){
 
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, Attribute selectedObject) {
-				return new AttributeForm(interactionState, name, selectedObject);
+			protected ObjectForm<Attribute> createForm(WString name, InteractionState interactionState, Attribute selectedObject) {
+				return new AttributeForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectAttributeForm();
+				return new SelectAttributeForm(this);
 			}
 
 			@Override
@@ -77,13 +78,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		new ObjectTreeNode<AttributeGroup>("attributeSettings.attributeGroups", attributeSettings){
 
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, AttributeGroup selectedObject) {
-				return new AttributeGroupForm(interactionState, name, selectedObject);
+			protected ObjectForm<AttributeGroup> createForm(WString name, InteractionState interactionState, AttributeGroup selectedObject) {
+				return new AttributeGroupForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectAttributeGroupForm();
+				return new SelectAttributeGroupForm(this);
 			}
 
 			@Override
@@ -97,13 +98,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		new ObjectTreeNode<TestType>("testSettings.testTypes", testSettings){
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, TestType selectedObject) {
-				return new TestTypeForm(interactionState, name, selectedObject);
+			protected ObjectForm<TestType> createForm(WString name, InteractionState interactionState, TestType selectedObject) {
+				return new TestTypeForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectTestTypeForm();
+				return new SelectTestTypeForm(this);
 			}
 
 			@Override
@@ -114,13 +115,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		new ObjectTreeNode<Test>("testSettings.tests", testSettings){
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, Test selectedObject) {
-				return new TestForm(interactionState,name,selectedObject);
+			protected ObjectForm<Test> createForm(WString name, InteractionState interactionState, Test selectedObject) {
+				return new TestForm(name,interactionState,this,selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectTestForm();
+				return new SelectTestForm(this);
 			}
 
 			@Override
@@ -131,13 +132,14 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		new ObjectTreeNode<ResistanceInterpretationTemplate>("resistance.report.template", testSettings){
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, ResistanceInterpretationTemplate selectedObject) {
-				return new ResistanceInterpretationTemplateForm(interactionState, name, selectedObject);
+			protected ObjectForm<ResistanceInterpretationTemplate> createForm(
+					WString name, InteractionState interactionState, ResistanceInterpretationTemplate selectedObject) {
+				return new ResistanceInterpretationTemplateForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectResRepTemplateForm();
+				return new SelectResRepTemplateForm(this);
 			}
 
 			@Override
@@ -148,13 +150,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		new ObjectTreeNode<Event>("event", this){
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, Event selectedObject) {
-				return new EventForm(interactionState, name, selectedObject);
+			protected ObjectForm<Event> createForm(WString name, InteractionState interactionState, Event selectedObject) {
+				return new EventForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectEventForm();
+				return new SelectEventForm(this);
 			}
 
 			@Override
@@ -167,13 +169,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		new ObjectTreeNode<Dataset>("datasetSettings.dataset",datasetSettings){
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, Dataset selectedObject) {
-				return new DatasetForm(interactionState, name, selectedObject);
+			protected ObjectForm<Dataset> createForm(WString name, InteractionState interactionState, Dataset selectedObject) {
+				return new DatasetForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectDatasetForm();
+				return new SelectDatasetForm(this);
 			}
 
 			@Override
@@ -187,7 +189,8 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		datasetAccessSelect = new FormNavigationNode(WString.tr("menu.dataset.access.select"),datasetSettings){
 			@Override
 			public IForm createForm() {
-				return new SelectDatasetAccessUserForm();
+//				return new SelectDatasetAccessUserForm(this);
+				return null;
 			}
 		};
 		
@@ -198,32 +201,32 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         	}
         };
         
-        new FormNavigationNode(WString.tr("menu.dataset.acces.view"), datasetAccessSelected){
-        	@Override
-        	public IForm createForm(){
-        		return new DatasetAccessForm(InteractionState.Viewing, WString.tr("form.dataset.access.view"),null);//datasetAccessSelected.getSelectedItem());
-        	}
-        };
-        
-        new FormNavigationNode(WString.tr("menu.dataset.access.edit"), datasetAccessSelected){
-        	@Override
-        	public IForm createForm(){
-        		return new DatasetAccessForm(InteractionState.Editing, WString.tr("form.dataset.access.edit"),null);//datasetAccessSelected.getSelectedItem());
-        	}
-        };
+//        new FormNavigationNode(WString.tr("menu.dataset.acces.view"), datasetAccessSelected){
+//        	@Override
+//        	public IForm createForm(){
+//        		return new DatasetAccessForm(InteractionState.Viewing, WString.tr("form.dataset.access.view"),null);//datasetAccessSelected.getSelectedItem());
+//        	}
+//        };
+//        
+//        new FormNavigationNode(WString.tr("menu.dataset.access.edit"), datasetAccessSelected){
+//        	@Override
+//        	public IForm createForm(){
+//        		return new DatasetAccessForm(InteractionState.Editing, WString.tr("form.dataset.access.edit"),null);//datasetAccessSelected.getSelectedItem());
+//        	}
+//        };
         
         
         ObjectTreeNode<SettingsUser> settingsUser = new ObjectTreeNode<SettingsUser>("administrator.users", this){
 
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, SettingsUser selectedObject) {
+			protected ObjectForm<SettingsUser> createForm(WString name, InteractionState interactionState, SettingsUser selectedObject) {
 //TODO				return new AccountForm(interactionState,name,selectedObject);
 				return null;
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectSettingsUserForm();
+				return new SelectSettingsUserForm(this);
 			}
 
 			@Override
@@ -243,30 +246,51 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         
         
         DefaultNavigationNode update = new DefaultNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos"), this);
-        new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update.view"), update)
+        updateForm = new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update.view"), update)
         {
             public IForm createForm()
             {
-                return new UpdateForm(WString.tr("form.update_central_server.view"), InteractionState.Viewing);
+                return new UpdateForm(WString.tr("form.update_central_server.view"), InteractionState.Viewing){
+
+					@Override
+					public void redirectAfterSave() {
+					}
+
+					@Override
+					public void redirectAfterCancel() {
+					}
+                	
+                };
             }
         };
         new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update"), update)
         {
             public IForm createForm()
             {
-                return new UpdateForm(WString.tr("form.update_central_server"),InteractionState.Editing);
+                return new UpdateForm(WString.tr("form.update_central_server"),InteractionState.Editing){
+					@Override
+					public void redirectAfterSave() {
+						updateForm.selectNode();
+					}
+
+					@Override
+					public void redirectAfterCancel() {
+						updateForm.selectNode();
+					}
+                };
             }
         };
         
         new ObjectTreeNode<ImportDefinition>("importTool", this){
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, ImportDefinition selectedObject) {
-				return new ImportToolForm(interactionState, name, selectedObject);
+			protected ObjectForm<ImportDefinition> createForm(
+					WString name, InteractionState interactionState, ImportDefinition selectedObject) {
+				return new ImportToolForm(name, interactionState, this, selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectImportToolForm();
+				return new SelectImportToolForm(this);
 			}
 
 			@Override
@@ -287,7 +311,19 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         {
             public IForm createForm() 
             {
-                return new ImportFormAdd(WString.tr("form.impex.import.title"), InteractionState.Adding);
+                return new ImportFormAdd(WString.tr("form.impex.import.title"), InteractionState.Adding){
+					@Override
+					public void redirectAfterSave() {
+						// TODO Auto-generated method stub
+						
+					}
+					@Override
+					public void redirectAfterCancel() {
+						// TODO Auto-generated method stub
+						
+					}
+                	
+                };
             }
         };
         
@@ -311,7 +347,21 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         new FormNavigationNode(WString.tr("menu.batchtest.add"), batchTest) {
             public IForm createForm() 
             {
-                return new BatchTestAddForm(WString.tr("form.batchtest.title"), InteractionState.Adding);
+                return new BatchTestAddForm(WString.tr("form.batchtest.title"), InteractionState.Adding){
+
+					@Override
+					public void redirectAfterSave() {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void redirectAfterCancel() {
+						// TODO Auto-generated method stub
+						
+					}
+                	
+                };
             }
         };
         
@@ -319,13 +369,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         new ObjectTreeNode<File>("log",this){
 
 			@Override
-			protected IForm createForm(WString name, InteractionState interactionState, File selectedObject) {
-				return new LogForm(name,interactionState,selectedObject);
+			protected ObjectForm<File> createForm(WString name, InteractionState interactionState, File selectedObject) {
+				return new LogForm(name,interactionState,this,selectedObject);
 			}
 
 			@Override
 			protected IForm createSelectionForm() {
-				return new SelectLogForm();
+				return new SelectLogForm(this);
 			}
 
 			@Override

@@ -17,6 +17,7 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WContainerWidget.Overflow;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -24,7 +25,6 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
-import eu.webtoolkit.jwt.WContainerWidget.Overflow;
 
 public class StartImportForm extends WDialog {
 	private ImportToolForm importToolForm;
@@ -122,7 +122,7 @@ public class StartImportForm extends WDialog {
 							final Transaction tr = workerLogin.getTransaction(true);
 	
 							ImportData importData = 
-								new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
+								new ImportData(StartImportForm.this.importToolForm.getObject(), 
 										new File(xlsFile.getFileUpload().getSpoolFileName()),
 										new File(fastaFile.getFileUpload().getSpoolFileName()),
 										dataset.currentValue());

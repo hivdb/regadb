@@ -4,6 +4,7 @@ import net.sf.regadb.db.Privileges;
 import net.sf.regadb.ui.framework.forms.FormListener;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import eu.webtoolkit.jwt.WString;
 
@@ -45,10 +46,10 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 			}
 			
 			@Override
-			public IForm createForm() {
-				IForm f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Adding),
+			public ObjectForm<Type> createForm() {
+				ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Adding),
 						InteractionState.Adding, null);
-				f.setListener(ObjectTreeNode.this);
+				f.setNode(ObjectTreeNode.this);
 				return f;
 			}
         };
@@ -73,36 +74,36 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 
         view = new FormNavigationNode(getMenuResource("view"), selected){
 			@Override
-			public IForm createForm() {
-				IForm f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Viewing),
+			public ObjectForm<Type> createForm() {
+				ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Viewing),
 						InteractionState.Viewing, getSelectedItem());
-				f.setListener(ObjectTreeNode.this);
+				f.setNode(ObjectTreeNode.this);
 				return f;
 			}
         };
 
         edit = new FormNavigationNode(getMenuResource("edit"), selected){
         	@Override
-        	public IForm createForm(){
-        		IForm f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Editing),
+        	public ObjectForm<Type> createForm(){
+        		ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Editing),
         				InteractionState.Editing, getSelectedItem());
-        		f.setListener(ObjectTreeNode.this);
+        		f.setNode(ObjectTreeNode.this);
         		return f;
         	}
         };
         
         delete = new FormNavigationNode(getMenuResource("delete"), selected){
         	@Override
-        	public IForm createForm(){
-        		IForm f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Deleting),
+        	public ObjectForm<Type> createForm(){
+        		ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Deleting),
         				InteractionState.Deleting, getSelectedItem());
-        		f.setListener(ObjectTreeNode.this);
+        		f.setNode(ObjectTreeNode.this);
         		return f;
         	}
         };
 	}
 	
-	protected abstract IForm createForm(WString name, InteractionState interactionState, Type selectedObject);
+	protected abstract ObjectForm<Type> createForm(WString name, InteractionState interactionState, Type selectedObject);
 	protected abstract IForm createSelectionForm();
 	
 	protected String getStateName(InteractionState interactionState){

@@ -9,8 +9,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -19,6 +19,7 @@ import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TestTypeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
@@ -26,10 +27,8 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class MeasurementForm extends FormWidget
+public class MeasurementForm extends ObjectForm<TestResult>
 {
-	private TestResult testResult_;
-	
 	//General group
     private WGroupBox generalGroup_;
     private FormTable generalGroupTable_;
@@ -45,11 +44,9 @@ public class MeasurementForm extends FormWidget
     private FormField testResultField_;
     private WContainerWidget testResultC;
     
-	public MeasurementForm(InteractionState interactionState, WString formName, TestResult testResult)
+	public MeasurementForm(WString formName, InteractionState interactionState, ObjectTreeNode<TestResult> node, TestResult testResult)
 	{
-		super(formName, interactionState);
-		testResult_ = testResult;
-		
+		super(formName, interactionState, node, testResult);
 		init();
 	}
 	
@@ -97,12 +94,12 @@ public class MeasurementForm extends FormWidget
 	{
 		if(!(getInteractionState()==InteractionState.Adding))
 		{
-	       	testTypeCB.selectItem(testResult_.getTest().getTestType());
-	        testNameCB.selectItem(testResult_.getTest());
+	       	testTypeCB.selectItem(getObject().getTest().getTestType());
+	        testNameCB.selectItem(getObject().getTest());
 	        
-	        dateTF.setDate(testResult_.getTestDate());
+	        dateTF.setDate(getObject().getTestDate());
             
-            sampleIdTF_.setText(testResult_.getSampleId());
+            sampleIdTF_.setText(getObject().getSampleId());
 		}
         
         Transaction t = RegaDBMain.getApp().createTransaction();
@@ -116,15 +113,15 @@ public class MeasurementForm extends FormWidget
         {
             if(testResultField_ instanceof ComboBox)
             {
-                ((ComboBox)testResultField_).selectItem(testResult_.getTestNominalValue().getValue());
+                ((ComboBox)testResultField_).selectItem(getObject().getTestNominalValue().getValue());
             }
-            else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
+            else if(ValueTypes.getValueType(getObject().getTest().getTestType().getValueType()) == ValueTypes.DATE)
             {
-            	((DateField) testResultField_).setDate(DateUtils.parseDate(testResult_.getValue()));
+            	((DateField) testResultField_).setDate(DateUtils.parseDate(getObject().getValue()));
             }
             else
             {
-                testResultField_.setText(testResult_.getValue());
+                testResultField_.setText(getObject().getValue());
             }
         }
 		
@@ -183,36 +180,34 @@ public class MeasurementForm extends FormWidget
 		
 		if(getInteractionState()==InteractionState.Adding)
 		{
-			testResult_ = p.createTestResult(test);
+			setObject(p.createTestResult(test));
 		}
 		else
 		{
-			testResult_.setTest(test);
+			getObject().setTest(test);
 		}
 		
-		testResult_.setTestDate(dateTF.getDate());
-        testResult_.setSampleId(sampleIdTF_.text());
+		getObject().setTestDate(dateTF.getDate());
+		getObject().setSampleId(sampleIdTF_.text());
 			    
 		if(testResultField_ instanceof ComboBox)
 		{
-			testResult_.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getDataValue());
-            testResult_.setValue(null);
+			getObject().setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)testResultField_).currentItem()).getDataValue());
+			getObject().setValue(null);
         }
-		else if(ValueTypes.getValueType(testResult_.getTest().getTestType().getValueType()) == ValueTypes.DATE)
+		else if(ValueTypes.getValueType(getObject().getTest().getTestType().getValueType()) == ValueTypes.DATE)
 		{
-		    testResult_.setValue(DateUtils.parse(testResultField_.text()).getTime()+"");
-		    testResult_.setTestNominalValue(null);
+			getObject().setValue(DateUtils.parse(testResultField_.text()).getTime()+"");
+			getObject().setTestNominalValue(null);
 		}
 		else
 		{
-			testResult_.setValue(testResultField_.text());
-            testResult_.setTestNominalValue(null);
+			getObject().setValue(testResultField_.text());
+			getObject().setTestNominalValue(null);
 		}
 		
-		update(testResult_, t);
+		update(getObject(), t);
 		t.commit();
-		
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTestResultTreeNode().setSelectedItem(testResult_);
 	}
     
     @Override
@@ -227,17 +222,12 @@ public class MeasurementForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
-        p.getTestResults().remove(testResult_);
+        p.getTestResults().remove(getObject());
         
-        t.delete(testResult_);
+        t.delete(getObject());
         
         t.commit();
         
         return null;
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
     }
 }

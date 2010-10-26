@@ -31,26 +31,27 @@ public class VersionForm extends FormWidget {
 
 	@Override
 	public void cancel() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public WString deleteObject() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void redirectAfterDelete() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void saveData() {
-		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
 	}
 
 }

@@ -36,7 +36,7 @@ import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WWidget;
 
-public class GridForm extends FormWidget{
+public abstract class GridForm extends FormWidget{
 	private TreeMenuNode lastItem;
 	
 	private List<Test> tests = new ArrayList<Test>();

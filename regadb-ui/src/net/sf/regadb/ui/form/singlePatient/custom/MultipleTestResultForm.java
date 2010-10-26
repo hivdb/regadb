@@ -14,7 +14,6 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
-import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -40,9 +39,8 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WWidget;
 
-public class MultipleTestResultForm extends FormWidget {
+public abstract class MultipleTestResultForm extends FormWidget {
     
     private WGroupBox testGroupBox_;
     private FormTable testGroupTable_;
@@ -384,15 +382,12 @@ public class MultipleTestResultForm extends FormWidget {
         lastItem_.prograSelectNode();
     }
 	
-    private void saveAndGotoViralIsolate(){
+    protected void saveAndGotoViralIsolate(){
     	if (!validateForm())
     		return;
     	
         save();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
-        	.getViralIsolateTreeNode().getAddNavigationNode().selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
-        	.getViralIsolateTreeNode().setSelectedItem(null);
-        RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(InteractionState.Adding, WWidget.tr("form.viralIsolate.add"), sampleIdTF_.text(), dateTF_.getDate()));
     }
+    
+    protected abstract void gotoViralIsolateForm();
 }

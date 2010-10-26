@@ -4,16 +4,20 @@ import java.util.List;
 
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
+public class IAttributeGroupDataTable extends DefaultDataTable<AttributeGroup>
 {
-    private static WString [] _colNames = {WString.tr("dataTable.attributeGroup.colName.groupName")};
+    public IAttributeGroupDataTable(SelectForm<AttributeGroup> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {WString.tr("dataTable.attributeGroup.colName.groupName")};
     private static String[] filterVarNames_ = { "attributeGroup.groupName"};
     private static int[] colWidths = {100};
     
@@ -58,14 +62,6 @@ public class IAttributeGroupDataTable implements IDataTable<AttributeGroup>
     public void init(Transaction t)
     {
         filters_[0] = new StringFilter();
-    }
-
-    public void selectAction(AttributeGroup selectedItem)
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView.selectNode();
     }
 
     public boolean[] sortableFields()

@@ -20,28 +20,28 @@ public class WivQueryNavigationNode extends DefaultNavigationNode {
 	public WivQueryNavigationNode(TreeMenuNode parent) {
 		super(WString.tr("menu.query.wiv"), parent);
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv."),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.confirmedHiv"),this){
 			@Override
 			public IForm createForm() {
 				return new WivArlConfirmedHivForm();
 			}
 		};
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv."),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.epidemiology"),this){
 			@Override
 			public IForm createForm() {
 				return new WivArlEpidemiologyForm();
 			}
 		};
 
-		new FormNavigationNode(WString.tr("menu.query.wiv."),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.cd4"),this){
 			@Override
 			public IForm createForm() {
 				return new WivArlCd4Form();
 			}
 		};
 
-		new FormNavigationNode(WString.tr("menu.query.wiv."),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.viralLoad"),this){
 			@Override
 			public IForm createForm() {
 				return new WivArlViralLoadForm();

@@ -9,8 +9,8 @@ import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
@@ -25,10 +26,8 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class PatientEventForm extends FormWidget
+public class PatientEventForm extends ObjectForm<PatientEventValue>
 {
-	private PatientEventValue patientEvent_;
-	
 	// FORM COMPONENTS \\
 	private WGroupBox mainFrameGroup_;
 	private FormTable mainFrameTable_;
@@ -38,10 +37,8 @@ public class PatientEventForm extends FormWidget
 	private ComboBox<Event> cmbEvents;
 	private DateField startDate, endDate;
 	
-	public PatientEventForm(InteractionState state, WString formName, PatientEventValue patientEvent) {
-		super(formName, state);
-		
-		patientEvent_ = patientEvent;
+	public PatientEventForm(WString formName, InteractionState state, ObjectTreeNode<PatientEventValue> node, PatientEventValue patientEvent) {
+		super(formName, state, node, patientEvent);
 		
 		init();
 		fillData();
@@ -101,11 +98,11 @@ public class PatientEventForm extends FormWidget
 	private void fillData() {
 		if( getInteractionState() == InteractionState.Adding )
 		{
-			patientEvent_ = new PatientEventValue();
+			setObject(new PatientEventValue());
 		}
 		else
 		{
-			cmbEvents.selectItem(patientEvent_.getEvent().getName());
+			cmbEvents.selectItem(getObject().getEvent().getName());
 		}
 		
 		updateValue();
@@ -114,16 +111,16 @@ public class PatientEventForm extends FormWidget
         {
             if( isNominalValue() )
             {
-                ((ComboBox<PatientEventValue>)ffValue).selectItem(patientEvent_.getEventNominalValue().getValue());
+                ((ComboBox<PatientEventValue>)ffValue).selectItem(getObject().getEventNominalValue().getValue());
             }
             else
             {
-            	ffValue.setText(patientEvent_.getValue());
+            	ffValue.setText(getObject().getValue());
             }
         }
 		
-		startDate.setDate(patientEvent_.getStartDate());
-		endDate.setDate(patientEvent_.getEndDate());
+		startDate.setDate(getObject().getStartDate());
+		endDate.setDate(getObject().getEndDate());
 	}
 	
 	private void updateValue()
@@ -152,18 +149,6 @@ public class PatientEventForm extends FormWidget
 	
 	@Override
 	public void cancel() {
-		if( getInteractionState() == InteractionState.Adding )
-        {
-            redirectToSelect(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectNavigationNode());
-        }
-        else
-        {
-            redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedItemNavigationNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewNavigationNode());
-        }
 	}
 	
 	@Override
@@ -171,20 +156,12 @@ public class PatientEventForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
         
-		RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().remove(patientEvent_);
-        t.delete(patientEvent_);
+		RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().remove(getObject());
+        t.delete(getObject());
         
         t.commit();
         
         return null;
-	}
-	
-	@Override
-	public void redirectAfterDelete() {
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectNavigationNode().selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-        	.setSelectedItem(null);
 	}
 	
 	@Override
@@ -202,30 +179,25 @@ public class PatientEventForm extends FormWidget
         {
         	if( getInteractionState() == InteractionState.Adding )
 			{
-				patientEvent_ = p.addPatientEvent(cmbEvents.currentValue());
+        		setObject(p.addPatientEvent(cmbEvents.currentValue()));
 			}
 			
-			patientEvent_.setStartDate(startDate.getDate());
-			patientEvent_.setEndDate(endDate.getDate());
+        	getObject().setStartDate(startDate.getDate());
+        	getObject().setEndDate(endDate.getDate());
 			
-			patientEvent_.setEvent(cmbEvents.currentValue());
+        	getObject().setEvent(cmbEvents.currentValue());
 			
 			if ( isNominalValue() )
 			{
-				patientEvent_.setEventNominalValue( (EventNominalValue)((ComboBox)ffValue).currentValue() );
+				getObject().setEventNominalValue( (EventNominalValue)((ComboBox)ffValue).currentValue() );
 			}
 			else
 			{
-				patientEvent_.setValue( ((TextField)ffValue).getFormText() );
+				getObject().setValue( ((TextField)ffValue).getFormText() );
 			}
 			
-			update(patientEvent_, t);
+			update(getObject(), t);
 			t.commit();
-			
-	        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().setSelectedItem(patientEvent_);
-	        redirectToView(
-	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedItemNavigationNode(),
-	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewNavigationNode());
 		}
 	}
 	

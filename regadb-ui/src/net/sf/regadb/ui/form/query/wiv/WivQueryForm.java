@@ -799,4 +799,12 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
     			" and tr.test.id in (select t.id from Test t where t.testType.description =" +
     			" '"+ StandardObjects.getContactTestType().getDescription() +"'))";
     }
+    
+    @Override
+    public void redirectAfterSave(){
+    }
+    
+    @Override
+    public void redirectAfterCancel(){
+    }
 }

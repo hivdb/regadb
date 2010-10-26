@@ -17,41 +17,39 @@ import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import eu.webtoolkit.jwt.WString;
 
-public class ViralIsolateForm extends FormWidget
+public class ViralIsolateForm extends ObjectForm<ViralIsolate>
 {
-	private ViralIsolate viralIsolate_;
-
 	private ViralIsolateMainForm _mainForm;
 	private ViralIsolateProteinForm proteinForm_;
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
     private ViralIsolateReportForm reportForm_;
 
-    public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
-        this(interactionState,formName,null);
+    public ViralIsolateForm(WString formName, InteractionState interactionState, ObjectTreeNode<ViralIsolate> node, String sampleId, Date sampleDate){
+        this(formName,interactionState,node,null);
         
         _mainForm.setSampleId(sampleId);
         _mainForm.setSampleDate(sampleDate);
     }
     
-	public ViralIsolateForm(InteractionState interactionState, WString formName, ViralIsolate viralIsolate)
+	public ViralIsolateForm(WString formName, InteractionState interactionState, ObjectTreeNode<ViralIsolate> node, ViralIsolate viralIsolate)
 	{
-		super(formName, interactionState);
-		viralIsolate_ = viralIsolate;
+		super(formName, interactionState, node, viralIsolate);
         
         if(getInteractionState()==InteractionState.Adding)
         {
-            viralIsolate_ = new ViralIsolate();
-            viralIsolate_.getNtSequences().add(new NtSequence(viralIsolate_));
+            setObject(new ViralIsolate());
+            getObject().getNtSequences().add(new NtSequence(getObject()));
         }
         else
         {
-        	RegaDBMain.getApp().createTransaction().refresh(viralIsolate_);
+        	RegaDBMain.getApp().createTransaction().refresh(getObject());
         }
 
 		init();	
@@ -89,19 +87,19 @@ public class ViralIsolateForm extends FormWidget
 	{
 		if(getInteractionState()!=InteractionState.Adding)
 		{
-			RegaDBMain.getApp().createTransaction().refresh(viralIsolate_);
+			RegaDBMain.getApp().createTransaction().refresh(getObject());
 		}
 
         if(proteinForm_!=null)
         {
-            proteinForm_.fillData(viralIsolate_);
+            proteinForm_.fillData(getObject());
         }
-        _mainForm.fillData(viralIsolate_);
+        _mainForm.fillData(getObject());
 	}
     
     public ViralIsolate getViralIsolate()
     {
-        return viralIsolate_;
+        return getObject();
     }
 	
 	@Override
@@ -118,13 +116,13 @@ public class ViralIsolateForm extends FormWidget
 		if (getInteractionState()==InteractionState.Adding) {
 			Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 			t.attach(p);
-			p.addViralIsolate(viralIsolate_);
+			p.addViralIsolate(getObject());
 		}
 
 		_mainForm.saveData(t);
 
 		//remove resistance tests
-		Iterator<TestResult> i = viralIsolate_.getTestResults().iterator();
+		Iterator<TestResult> i = getObject().getTestResults().iterator();
 		while (i.hasNext()) {
 			TestResult test = i.next();
 			String description = test.getTest().getTestType().getDescription();
@@ -136,17 +134,11 @@ public class ViralIsolateForm extends FormWidget
 			}
 		}
 
-		viralIsolate_.setGenome(t.getGenome(genome.getOrganismName()));
+		getObject().setGenome(t.getGenome(genome.getOrganismName()));
 
 		t.commit();
 
 		_mainForm.startAnalysis(genome);
-
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(viralIsolate_);
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
-		redirectToView(
-				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedItemNavigationNode(),
-				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewNavigationNode());
 	}
 	
 	private Genome blast(NtSequence ntseq){
@@ -175,18 +167,6 @@ public class ViralIsolateForm extends FormWidget
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectNavigationNode());
-        }
-        else
-        {
-            redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getSelectedItemNavigationNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewNavigationNode());
-        } 
     }
     
     @Override
@@ -196,31 +176,21 @@ public class ViralIsolateForm extends FormWidget
         
         Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
         
-        for(TestResult tr : viralIsolate_.getTestResults())
+        for(TestResult tr : getObject().getTestResults())
         	p.getTestResults().remove(tr);
-        for(NtSequence nt : viralIsolate_.getNtSequences())
+        for(NtSequence nt : getObject().getNtSequences())
         	for(TestResult tr : nt.getTestResults())
         		p.getTestResults().remove(tr);
         
-        p.getViralIsolates().remove(viralIsolate_);
+        p.getViralIsolates().remove(getObject());
         
-        t.delete(viralIsolate_);
+        t.delete(getObject());
         
         t.commit();
         
         return null;
     }
 
-    @Override
-    public void redirectAfterDelete() 
-    {
-    	RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
-        	.getSelectNavigationNode().selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
-        	.setSelectedItem(null);
-    }
-    
     @Override
     public WString leaveForm() {
         if(proteinForm_!=null && proteinForm_.refreshAlignmentsTimer_!=null)

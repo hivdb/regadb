@@ -18,28 +18,22 @@ public class LogoutItem extends TreeMenuNode
     }
     
     @Override
-    public ITreeAction getFormAction()
+    public void doAction()
     {
-        return new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                final WMessageBox cmb = UIUtils.createYesNoMessageBox(LogoutItem.this, tr("menu.myAccount.logout.warning"));
-                cmb.buttonClicked().addListener(LogoutItem.this, new Signal1.Listener<StandardButton>(){
-    				public void trigger(StandardButton sb) {
-    					cmb.remove();
-    					if(sb==StandardButton.Yes) {
-                            RegaDBMain.getApp().getFormContainer().setForm(new LoginForm());
-                            RegaDBMain.getApp().logout();
-                            RegaDBMain.getApp().getWindow().newTree();
-                            RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
-                            RegaDBMain.getApp().getTree().getTreeContent().myAccountMain.expand();
-    					}
-    				}
-                });
-                cmb.show();
-            }
-        };
+        final WMessageBox cmb = UIUtils.createYesNoMessageBox(LogoutItem.this, tr("menu.myAccount.logout.warning"));
+        cmb.buttonClicked().addListener(LogoutItem.this, new Signal1.Listener<StandardButton>(){
+			public void trigger(StandardButton sb) {
+				cmb.remove();
+				if(sb==StandardButton.Yes) {
+                    RegaDBMain.getApp().getFormContainer().setForm(new LoginForm());
+                    RegaDBMain.getApp().logout();
+                    RegaDBMain.getApp().getWindow().newTree();
+                    RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
+                    RegaDBMain.getApp().getTree().getTreeContent().myAccountMain.expand();
+				}
+			}
+        });
+        cmb.show();
     }
 
     @Override

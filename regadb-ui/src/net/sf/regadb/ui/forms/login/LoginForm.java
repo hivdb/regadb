@@ -7,7 +7,6 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormListener;
 import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -48,8 +47,6 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 	//control
 	private WPushButton _loginButton = new WPushButton(tr("form.login.button.login"));
 	private WPushButton _helpButton = new WPushButton(tr("form.general.button.help"));
-	
-	private FormListener listener = null;
 	
 	public LoginForm()
 	{
@@ -184,10 +181,5 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
 
 	public void removeFormField(IFormField field) {
 		
-	}
-
-	@Override
-	public void setListener(FormListener listener) {
-		this.listener = listener;
 	}
 }

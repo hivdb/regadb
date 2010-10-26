@@ -112,7 +112,6 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 public void trigger(WMouseEvent a) 
                 {
                     confirmAction();
-                    notifyConfirmed();
                 }
             });
             buttonContainer.addWidget(_cancelButton);
@@ -121,7 +120,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 public void trigger(WMouseEvent a) 
                 {
                     cancel();
-                    notifyCanceled();
+                    redirectAfterCancel();
                 }
             });
 
@@ -164,6 +163,8 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     public abstract WString deleteObject();
     
     public abstract void redirectAfterDelete();
+    public abstract void redirectAfterSave();
+    public abstract void redirectAfterCancel();
     
     protected void update(Serializable o, Transaction t)
     {
@@ -205,6 +206,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
         {
             formValidation_.setHidden(true);
             saveData();
+            redirectAfterSave();
         }
         else
         {

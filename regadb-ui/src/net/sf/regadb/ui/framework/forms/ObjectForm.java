@@ -28,7 +28,18 @@ public abstract class ObjectForm<Type> extends FormWidget{
 		return object;
 	}
 	
+	public void redirectAfterSave(){
+		node.setSelectedItem(getObject());
+		node.getViewNavigationNode().selectNode();
+	}
 	public void redirectAfterDelete(){
-		
+		node.setSelectedItem(null);
+		node.getSelectNavigationNode().selectNode();
+	}
+	public void redirectAfterCancel(){
+		if(getInteractionState() == InteractionState.Adding)
+			node.getSelectNavigationNode().selectNode();
+		else
+			node.getViewNavigationNode().selectNode();
 	}
 }

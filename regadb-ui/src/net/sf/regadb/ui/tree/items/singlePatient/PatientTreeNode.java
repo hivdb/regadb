@@ -9,6 +9,7 @@ import net.sf.regadb.ui.form.singlePatient.custom.Nadir;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.DefaultNavigationNode;
 import net.sf.regadb.ui.tree.FormNavigationNode;
@@ -127,15 +128,15 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
     }
 
 	@Override
-	protected IForm createForm(WString name, InteractionState interactionState, Patient selectedObject) {
+	protected ObjectForm<Patient> createForm(WString name, InteractionState interactionState, Patient selectedObject) {
 		if(interactionState == InteractionState.Adding)
 			selectedObject = new Patient();
 			
-		return new SinglePatientForm(interactionState, name, selectedObject);
+		return new SinglePatientForm(name, interactionState, PatientTreeNode.this, selectedObject);
 	}
 
 	@Override
 	protected IForm createSelectionForm() {
-		return new SelectPatientForm();
+		return new SelectPatientForm(this);
 	}
 }

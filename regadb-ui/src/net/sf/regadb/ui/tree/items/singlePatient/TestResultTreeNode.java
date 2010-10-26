@@ -5,6 +5,7 @@ import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
@@ -27,12 +28,12 @@ public class TestResultTreeNode extends ObjectTreeNode<TestResult>{
 	}
 
 	@Override
-	protected IForm createForm(WString name, InteractionState interactionState, TestResult selectedObject) {
-		return new MeasurementForm(interactionState, name, selectedObject);
+	protected ObjectForm<TestResult> createForm(WString name, InteractionState interactionState, TestResult selectedObject) {
+		return new MeasurementForm(name, interactionState, TestResultTreeNode.this, selectedObject);
 	}
 
 	@Override
 	protected IForm createSelectionForm() {
-		return new SelectMeasurementForm();
+		return new SelectMeasurementForm(this);
 	}
 }

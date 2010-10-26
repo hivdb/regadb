@@ -2,7 +2,6 @@ package net.sf.regadb.ui.form.importTool;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import net.sf.regadb.db.Attribute;

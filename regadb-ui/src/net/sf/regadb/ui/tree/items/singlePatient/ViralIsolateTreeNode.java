@@ -10,6 +10,7 @@ import net.sf.regadb.ui.form.singlePatient.ViralIsolateResistanceEvolutionForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.DefaultNavigationNode;
 import net.sf.regadb.ui.tree.FormNavigationNode;
@@ -88,12 +89,12 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 	}
 
 	@Override
-	protected IForm createForm(WString name, InteractionState interactionState, ViralIsolate selectedObject) {
-		return new ViralIsolateForm(interactionState, name, selectedObject);
+	protected ObjectForm<ViralIsolate> createForm(WString name, InteractionState interactionState, ViralIsolate selectedObject) {
+		return new ViralIsolateForm(name, interactionState, ViralIsolateTreeNode.this, selectedObject);
 	}
 
 	@Override
 	protected IForm createSelectionForm() {
-		return new SelectViralIsolateForm();
+		return new SelectViralIsolateForm(this);
 	}
 }

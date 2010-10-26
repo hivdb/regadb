@@ -12,8 +12,9 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
@@ -21,8 +22,12 @@ import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
-public class ITherapyDataTable implements IDataTable<Therapy>
+public class ITherapyDataTable extends DefaultDataTable<Therapy>
 {
+	public ITherapyDataTable(SelectForm<Therapy> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
 	    WString.tr("dataTable.therapy.colName.startDate"),
 	    WString.tr("dataTable.therapy.colName.endDate"), 
@@ -106,13 +111,6 @@ public class ITherapyDataTable implements IDataTable<Therapy>
 		filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
 		filters_[2] = null;
 		filters_[3] = new StringFilter();
-	}
-
-	public void selectAction(Therapy selectedItem)
-	{
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedItemNavigationNode().refresh();
 	}
 
 	public boolean[] sortableFields()

@@ -8,6 +8,7 @@ import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.FormNavigationNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
@@ -28,7 +29,7 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 		
       copyLast = new FormNavigationNode(getMenuResource("copylast"), this)
       {
-          public IForm createForm()
+          public ObjectForm<Therapy> createForm()
           {
         	  Patient p = RegaDBMain.getApp().getSelectedPatient();
               Therapy lastTherapy = null;
@@ -36,7 +37,7 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
                   if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
                       lastTherapy = therapy;
               }
-        	  return new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy);
+        	  return new TherapyForm(WWidget.tr("form.therapy.add"), InteractionState.Adding, TherapyTreeNode.this, lastTherapy);
           }
       };
 	}
@@ -48,7 +49,7 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
             if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
                 lastTherapy = therapy;
         }
-        RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(InteractionState.Adding, WWidget.tr("form.therapy.add"), lastTherapy));
+        RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(WWidget.tr("form.therapy.add"), InteractionState.Adding, TherapyTreeNode.this, lastTherapy));
 	}
 	
 	public FormNavigationNode getCopyLastNode(){
@@ -70,12 +71,12 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 	}
 
 	@Override
-	protected IForm createForm(WString name, InteractionState interactionState, Therapy selectedObject) {
-		return new TherapyForm(interactionState, name, selectedObject);
+	protected ObjectForm<Therapy> createForm(WString name, InteractionState interactionState, Therapy selectedObject) {
+		return new TherapyForm(name, interactionState, TherapyTreeNode.this, selectedObject);
 	}
 
 	@Override
 	protected IForm createSelectionForm() {
-		return new SelectTherapyForm();
+		return new SelectTherapyForm(this);
 	}
 }

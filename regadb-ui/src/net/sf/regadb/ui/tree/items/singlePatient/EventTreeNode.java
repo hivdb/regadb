@@ -4,6 +4,7 @@ import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.ui.form.singlePatient.PatientEventForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
@@ -24,13 +25,13 @@ public class EventTreeNode extends ObjectTreeNode<PatientEventValue> {
 	}
 
 	@Override
-	protected IForm createForm(WString name, InteractionState interactionState, PatientEventValue selectedObject) {
-		return new PatientEventForm(interactionState, name, selectedObject);
+	protected ObjectForm<PatientEventValue> createForm(WString name, InteractionState interactionState, PatientEventValue selectedObject) {
+		return new PatientEventForm(name, interactionState, EventTreeNode.this, selectedObject);
 	}
 
 	@Override
 	protected IForm createSelectionForm() {
-		return new SelectPatientEvent();
+		return new SelectPatientEvent(this);
 	}
 
 }

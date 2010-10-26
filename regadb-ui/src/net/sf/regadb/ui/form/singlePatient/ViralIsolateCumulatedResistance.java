@@ -117,5 +117,17 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     public void saveData() {
         
     }
+
+	@Override
+	public void redirectAfterSave() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

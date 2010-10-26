@@ -432,4 +432,12 @@ public class AccountForm extends FormWidget
     public void redirectAfterDelete() 
     {
     }
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+	}
 }

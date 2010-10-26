@@ -4,16 +4,20 @@ import java.util.List;
 
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class ITestTypeDataTable implements IDataTable<TestType>
+public class ITestTypeDataTable extends DefaultDataTable<TestType>
 {
-    private static WString [] _colNames = {
+    public ITestTypeDataTable(SelectForm<TestType> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {
         WString.tr("dataTable.testType.colName.description"),
         WString.tr("dataTable.testType.colName.organismName"),
         WString.tr("dataTable.testType.colName.testObject"),
@@ -69,14 +73,6 @@ public class ITestTypeDataTable implements IDataTable<TestType>
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
         filters_[3] = new StringFilter();
-    }
-
-    public void selectAction(TestType selectedItem)
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().testTypesView.selectNode();
     }
 
     public boolean[] sortableFields()

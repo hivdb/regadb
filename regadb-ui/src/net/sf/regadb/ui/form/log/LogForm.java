@@ -3,14 +3,14 @@ package net.sf.regadb.ui.form.log;
 import java.io.File;
 import java.util.Date;
 
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.file.FileUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WAnchor;
@@ -20,9 +20,8 @@ import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WWidget;
 
-public class LogForm extends FormWidget {
-    private File logFile = null;
-
+public class LogForm extends ObjectForm<File> {
+	
     private WGroupBox propertiesGroup;
     private WGroupBox contentGroup;
     
@@ -44,10 +43,8 @@ public class LogForm extends FormWidget {
     private TextArea fileContentTA;
     
     
-    public LogForm(WString formName, InteractionState interactionState, File logFile) {
-        super(formName, interactionState);
-        this.logFile = logFile;
-        
+    public LogForm(WString formName, InteractionState interactionState, ObjectTreeNode<File> node, File logFile) {
+        super(formName, interactionState, node, logFile);
         init();
         fillData();
         addControlButtons();
@@ -82,17 +79,17 @@ public class LogForm extends FormWidget {
     }
     
     protected void fillData(){
-        if(exists(logFile)){
-            fileNameTF.setText(logFile.getName());
-            fileDateDF.setDate(new Date(logFile.lastModified()));
-            fileSizeTF.setText(FileUtils.getHumanReadableFileSize(logFile));
+        if(exists(getObject())){
+            fileNameTF.setText(getObject().getName());
+            fileDateDF.setDate(new Date(getObject().lastModified()));
+            fileSizeTF.setText(FileUtils.getHumanReadableFileSize(getObject()));
             
-            if(!logFile.isDirectory()){
-	            fileDownloadA.setText(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
-	            fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath()).generateUrl());
+            if(!getObject().isDirectory()){
+	            fileDownloadA.setText(getObject().getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
+	            fileDownloadA.setRef(new WFileResource("text/txt", getObject().getAbsolutePath()).generateUrl());
             }
             try{
-                fileContentTA.setText(parseContent(logFile));
+                fileContentTA.setText(parseContent(getObject()));
             }
             catch(Exception e){
                 e.printStackTrace();
@@ -131,17 +128,11 @@ public class LogForm extends FormWidget {
 
     @Override
     public WString deleteObject() {
-        if(exists(logFile)){
-            logFile.delete();
+        if(exists(getObject())){
+        	getObject().delete();
         }
         
         return null;
-    }
-
-    @Override
-    public void redirectAfterDelete() {
-        RegaDBMain.getApp().getTree().getTreeContent().logSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.setSelectedItem(null);
     }
 
     @Override

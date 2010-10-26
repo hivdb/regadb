@@ -10,8 +10,8 @@ import java.util.List;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -19,8 +19,12 @@ import com.thoughtworks.xstream.XStream;
 
 import eu.webtoolkit.jwt.WString;
 
-public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
-    private static WString [] colNames = {
+public class ImportDefinitionDataTable extends DefaultDataTable<ImportDefinition> {
+    public ImportDefinitionDataTable(SelectForm<ImportDefinition> form) {
+		super(form);
+	}
+
+	private static WString [] colNames = {
         WString.tr("dataTable.importDefinition.colName.description")};
     private static int[] colWidths = {100};
     private static boolean [] sortable = {false};
@@ -88,13 +92,6 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
 
 	public void init(Transaction t) {
 
-	}
-
-	public void selectAction(ImportDefinition selectedItem) {
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView.selectNode();
 	}
 
 	public boolean[] sortableFields() {

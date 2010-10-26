@@ -10,20 +10,19 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class EventForm extends FormWidget {
-	private Event event_;
-	
+public class EventForm extends ObjectForm<Event> {
 	// Frame
 	private WGroupBox mainFrameGroup_;
 	private FormTable mainFrameTable_;
@@ -36,11 +35,8 @@ public class EventForm extends FormWidget {
 	private EditableTable<EventNominalValue> nominalValuesList_;
 	private IEventNominalValueDataList iNominalValuesList_;
 	
-	public EventForm(InteractionState interactionState, WString formName, Event event) {
-		super(formName, interactionState);
-		
-		event_ = event;
-		
+	public EventForm(WString formName, InteractionState interactionState, ObjectTreeNode<Event> node, Event event) {
+		super(formName, interactionState, node, event);
 		init();
 		fillData();
 	}
@@ -79,14 +75,14 @@ public class EventForm extends FormWidget {
 	
 	private void fillData() {
 		if(getInteractionState() == InteractionState.Adding){
-			event_ = new Event();
+			setObject(new Event());
 		}
 		
-		txtName.setText(event_.getName());
+		txtName.setText(getObject().getName());
 		
-		if(event_.getValueType() != null)
+		if(getObject().getValueType() != null)
         {
-            cmbValueType.selectItem(event_.getValueType().getDescription());
+            cmbValueType.selectItem(getObject().getValueType().getDescription());
         }
 		
 		setNominalValuesGroup();
@@ -116,16 +112,16 @@ public class EventForm extends FormWidget {
             if(getInteractionState()!=InteractionState.Adding)
             {
                 Transaction t = RegaDBMain.getApp().createTransaction();
-                t.attach(event_);
+                t.attach(getObject());
                 
-                for(EventNominalValue anv : event_.getEventNominalValues())
+                for(EventNominalValue anv : getObject().getEventNominalValues())
                 {
                     list.add(anv);
                 }
                 t.commit();
             }
             
-            iNominalValuesList_ = new IEventNominalValueDataList(this, event_);
+            iNominalValuesList_ = new IEventNominalValueDataList(this, getObject());
             nominalValuesList_ = new EditableTable<EventNominalValue>(nominalValuesGroup_, iNominalValuesList_, list){
             	public boolean canRemove(EventNominalValue toRemove){
             		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -139,12 +135,6 @@ public class EventForm extends FormWidget {
 	
 	@Override
 	public void cancel() {
-		if(getInteractionState()==InteractionState.Adding) {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().event, RegaDBMain.getApp().getTree().getTreeContent().eventSelect);
-        }
-        else {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().eventSelected, RegaDBMain.getApp().getTree().getTreeContent().eventSelectedView);
-        }
 	}
 	
 	@Override
@@ -152,7 +142,7 @@ public class EventForm extends FormWidget {
 		Transaction t = RegaDBMain.getApp().createTransaction();
     	
     	try {
-    		t.delete(event_);
+    		t.delete(getObject());
 	        t.commit();
 	        return null;
     	} catch(Exception e) {
@@ -163,36 +153,27 @@ public class EventForm extends FormWidget {
 	}
 	
 	@Override
-	public void redirectAfterDelete() {
-		RegaDBMain.getApp().getTree().getTreeContent().eventSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().eventSelected.setSelectedItem(null);
-	}
-	
-	@Override
 	public void saveData() {
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		
         if(getInteractionState() != InteractionState.Adding) {
-            t.attach(event_);
+            t.attach(getObject());
         }
         
         ValueType vt = cmbValueType.currentValue();
         
-        event_.setName(txtName.text());
-        event_.setValueType(vt);
+        getObject().setName(txtName.text());
+        getObject().setValueType(vt);
         
         if(!nominalValuesGroup_.isHidden())
         {
-            iNominalValuesList_.setEvent(event_);
+            iNominalValuesList_.setEvent(getObject());
             iNominalValuesList_.setTransaction(t);
             nominalValuesList_.saveData();
         }
         
-        update(event_, t);
+        update(getObject(), t);
                 
 		t.commit();
-        
-        RegaDBMain.getApp().getTree().getTreeContent().eventSelected.setSelectedItem(event_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().eventSelected, RegaDBMain.getApp().getTree().getTreeContent().eventSelectedView);
 	}
 }

@@ -18,8 +18,8 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.ui.framework.IntegratedRegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -29,6 +29,7 @@ import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.pair.Pair;
 
@@ -41,7 +42,7 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 
-public class SinglePatientForm extends FormWidget
+public class SinglePatientForm extends ObjectForm<Patient>
 {
     //general group
     private WGroupBox generalGroup_;
@@ -57,12 +58,9 @@ public class SinglePatientForm extends FormWidget
     
     private HashMap<Label, Attribute> attributePairs_ = new HashMap<Label, Attribute>();
     
-    private Patient patient_;
-    
-    public SinglePatientForm(InteractionState state, WString formName, Patient patient)
+    public SinglePatientForm(WString formName, InteractionState interactionState, ObjectTreeNode<Patient> node, Patient object)
 	{
-        super(formName, state);
-        patient_ = patient;
+        super(formName, interactionState, node, object);
         init();
 	}
     
@@ -99,7 +97,7 @@ public class SinglePatientForm extends FormWidget
         });*/
         generalGroupTable_.getColumnCount();
         
-        fillData(patient_);
+        fillData(getObject());
         
         addControlButtons();
     }
@@ -109,7 +107,7 @@ public class SinglePatientForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         Patient p = t.getPatient(sourceDatasetCB.currentValue(), id);
-        if(p != null && !p.getPatientIi().equals(patient_.getPatientIi())){
+        if(p != null && !p.getPatientIi().equals(getObject().getPatientIi())){
             unique = false;
         }
         
@@ -330,17 +328,17 @@ public class SinglePatientForm extends FormWidget
     	
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        if(patient_.getPatientIi()!=null)
+        if(getObject().getPatientIi()!=null)
         {
-            t.attach(patient_);
+            t.attach(getObject());
         }
         
         if(getInteractionState() == InteractionState.Adding)
         {
-            patient_.setSourceDataset(sourceDatasetCB.currentValue(), t);
+            getObject().setSourceDataset(sourceDatasetCB.currentValue(), t);
         }
         
-        patient_.setPatientId(getNulled(idTF.text()));
+        getObject().setPatientId(getNulled(idTF.text()));
         
         Object label;
         Object tf;
@@ -356,22 +354,22 @@ public class SinglePatientForm extends FormWidget
                 {
                     attribute = attributePairs_.get(label);
                     tf = attributesGroupTable_.getElementAt(row, 1).getChildren().get(0);
-                    PatientAttributeValue attributeValue = patient_.getAttributeValue(attribute);
+                    PatientAttributeValue attributeValue = getObject().getAttributeValue(attribute);
     
                     if(tf instanceof TextField)
                     {
                         text = ((TextField)tf).text();
-                        storeAttributeTF(text, attributeValue, attribute, patient_, t);
+                        storeAttributeTF(text, attributeValue, attribute, getObject(), t);
                     }
                     else if(tf instanceof LimitedNumberField)
                     {
                         text = ((LimitedNumberField)tf).text();
-                        storeAttributeTF(text, attributeValue, attribute, patient_, t);
+                        storeAttributeTF(text, attributeValue, attribute, getObject(), t);
                     }
                     else if(tf instanceof DateField)
                     {
                         text = ((DateField)tf).text();
-                        storeAttributeTF(text, attributeValue, attribute, patient_, t);
+                        storeAttributeTF(text, attributeValue, attribute, getObject(), t);
                     }
                     else if(tf instanceof ComboBox)
                     {
@@ -381,13 +379,13 @@ public class SinglePatientForm extends FormWidget
                         {
                             if(attributeValue==null)
                             {
-                            attributeValue = patient_.createPatientAttributeValue(attribute);
+                            attributeValue = getObject().createPatientAttributeValue(attribute);
                             }
                             attributeValue.setAttributeNominalValue(((DataComboMessage<AttributeNominalValue>)message).getDataValue());
                         }
                         else if(attributeValue!=null)
                         {
-                        	patient_.getPatientAttributeValues().remove(attributeValue);
+                        	getObject().getPatientAttributeValues().remove(attributeValue);
                             t.delete(attributeValue);
                         }
                     }
@@ -395,7 +393,7 @@ public class SinglePatientForm extends FormWidget
         }
         }
 
-        update(patient_, t);
+        update(getObject(), t);
         t.commit();
     }
     
@@ -409,20 +407,13 @@ public class SinglePatientForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        t.delete(patient_);
+        t.delete(getObject());
         
         t.commit();
         
         return null;
     }
 
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(null);
-    }
-    
     private void storeAttributeTF(String text, PatientAttributeValue attributeValue, Attribute attribute, Patient p, Transaction t)
     {
         if(!"".equals(text) && text!=null)

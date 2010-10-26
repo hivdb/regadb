@@ -16,8 +16,9 @@ import net.sf.regadb.ui.form.query.querytool.tree.QueryEditorTreeContainer;
 import net.sf.regadb.ui.form.query.querytool.tree.QueryStatusBar;
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 import com.pharmadm.custom.rega.queryeditor.QueryContext;
 import com.pharmadm.custom.rega.queryeditor.QueryEditorComponent;
@@ -26,7 +27,7 @@ import com.pharmadm.custom.rega.savable.Savable;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class QueryToolForm extends FormWidget implements QueryToolApp{
+public class QueryToolForm extends ObjectForm<QueryDefinition> implements QueryToolApp{
 	public Map<String, GSSExporter> exporters = new HashMap<String, GSSExporter>();
 
 	private WTabbedPane tabs;
@@ -40,7 +41,6 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	private QueryStatusBar statusbar;
 	
 	private Savable queryLoader;
-    private QueryDefinition definition;
     
 	// is edit mode on
 	private boolean editable;
@@ -49,13 +49,13 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	private boolean controlsEnabled;
     
 	
-	public QueryToolForm(WString title, InteractionState istate) {
-		this(title, istate, new QueryDefinition(StandardObjects.getQueryToolQueryType()));
+	public QueryToolForm(WString title, InteractionState istate, ObjectTreeNode<QueryDefinition> node) {
+		this(title, istate, node, new QueryDefinition(StandardObjects.getQueryToolQueryType()));
 	}
     
-	public QueryToolForm(WString  title, InteractionState istate, QueryDefinition query) {
-		super(title, istate);
-		init(query);
+	public QueryToolForm(WString  title, InteractionState istate, ObjectTreeNode<QueryDefinition> node, QueryDefinition query) {
+		super(title, istate, node, query);
+		init();
 	}
 	
     public WString  leaveForm() {
@@ -68,9 +68,8 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
         }
     }	
     
-	private void init(QueryDefinition query) {
+	private void init() {
 		setStyleClass("querytoolform");
-		definition = query;
 		controlsEnabled = true;
 		
 
@@ -97,7 +96,7 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 		
 		queryLoader = new QueryLoader(this, infoTab, queryTreeTab);
 		try {
-			queryLoader.load(query);
+			queryLoader.load(getObject());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -161,44 +160,24 @@ public class QueryToolForm extends FormWidget implements QueryToolApp{
 	}
 	
 	public void cancel() {
-		if(getInteractionState() == InteractionState.Adding)
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryMain, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelect);
-		}
-		else
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
-		}
-		
 	}
 
 	public WString  deleteObject() {
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
-        t.delete(definition);
+        t.delete(getObject());
         t.commit();
         
         return null;
 	}
 
-	public void redirectAfterDelete() {
-		RegaDBMain.getApp().getTree().getTreeContent().queryToolSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(null);
-	}
-
 	public void saveData() {
 		try {
 			Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
-			queryLoader.save(definition);
-	    	definition.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
-	    	update(definition, t);
+			queryLoader.save(getObject());
+			getObject().setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
+	    	update(getObject(), t);
 	    	t.commit();
 		} catch (IOException e) {}
-    	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(definition);
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected, RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView);
-	}
-	
-	public QueryDefinition getQueryDefinition() {
-		return definition;
 	}
 	
 	public void addReportTab(ReportContainer report) {

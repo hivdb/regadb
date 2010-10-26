@@ -6,16 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.ScriptDefinition;
 import net.sf.regadb.ui.form.importTool.data.ValidateRules;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -23,6 +20,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.xls.ExcelTable;
 
@@ -34,7 +32,7 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 
-public class ImportToolForm extends FormWidget {
+public class ImportToolForm extends ObjectForm<ImportDefinition>{
 	private FormTable formTable;
 	
 	private Label descriptionL;
@@ -50,15 +48,12 @@ public class ImportToolForm extends FormWidget {
 	
 	private ScriptForm scriptForm;
 	
-	private ImportDefinition definition;
 	private DataProvider dataProvider;
 	
 	private StartImportForm startImportForm;
 
-	public ImportToolForm(InteractionState interactionState, WString formName, ImportDefinition definition) {
-		super(formName, interactionState);
-		
-		this.definition = definition;
+	public ImportToolForm(WString formName, InteractionState interactionState, ObjectTreeNode<ImportDefinition> node, ImportDefinition definition) {
+		super(formName, interactionState, node, definition);
 		
 		formTable = new FormTable(this);
 
@@ -138,7 +133,7 @@ public class ImportToolForm extends FormWidget {
 			public void trigger(WMouseEvent arg) {
 				ValidateRules validate = new ValidateRules();
 				createDefinitionObject();
-				WString error = validate.validateRules(ImportToolForm.this.definition.getRules());
+				WString error = validate.validateRules(ImportToolForm.this.getObject().getRules());
 				if (error != null) {
 					UIUtils.showWarningMessageBox(ImportToolForm.this, error);
 				} else {
@@ -158,10 +153,10 @@ public class ImportToolForm extends FormWidget {
     
     private void fillData()
     {        
-    	if (definition != null) {
-    		descriptionTF.setText(definition.getDescription());
+    	if (getObject() != null) {
+    		descriptionTF.setText(getObject().getDescription());
     		
-    		for (Rule r : definition.getRules()) {
+    		for (Rule r : getObject().getRules()) {
     			addRule(r);
     		}
     	}
@@ -169,10 +164,6 @@ public class ImportToolForm extends FormWidget {
 	
 	@Override
 	public void cancel() {
-        if(getInteractionState()==InteractionState.Adding)
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().importTool, RegaDBMain.getApp().getTree().getTreeContent().importToolSelect);
-        else
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().importToolSelected, RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView);
 	}
 
 	@Override
@@ -186,24 +177,19 @@ public class ImportToolForm extends FormWidget {
 		return null;
 	}
 
-	@Override
-	public void redirectAfterDelete() {
-		redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().importTool, RegaDBMain.getApp().getTree().getTreeContent().importToolSelect);
-	}
-
 	private void createDefinitionObject() {
-		if (definition == null)
-			definition = new ImportDefinition();
+		if (getObject() == null)
+			setObject(new ImportDefinition());
 		
-		definition.setDescription(descriptionTF.text());
+		getObject().setDescription(descriptionTF.text());
 		
-		definition.getRules().clear();
+		getObject().getRules().clear();
 		for (ImportRule ir : this.rules) {
 			ir.saveRule();
-			definition.getRules().add(ir.getRule());
+			getObject().getRules().add(ir.getRule());
 		}
 		
-		definition.setScript(scriptForm.getScript());
+		getObject().setScript(scriptForm.getScript());
 	}
 	
 	@Override
@@ -222,14 +208,11 @@ public class ImportToolForm extends FormWidget {
 
 		try {
 			FileWriter fw = new FileWriter(f);
-			xstream.toXML(definition, fw);
+			xstream.toXML(getObject(), fw);
 			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.setSelectedItem(definition);
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().importToolSelected, RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView);
 	}
 	
 	public List<ImportRule> getRules() {
@@ -238,10 +221,6 @@ public class ImportToolForm extends FormWidget {
 	
 	public DataProvider getDataProvider() {
 		return dataProvider;
-	}
-	
-	public ImportDefinition getDefinition() {
-		return definition;
 	}
 	
 	public ScriptDefinition getScriptDefinition() {
