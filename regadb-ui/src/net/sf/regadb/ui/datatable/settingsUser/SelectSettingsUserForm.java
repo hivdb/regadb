@@ -7,19 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectSettingsUserForm extends SelectForm<SettingsUser>
 {
-    private DataTable<SettingsUser> dataTable_;
-    private ISettingsUserDataTable dataTableI_;
-    
     public SelectSettingsUserForm(ObjectTreeNode<SettingsUser> node)
     {
         super(tr("form.administrator.user.select"),node);
-        init();
     }
     
-    public void init()
+    public DataTable<SettingsUser> createDataTable()
     {
-        dataTableI_ = new ISettingsUserDataTable(this);
-        dataTable_ = new DataTable<SettingsUser>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<SettingsUser>(new ISettingsUserDataTable(this), 10);
     }
 }

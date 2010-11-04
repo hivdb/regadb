@@ -20,7 +20,7 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 	private FormNavigationNode copyLast;
 
 	public TherapyTreeNode(TreeMenuNode parent) {
-		super("patient.therapy", parent);
+		super("therapy", parent);
 	}
 	
 	@Override

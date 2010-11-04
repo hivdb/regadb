@@ -89,7 +89,7 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
         {
             public void trigger(WMouseEvent me)
             {
-//                RegaDBMain.getApp().getTree().getTreeContent().myAccountCreate.selectNode();
+                RegaDBMain.getApp().getTree().getTreeContent().accountNode.getAddNode().selectNode();
             }
         });
         createAccountContainer.addWidget(createAccountLink_);
@@ -176,7 +176,8 @@ public class LoginForm extends WGroupBox implements IForm, IConfirmForm
     }
 
     public WString leaveForm() {
-        return tr("form.login.tree.warning");
+//        return tr("form.login.tree.warning");
+    	return null;
     }
 
 	public void removeFormField(IFormField field) {

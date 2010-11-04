@@ -7,21 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectQueryDefinitionRunForm extends SelectForm<QueryDefinitionRun>
 {
-    private DataTable<QueryDefinitionRun> dataTable_;
-    private ISelectQueryDefinitionRunDataTable dataTableI_;
-    
     public SelectQueryDefinitionRunForm(ObjectTreeNode<QueryDefinitionRun> node)
     {
         super(tr("form.query.definition.run.select"),node);
-        
-        init();
     }
 
-    public void init()
+    public DataTable<QueryDefinitionRun> createDataTable()
     {
-        dataTableI_ = new ISelectQueryDefinitionRunDataTable(this);
-        dataTable_ = new DataTable<QueryDefinitionRun>(dataTableI_, 10);
-        
-        addWidget(dataTable_);
+        return new DataTable<QueryDefinitionRun>(new ISelectQueryDefinitionRunDataTable(this), 10);
     }
 }

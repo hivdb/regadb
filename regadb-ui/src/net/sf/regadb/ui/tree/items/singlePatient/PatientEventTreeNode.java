@@ -10,10 +10,10 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class EventTreeNode extends ObjectTreeNode<PatientEventValue> {
+public class PatientEventTreeNode extends ObjectTreeNode<PatientEventValue> {
 
-	public EventTreeNode(TreeMenuNode parent) {
-		super("patient.event", parent);
+	public PatientEventTreeNode(TreeMenuNode parent) {
+		super("patientEvent", parent);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class EventTreeNode extends ObjectTreeNode<PatientEventValue> {
 
 	@Override
 	protected ObjectForm<PatientEventValue> createForm(WString name, InteractionState interactionState, PatientEventValue selectedObject) {
-		return new PatientEventForm(name, interactionState, EventTreeNode.this, selectedObject);
+		return new PatientEventForm(name, interactionState, PatientEventTreeNode.this, selectedObject);
 	}
 
 	@Override

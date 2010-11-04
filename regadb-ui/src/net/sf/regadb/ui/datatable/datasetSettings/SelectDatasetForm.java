@@ -7,20 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectDatasetForm extends SelectForm<Dataset> 
 {
-	private DataTable<Dataset> dataTable_;
-
-	private IDatasetDataTable dataTableI_;
-
 	public SelectDatasetForm(ObjectTreeNode<Dataset> node) 
 	{
 		super(tr("form.DatasetSettings.dataset.selectDatasetForm"), node);
-		init();
 	}
 
-    public void init() 
+    public DataTable<Dataset> createDataTable() 
 	{
-		dataTableI_ = new IDatasetDataTable(this);
-		dataTable_ = new DataTable<Dataset>(dataTableI_, 10);
-		addWidget(dataTable_);
+		return new DataTable<Dataset>(new IDatasetDataTable(this), 10);
 	}
 }

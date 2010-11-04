@@ -7,20 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectTestForm  extends SelectForm<Test>
 {
-	private DataTable<Test> dataTable_;
-
-	private ITestDataTable dataTableI_;
-
 	public SelectTestForm(ObjectTreeNode<Test> node) 
 	{
 		super(tr("form.testSetting.test.selectTestForm"), node);
-		init();
 	}
 
-	public void init() 
+	public DataTable<Test> createDataTable() 
 	{
-		dataTableI_ = new ITestDataTable(this);
-		dataTable_ = new DataTable<Test>(dataTableI_, 10);
-		addWidget(dataTable_);
+		return new DataTable<Test>(new ITestDataTable(this), 10);
 	}
 }

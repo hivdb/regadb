@@ -7,19 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectTestTypeForm extends SelectForm<TestType>
 {
-    private DataTable<TestType> dataTable_;
-    private ITestTypeDataTable dataTableI_;
-    
     public SelectTestTypeForm(ObjectTreeNode<TestType> node)
     {
         super(tr("form.testSetting.testType.selectTestTypeForm"),node);
-        init();
     }
 
-    public void init() 
+    public DataTable<TestType> createDataTable()
     {
-        dataTableI_ = new ITestTypeDataTable(this);
-        dataTable_ = new DataTable<TestType>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<TestType>(new ITestTypeDataTable(this), 10);
     }
 }

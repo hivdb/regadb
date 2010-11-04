@@ -3,7 +3,6 @@ package net.sf.regadb.ui.tree;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.query.CustomQueryNavigation;
-import net.sf.regadb.ui.tree.items.query.QueryDefinitionNavigation;
 import net.sf.regadb.ui.tree.items.query.QueryToolNavigation;
 import net.sf.regadb.ui.tree.items.query.WivQueryNavigationNode;
 import net.sf.regadb.ui.tree.items.singlePatient.PatientTreeNode;
@@ -13,6 +12,7 @@ import eu.webtoolkit.jwt.WString;
 public class TreeContent
 {
 	public PatientTreeNode patientTreeNode;
+	public AccountNavigationNode accountNode;
     
 //    public MyAccountItem myAccountMain;
 //    public LoginItem myAccountLogin;
@@ -1058,33 +1058,21 @@ public class TreeContent
     	TreeMenuNode query = new DefaultNavigationNode(WString.tr("menu.query"), root);
     	
     	new QueryToolNavigation(query);
-    	new QueryDefinitionNavigation(query);
+//    	new QueryDefinitionNavigation(query, new QueryDefinitionRunNavigation(query));
     	new CustomQueryNavigation(query);
     	
     	if(RegaDBSettings.getInstance().getInstituteConfig().getWivConfig() != null)
     		new WivQueryNavigationNode(query);
     	
-        AccountNavigationNode account = new AccountNavigationNode(root);
+        accountNode = new AccountNavigationNode(root);
 		
 		new AdministratorNavigationNode(root);
 		
-		DefaultNavigationNode bla = new DefaultNavigationNode(WString.toWString("bla"), root){
-			@Override
-			public boolean isDisabled(){
-				return RegaDBMain.getApp().getLogin() == null;
-			}
-			@Override
-			public boolean isEnabled(){
-				return !isDisabled();
-			}
-		};
-		new DefaultNavigationNode(WString.toWString("ble"),bla);
-    	
     	root.refresh();
     	
     	if(patientTreeNode.isEnabled())
     		return patientTreeNode;
     	else
-    		return account;
+    		return accountNode;
     }
 }

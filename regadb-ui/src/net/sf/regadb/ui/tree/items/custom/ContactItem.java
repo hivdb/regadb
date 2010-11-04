@@ -1,7 +1,11 @@
 package net.sf.regadb.ui.tree.items.custom;
 
+import java.util.Date;
+
+import net.sf.regadb.ui.form.singlePatient.ViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.custom.GridForm;
 import net.sf.regadb.ui.form.singlePatient.custom.MultipleTestResultForm;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
@@ -42,7 +46,7 @@ public class ContactItem extends DefaultNavigationNode {
 
 					@Override
 					public void redirectAfterCancel() {
-						grid.selectNode();
+						lastContact.selectNode();
 					}
                 };
             }
@@ -51,16 +55,21 @@ public class ContactItem extends DefaultNavigationNode {
     
     private IForm createMultipleTestResultForm(WString name, InteractionState state){
     	return new MultipleTestResultForm( WString.tr("form.multipleTestResults.contact.newest"),
-                InteractionState.Viewing,
+                state,
                 lastContact){
 
 			@Override
-			protected void gotoViralIsolateForm() {
-//				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
-//					.getViralIsolateTreeNode().getAddNavigationNode().selectNode();
-//				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
-//					.getViralIsolateTreeNode().setSelectedItem(null);
-//				RegaDBMain.getApp().getFormContainer().setForm(new ViralIsolateForm(WString.tr("form.viralIsolate.add"), InteractionState.Adding, sampleIdTF_.text(), dateTF_.getDate()));
+			protected void gotoViralIsolateForm(String sampleId, Date sampleDate) {
+				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
+					.getViralIsolateTreeNode().getAddNavigationNode().selectNode();
+				RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode
+					.getViralIsolateTreeNode().setSelectedItem(null);
+				RegaDBMain.getApp().getFormContainer().setForm(
+						new ViralIsolateForm(
+								WString.tr("form.viralIsolate.add"),
+								InteractionState.Adding,
+								RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode(),
+								sampleId, sampleDate));
 			}
 			
 			@Override

@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree;
 
 import java.io.File;
+import java.util.EnumSet;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -13,6 +14,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
+import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetForm;
 import net.sf.regadb.ui.datatable.importTool.SelectImportToolForm;
 import net.sf.regadb.ui.datatable.log.SelectLogForm;
@@ -26,6 +28,7 @@ import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
+import net.sf.regadb.ui.form.datasetSettings.DatasetAccessForm;
 import net.sf.regadb.ui.form.datasetSettings.DatasetForm;
 import net.sf.regadb.ui.form.event.EventForm;
 import net.sf.regadb.ui.form.impex.ExportForm;
@@ -37,6 +40,8 @@ import net.sf.regadb.ui.form.log.LogForm;
 import net.sf.regadb.ui.form.testTestTypes.ResistanceInterpretationTemplateForm;
 import net.sf.regadb.ui.form.testTestTypes.TestForm;
 import net.sf.regadb.ui.form.testTestTypes.TestTypeForm;
+import net.sf.regadb.ui.forms.account.AccountForm;
+import net.sf.regadb.ui.forms.account.PasswordForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -50,6 +55,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 	
 	private SelectedItemNavigationNode<DatasetAccess> datasetAccessSelected;
 	private FormNavigationNode datasetAccessSelect;
+	private ObjectTreeNode<SettingsUser> settingsUser;
 	
 	private FormNavigationNode updateForm;
 
@@ -186,42 +192,30 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		DefaultNavigationNode datasetAccess = new DefaultNavigationNode(WString.tr("menu.dataset.access"), datasetSettings);
 		
-		datasetAccessSelect = new FormNavigationNode(WString.tr("menu.dataset.access.select"),datasetSettings){
+		new ObjectTreeNode<SettingsUser>("dataset.access", datasetAccess, EnumSet.of(InteractionState.Viewing, InteractionState.Editing)){
 			@Override
-			public IForm createForm() {
-//				return new SelectDatasetAccessUserForm(this);
-				return null;
+			protected ObjectForm<SettingsUser> createForm(WString name,
+					InteractionState interactionState,
+					SettingsUser selectedObject) {
+				return new DatasetAccessForm(name,interactionState,this,selectedObject);
+			}
+
+			@Override
+			protected IForm createSelectionForm() {
+				return new SelectDatasetAccessUserForm(this);
+			}
+
+			@Override
+			public String getArgument(SettingsUser type) {
+				return type.getUid();
 			}
 		};
-		
-        datasetAccessSelected = new SelectedItemNavigationNode<DatasetAccess>(WString.tr("menu.dataset.acces.SelectedItem"), datasetAccess){
-        	public DatasetAccess getSelectedItem(){
-        		//TODO
-        		return null;
-        	}
-        };
         
-//        new FormNavigationNode(WString.tr("menu.dataset.acces.view"), datasetAccessSelected){
-//        	@Override
-//        	public IForm createForm(){
-//        		return new DatasetAccessForm(InteractionState.Viewing, WString.tr("form.dataset.access.view"),null);//datasetAccessSelected.getSelectedItem());
-//        	}
-//        };
-//        
-//        new FormNavigationNode(WString.tr("menu.dataset.access.edit"), datasetAccessSelected){
-//        	@Override
-//        	public IForm createForm(){
-//        		return new DatasetAccessForm(InteractionState.Editing, WString.tr("form.dataset.access.edit"),null);//datasetAccessSelected.getSelectedItem());
-//        	}
-//        };
-        
-        
-        ObjectTreeNode<SettingsUser> settingsUser = new ObjectTreeNode<SettingsUser>("administrator.users", this){
+        settingsUser = new ObjectTreeNode<SettingsUser>("administrator.users", this){
 
 			@Override
 			protected ObjectForm<SettingsUser> createForm(WString name, InteractionState interactionState, SettingsUser selectedObject) {
-//TODO				return new AccountForm(interactionState,name,selectedObject);
-				return null;
+				return new AccountForm(name,interactionState,this,selectedObject,true);
 			}
 
 			@Override
@@ -239,8 +233,11 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 
 			@Override
 			public IForm createForm() {
-//TODO				return new PasswordForm(InteractionState.Editing, WString.tr("menu.myAccount.passwordForm"), settingsUser.getSelectedItem());
-				return null;
+				return new PasswordForm(WString.tr("menu.myAccount.passwordForm"),
+						InteractionState.Editing,
+						settingsUser.getSelectedItemNavigationNode(),
+						true,
+						settingsUser.getSelectedItem());
 			}
         };
         

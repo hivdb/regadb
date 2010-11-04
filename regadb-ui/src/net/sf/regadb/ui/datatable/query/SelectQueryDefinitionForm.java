@@ -7,21 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectQueryDefinitionForm extends SelectForm<QueryDefinition>
 {
-    private DataTable<QueryDefinition> dataTable_;
-    private ISelectQueryDefinitionDataTable dataTableI_;
-    
     public SelectQueryDefinitionForm(ObjectTreeNode<QueryDefinition> node)
     {
         super(tr("form.query.definition.select"),node);
-        
-        init();
     }
 
-    public void init()
+    public DataTable<QueryDefinition> createDataTable()
     {
-        dataTableI_ = new SelectHqlQueryDefinitionDatatable(this);
-        dataTable_ = new DataTable<QueryDefinition>(dataTableI_, 10);
-        
-        addWidget(dataTable_);
+        return new DataTable<QueryDefinition>(new SelectHqlQueryDefinitionDatatable(this), 10);
     }
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
 import net.sf.regadb.db.Transaction;
@@ -53,6 +54,8 @@ public class QueryDefinitionRunForm extends ObjectForm<QueryDefinitionRun>
     private Label resultL;
     private WAnchor resultLink;
     
+    private QueryDefinition queryDefinition = null;
+    
     private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     
     public QueryDefinitionRunForm(WString formName, InteractionState interactionState,
@@ -65,11 +68,21 @@ public class QueryDefinitionRunForm extends ObjectForm<QueryDefinitionRun>
         addControlButtons();
     }
     
+    public QueryDefinitionRunForm(WString formName, ObjectTreeNode<QueryDefinitionRun> node, QueryDefinition queryDefinition)
+    {
+        super(formName, InteractionState.Adding, node, new QueryDefinitionRun());
+        this.queryDefinition = queryDefinition;
+        init();
+        fillData();
+        
+        addControlButtons();
+    }
+    
     public void init()
     {
     	if(getInteractionState() == InteractionState.Adding)
         {
-        	getObject().setQueryDefinition(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.getSelectedItem());
+        	getObject().setQueryDefinition(queryDefinition);
         }
     	
     	queryDefinitionRunGroup_ = new WGroupBox(tr("form.query.definition.run.general"), this);

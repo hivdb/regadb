@@ -67,13 +67,13 @@ public class SinglePatientForm extends ObjectForm<Patient>
     public void init()
     {   
         //general group
-        generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("form.patient.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
+        sourceDatasetL = new Label(tr("form.patient.sourceDataset"));
         sourceDatasetCB = new ComboBox<Dataset>(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
         sourceDatasetCB.setMandatory(true);
         generalGroupTable_.addLineToTable(sourceDatasetL, sourceDatasetCB);
-        idL = new Label(tr("form.singlePatient.editView.patientId"));
+        idL = new Label(tr("form.patient.patientId"));
         idTF = new TextField(getInteractionState(), this){
                 public boolean checkUniqueness(){
                     return checkPatientId(getFormText());
@@ -192,7 +192,7 @@ public class SinglePatientForm extends ObjectForm<Patient>
         
         if(groups.entrySet().size()>0)
         {
-            attributesGroup_ = new WGroupBox(tr("form.singlePatient.editView.attributes"), this);
+            attributesGroup_ = new WGroupBox(tr("form.patient.attributes"), this);
             attributesGroupTable_ = new WTable(attributesGroup_);
             attributesGroupTable_.setStyleClass("datatable");
             int rowToPlace;
@@ -204,7 +204,7 @@ public class SinglePatientForm extends ObjectForm<Patient>
             AttributeNominalValue selectedNominalVal;
             for(Map.Entry<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> entry : groups.entrySet())
             {
-                if(entry.getKey().equals("form.singlePatient.editView.generalAttribute"))
+                if(entry.getKey().equals("form.patient.generalAttributes"))
                 {
                     groupMessage = tr(entry.getKey());
                     rowToPlace = 0;
@@ -294,7 +294,7 @@ public class SinglePatientForm extends ObjectForm<Patient>
             groupName = attribute.getAttributeGroup();
             if(groupName==null)
             {
-                groupStr = "form.singlePatient.editView.generalAttribute";
+                groupStr = "form.patient.generalAttributes";
             }
             else
             {

@@ -75,13 +75,13 @@ public class TherapyForm extends ObjectForm<Therapy>
 	public void init()
 	{
 		//general group
-        generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("form.therapy.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        startDateL = new Label(tr("form.therapy.editView.startDate"));
+        startDateL = new Label(tr("form.therapy.startDate"));
         startDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         startDateDF.setMandatory(true);
         generalGroupTable_.addLineToTable(startDateL, startDateDF);
-        stopDateL = new Label(tr("form.therapy.editView.stopDate"));
+        stopDateL = new Label(tr("form.therapy.stopDate"));
         stopDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(stopDateL, stopDateDF);
         
@@ -93,10 +93,10 @@ public class TherapyForm extends ObjectForm<Therapy>
             }
         });
         
-        motivationL = new Label(tr("form.therapy.editView.motivation"));
+        motivationL = new Label(tr("form.therapy.motivation"));
         motivationCB = new ComboBox<TherapyMotivation>(getInteractionState(), this);
         generalGroupTable_.addLineToTable( motivationL, motivationCB);
-        commentL = new Label(tr("form.therapy.editView.comment"));
+        commentL = new Label(tr("form.therapy.comment"));
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
         

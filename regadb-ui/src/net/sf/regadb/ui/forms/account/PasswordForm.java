@@ -21,7 +21,7 @@ public class PasswordForm extends FormWidget
     
     private boolean administrator_;
     
-    private TreeMenuNode selectNode_, expandNode_;
+    private TreeMenuNode redirectNode;
     
     private WGroupBox passwordGroup_;
     private FormTable passwordGroupTable;
@@ -32,11 +32,10 @@ public class PasswordForm extends FormWidget
     private Label retypePasswordL;
     private TextField retypePasswordTF;
     
-    public PasswordForm(WString formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
+    public PasswordForm(WString formName, InteractionState interactionState, TreeMenuNode redirectNode, boolean admin, SettingsUser settingsUser)
     {
         super(formName, interactionState);
-        selectNode_ = selectNode;
-        expandNode_ = expandNode;
+        this.redirectNode = redirectNode;
         administrator_ = admin;
         
         Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
@@ -154,9 +153,11 @@ public class PasswordForm extends FormWidget
 
 	@Override
 	public void redirectAfterSave() {
+		redirectNode.selectNode();
 	}
 
 	@Override
 	public void redirectAfterCancel() {
+		redirectNode.selectNode();
 	}
 }

@@ -14,7 +14,7 @@ import eu.webtoolkit.jwt.WString;
 public class TestResultTreeNode extends ObjectTreeNode<TestResult>{
 
 	public TestResultTreeNode(TreeMenuNode parent) {
-		super("patient.testresult", parent);
+		super("testResult", parent);
 	}
 
 	@Override

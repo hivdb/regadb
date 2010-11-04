@@ -54,7 +54,7 @@ public class QueryToolForm extends ObjectForm<QueryDefinition> implements QueryT
 	}
     
 	public QueryToolForm(WString  title, InteractionState istate, ObjectTreeNode<QueryDefinition> node, QueryDefinition query) {
-		super(title, istate, node, query);
+		super(title, istate, node, query == null ? new QueryDefinition(StandardObjects.getQueryToolQueryType()) : query);
 		init();
 	}
 	

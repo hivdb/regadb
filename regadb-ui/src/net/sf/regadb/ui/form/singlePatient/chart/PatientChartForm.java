@@ -36,7 +36,7 @@ public class PatientChartForm extends WGroupBox implements IForm
 	
 	public PatientChartForm(Patient p)
 	{
-		super(tr("form.singlePatient.viewChart"));
+		super(tr("form.patient.chart"));
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		t.attach(p);

@@ -7,19 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectViralIsolateForm extends SelectForm<ViralIsolate>
 {
-	private DataTable<ViralIsolate> dataTable_;
-	private IViralIsolateDataTable dataTableI_;
-	
 	public SelectViralIsolateForm(ObjectTreeNode<ViralIsolate> node)
 	{
 		super(tr("form.patient.selectViralIsolateForm"),node);
-        init();
 	}
 
-    public void init() 
+    public DataTable<ViralIsolate> createDataTable()
     {
-        dataTableI_ = new IViralIsolateDataTable(this);
-        dataTable_ = new DataTable<ViralIsolate>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<ViralIsolate>(new IViralIsolateDataTable(this), 10);
     }
 }

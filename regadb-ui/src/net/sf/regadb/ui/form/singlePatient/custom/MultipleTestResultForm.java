@@ -387,7 +387,8 @@ public abstract class MultipleTestResultForm extends FormWidget {
     		return;
     	
         save();
+        gotoViralIsolateForm(sampleIdTF_.text(),dateTF_.getDate());
     }
     
-    protected abstract void gotoViralIsolateForm();
+    protected abstract void gotoViralIsolateForm(String sampleId, Date sampleDate);
 }

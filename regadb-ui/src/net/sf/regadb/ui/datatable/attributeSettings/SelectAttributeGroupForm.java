@@ -7,19 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectAttributeGroupForm extends SelectForm<AttributeGroup>
 {
-    private DataTable<AttributeGroup> dataTable_;
-    private IAttributeGroupDataTable dataTableI_;
-    
     public SelectAttributeGroupForm(ObjectTreeNode<AttributeGroup> node)
     {
         super(tr("form.attributes.attributeGroups.selectAttributeGroupForm"),node);
-        init();
     }
 
-    public void init() 
+    public DataTable<AttributeGroup> createDataTable() 
     {
-        dataTableI_ = new IAttributeGroupDataTable(this);
-        dataTable_ = new DataTable<AttributeGroup>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<AttributeGroup>(new IAttributeGroupDataTable(this), 10);
     }
 }

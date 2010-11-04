@@ -22,10 +22,10 @@ public class IPatientEventDataTable extends DefaultDataTable<PatientEventValue> 
 	}
 
 	private static WString [] _colNames = {
-		WString.tr("dataTable.singlePatient.patientEvent.column.startDate"),
-		WString.tr("dataTable.singlePatient.patientEvent.column.endDate"),
-		WString.tr("dataTable.singlePatient.patientEvent.column.eventName"),
-		WString.tr("dataTable.singlePatient.patientEvent.column.value")};
+		WString.tr("dataTable.patientEvent.column.startDate"),
+		WString.tr("dataTable.patientEvent.column.endDate"),
+		WString.tr("dataTable.patientEvent.column.eventName"),
+		WString.tr("dataTable.patientEvent.column.value")};
 	
 	private static String[] filterVarNames_ = {"patient_event_value.startDate", "patient_event_value.endDate", "event.name", null};
 	private static boolean [] sortable_ = {true, true, true, false};

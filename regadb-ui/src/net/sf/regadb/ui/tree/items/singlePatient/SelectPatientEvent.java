@@ -7,18 +7,13 @@ import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectPatientEvent extends SelectForm<PatientEventValue> {
-	private DataTable<PatientEventValue> datatable_;
-	private IPatientEventDataTable datatableI_;
 	
 	public SelectPatientEvent(ObjectTreeNode<PatientEventValue> node) {
-		super(tr("form.singlePatient.selectEvent"),node);
-        init();
+		super(tr("form.patientEvent.select"),node);
 	}
 	
-	public void init() 
+	public DataTable<PatientEventValue> createDataTable() 
     {
-		datatableI_ = new IPatientEventDataTable(this);
-        datatable_ = new DataTable<PatientEventValue>(datatableI_, 10);
-        addWidget(datatable_);
+		return new DataTable<PatientEventValue>(new IPatientEventDataTable(this), 10);
     }
 }

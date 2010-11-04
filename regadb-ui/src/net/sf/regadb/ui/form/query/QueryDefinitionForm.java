@@ -6,6 +6,7 @@ import java.util.List;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
@@ -41,7 +42,8 @@ public class QueryDefinitionForm extends ObjectForm<QueryDefinition>
     public QueryDefinitionForm(WString formName, InteractionState interactionState,
     		ObjectTreeNode<QueryDefinition> node, QueryDefinition queryDefinition)
     {
-    	super(formName, interactionState, node, queryDefinition);
+    	super(formName, interactionState, node,
+    			queryDefinition == null ? new QueryDefinition(StandardObjects.getHqlQueryQueryType()) : queryDefinition);
         init();
         fillData();
     }

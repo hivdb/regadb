@@ -22,7 +22,7 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	private TestResultTreeNode testResult;
 	private TherapyTreeNode therapy;
 	private ViralIsolateTreeNode viralIsolate;
-	private EventTreeNode event;
+	private PatientEventTreeNode event;
 	
 	private DefaultNavigationNode custom;
 	private ContactItem contact;
@@ -45,7 +45,7 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		testResult = new TestResultTreeNode(getSelectedItemNavigationNode());
 		therapy = new TherapyTreeNode(getSelectedItemNavigationNode());
 		viralIsolate = new ViralIsolateTreeNode(getSelectedItemNavigationNode());
-		event = new EventTreeNode(getSelectedItemNavigationNode());
+		event = new PatientEventTreeNode(getSelectedItemNavigationNode());
 		
 		custom = new DefaultNavigationNode(getMenuResource("custom"), getSelectedItemNavigationNode());
 		contact = new ContactItem(custom);
@@ -70,7 +70,7 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	public ViralIsolateTreeNode getViralIsolateTreeNode(){
 		return viralIsolate;
 	}
-	public EventTreeNode getEventTreeNode(){
+	public PatientEventTreeNode getEventTreeNode(){
 		return event;
 	}
 	public DefaultNavigationNode getCustomNode(){

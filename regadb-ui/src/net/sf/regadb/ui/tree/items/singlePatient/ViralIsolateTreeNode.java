@@ -24,7 +24,7 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 	private FormNavigationNode cumulatedResistance;
 
 	public ViralIsolateTreeNode(TreeMenuNode parent) {
-		super("patient.viralisolate", parent);
+		super("viralIsolate", parent);
 	}
 	
 	@Override

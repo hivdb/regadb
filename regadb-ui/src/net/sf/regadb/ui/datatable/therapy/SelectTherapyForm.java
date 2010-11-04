@@ -7,19 +7,13 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 public class SelectTherapyForm extends SelectForm<Therapy>
 {
-	private DataTable<Therapy> dataTable_;
-	private ITherapyDataTable dataTableI_;
-	
 	public SelectTherapyForm(ObjectTreeNode<Therapy> node)
 	{
 		super(tr("form.patient.selectTherapyForm"),node);
-        init();
 	}
 
-    public void init() 
+    public DataTable<Therapy> createDataTable() 
     {
-        dataTableI_ = new ITherapyDataTable(this);
-        dataTable_ = new DataTable<Therapy>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<Therapy>(new ITherapyDataTable(this), 10);
     }
 }

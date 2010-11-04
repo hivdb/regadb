@@ -49,16 +49,16 @@ public class PatientEventForm extends ObjectForm<PatientEventValue>
 		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
-		lblStartDate = new Label(tr("form.singlePatient.patientEvent.label.startDate"));
+		lblStartDate = new Label(tr("form.patientEvent.startDate"));
 		startDate = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
 		startDate.setMandatory(true);
 		mainFrameTable_.addLineToTable(lblStartDate, startDate);
 		
-		lblEndDate = new Label(tr("form.singlePatient.patientEvent.label.endDate"));
+		lblEndDate = new Label(tr("form.patientEvent.endDate"));
 		endDate = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
 		mainFrameTable_.addLineToTable(lblEndDate, endDate);
 		
-		lblEvent = new Label(tr("form.singlePatient.patientEvent.label.event"));
+		lblEvent = new Label(tr("form.patientEvent.event"));
 		cmbEvents = new ComboBox<Event>(getInteractionState(), this);
         cmbEvents.setMandatory(true);
         mainFrameTable_.addLineToTable(lblEvent, cmbEvents);
@@ -85,7 +85,7 @@ public class PatientEventForm extends ObjectForm<PatientEventValue>
         t.commit();
 		
         int row = mainFrameTable_.getRowCount();
-		lblValue = new Label(tr("form.singlePatient.patientEvent.label.value"));
+		lblValue = new Label(tr("form.patientEvent.value"));
 		lblValue.setLabelUIMandatory(this);
 		valueContainer = new WContainerWidget();
 		

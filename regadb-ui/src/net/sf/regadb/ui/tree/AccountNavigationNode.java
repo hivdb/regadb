@@ -18,6 +18,7 @@ import eu.webtoolkit.jwt.WWidget;
 public class AccountNavigationNode extends DefaultNavigationNode{
 	private TreeMenuNode accountLogin;
 	private TreeMenuNode accountView;
+	private TreeMenuNode accountAdd;
 
 	@SuppressWarnings("unused")
 	public AccountNavigationNode(TreeMenuNode parent) {
@@ -34,10 +35,19 @@ public class AccountNavigationNode extends DefaultNavigationNode{
         		return RegaDBMain.getApp().getLogin() != null;
         	}
         };
-        FormNavigationNode accountAdd = new FormNavigationNode(WString.tr("menu.myAccount.add"),this) {
+        accountAdd = new FormNavigationNode(WString.tr("menu.myAccount.add"),this) {
 			@Override
 			public IForm createForm() {
-				return new AccountForm(WWidget.tr("form.account.create"), InteractionState.Adding, accountLogin, this, false, new SettingsUser());
+				return new AccountForm(WWidget.tr("form.account.create"), InteractionState.Adding, null, new SettingsUser(), false){
+					@Override
+					public void redirectAfterSave(){
+						accountLogin.selectNode();
+					}
+					@Override
+					public void redirectAfterCancel(){
+						accountLogin.selectNode();
+					}
+				};
 			}
 			
             @Override
@@ -49,7 +59,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
 		accountView = new FormNavigationNode(WString.tr("menu.myAccount.view"),this){
 			@Override
 			public IForm createForm(){
-				return new AccountForm(WWidget.tr("form.account.view"), InteractionState.Viewing, accountView, this, false, null);
+				return new AccountForm(WWidget.tr("form.account.view"), InteractionState.Viewing, null, null, false);
 			}
 			
 			@Override
@@ -61,7 +71,16 @@ public class AccountNavigationNode extends DefaultNavigationNode{
 		FormNavigationNode accountEdit = new FormNavigationNode(WString.tr("menu.myAccount.edit"),this){
 			@Override
 			public IForm createForm(){
-				return new AccountForm(WWidget.tr("form.account.edit"), InteractionState.Editing, accountView, this, false, null);
+				return new AccountForm(WWidget.tr("form.account.edit"), InteractionState.Editing, null, null, false){
+					@Override
+					public void redirectAfterSave(){
+						accountView.selectNode();
+					}
+					@Override
+					public void redirectAfterCancel(){
+						accountView.selectNode();
+					}
+				};
 			}
 			
 			@Override
@@ -73,7 +92,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
 		FormNavigationNode accountPass = new FormNavigationNode(WString.tr("menu.myAccount.passwordForm"),this){
 			@Override
 			public IForm createForm(){
-				return new PasswordForm(WWidget.tr("form.account.edit.password"), InteractionState.Editing, accountView, this, false, null);
+				return new PasswordForm(WWidget.tr("form.account.edit.password"), InteractionState.Editing, accountView, false, null);
 			}
 			
 			@Override
@@ -107,6 +126,16 @@ public class AccountNavigationNode extends DefaultNavigationNode{
             }
 		};
 
+	}
+	
+	public TreeMenuNode getViewNode(){
+		return accountView;
+	}
+	public TreeMenuNode getLoginNode(){
+		return accountLogin;
+	}
+	public TreeMenuNode getAddNode(){
+		return accountAdd;
 	}
 
 }
