@@ -112,10 +112,6 @@ public class ViralIsolateResistanceTable extends WTable {
 	            if(colN!=null && rowN!=null) {
 	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), config, false, showMutations);
 	            }
-	            rowN = drugColumn.get(ViralIsolateFormUtils.getFixedGenericId(tr)+"/r");
-	            if(colN!=null && rowN!=null) {
-	                ViralIsolateFormUtils.putResistanceTableResult(tr, getElementAt(rowN, colN), config, true, showMutations);
-	            }
             }
         }
     }
