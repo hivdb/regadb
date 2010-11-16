@@ -17,12 +17,12 @@ import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
 
 import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
 import eu.webtoolkit.jwt.TextFormat;
@@ -41,11 +41,17 @@ public class RegaDBApplication extends WApplication
 	
 	private ServletContext servletContext_;
 	
+	private SequenceDb sequenceDb;
+	
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
-		System.err.println("new regadb app");
+
+		String path = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath();
+		if (path != null)
+			sequenceDb = new SequenceDb(path);
 		
+		System.err.println("new regadb app");
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
 		window_.init();

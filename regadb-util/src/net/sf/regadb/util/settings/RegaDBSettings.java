@@ -27,6 +27,7 @@ public class RegaDBSettings {
     	addConfig(new AccessPolicyConfig());
     	addConfig(new InstituteConfig());
     	addConfig(new CronConfig());
+    	addConfig(new SequenceDatabaseConfig());
     }
     
     private void addConfig(IConfigParser cfg){
@@ -129,6 +130,9 @@ public class RegaDBSettings {
                 + "skeleton-settings.xml"));
     }
 
+    public SequenceDatabaseConfig getSequenceDatabaseConfig(){
+    	return (SequenceDatabaseConfig)configs.get("sequence-database");
+    }
     
     public HibernateConfig getHibernateConfig(){
     	return (HibernateConfig)configs.get("hibernate");
