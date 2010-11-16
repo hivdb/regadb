@@ -22,7 +22,6 @@ import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.tools.exportFasta.ExportAaSequence;
 import net.sf.regadb.tools.exportFasta.FastaExporter.Symbol;
-import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
@@ -31,9 +30,11 @@ import org.hibernate.ScrollableResults;
 public class SequenceDb {
 	private ReentrantLock formattingLock = new ReentrantLock();
 	private ReentrantLock queryLock = new ReentrantLock();
-	private Condition queriesFinishedCondition  = queryLock.newCondition(); 
+	private Condition queriesFinishedCondition  = queryLock.newCondition();
 
 	private int queries = 0;
+	
+	private static ExportAaSequence exporter = new ExportAaSequence(Symbol.Nucleotides, true);
 	
 	private File path;
 	
@@ -43,14 +44,12 @@ public class SequenceDb {
 	
 	public void init(Transaction t) {
 		if (path != null && path.listFiles().length == 0) {		
-			ExportAaSequence exporter = new ExportAaSequence(Symbol.Nucleotides, true);
-
 			Query q = t.createQuery("from NtSequence");
 			q.setCacheMode(CacheMode.IGNORE);
 			ScrollableResults r = q.scroll();
 			int i = 0;
 			while (r.next()) {
-				exportAlignment((NtSequence)r.get(0), exporter);
+				exportAlignment((NtSequence)r.get(0));
 				i++;
 				if (i > 1000) { 
 					t.clearCache();
@@ -60,41 +59,56 @@ public class SequenceDb {
 		}
 	}
 	
-	private String proteinString(Protein p) {
+	private static String proteinString(Protein p) {
 		return p.getOpenReadingFrame().getName() + "_" + p.getAbbreviation();
 	}
+	
+	public static String alignmentToString(OpenReadingFrame orf, NtSequence sequence) {
+		return alignmentToString(orf, getAlignmentMap(sequence));
+	}
+	
+	private static String alignmentToString(OpenReadingFrame orf, Map<String, AaSequence> aaSeqs) {
+		StringBuffer alignment = new StringBuffer();
 
-	private void exportAlignment(NtSequence sequence, ExportAaSequence exporter) {
+		List<Protein> proteins = new ArrayList<Protein>(orf.getProteins());
+		Collections.sort(proteins, new Comparator<Protein>() {
+			public int compare(Protein p0, Protein p1) {
+				return p0.getStartPosition() - p1.getStartPosition();
+			}
+		});
+		
+		boolean hasSequence = false;
+		for (Protein p : proteins) {
+			AaSequence aaSeq = aaSeqs.get(proteinString(p));
+			if (aaSeq == null) {
+				for (int i = 0; i < p.getStopPosition() - p.getStartPosition(); i++)
+					alignment.append("---");
+			} else {
+				alignment.append(exporter.getAlignmentView(aaSeq));
+				hasSequence = true;
+			}
+		}
+		
+		if (hasSequence)
+			return alignment.toString();
+		else
+			return null;
+	}
+
+	private static Map<String, AaSequence> getAlignmentMap(NtSequence sequence) {
 		Map<String, AaSequence> aaSeqs = new HashMap<String, AaSequence>();
 		for (AaSequence aaSeq : sequence.getAaSequences())
 			aaSeqs.put(proteinString(aaSeq.getProtein()), aaSeq);
-
+		return aaSeqs;
+	}
+	
+	private void exportAlignment(NtSequence sequence) {
 		Genome genome = sequence.getViralIsolate().getGenome();
 		for (OpenReadingFrame orf : genome.getOpenReadingFrames()) {
 			String id = sequence.getNtSequenceIi() + "";
-
-			StringBuffer alignment = new StringBuffer();
-
-			List<Protein> proteins = new ArrayList<Protein>(orf.getProteins());
-			Collections.sort(proteins, new Comparator<Protein>() {
-				public int compare(Protein p0, Protein p1) {
-					return p0.getStartPosition() - p1.getStartPosition();
-				}
-			});
+			String alignment = alignmentToString(orf, getAlignmentMap(sequence));
 			
-			boolean hasSequence = false;
-			for (Protein p : proteins) {
-				AaSequence aaSeq = aaSeqs.get(proteinString(p));
-				if (aaSeq == null) {
-					for (int i = 0; i < p.getStopPosition() - p.getStartPosition(); i++)
-						alignment.append("---");
-				} else {
-					alignment.append(exporter.getAlignmentView(aaSeq));
-					hasSequence = true;
-				}
-			}
-			
-			if (hasSequence) {
+			if (alignment != null) {
 				File dir = getOrfDir(orf);
 				dir.mkdirs();
 				File f = new File(dir.getAbsolutePath() + File.separatorChar + id + ".fasta");
@@ -125,8 +139,7 @@ public class SequenceDb {
 		try {
 			formattingLock.lock();
 
-			ExportAaSequence exporter = new ExportAaSequence(Symbol.Nucleotides, true);
-			exportAlignment(sequence, exporter);
+			exportAlignment(sequence);
 		} finally {
 			formattingLock.unlock();
 		}
@@ -147,7 +160,7 @@ public class SequenceDb {
 					try {
 			          String id = input.readLine().substring(1);
 			          String alignment = input.readLine();
-			          query.process(id, alignment);
+			          query.process(orf, id, alignment);
 			        } finally {
 			          input.close();
 			        }
