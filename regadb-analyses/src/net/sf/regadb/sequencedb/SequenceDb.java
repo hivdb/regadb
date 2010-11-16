@@ -18,6 +18,8 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.OpenReadingFrame;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.tools.exportFasta.ExportAaSequence;
@@ -102,10 +104,16 @@ public class SequenceDb {
 		return aaSeqs;
 	}
 	
+	private String getNtSequenceId(NtSequence sequence) {
+		return (new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue())).getPatientIi() + "_" +
+			sequence.getViralIsolate().getViralIsolateIi() + "_" + 
+			sequence.getNtSequenceIi();
+	}
+	
 	private void exportAlignment(NtSequence sequence) {
 		Genome genome = sequence.getViralIsolate().getGenome();
 		for (OpenReadingFrame orf : genome.getOpenReadingFrames()) {
-			String id = sequence.getNtSequenceIi() + "";
+			String id = getNtSequenceId(sequence);
 			String alignment = alignmentToString(orf, getAlignmentMap(sequence));
 			
 			if (alignment != null) {
@@ -154,20 +162,28 @@ public class SequenceDb {
 	private void queryImpl(Genome genome, SequenceQuery query) {
 		for (OpenReadingFrame orf : genome.getOpenReadingFrames()) {
 			File dir = getOrfDir(orf);
-			for (File f : dir.listFiles()) {
-				try {
-					BufferedReader input =  new BufferedReader(new FileReader(f));
+			if (dir != null && dir.exists())
+				for (File f : dir.listFiles()) {
 					try {
-			          String id = input.readLine().substring(1);
-			          String alignment = input.readLine();
-			          query.process(orf, id, alignment);
-			        } finally {
-			          input.close();
-			        }
-			      } catch (IOException ex){
-			        ex.printStackTrace();
-			      }
-			}
+						BufferedReader input = new BufferedReader(
+								new FileReader(f));
+						try {
+							String[] ids = input.readLine().substring(1).split(
+									"_");
+							String alignment = input.readLine();
+
+							query.process(orf, 
+									Integer.parseInt(ids[0]),
+									Integer.parseInt(ids[1]), 
+									Integer.parseInt(ids[2]), 
+									alignment);
+						} finally {
+							input.close();
+						}
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				}
 		}
 	}
 	
