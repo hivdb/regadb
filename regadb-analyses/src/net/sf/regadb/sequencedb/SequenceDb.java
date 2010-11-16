@@ -84,7 +84,7 @@ public class SequenceDb {
 			AaSequence aaSeq = aaSeqs.get(proteinString(p));
 			if (aaSeq == null) {
 				for (int i = 0; i < p.getStopPosition() - p.getStartPosition(); i++)
-					alignment.append("---");
+					alignment.append("-");
 			} else {
 				alignment.append(exporter.getAlignmentView(aaSeq));
 				hasSequence = true;
