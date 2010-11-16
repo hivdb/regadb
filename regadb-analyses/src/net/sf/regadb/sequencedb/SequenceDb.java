@@ -34,7 +34,7 @@ public class SequenceDb {
 
 	private int queries = 0;
 	
-	private static ExportAaSequence exporter = new ExportAaSequence(Symbol.Nucleotides, true);
+	private static ExportAaSequence exporter = new ExportAaSequence(Symbol.Nucleotides, true, false);
 	
 	private File path;
 	

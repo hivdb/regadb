@@ -10,13 +10,18 @@ public class ExportAaSequence extends VisualizeAaSequence {
 	
 	private FastaExporter.Symbol symbol;
 	private boolean aligned;
+	private boolean insertions;
 	
-	public ExportAaSequence(FastaExporter.Symbol symbol, boolean aligned) {
+	public ExportAaSequence(FastaExporter.Symbol symbol, boolean aligned, boolean insertions) {
 		this.symbol = symbol;
 		this.aligned = aligned;
+		this.insertions = insertions;
 	}
 
-	public void addNt(char reference, char target, int codonIndex) {
+	public void addNt(char reference, char target, int codonIndex, boolean insertion) {
+		if (!insertions && insertion)
+			return;
+			
 		codon.append(target);
 		if(codon.length()==3) {
 			addAa();

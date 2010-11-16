@@ -155,7 +155,7 @@ public class FastaExporter {
 				entries++;
 			}
 		} else if (mode == Mode.BaseOnProteins) {
-			ExportAaSequence exporter = new ExportAaSequence(symbol, aligned);
+			ExportAaSequence exporter = new ExportAaSequence(symbol, aligned, true);
 			os.write(">" + getFastaId(viralIsolate, datasets) + "\n");
 			for (String protein : proteins) {
 				boolean found = false;
