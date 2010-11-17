@@ -220,7 +220,9 @@ public class SequenceDb {
 	}
 	
 	public static void main(String [] args) {
-		if (args[0] == "--init") {
+		if (args[0].trim().equals("--init")) {
+			RegaDBSettings.createInstance();
+			
 			Session session = HibernateUtil.getSessionFactory().openSession();
 			Transaction t  = new Transaction(null, session);
 			
