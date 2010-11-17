@@ -11,7 +11,6 @@ public class HibernateConfig extends ConfigParser{
 	
 	public HibernateConfig(){
 		super("hibernate");
-		setDefaults();
 	}
 
 	public Element toXml() {

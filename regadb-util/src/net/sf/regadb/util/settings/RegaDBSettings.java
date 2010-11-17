@@ -81,6 +81,9 @@ public class RegaDBSettings {
     }
     
     private void parseConfFile(File confFile) {
+    	for(ConfigParser cp : configs.values())
+    		cp.setDefaults();
+    	
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
         try {

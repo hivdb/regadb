@@ -8,7 +8,6 @@ public abstract class ConfigParser {
 	
 	public ConfigParser(String xmlTag){
 		setXmlTag(xmlTag);
-		setDefaults();
 	}
 	
 	public void setXmlTag(String xmlTag){
