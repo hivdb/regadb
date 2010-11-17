@@ -1,5 +1,8 @@
 package net.sf.regadb.contamination;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +25,7 @@ import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 
 public class ApproximateDistributions {
-	public static void main(String [] args) throws WrongUidException, WrongPasswordException, DisabledUserException {
+	public static void main(String [] args) throws WrongUidException, WrongPasswordException, DisabledUserException, IOException {
 		RegaDBSettings.createInstance();
 		
 		SequenceDb db = new SequenceDb(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
@@ -32,6 +35,9 @@ public class ApproximateDistributions {
 		Query q = t.createQuery("from NtSequence");
 		q.setCacheMode(CacheMode.IGNORE);
 		ScrollableResults r = q.scroll();
+		
+		FileWriter fw = new FileWriter(new File(args[2]));
+		
 		int i = 0;
 		while (r.next()) {
 			NtSequence seq = (NtSequence)r.get(0);
@@ -46,6 +52,9 @@ public class ApproximateDistributions {
 			db.query(seq.getViralIsolate().getGenome(), distances);
 			
 			for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
+				if (e.getKey() == seq.getNtSequenceIi())
+					continue;
+					
 				String type = "O";
 				if (intraPatientSeqs.contains(e.getKey()))
 					type = "I";
@@ -53,14 +62,14 @@ public class ApproximateDistributions {
 				
 				double diff = ((double)f.numberOfDifferences/f.numberOfPositions);
 				if (f.numberOfPositions != 0)
-					System.out.println(type + ";" + diff + "(" + f.numberOfDifferences + "/" + f.numberOfPositions + ")");
+					fw.write(type + ";" + diff + "\n");
 			}
 			
-			i++;
-			if (i > 100) { 
+			if (i % 100 == 0) 
 				t.clearCache();
-				i = 0;
-			}
+			
+			i++;
+			System.err.println("Processed " + i);
 		}
 	}
 }
