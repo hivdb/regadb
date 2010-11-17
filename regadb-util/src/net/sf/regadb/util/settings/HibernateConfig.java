@@ -6,10 +6,11 @@ import java.util.Map;
 import org.jdom.Comment;
 import org.jdom.Element;
 
-public class HibernateConfig implements IConfigParser{
+public class HibernateConfig extends ConfigParser{
 	private Map<String, String> properties = new HashMap<String,String>();
 	
 	public HibernateConfig(){
+		super("hibernate");
 		setDefaults();
 	}
 
@@ -25,10 +26,6 @@ public class HibernateConfig implements IConfigParser{
 			r.addContent(ee);
 		}
 		return r;
-	}
-
-	public String getXmlTag() {
-		return "hibernate";
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {

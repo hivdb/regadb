@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.jdom.Comment;
 import org.jdom.Element;
 
-public class InstituteConfig implements IConfigParser {
+public class InstituteConfig extends ConfigParser {
 	public final static String WTS_URL = "$WTS_URL";
 	
 	private Filter organismFilter = null;
@@ -32,12 +32,8 @@ public class InstituteConfig implements IConfigParser {
 
 	private HashMap<String, FormConfig> forms = new HashMap<String, FormConfig>();
 	
-	public String getXmlTag() {
-		return "institute";
-	}
-	
 	public InstituteConfig(){
-		setDefaults();
+		super("institute");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {

@@ -7,7 +7,7 @@ import net.sf.regadb.util.settings.ProxyConfig.ProxyServer.Type;
 import org.jdom.Comment;
 import org.jdom.Element;
 
-public class ProxyConfig implements IConfigParser {
+public class ProxyConfig extends ConfigParser {
 	public static class ProxyServer{
 		public static enum Type {HTTP,SOCKS};
 		
@@ -51,13 +51,9 @@ public class ProxyConfig implements IConfigParser {
 	private ArrayList<ProxyServer> proxyList = new ArrayList<ProxyServer>();
 	
 	public ProxyConfig(){
-		setDefaults();
+		super("proxies");
 	}
 	
-	public String getXmlTag() {
-		return "proxies";
-	}
-
 	public void parseXml(RegaDBSettings settings, Element e) {
 		for(Object o : e.getChildren()){
 			Element ee = (Element)o;

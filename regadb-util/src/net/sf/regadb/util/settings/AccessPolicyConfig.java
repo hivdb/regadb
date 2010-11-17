@@ -7,18 +7,14 @@ import java.util.Map;
 import org.jdom.Comment;
 import org.jdom.Element;
 
-public class AccessPolicyConfig implements IConfigParser {
+public class AccessPolicyConfig extends ConfigParser {
 	public static enum AccessMode{STANDALONE, INTEGRATED};
 	
 	private Map<String, Role> roles = new HashMap<String, Role>();
 	private AccessMode accessMode;
 	
 	public AccessPolicyConfig(){
-	    setDefaults();
-	}
-	
-	public String getXmlTag() {
-		return "access-policies";
+		super("access-policies");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
