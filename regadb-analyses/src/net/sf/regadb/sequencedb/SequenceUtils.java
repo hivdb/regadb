@@ -3,7 +3,7 @@ package net.sf.regadb.sequencedb;
 public class SequenceUtils {
 	public static class SequenceDistance {
 		public int numberOfDifferences;
-		public int denominator;
+		public int numberOfPositions;
 	}
 	
 	public static SequenceDistance distance(String alignment1, String alignment2) {
@@ -14,7 +14,7 @@ public class SequenceUtils {
 		
 		for (int i = 0; i < alignment1.length(); i++) {
 			if (alignment1.charAt(i) != '-' && alignment2.charAt(i) != '-') {
-				f.denominator++;
+				f.numberOfPositions++;
 				if (alignment1.charAt(i) != alignment2.charAt(i))
 					f.numberOfDifferences++;
 			}
