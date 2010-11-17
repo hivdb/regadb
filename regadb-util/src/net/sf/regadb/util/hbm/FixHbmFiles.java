@@ -50,7 +50,7 @@ public class FixHbmFiles
 	
 	@SuppressWarnings("serial")
 	public static class MultiMap<K, V> extends HashMap<K, ArrayList<V>>{
-		public void put(K key, V value){
+		public void putMulti(K key, V value){
 			ArrayList<V> values = get(key);
 			if(values == null){
 				values = new ArrayList<V>();
@@ -75,13 +75,13 @@ public class FixHbmFiles
         
         FilterDef fd = new FilterDef("attributeFilter");
         fd.addParam("attribute_ii_list", "integer");
-        filterDefs.put("net.sf.regadb.db.Attribute",fd);
+        filterDefs.putMulti("net.sf.regadb.db.Attribute",fd);
         
         FilterInst fi = new FilterInst(fd, "attribute_ii NOT IN (:attribute_ii_list)");
-        filterInsts.put("net.sf.regadb.db.Attribute", fi);
+        filterInsts.putMulti("net.sf.regadb.db.Attribute", fi);
         
         fi = new FilterInst(fd, "attribute_ii IN (:attribute_ii_list)", "patientAttributeValues");
-        filterInsts.put("net.sf.regadb.db.PatientImpl", fi);
+        filterInsts.putMulti("net.sf.regadb.db.PatientImpl", fi);
         
         
         for(Map.Entry<String, Element> a : interpreter.classHbms_.entrySet())
