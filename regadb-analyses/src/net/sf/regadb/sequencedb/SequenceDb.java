@@ -22,12 +22,15 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.tools.exportFasta.ExportAaSequence;
 import net.sf.regadb.tools.exportFasta.FastaExporter.Symbol;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
 
 public class SequenceDb {
 	private ReentrantLock formattingLock = new ReentrantLock();
@@ -213,6 +216,19 @@ public class SequenceDb {
 				}
 		} finally {
 			queryLock.unlock();
+		}
+	}
+	
+	public static void main(String [] args) {
+		if (args[0] == "--init") {
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			Transaction t  = new Transaction(null, session);
+			
+			String path = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath();
+			if (path != null)
+				new SequenceDb(path).init(t);
+			
+			session.close();
 		}
 	}
 }
