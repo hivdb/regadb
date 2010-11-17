@@ -39,6 +39,7 @@ public class ApproximateDistributions {
 		FileWriter fw = new FileWriter(new File(args[2]));
 		
 		int i = 0;
+		long start = System.currentTimeMillis();
 		while (r.next()) {
 			NtSequence seq = (NtSequence)r.get(0);
 			
@@ -65,8 +66,11 @@ public class ApproximateDistributions {
 					fw.write(type + ";" + diff + "\n");
 			}
 			
-			if (i % 100 == 0) 
+			if (i % 100 == 0) {
+				System.err.println("time:" + (System.currentTimeMillis() - start));
+				start = System.currentTimeMillis();
 				t.clearCache();
+			}
 			
 			i++;
 			System.err.println("Processed " + i);
