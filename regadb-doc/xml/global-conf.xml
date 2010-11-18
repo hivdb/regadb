@@ -207,4 +207,12 @@
       <password>pass1</password>
     </proxy>
   </proxies>
+
+  <!--  contamination tool configuration
+  		required if you want to use the tool
+  -->  
+  <contamination>
+  	<!-- cluster factor threshold -->
+  	<threshold>0.5</threshold>
+  </contamination>
 </regadb-settings>
