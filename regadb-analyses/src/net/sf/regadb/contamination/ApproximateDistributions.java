@@ -54,8 +54,9 @@ public class ApproximateDistributions {
 			db.query(seq.getViralIsolate().getGenome(), distances);
 			
 			for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
-				if (e.getKey() == seq.getNtSequenceIi())
+				if (e.getKey().equals(seq.getNtSequenceIi())) {
 					continue;
+				}
 				
 				SequenceDistance f = e.getValue();
 				
