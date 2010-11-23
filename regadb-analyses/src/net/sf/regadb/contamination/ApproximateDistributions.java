@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.regadb.contamination.SequenceDistancesQuery.OutputType;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
@@ -38,36 +39,33 @@ public class ApproximateDistributions {
 		
 		FileWriter fw = new FileWriter(new File(args[2]));
 		
+		OutputType outputType = null;
+		if (args[3].trim().equals("I"))
+			outputType = OutputType.IntraPatient;
+		else if (args[3].trim().equals("O"))
+			outputType = OutputType.ExtraPatient;
+		
 		int i = 0;
 		long start = System.currentTimeMillis();
 		while (r.next()) {
 			NtSequence seq = (NtSequence)r.get(0);
 			
-			Patient p = new Patient(seq.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
-			Set<Integer> intraPatientSeqs = new HashSet<Integer>();
-			for (ViralIsolate vi : p.getViralIsolates()) 
-				for (NtSequence ntseq : vi.getNtSequences()) 
-					intraPatientSeqs.add(ntseq.getNtSequenceIi());
-			
-			SequenceDistancesQuery distances = new SequenceDistancesQuery(seq);
+			SequenceDistancesQuery distances = new SequenceDistancesQuery(seq, outputType);
 			db.query(seq.getViralIsolate().getGenome(), distances);
 			
 			for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
 				if (e.getKey() == seq.getNtSequenceIi())
 					continue;
-					
-				String type = "O";
-				if (intraPatientSeqs.contains(e.getKey()))
-					type = "I";
+				
 				SequenceDistance f = e.getValue();
 				
 				double diff = ((double)f.numberOfDifferences/f.numberOfPositions);
 				if (f.numberOfPositions != 0)
-					fw.write(type + ";" + diff + "\n");
+					fw.write(outputType + ";" + diff + "\n");
 			}
 			
 			if (i % 100 == 0) {
-				System.err.println("time:" + (System.currentTimeMillis() - start));
+				System.err.println("time:" + ((System.currentTimeMillis() - start) / 1000));
 				start = System.currentTimeMillis();
 				t.clearCache();
 			}

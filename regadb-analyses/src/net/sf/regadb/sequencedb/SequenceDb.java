@@ -2,6 +2,7 @@ package net.sf.regadb.sequencedb;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -167,27 +168,22 @@ public class SequenceDb {
 			File dir = getOrfDir(orf);
 			if (dir != null && dir.exists())
 				for (File f : dir.listFiles()) {
-					try {
-						BufferedReader input = new BufferedReader(
-								new FileReader(f));
-						try {
-							String[] ids = input.readLine().substring(1).split(
-									"_");
-							String alignment = input.readLine();
-
-							query.process(orf, 
-									Integer.parseInt(ids[0]),
-									Integer.parseInt(ids[1]), 
-									Integer.parseInt(ids[2]), 
-									alignment);
-						} finally {
-							input.close();
-						}
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+					String[] ids = f.getName().substring(0, f.getName().indexOf('.')).split("_");
+					query.process(orf, 
+							Integer.parseInt(ids[0]),
+							Integer.parseInt(ids[1]), 
+							Integer.parseInt(ids[2]), 
+							f);
 				}
 		}
+	}
+	
+	public static String readAlignment(File f) throws IOException {
+		BufferedReader input = new BufferedReader(new FileReader(f));
+		input.readLine();
+		String alignment = input.readLine();
+		input.close();
+		return alignment;
 	}
 	
 	public void query(Genome genome, SequenceQuery query) {
