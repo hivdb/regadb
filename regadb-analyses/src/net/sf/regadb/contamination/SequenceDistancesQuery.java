@@ -60,7 +60,7 @@ public class SequenceDistancesQuery implements SequenceQuery {
 			}
 
 			try {
-			SequenceDistance result = SequenceUtils.distance(queryAlignment, alignment);
+			SequenceDistance result = SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment));
 			f.numberOfDifferences += result.numberOfDifferences;
 			f.numberOfPositions += result.numberOfPositions;
 			} catch (Exception e) {
