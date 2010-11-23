@@ -61,7 +61,7 @@ public class ApproximateDistributions {
 				
 				double diff = ((double)f.numberOfDifferences/f.numberOfPositions);
 				if (f.numberOfPositions != 0)
-					fw.write(outputType + ";" + diff + "\n");
+					fw.write(diff + "\n");
 			}
 			
 			if (i % 100 == 0) {
