@@ -60,8 +60,10 @@ public class ApproximateDistributions {
 				SequenceDistance f = e.getValue();
 				
 				double diff = ((double)f.numberOfDifferences/f.numberOfPositions);
-				if (f.numberOfPositions != 0)
+				if (f.numberOfPositions != 0){
 					fw.write(diff + "\n");
+					fw.flush();
+				}
 			}
 			
 			if (i % 100 == 0) {
@@ -73,5 +75,7 @@ public class ApproximateDistributions {
 			i++;
 			System.err.println("Processed " + i);
 		}
+		
+		fw.close();
 	}
 }
