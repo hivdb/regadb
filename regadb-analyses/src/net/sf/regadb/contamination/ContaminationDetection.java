@@ -17,7 +17,7 @@ public class ContaminationDetection {
 	static interface DistributionFunction {
 		public double f(double x);
 	}
-	
+
 	static class NormalDistributionFunction implements DistributionFunction {
 		private double double_sigma_square;
 		private double mu;
@@ -25,17 +25,31 @@ public class ContaminationDetection {
 		private double e_prefix;
 		
 		NormalDistributionFunction(double mu, double sigma) {
-			this.double_sigma_square = 2 * Math.pow(sigma, 2);
+			this.double_sigma_square = 2 * sigma * sigma;
 			this.mu = mu;
 			
 			e_prefix = 1 / Math.sqrt(double_sigma_square * Math.PI);
 		}
 		
 		public double f(double x) {
-			double pow = Math.pow(x - mu, 2) / double_sigma_square;
+			double xnorm = x - mu;
+			double pow = xnorm * xnorm / double_sigma_square;
 			return e_prefix * Math.pow(Math.E, -pow);
 		}
 	}
+	
+	static class LogNormalDistributionFunction extends NormalDistributionFunction {
+
+		LogNormalDistributionFunction(double logmu, double logsigma) {
+			super(logmu, logsigma);
+		}
+
+		public double f(double x) {
+			x = Math.max(1E-6, x);
+			return super.f(Math.log(x));
+		}
+	}
+	
 	public static double clusterFactor(NtSequence ntSeq, SequenceDb db) {
 		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq);
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
@@ -46,9 +60,8 @@ public class ContaminationDetection {
 			for (NtSequence ntseq : vi.getNtSequences()) 
 				intraPatientSeqs.add(ntseq.getNtSequenceIi());
 		
-		//TODO intra patient mu/sigma
-		DistributionFunction Fi = new NormalDistributionFunction(0, 0);
-		DistributionFunction Fo = new NormalDistributionFunction(0.08, 0.04);
+		DistributionFunction Fi = new LogNormalDistributionFunction(-3.896448912, 0.747342409);
+		DistributionFunction Fo = new LogNormalDistributionFunction(-2.6001244697, 0.3277675448);
 		
 		double[] Si = new double[intraPatientSeqs.size()];
 		double[] So = new double[distances.getSequenceDistances().size() - intraPatientSeqs.size()];
