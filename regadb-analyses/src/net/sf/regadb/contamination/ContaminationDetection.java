@@ -51,7 +51,8 @@ public class ContaminationDetection {
 	}
 	
 	public static double clusterFactor(NtSequence ntSeq, SequenceDb db) {
-		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq);
+		//TODO outputtype stuff
+		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null);
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
 		
 		Patient p = new Patient(ntSeq.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
