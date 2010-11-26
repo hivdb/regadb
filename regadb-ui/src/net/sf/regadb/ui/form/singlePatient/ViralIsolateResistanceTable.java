@@ -17,6 +17,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig.Algorithm;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
@@ -124,8 +125,11 @@ public class ViralIsolateResistanceTable extends WTable {
     		return t.getTests();
     	} else {
     		List<Test> tests = new ArrayList<Test>();
-    		for (String a : config.getAlgorithms())
-    			tests.add(t.getTest(a, gssTT.getDescription(), gssTT.getGenome().getOrganismName()));
+    		for (Algorithm a : config.getAlgorithms()) {
+    			Test test = t.getTest(a.getName(), gssTT.getDescription(), gssTT.getGenome().getOrganismName());
+    			if (test != null && a.getOrganism().equals(gssTT.getGenome().getOrganismName()))
+    				tests.add(test);
+    		}
     		return tests;
     	}
     }

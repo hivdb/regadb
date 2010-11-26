@@ -35,6 +35,7 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig.Algorithm;
 import eu.webtoolkit.jwt.WString;
 
 public class GenerateReport 
@@ -135,10 +136,12 @@ public class GenerateReport
     	String rtfString = rtfBuffer_.toString();
     	if(vifc != null && vifc.getAlgorithms() != null){
     		int ai = 1;
-    		for(String alg : vifc.getAlgorithms()){
-    			rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg +"\\)");
-    			rtfString = rtfString.replaceAll("\\$ASI_ALGORITHM\\(\\$"+ ai +"\\)", alg);
-    			++ai;
+    		for(Algorithm alg : vifc.getAlgorithms()){
+    			if (vi.getGenome().getOrganismName().equals(alg.getOrganism())) {
+    				rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg +"\\)");
+    				rtfString = rtfString.replaceAll("\\$ASI_ALGORITHM\\(\\$"+ ai +"\\)", alg.getName());
+    				++ai;
+    			}
     		}
     	}
     	rtfBuffer_.replace(0, rtfBuffer_.length(), rtfString);
