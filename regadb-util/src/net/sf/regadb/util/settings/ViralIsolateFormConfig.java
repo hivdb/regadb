@@ -82,11 +82,37 @@ public class ViralIsolateFormConfig extends FormConfig {
 			this.gssCutoff = gssCutoff;
 		}
 	}
+	
+	public static class Algorithm {
+		private String name;
+		private String organism;
+		
+		public Algorithm(String name, String organism) {
+			this.name = name;
+			this.organism = organism;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		public String getOrganism() {
+			return organism;
+		}
+		
+		public void setOrganism(String organism) {
+			this.organism = organism;
+		}
+	}
 
     public static final String NAME = "form.viralIsolate";
     
     private List<TestItem> tests = new ArrayList<TestItem>();
-    private List<String> algorithms;
+    private List<Algorithm> algorithms;
     private List<ScoreInfo> gss = new ArrayList<ScoreInfo>();
     
 	public ViralIsolateFormConfig() {
@@ -111,10 +137,13 @@ public class ViralIsolateFormConfig extends FormConfig {
         if (ee != null) {
 	        Element eee = ee.getChild("algorithms");
 	        if (eee != null) {
-	        	algorithms = new ArrayList<String>();
+	        	algorithms = new ArrayList<Algorithm>();
 		        for (Object o : eee.getChildren()) {
 		        	String algorithm = ((Element)o).getAttributeValue("name");
-		        	algorithms.add(algorithm);
+		        	String organism = ((Element)o).getAttributeValue("organism");
+		        	if (algorithm == null || organism == null)
+		        		throw new RuntimeException("Error: incorrect algorithm configuration with algorithm '" + algorithm + "' and organism '" + organism + "'");
+		        	algorithms.add(new Algorithm(algorithm, organism));
 		        }
 	        }
 	        
@@ -185,7 +214,7 @@ public class ViralIsolateFormConfig extends FormConfig {
 		return tests;
 	}
 	
-	public List<String> getAlgorithms() {
+	public List<Algorithm> getAlgorithms() {
 		return algorithms;
 	}
 	
