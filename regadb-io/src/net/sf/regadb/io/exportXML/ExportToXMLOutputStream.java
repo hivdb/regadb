@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.Collection;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.export.ExportPatient;
 
@@ -31,7 +32,7 @@ public abstract class ExportToXMLOutputStream<T> implements ExportPatient<T> {
 		this.rootElementName = rootElementName;
 	}
 	
-	public void start(){
+	public void start(Transaction t){
 		this.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		this.out.println('<'+ getRootElementName() +'>');		
 	}
@@ -44,11 +45,10 @@ public abstract class ExportToXMLOutputStream<T> implements ExportPatient<T> {
 	    this.rootElementName = rootElementName;
 	}
 	
-	public void stop(){
+	public void stop(Transaction t){
 		this.out.println("</"+ getRootElementName() +">");
 	}
 	
-	public abstract void exportPatient(Patient p);
 	public abstract Element toXML(T t);
 	
 	protected ExportToXML getExportToXml(){
@@ -77,7 +77,7 @@ public abstract class ExportToXMLOutputStream<T> implements ExportPatient<T> {
 	    }
 
         @Override
-        public void exportPatient(Patient p) {
+        public void exportPatient(Transaction t, Patient p) {
             try {
                 write(p);
             } catch (IOException e) {
@@ -120,7 +120,7 @@ public abstract class ExportToXMLOutputStream<T> implements ExportPatient<T> {
         }
 
         @Override
-        public void exportPatient(Patient p) {
+        public void exportPatient(Transaction t, Patient p) {
             try {
                 write(p.getViralIsolates());
             } catch (IOException e) {

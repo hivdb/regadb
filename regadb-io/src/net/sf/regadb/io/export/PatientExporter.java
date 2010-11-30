@@ -35,7 +35,7 @@ public class PatientExporter<T> {
         long n = t.getPatientCount(hfc);
         int maxResults = 100;
         
-        getOut().start();
+        getOut().start(t);
         for(int i=0; i < n; i+=maxResults){
             t.commit();
             t.clearCache();
@@ -43,9 +43,11 @@ public class PatientExporter<T> {
 
             Collection<Patient> patients = t.getPatients(t.getDataset(getDataset()),i,maxResults);
             for(Patient p : patients)
-                getOut().exportPatient(p);
+                getOut().exportPatient(t, p);
         }
-        getOut().stop();
+        getOut().stop(t);
+        
+        t.commit();
     }
 
     protected void setLogin(Login login) {
@@ -97,10 +99,10 @@ public class PatientExporter<T> {
         FileOutputStream fout = new FileOutputStream(new File(output.getValue()));
         PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout){
         	@Override
-        	public void exportPatient(Patient p){
+        	public void exportPatient(Transaction t, Patient p){
         		if(ids.contains(p.getPatientId())){
         			System.err.println("exporting: "+ p.getPatientId());
-        			super.exportPatient(p);
+        			super.exportPatient(t, p);
         		}
         	}
         };
