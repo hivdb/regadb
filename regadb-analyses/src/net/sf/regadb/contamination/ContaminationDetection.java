@@ -11,8 +11,6 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
 
-//TODO check whether it is OK to do this on the sequences
-//TODO which distribution for Fi
 public class ContaminationDetection {
 	static interface DistributionFunction {
 		public double f(double x);
@@ -51,7 +49,6 @@ public class ContaminationDetection {
 	}
 	
 	public static double clusterFactor(NtSequence ntSeq, SequenceDb db) {
-		//TODO outputtype stuff
 		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null);
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
 		
