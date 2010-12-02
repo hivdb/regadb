@@ -198,9 +198,13 @@ public class ViralIsolateForm extends FormWidget
         
         for(TestResult tr : viralIsolate_.getTestResults())
         	p.getTestResults().remove(tr);
-        for(NtSequence nt : viralIsolate_.getNtSequences())
+        for(NtSequence nt : viralIsolate_.getNtSequences()) {
         	for(TestResult tr : nt.getTestResults())
         		p.getTestResults().remove(tr);
+        	
+        	if (RegaDBMain.getApp().getSequenceDb() != null) 
+        		RegaDBMain.getApp().getSequenceDb().sequenceDeleted(nt);
+        }
         
         p.getViralIsolates().remove(viralIsolate_);
         

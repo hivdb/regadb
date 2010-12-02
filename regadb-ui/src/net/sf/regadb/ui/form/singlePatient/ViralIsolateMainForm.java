@@ -361,7 +361,11 @@ public class ViralIsolateMainForm extends WContainerWidget
             	RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
 
             t.delete(ntseq);
+                        
             viralIsolateForm_.getViralIsolate().getNtSequences().remove(ntseq);
+            
+            if (RegaDBMain.getApp().getSequenceDb() != null)
+            	RegaDBMain.getApp().getSequenceDb().sequenceDeleted(ntseq);
         }
         
         NtSequence ntseqref;
