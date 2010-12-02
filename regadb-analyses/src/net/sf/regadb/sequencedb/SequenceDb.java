@@ -2,7 +2,6 @@ package net.sf.regadb.sequencedb;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +22,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.tools.exportFasta.ExportAaSequence;
 import net.sf.regadb.tools.exportFasta.FastaExporter.Symbol;
@@ -123,11 +123,11 @@ public class SequenceDb {
 			if (alignment != null) {
 				File dir = getOrfDir(orf);
 				dir.mkdirs();
-				File f = new File(dir.getAbsolutePath() + File.separatorChar + id + ".fasta");
+				File f = new File(dir.getAbsolutePath() + File.separatorChar + sequence.getNtSequenceIi() + ".fasta");
 				FileWriter fw = null;
 				try {
 					try {
-						fw = new FileWriter(f);
+						fw = new FileWriter(f, false);
 						fw.append(">");
 						fw.append(id);
 						fw.append('\n');
@@ -142,7 +142,7 @@ public class SequenceDb {
 		}
 	}
 	
-	public void sequenceAligned(NtSequence sequence, boolean newSequence) {
+	public void sequenceAligned(NtSequence sequence) {
 		if (path == null)
 			return;
 		
@@ -154,6 +154,19 @@ public class SequenceDb {
 			exportAlignment(sequence);
 		} finally {
 			formattingLock.unlock();
+		}
+	}
+	
+	public void sequenceDeleted(NtSequence ntSeq) {
+		if (path == null)
+			return;
+
+		for (File organism : path.listFiles()) {
+			for (File orf : organism.listFiles()) {
+				File f = new File(orf.getAbsolutePath() + File.separatorChar + ntSeq.getNtSequenceIi() + ".fasta");
+				if (f.exists())
+					f.delete();
+			}
 		}
 	}
 	
