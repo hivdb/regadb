@@ -6,8 +6,10 @@ import java.util.List;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.ui.form.importTool.imp.ImportData;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
+import net.sf.regadb.ui.framework.RegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
@@ -15,7 +17,6 @@ import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.Signal1;
-import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WLength;
@@ -111,7 +112,7 @@ public class StartImportForm extends WDialog {
 				closeButton.setEnabled(false);
 				startImport.setEnabled(false);
 				
-				final WApplication app = RegaDBMain.getApp();
+				final RegaDBApplication app = RegaDBMain.getApp();
 				
 				Thread t = new Thread(new Runnable(){
 					public void run() {
@@ -121,14 +122,16 @@ public class StartImportForm extends WDialog {
 						try {
 							final Transaction tr = workerLogin.getTransaction(true);
 	
+							SequenceDb sequenceDb = app.getSequenceDb(); 
+							
 							ImportData importData = 
 								new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
 										new File(xlsFile.getFileUpload().getSpoolFileName()),
 										new File(fastaFile.getFileUpload().getSpoolFileName()),
 										dataset.currentValue());
-							List<WString> errors = importData.doImport(tr, true);
+							List<WString> errors = importData.doImport(tr, sequenceDb, true);
 							if (errors.size() == 0) {
-								importData.doImport(tr, false);
+								importData.doImport(tr, sequenceDb, false);
 							}
 							
 							StartImportForm.this.errors = errors;

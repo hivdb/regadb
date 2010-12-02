@@ -193,6 +193,10 @@ public class RegaDBApplication extends WApplication
 		quit();
 		throw new RuntimeException("Unrecoverable error", e);
 	}
+	  
+	public SequenceDb getSequenceDb() {
+		return sequenceDb;
+	}
 	
 	@Override
 	protected void finalize() throws Throwable{
