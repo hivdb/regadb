@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -48,6 +49,8 @@ import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
+import org.hibernate.Query;
+
 public class FullCsvExport implements ExportPatient {
 	private Map<String, String> resistanceResults = new HashMap<String, String>();
 	
@@ -67,6 +70,9 @@ public class FullCsvExport implements ExportPatient {
 	private File zipFile;
 	
 	boolean exportMutations;
+	
+	private ArrayList<String> proteins;
+	private ArrayList<Integer> proteinIis;
 	
 	public FullCsvExport(long maxNumberSeqs, List<Attribute> attributes, List<String> resistanceTestDrugs, File zipFile, boolean exportMutations) throws IOException {
 		File patientFile = File.createTempFile("patients", "csv");
@@ -140,8 +146,12 @@ public class FullCsvExport implements ExportPatient {
 			formatField(header, "sequence_"+(i+1));
 		}
 		
-		formatField(header, "mutations");
-		formatField(header, "evolution", false);
+		for(String protein : proteins)
+			formatField(header, protein);
+
+		int i=proteins.size();
+		for(String protein : proteins)
+			formatField(header, "evolution "+ protein, --i > 0);
 		
 		fw.append(header.toString());
 	}
@@ -164,27 +174,27 @@ public class FullCsvExport implements ExportPatient {
 		}
 		
 		if(exportMutations){
-			TreeSet<AaSequence> aaseqs = getSortedAaSequences(vi);
+			Map<Integer,AaSequence> aaseqs = getProteinAaSequenceMap(vi);
+			
+			for(Integer proteinIi : proteinIis){
+				AaSequence aaseq = aaseqs.get(proteinIi);
+				formatField(row, aaseq == null ? "" : MutationHelper.getNonSynonymousMutations(aaseq));
+			}
 			
 			StringBuilder sb = new StringBuilder();
-			for(AaSequence aaseq : aaseqs){
-				sb.append(aaseq.getProtein().getAbbreviation() +"("
-						+ MutationHelper.getNonSynonymousMutations(aaseq) +") ");
-			}
-			formatField(row, sb.toString());
-			
-			sb = new StringBuilder();
 			if(prev != null){
-				TreeSet<AaSequence> prevaaseqs = getSortedAaSequences(prev);
+				Map<Integer, AaSequence> prevaaseqs = getProteinAaSequenceMap(prev);
 				
-				for(AaSequence prevaaseq : prevaaseqs){
-					for(AaSequence aaseq : aaseqs){
+				for(Integer proteinIi : proteinIis){
+					AaSequence prevaaseq = prevaaseqs.get(proteinIi);
+					AaSequence aaseq = aaseqs.get(proteinIi);
+					
+					if(prevaaseq != null && aaseq != null){
 						String diff = MutationHelper.getAaMutationDifferenceList(prevaaseq, aaseq);
-						if(diff != null){
-							sb.append(aaseq.getProtein().getAbbreviation() +"("+ diff +") ");
-							continue;
-						}
+						formatField(row, diff == null ? "" : diff);
 					}
+					else
+						formatField(row, "");
 				}
 			}
 			formatField(row,sb.toString(),false);
@@ -209,11 +219,11 @@ public class FullCsvExport implements ExportPatient {
 		}
 	};
 
-	private static TreeSet<AaSequence> getSortedAaSequences(ViralIsolate vi){
-		TreeSet<AaSequence> aaseqs = new TreeSet<AaSequence>(aaSequenceComparator);
+	private static Map<Integer,AaSequence> getProteinAaSequenceMap(ViralIsolate vi){
+		Map<Integer,AaSequence> aaseqs = new TreeMap<Integer,AaSequence>();
 		for(NtSequence ntseq : vi.getNtSequences())
 			for(AaSequence aaseq : ntseq.getAaSequences())
-				aaseqs.add(aaseq);
+				aaseqs.put(aaseq.getProtein().getProteinIi(), aaseq);
 		return aaseqs;
 	}
 	
@@ -428,8 +438,22 @@ public class FullCsvExport implements ExportPatient {
 		}
 	}
 
-	public void start() {
+	public void start(Transaction t) {
 		try {
+			Query q = t.createQuery("select g.organismName, p.abbreviation, p.proteinIi " +
+					"from AaSequence aa join aa.protein p join p.openReadingFrame orf join orf.genome g " +
+					"group by g.organismName, p.abbreviation, p.proteinIi order by g.organismName, p.abbreviation");
+			List<Object[]> l = q.list();
+			
+			proteins = new ArrayList<String>();
+			proteinIis = new ArrayList<Integer>();
+			
+			for(Object[] o : l){
+				proteins.add(o[0] +" "+ o[1]);
+				proteinIis.add((Integer)o[2]);
+			}
+			
+			
 			patientHeader(patientFileWriter, attributes);
 			eventHeader(eventFileWriter);
 			testHeader(testFileWriter);
@@ -441,7 +465,7 @@ public class FullCsvExport implements ExportPatient {
 		}
 	}
 
-	public void stop() {
+	public void stop(Transaction t) {
 		try {
 			patientFileWriter.close();
 			eventFileWriter.close();

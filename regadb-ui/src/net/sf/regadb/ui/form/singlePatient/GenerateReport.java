@@ -107,6 +107,7 @@ public class GenerateReport
         replace("$PATIENT_ID", patient.getPatientId());
         replace("$PATIENT_CLINICAL_FILE_NR", getPatientAttributeValue(patient,StandardObjects.getClinicalFileNumberAttribute().getName()));
         replace("$SAMPLE_ID", vi.getSampleId());
+        replace("$REFERENCE_SEQUENCE", vi.getGenome() == null ? "" : vi.getGenome().getOrganismDescription());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate()));
         
