@@ -68,6 +68,8 @@ public class ContaminationDetection {
 		int Si_index = 0;
 		int So_index = 0;
 		for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
+			if (e.getValue().numberOfPositions == 0)
+				throw new RuntimeException("This distance should not be incorporated since the number of positions == 0");
 			
 			double d = (double)e.getValue().numberOfDifferences / e.getValue().numberOfPositions;
 			if (intraPatientSeqs.contains(e.getKey())) {
