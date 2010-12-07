@@ -215,4 +215,19 @@
   	<!-- cluster factor threshold -->
   	<threshold>0.5</threshold>
   </contamination>
+  
+  <!-- a list of cron jobs to be run at specified times/intervals
+       this element is optional
+  -->  
+  <cron>
+    <!-- a cron job
+         expression: define time/interval in the cron format
+         class: java class to be run, has to implement org.quartz.Job interface
+     -->
+    <job name="ghb-lis" expression="0 0 0 ? * sat" class="net.sf.regadb.system.cron.jobs.TestJob">
+      <!-- list of parameters -->
+      <param name="foo" value="bar"/>
+      <param name="hello" value="world"/>
+    </job>
+  </cron>
 </regadb-settings>
