@@ -45,6 +45,9 @@ public class SequenceDistancesQuery implements SequenceQuery {
 	}
 	
 	public void process(OpenReadingFrame orf, int patientId, int isolateId, int sequenceId, File alignment) {
+		if (sequenceId == query.getNtSequenceIi())
+			return;
+			
 		if (outputType == OutputType.IntraPatient && patientId != queryPatient.getPatientIi())
 			return;
 		else if (outputType == OutputType.ExtraPatient && patientId == queryPatient.getPatientIi())
