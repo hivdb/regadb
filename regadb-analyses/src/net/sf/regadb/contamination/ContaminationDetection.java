@@ -70,7 +70,7 @@ public class ContaminationDetection {
 		for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
 			double d = (double)e.getValue().numberOfDifferences / e.getValue().numberOfPositions;
 			
-			if (intraPatientSeqs.contains(ntSeq.getNtSequenceIi())) {
+			if (intraPatientSeqs.contains(e.getKey())) {
 				Si[Si_index] = d;
 				Si_index++;
 			} else {
