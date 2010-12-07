@@ -34,6 +34,8 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 
 public class SequenceDb {
+	private static Map<String, SequenceDb> instances = new HashMap<String, SequenceDb>(); 
+	
 	private ReentrantLock formattingLock = new ReentrantLock();
 	private ReentrantLock queryLock = new ReentrantLock();
 	private Condition queriesFinishedCondition  = queryLock.newCondition();
@@ -44,8 +46,17 @@ public class SequenceDb {
 	
 	private File path;
 	
-	public SequenceDb(String path) {
+	private SequenceDb(String path) {
 		this.path = new File(path);
+	}
+	
+	public static SequenceDb getInstance(String path) {
+		SequenceDb db = instances.get(path);
+		if (db == null) {
+			db = new SequenceDb(path);
+			instances.put(path, db);
+		}
+		return db;
 	}
 	
 	public void init(Transaction t) {

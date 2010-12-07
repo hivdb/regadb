@@ -41,15 +41,9 @@ public class RegaDBApplication extends WApplication
 	
 	private ServletContext servletContext_;
 	
-	private SequenceDb sequenceDb;
-	
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
-
-		String path = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath();
-		if (path != null)
-			sequenceDb = new SequenceDb(path);
 		
 		System.err.println("new regadb app");
 		servletContext_ = servletContext;
@@ -195,7 +189,7 @@ public class RegaDBApplication extends WApplication
 	}
 	  
 	public SequenceDb getSequenceDb() {
-		return sequenceDb;
+		return SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 	}
 	
 	@Override
