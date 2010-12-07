@@ -55,8 +55,9 @@ public class ContaminationDetection {
 		Patient p = new Patient(ntSeq.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
 		Set<Integer> intraPatientSeqs = new HashSet<Integer>();
 		for (ViralIsolate vi : p.getViralIsolates()) 
-			for (NtSequence ntseq : vi.getNtSequences()) 
-				intraPatientSeqs.add(ntseq.getNtSequenceIi());
+			for (NtSequence nt : vi.getNtSequences()) 
+				if (nt.getNtSequenceIi() != ntSeq.getNtSequenceIi())
+					intraPatientSeqs.add(nt.getNtSequenceIi());
 		
 		DistributionFunction Fi = new LogNormalDistributionFunction(-3.896448912, 0.747342409);
 		DistributionFunction Fo = new LogNormalDistributionFunction(-2.6001244697, 0.3277675448);
@@ -67,9 +68,6 @@ public class ContaminationDetection {
 		int Si_index = 0;
 		int So_index = 0;
 		for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
-			if (e.getKey() == ntSeq.getNtSequenceIi())
-				continue;
-			
 			double d = (double)e.getValue().numberOfDifferences / e.getValue().numberOfPositions;
 			
 			if (intraPatientSeqs.contains(ntSeq.getNtSequenceIi())) {
