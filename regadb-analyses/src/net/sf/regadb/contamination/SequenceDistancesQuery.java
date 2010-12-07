@@ -57,15 +57,18 @@ public class SequenceDistancesQuery implements SequenceQuery {
 
 		String queryAlignment = alignments.get(orf.getName());
 		if (queryAlignment != null) {
-			if (f == null) {
-				f = new SequenceDistance();
-				sequenceDistances.put(sequenceId, f);
-			}
-
 			try {
-			SequenceDistance result = SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment));
-			f.numberOfDifferences += result.numberOfDifferences;
-			f.numberOfPositions += result.numberOfPositions;
+				SequenceDistance result = SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment));
+			
+				if (result.numberOfPositions != 0) {
+					if (f == null) {
+						f = new SequenceDistance();
+						sequenceDistances.put(sequenceId, f);
+					}
+					
+					f.numberOfDifferences += result.numberOfDifferences;
+					f.numberOfPositions += result.numberOfPositions;
+				}
 			} catch (Exception e) {
 				//System.err.println("woeps:" + patientId);
 			}
