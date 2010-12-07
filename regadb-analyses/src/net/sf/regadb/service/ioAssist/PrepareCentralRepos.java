@@ -115,6 +115,9 @@ public class PrepareCentralRepos
         export.writeTopTest(StandardObjects.getGenericHAVIgGTest(), tests);
         export.writeTopTest(StandardObjects.getGenericHAVIgMTest(), tests);
         
+        export.writeTopTest(StandardObjects.getContaminationTest(), tests);
+        export.writeTopTest(StandardObjects.getContaminationClusterFactorTest(), tests);
+        
         //Resistance tests
         Test resTest;
         resTest = createResistanceTest("ANRS-HIV1-2009.07.xml", "ANRS 2009.07", StandardObjects.getHiv1Genome());
