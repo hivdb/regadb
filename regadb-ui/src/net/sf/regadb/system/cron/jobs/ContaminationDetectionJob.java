@@ -1,5 +1,6 @@
 package net.sf.regadb.system.cron.jobs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.contamination.ContaminationDetection;
@@ -27,27 +28,34 @@ public class ContaminationDetectionJob implements Job {
 		Transaction t  = new Transaction(null, session);
 		Test ccfTest = t.getTest(StandardObjects.getContaminationClusterFactorTest().getDescription());
 		
-		Query q = t.createQuery("from NtSequence ntseq where ntseq.id not in " +
+		Query q = t.createQuery("select id from NtSequence ntseq where ntseq.id not in " +
 			"(select tr.ntSequence.id from TestResult tr where tr.test = :test)");
 		q.setParameter("test", ccfTest);
 		
-		List<NtSequence> sequences = q.list();
-		
+		List<Integer> sequenceIds = q.list();
+
+		t.commit();
+		t  = new Transaction(null, session);
 		SequenceDb seqDb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
-		for (int i = 0; i < sequences.size(); i++) {
-			NtSequence ntSeq = sequences.get(i);
+		for (int i = 0; i < sequenceIds.size(); i++) {
+			NtSequence ntSeq = t.getSequence(sequenceIds.get(i));
+			System.err.println("sample id:" + ntSeq.getViralIsolate().getSampleId());
 			double cf = ContaminationDetection.clusterFactor(ntSeq, seqDb);
 			System.err.println("cf:" + cf);
-			/*TestResult tr = new TestResult();
+			TestResult tr = new TestResult();
 			tr.setNtSequence(ntSeq);
 			ntSeq.getTestResults().add(tr);
 			tr.setTest(ccfTest);
 			tr.setValue(cf+"");
 			
-			if (i % 50 == 0) {
-				t.commit();   
-	            t.clearCache();
-			} */
+			t.save(tr);
+			
+            if (i % 50 == 0) {
+            	t.commit();
+            	t.clearCache();
+            	t.flush();
+            	t = new Transaction(null, session);
+            }
 		}
 		t.commit();
 	}
@@ -57,7 +65,6 @@ public class ContaminationDetectionJob implements Job {
 		try {
 			j.execute(null);
 		} catch (JobExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
