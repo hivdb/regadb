@@ -56,7 +56,8 @@ public class ContaminationDetection {
 		Set<Integer> intraPatientSeqs = new HashSet<Integer>();
 		for (ViralIsolate vi : p.getViralIsolates()) 
 			for (NtSequence nt : vi.getNtSequences()) 
-				if (nt.getNtSequenceIi() != ntSeq.getNtSequenceIi())
+				if (nt.getNtSequenceIi() != ntSeq.getNtSequenceIi() && 
+						distances.getSequenceDistances().containsKey(nt.getNtSequenceIi()))
 					intraPatientSeqs.add(nt.getNtSequenceIi());
 		
 		DistributionFunction Fi = new LogNormalDistributionFunction(-3.896448912, 0.747342409);
