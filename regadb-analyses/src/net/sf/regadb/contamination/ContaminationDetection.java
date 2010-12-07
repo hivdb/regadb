@@ -81,6 +81,13 @@ public class ContaminationDetection {
 			}
 		}
 		
+		System.err.println("Si"+Si.length);
+		System.err.println("So"+So.length);
+		System.err.print("average(Si, Fi)="+average(Si, Fi));
+		System.err.print(" average(So, Fo))="+average(So, Fo));
+		System.err.print(" average(So, Fi)="+average(So, Fi));
+		System.err.print(" average(Si, Fo)="+average(Si, Fo)+"\n");
+		
 		return (average(Si, Fi) + average(So, Fo)) - (average(So, Fi) + average(Si, Fo));
 	}
 	
