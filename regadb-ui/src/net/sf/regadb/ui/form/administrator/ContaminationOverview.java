@@ -52,7 +52,7 @@ public class ContaminationOverview extends FormWidget {
 			addWidget(button);
 			
 			table = new WTable(this);
-			table.setStyleClass("datatable");
+			table.setStyleClass("datatable contamination");
 			addWidget(table);
 			
 			fill(RegaDBSettings.getInstance().getContaminationConfig().getThreshold());
