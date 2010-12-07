@@ -68,8 +68,8 @@ public class ContaminationDetection {
 		int Si_index = 0;
 		int So_index = 0;
 		for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
-			double d = (double)e.getValue().numberOfDifferences / e.getValue().numberOfPositions;
 			
+			double d = (double)e.getValue().numberOfDifferences / e.getValue().numberOfPositions;
 			if (intraPatientSeqs.contains(e.getKey())) {
 				Si[Si_index] = d;
 				Si_index++;
@@ -79,14 +79,18 @@ public class ContaminationDetection {
 			}
 		}
 		
-		return (sum(Si, Fi) + sum(So, Fo)) - (sum(So, Fi) + sum(Si, Fo));
+		return (average(Si, Fi) + average(So, Fo)) - (average(So, Fi) + average(Si, Fo));
 	}
 	
-	private static double sum(double [] distances, DistributionFunction df) {
+	private static double average(double [] distances, DistributionFunction df) {
 		double sum = 0.0;
 		for (double d : distances) {
 			sum += Math.log(df.f(d));
 		}
-		return sum;
+		
+		if (distances.length > 0)
+			return sum / distances.length;
+		else
+			return 0.0;
 	}
 }
