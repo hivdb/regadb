@@ -671,3 +671,20 @@ table.form-custom-grid > tbody > tr > td {
 	margin-top: -6px;
 	padding-left: 1.5em;
 }
+
+table.contamination .header{
+	cursor: auto;
+	border-bottom:1px solid #bbb;
+}
+
+table.contamination {
+	cursor: pointer;
+}
+
+table.contamination td{
+	border-left:1px solid #bbb;
+}
+
+table.contamination span{
+	display: block;
+}
