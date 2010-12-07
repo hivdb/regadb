@@ -2,6 +2,7 @@ package net.sf.regadb.sequencedb;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -192,7 +193,25 @@ public class SequenceDb {
 			File dir = getOrfDir(orf);
 			if (dir != null && dir.exists())
 				for (File f : dir.listFiles()) {
-					String[] ids = f.getName().substring(0, f.getName().indexOf('.')).split("_");
+					String[] ids = null;
+					BufferedReader reader = null;
+					
+					try {
+						reader = new BufferedReader(new FileReader(f));
+						ids = reader.readLine().substring(1).split("_");
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						if (reader != null)
+							try {
+								reader.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+					}
+					
 					query.process(orf, 
 							Integer.parseInt(ids[0]),
 							Integer.parseInt(ids[1]), 
