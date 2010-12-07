@@ -2,10 +2,8 @@ package net.sf.regadb.ui.form.administrator;
 
 import java.util.List;
 
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -20,14 +18,13 @@ import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WValidator;
 
 public class ContaminationOverview extends FormWidget {
 	
 	private WLineEdit threshold;
 	private WPushButton button;
-	private WTable table;
+	private ContaminationTable table;
 
 	public ContaminationOverview() {
 		super(WString.tr("form.contamination"), InteractionState.Viewing);
@@ -35,6 +32,13 @@ public class ContaminationOverview extends FormWidget {
 		if(RegaDBSettings.getInstance().getContaminationConfig().isConfigured()){
 			addWidget(new WLabel(WString.tr("form.contamination.threshold")));
 			
+			Signal.Listener listener = new Signal.Listener() {
+	            public void trigger() {
+	            	if(threshold.validate() == WValidator.State.Valid)
+	            		fill(Double.parseDouble(threshold.getText()));
+	            }
+	        };
+	        
 			threshold = new WLineEdit();
 			//TODO lower and upper limit for threshold?
 			threshold.setValidator(new WDoubleValidator());
@@ -42,17 +46,14 @@ public class ContaminationOverview extends FormWidget {
 			threshold.setText(""+ RegaDBSettings.getInstance().getContaminationConfig().getThreshold());
 			addWidget(threshold);
 			
+			threshold.enterPressed().addListener(this, listener);
+			
 			button = new WPushButton(WString.tr("form.contamination.submit"));
-			button.clicked().addListener(this, new Signal.Listener() {
-	            public void trigger() {
-	            	if(threshold.validate() == WValidator.State.Valid)
-	            		fill(Double.parseDouble(threshold.getText()));
-	            }
-	        });
+			
+			button.clicked().addListener(this, listener);
 			addWidget(button);
 			
-			table = new WTable(this);
-			table.setStyleClass("datatable contamination");
+			table = new ContaminationTable(this);
 			addWidget(table);
 			
 			fill(RegaDBSettings.getInstance().getContaminationConfig().getThreshold());
@@ -64,6 +65,9 @@ public class ContaminationOverview extends FormWidget {
 	
 	@SuppressWarnings("unchecked")
 	private void fill(double threshold){
+		table.clear();
+		table.addHeader();
+		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		Test test = t.getTest(StandardObjects.getContaminationClusterFactorTest().getDescription());
 		
@@ -79,77 +83,13 @@ public class ContaminationOverview extends FormWidget {
 			q.setDouble("threshold", threshold);
 			
 			List<Object[]> l = q.list();
-			
-			table.clear();
-			table.getElementAt(0,0).addWidget(new WLabel(WString.tr("form.contamination.patientId")));
-			table.getElementAt(0,1).addWidget(new WLabel(WString.tr("form.contamination.sampleId")));
-			table.getElementAt(0,2).addWidget(new WLabel(WString.tr("form.contamination.label")));
-			table.getElementAt(0,3).addWidget(new WLabel(WString.tr("form.contamination.clusterFactor")));
-			
-			table.getRowAt(0).setStyleClass("header");
-			
-			int n = 1;
-			
-			for(Object[] o : l){
-				String patientId = (String)o[0];
-				String sampleId = (String)o[1];
-				String label = (String)o[2];
-				String value = (String)o[3];
-				final Integer patientIi = (Integer)o[4];
-				final Integer viralIsolateIi = (Integer)o[5];
-				
-				WLabel lblPatient = new WLabel(patientId);
-				lblPatient.clicked().addListener(this, new Signal.Listener() {
-		            public void trigger() {
-		            	gotoPatient(patientIi);
-		            }
-		        });
-				
-				Signal.Listener toViralIsolate = new Signal.Listener(){
-					public void trigger(){
-						gotoViralIsolate(patientIi, viralIsolateIi);
-					}
-				};
-				
-				WLabel lblSample = new WLabel(sampleId);
-				lblSample.clicked().addListener(this, toViralIsolate);
-				
-				WLabel lblLabel = new WLabel(label);
-				lblLabel.clicked().addListener(this, toViralIsolate);
-				
-				WLabel lblValue = new WLabel(value);
-				lblValue.clicked().addListener(this, toViralIsolate);
-				
-				table.getElementAt(n,0).addWidget(lblPatient);
-				table.getElementAt(n,1).addWidget(lblSample);
-				table.getElementAt(n,2).addWidget(lblLabel);
-				table.getElementAt(n,3).addWidget(lblValue);
-				++n;
-			}
+			for(Object[] o : l)
+				table.add((Integer)o[4], (String)o[0], (Integer)o[5], (String)o[1], (String)o[2], (String)o[3]);
 		}
 		
 		t.commit();
 	}
 	
-	public void gotoPatient(int patientIi){
-		Transaction t = RegaDBMain.getApp().createTransaction();
-		Patient p = t.getPatient(patientIi);
-		t.commit();
-		
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViewActionItem().prograSelectNode();
-	}
-	
-	public void gotoViralIsolate(int patientIi, int viralIsolateIi){
-		Transaction t = RegaDBMain.getApp().createTransaction();
-		Patient p = t.getPatient(patientIi);
-		ViralIsolate v = t.getViralIsolate(viralIsolateIi);
-		t.commit();
-		
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(v);
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().getViewActionItem().prograSelectNode();
-	}
 
 	@Override
 	public void saveData() {
