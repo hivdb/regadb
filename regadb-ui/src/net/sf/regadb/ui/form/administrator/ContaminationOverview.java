@@ -86,8 +86,8 @@ public class ContaminationOverview extends FormWidget {
 					"select p.patientId, v.sampleId, nt.label, tr.value, p.patientIi, v.viralIsolateIi" +
 					" from TestResult tr join tr.ntSequence nt join nt.viralIsolate v join v.patient p" +
 					" where tr.test.testIi = :testii" +
-					" and cast(tr.value as double) >= :threshold" +
-					" order by cast(tr.value as double) desc, p.patientId, v.sampleId, nt.label");
+					" and cast(tr.value as double) <= :threshold" +
+					" order by cast(tr.value as double) asc, p.patientId, v.sampleId, nt.label");
 			q.setInteger("testii", testIi);
 			q.setDouble("threshold", threshold);
 			
