@@ -6,13 +6,13 @@ public class SequenceUtils {
 		public int numberOfPositions;
 	}
 	
-	public static SequenceDistance distance(String alignment1, String alignment2) {
+	public static SequenceDistance distance(String alignment1, String alignment2, int from, int to) {
 		if (alignment1.length() != alignment2.length())
 			throw new RuntimeException("Alignments differ in size");
 		
 		SequenceDistance f = new SequenceDistance();
 		
-		for (int i = 0; i < alignment1.length(); i++) {
+		for (int i = from; i < to; i++) {
 			if (alignment1.charAt(i) != '-' && alignment2.charAt(i) != '-') {
 				f.numberOfPositions++;
 				if (alignment1.charAt(i) != alignment2.charAt(i))

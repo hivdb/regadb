@@ -10,6 +10,8 @@ import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ContaminationConfig.Distribution;
 
 public class ContaminationDetection {
 	static interface DistributionFunction {
@@ -49,6 +51,9 @@ public class ContaminationDetection {
 	}
 	
 	public static double clusterFactor(NtSequence ntSeq, SequenceDb db) {
+		//TODO allow multiple distributions
+		Distribution distributionSettings = RegaDBSettings.getInstance().getContaminationConfig().getDistributions().get(0);
+		
 		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null);
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
 		
@@ -60,8 +65,9 @@ public class ContaminationDetection {
 						distances.getSequenceDistances().containsKey(nt.getNtSequenceIi()))
 					intraPatientSeqs.add(nt.getNtSequenceIi());
 		
-		DistributionFunction Fi = new LogNormalDistributionFunction(-3.896448912, 0.747342409);
-		DistributionFunction Fo = new LogNormalDistributionFunction(-2.6001244697, 0.3277675448);
+		//TODO allow multiple distributions
+		DistributionFunction Fi = new LogNormalDistributionFunction(distributionSettings.Di_mu, distributionSettings.Di_sigma);
+		DistributionFunction Fo = new LogNormalDistributionFunction(distributionSettings.Do_mu, distributionSettings.Do_sigma);
 		
 		double[] Si = new double[intraPatientSeqs.size()];
 		double[] So = new double[distances.getSequenceDistances().size() - intraPatientSeqs.size()];

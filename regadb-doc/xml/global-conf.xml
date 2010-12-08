@@ -214,6 +214,14 @@
   <contamination>
   	<!-- cluster factor threshold -->
   	<threshold>0.5</threshold>
+
+        <!-- list of distributions per regio 
+            (currently only PR+RT in HIV1 is supported)-->
+        <distributions>
+          <distribution organism="HIV-1" orf="pol" start="169" end="1786"
+                        Di_mu="-3.896448912" Di_sigma="0.747342409" 
+                        Do_mu="-2.6001244697" Do_sigma="0.3277675448"/>
+        </distributions>
   </contamination>
   
   <!-- a list of cron jobs to be run at specified times/intervals

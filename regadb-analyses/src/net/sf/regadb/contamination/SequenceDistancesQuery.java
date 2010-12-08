@@ -13,6 +13,8 @@ import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceQuery;
 import net.sf.regadb.sequencedb.SequenceUtils;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ContaminationConfig.Distribution;
 
 public class SequenceDistancesQuery implements SequenceQuery {
 	public enum OutputType {
@@ -47,6 +49,10 @@ public class SequenceDistancesQuery implements SequenceQuery {
 	public void process(OpenReadingFrame orf, int patientId, int isolateId, int sequenceId, File alignment) {
 		if (sequenceId == query.getNtSequenceIi())
 			return;
+		
+		//TODO allow multiple distributions
+		if (orf.getName().equals("orf"))
+			return;
 			
 		if (outputType == OutputType.IntraPatient && patientId != queryPatient.getPatientIi())
 			return;
@@ -58,7 +64,10 @@ public class SequenceDistancesQuery implements SequenceQuery {
 		String queryAlignment = alignments.get(orf.getName());
 		if (queryAlignment != null) {
 			try {
-				SequenceDistance result = SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment));
+				Distribution ds = RegaDBSettings.getInstance().getContaminationConfig().getDistributions().get(0);
+				SequenceDistance result = 
+					//TODO allow multiple distributions
+					SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment), ds.start, ds.end);
 			
 				if (result.numberOfPositions != 0) {
 					if (f == null) {
