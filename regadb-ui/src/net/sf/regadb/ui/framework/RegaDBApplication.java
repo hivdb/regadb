@@ -41,15 +41,9 @@ public class RegaDBApplication extends WApplication
 	
 	private ServletContext servletContext_;
 	
-	private SequenceDb sequenceDb;
-	
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
-
-		String path = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath();
-		if (path != null)
-			sequenceDb = new SequenceDb(path);
 		
 		System.err.println("new regadb app");
 		servletContext_ = servletContext;
@@ -192,6 +186,10 @@ public class RegaDBApplication extends WApplication
 		new WText(new WString(sw.toString()), TextFormat.PlainText, wc);
 		quit();
 		throw new RuntimeException("Unrecoverable error", e);
+	}
+	  
+	public SequenceDb getSequenceDb() {
+		return SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 	}
 	
 	@Override

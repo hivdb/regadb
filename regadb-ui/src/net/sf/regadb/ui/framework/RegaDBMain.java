@@ -53,7 +53,7 @@ public class RegaDBMain extends WtServlet
 		
 		String path = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath();
 		if (path != null)
-			new SequenceDb(path).init(t);
+			SequenceDb.getInstance(path).init(t);
 		
 		session.close();
 	}

@@ -23,6 +23,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.tools.exportFasta.ExportAaSequence;
 import net.sf.regadb.tools.exportFasta.FastaExporter.Symbol;
@@ -34,6 +35,8 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 
 public class SequenceDb {
+	private static Map<String, SequenceDb> instances = new HashMap<String, SequenceDb>(); 
+	
 	private ReentrantLock formattingLock = new ReentrantLock();
 	private ReentrantLock queryLock = new ReentrantLock();
 	private Condition queriesFinishedCondition  = queryLock.newCondition();
@@ -44,8 +47,17 @@ public class SequenceDb {
 	
 	private File path;
 	
-	public SequenceDb(String path) {
+	private SequenceDb(String path) {
 		this.path = new File(path);
+	}
+	
+	public static SequenceDb getInstance(String path) {
+		SequenceDb db = instances.get(path);
+		if (db == null) {
+			db = new SequenceDb(path);
+			instances.put(path, db);
+		}
+		return db;
 	}
 	
 	public void init(Transaction t) {
@@ -123,11 +135,11 @@ public class SequenceDb {
 			if (alignment != null) {
 				File dir = getOrfDir(orf);
 				dir.mkdirs();
-				File f = new File(dir.getAbsolutePath() + File.separatorChar + id + ".fasta");
+				File f = new File(dir.getAbsolutePath() + File.separatorChar + sequence.getNtSequenceIi() + ".fasta");
 				FileWriter fw = null;
 				try {
 					try {
-						fw = new FileWriter(f);
+						fw = new FileWriter(f, false);
 						fw.append(">");
 						fw.append(id);
 						fw.append('\n');
@@ -142,7 +154,7 @@ public class SequenceDb {
 		}
 	}
 	
-	public void sequenceAligned(NtSequence sequence, boolean newSequence) {
+	public void sequenceAligned(NtSequence sequence) {
 		if (path == null)
 			return;
 		
@@ -157,6 +169,19 @@ public class SequenceDb {
 		}
 	}
 	
+	public void sequenceDeleted(NtSequence ntSeq) {
+		if (path == null)
+			return;
+
+		for (File organism : path.listFiles()) {
+			for (File orf : organism.listFiles()) {
+				File f = new File(orf.getAbsolutePath() + File.separatorChar + ntSeq.getNtSequenceIi() + ".fasta");
+				if (f.exists())
+					f.delete();
+			}
+		}
+	}
+	
 	private File getOrfDir(OpenReadingFrame orf) {
 		return new File(path.getAbsolutePath() 
 					+ File.separatorChar + orf.getGenome().getOrganismName() 
@@ -168,7 +193,25 @@ public class SequenceDb {
 			File dir = getOrfDir(orf);
 			if (dir != null && dir.exists())
 				for (File f : dir.listFiles()) {
-					String[] ids = f.getName().substring(0, f.getName().indexOf('.')).split("_");
+					String[] ids = null;
+					BufferedReader reader = null;
+					
+					try {
+						reader = new BufferedReader(new FileReader(f));
+						ids = reader.readLine().substring(1).split("_");
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						if (reader != null)
+							try {
+								reader.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+					}
+					
 					query.process(orf, 
 							Integer.parseInt(ids[0]),
 							Integer.parseInt(ids[1]), 

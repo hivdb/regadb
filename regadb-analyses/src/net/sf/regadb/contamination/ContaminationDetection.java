@@ -11,8 +11,6 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
 
-//TODO check whether it is OK to do this on the sequences
-//TODO which distribution for Fi
 public class ContaminationDetection {
 	static interface DistributionFunction {
 		public double f(double x);
@@ -51,15 +49,16 @@ public class ContaminationDetection {
 	}
 	
 	public static double clusterFactor(NtSequence ntSeq, SequenceDb db) {
-		//TODO outputtype stuff
 		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null);
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
 		
 		Patient p = new Patient(ntSeq.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
 		Set<Integer> intraPatientSeqs = new HashSet<Integer>();
 		for (ViralIsolate vi : p.getViralIsolates()) 
-			for (NtSequence ntseq : vi.getNtSequences()) 
-				intraPatientSeqs.add(ntseq.getNtSequenceIi());
+			for (NtSequence nt : vi.getNtSequences()) 
+				if (nt.getNtSequenceIi() != ntSeq.getNtSequenceIi() && 
+						distances.getSequenceDistances().containsKey(nt.getNtSequenceIi()))
+					intraPatientSeqs.add(nt.getNtSequenceIi());
 		
 		DistributionFunction Fi = new LogNormalDistributionFunction(-3.896448912, 0.747342409);
 		DistributionFunction Fo = new LogNormalDistributionFunction(-2.6001244697, 0.3277675448);
@@ -70,12 +69,11 @@ public class ContaminationDetection {
 		int Si_index = 0;
 		int So_index = 0;
 		for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
-			if (e.getKey() == ntSeq.getNtSequenceIi())
-				continue;
+			if (e.getValue().numberOfPositions == 0)
+				throw new RuntimeException("This distance should not be incorporated since the number of positions == 0");
 			
 			double d = (double)e.getValue().numberOfDifferences / e.getValue().numberOfPositions;
-			
-			if (intraPatientSeqs.contains(ntSeq.getNtSequenceIi())) {
+			if (intraPatientSeqs.contains(e.getKey())) {
 				Si[Si_index] = d;
 				Si_index++;
 			} else {
@@ -84,14 +82,25 @@ public class ContaminationDetection {
 			}
 		}
 		
-		return (sum(Si, Fi) + sum(So, Fo)) - (sum(So, Fi) + sum(Si, Fo));
+		System.err.println("Si"+Si.length);
+		System.err.println("So"+So.length);
+		System.err.print("average(Si, Fi)="+average(Si, Fi));
+		System.err.print(" average(So, Fo))="+average(So, Fo));
+		System.err.print(" average(So, Fi)="+average(So, Fi));
+		System.err.print(" average(Si, Fo)="+average(Si, Fo)+"\n");
+		
+		return (average(Si, Fi) + average(So, Fo)) - (average(So, Fi) + average(Si, Fo));
 	}
 	
-	private static double sum(double [] distances, DistributionFunction df) {
+	private static double average(double [] distances, DistributionFunction df) {
 		double sum = 0.0;
 		for (double d : distances) {
 			sum += Math.log(df.f(d));
 		}
-		return sum;
+		
+		if (distances.length > 0)
+			return sum / distances.length;
+		else
+			return 0.0;
 	}
 }

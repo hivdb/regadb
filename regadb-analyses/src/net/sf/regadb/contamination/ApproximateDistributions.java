@@ -29,7 +29,7 @@ public class ApproximateDistributions {
 	public static void main(String [] args) throws WrongUidException, WrongPasswordException, DisabledUserException, IOException {
 		RegaDBSettings.createInstance();
 		
-		SequenceDb db = new SequenceDb(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
+		SequenceDb db = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 		
 		Login login = Login.authenticate(args[0], args[1]);
 		Transaction t = login.createTransaction();
