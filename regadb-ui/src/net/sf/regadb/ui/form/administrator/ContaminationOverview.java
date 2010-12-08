@@ -45,12 +45,11 @@ public class ContaminationOverview extends FormWidget {
 			
 			threshold.setText(""+ RegaDBSettings.getInstance().getContaminationConfig().getThreshold());
 			addWidget(threshold);
-			
 			threshold.enterPressed().addListener(this, listener);
 			
 			button = new WPushButton(WString.tr("form.contamination.submit"));
-			
 			button.clicked().addListener(this, listener);
+
 			addWidget(button);
 			
 			table = new ContaminationTable(this);
@@ -77,8 +76,8 @@ public class ContaminationOverview extends FormWidget {
 					"select p.patientId, v.sampleId, nt.label, tr.value, p.patientIi, v.viralIsolateIi" +
 					" from TestResult tr join tr.ntSequence nt join nt.viralIsolate v join v.patient p" +
 					" where tr.test.testIi = :testii" +
-					" and cast(tr.value as double) >= :threshold" +
-					" order by p.patientId, v.sampleId, nt.label");
+					" and cast(tr.value as double) < :threshold" +
+					" order by cast(tr.value as double) asc, p.patientId, v.sampleId, nt.label");
 			q.setInteger("testii", testIi);
 			q.setDouble("threshold", threshold);
 			
