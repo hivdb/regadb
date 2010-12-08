@@ -28,8 +28,9 @@ public class ContaminationDetectionJob implements Job {
 		Transaction t  = new Transaction(null, session);
 		Test ccfTest = t.getTest(StandardObjects.getContaminationClusterFactorTest().getDescription());
 		
-		Query q = t.createQuery("select id from NtSequence ntseq where ntseq.id not in " +
-			"(select tr.ntSequence.id from TestResult tr where tr.test = :test)");
+		Query q = t.createQuery("select id from NtSequence ntseq where ntseq.aaSequences.size > 0 and " +
+				"ntseq.id not in " +
+				"(select tr.ntSequence.id from TestResult tr where tr.test = :test)");
 		q.setParameter("test", ccfTest);
 		
 		List<Integer> sequenceIds = q.list();
