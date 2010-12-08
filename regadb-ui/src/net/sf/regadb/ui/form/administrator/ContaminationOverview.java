@@ -14,8 +14,11 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
+import eu.webtoolkit.jwt.Key;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WDoubleValidator;
+import eu.webtoolkit.jwt.WKeyEvent;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WPushButton;
@@ -38,6 +41,12 @@ public class ContaminationOverview extends FormWidget {
 			threshold = new WLineEdit();
 			//TODO lower and upper limit for threshold?
 			threshold.setValidator(new WDoubleValidator());
+			threshold.keyPressed().addListener(this, new Signal1.Listener<WKeyEvent>() {
+				public void trigger(WKeyEvent ke) {
+					if (ke.getCharCode() == Key.Key_Enter.getValue())
+						update();
+				}
+			});
 			
 			threshold.setText(""+ RegaDBSettings.getInstance().getContaminationConfig().getThreshold());
 			addWidget(threshold);
@@ -45,8 +54,7 @@ public class ContaminationOverview extends FormWidget {
 			button = new WPushButton(WString.tr("form.contamination.submit"));
 			button.clicked().addListener(this, new Signal.Listener() {
 	            public void trigger() {
-	            	if(threshold.validate() == WValidator.State.Valid)
-	            		fill(Double.parseDouble(threshold.getText()));
+	            	update();
 	            }
 	        });
 			addWidget(button);
@@ -60,6 +68,11 @@ public class ContaminationOverview extends FormWidget {
 		else{
 			addWidget(new WLabel("form.contamination.noConfig"));
 		}
+	}
+	
+	private void update() {
+    	if(threshold.validate() == WValidator.State.Valid)
+    		fill(Double.parseDouble(threshold.getText()));
 	}
 	
 	@SuppressWarnings("unchecked")
