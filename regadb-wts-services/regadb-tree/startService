@@ -1,0 +1,14 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Starting tree building" >> $monitor_file
+clustalw -infile="$1/inputs/sequences.fasta" -tree
+
+echo "Writing result" >> $monitor_file
+cp "$1/inputs/sequences.ph" "$1/outputs/tree.phy"
+ 
+rm "$running_file"
+echo "ENDED_SUCCES" > "$1/.ended"
+
