@@ -1,0 +1,13 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Converting fasta to stockholm format" >> $monitor_file
+/usr/local/bin/stockholm "$1/inputs/sequences.fasta" "$1/inputs/sequences.stockholm"
+
+echo "Calculating tree" >> $monitor_file
+/usr/local/bin/quicktree "$1/inputs/sequences.stockholm" > "$1/outputs/tree.phy"
+ 
+rm "$running_file"
+echo "ENDED_SUCCES" > "$1/.ended"
