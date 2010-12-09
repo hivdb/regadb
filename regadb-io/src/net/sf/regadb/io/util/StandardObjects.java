@@ -242,8 +242,8 @@ public class StandardObjects {
         tt.getTestNominalValues().add(new TestNominalValue(tt, "Negative"));
         contaminationTest = createTest(tt, "Contamination");
         
-        tt = new TestType(numberValueType, null, sequenceAnalysisTestObject, "Contamination Factor", new TreeSet<TestNominalValue>());
-        contaminationClusterFactorTest = createTest(tt, "Contamination Factor");
+        tt = new TestType(numberValueType, null, sequenceAnalysisTestObject, "Contamination Cluster Factor", new TreeSet<TestNominalValue>());
+        contaminationClusterFactorTest = createTest(tt, "Contamination Cluster Factor");
     }
     
     private static TestObject createTestObject(String description, int id){

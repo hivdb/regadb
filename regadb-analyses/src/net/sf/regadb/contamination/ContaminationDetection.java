@@ -50,12 +50,15 @@ public class ContaminationDetection {
 		}
 	}
 	
-	public static double clusterFactor(NtSequence ntSeq, SequenceDb db) {
+	public static Double clusterFactor(NtSequence ntSeq, SequenceDb db) {
 		//TODO allow multiple distributions
 		Distribution distributionSettings = RegaDBSettings.getInstance().getContaminationConfig().getDistributions().get(0);
 		
 		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null);
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
+		
+		if (distances.getSequenceDistances().size() == 0)
+			return null;
 		
 		Patient p = new Patient(ntSeq.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
 		Set<Integer> intraPatientSeqs = new HashSet<Integer>();

@@ -41,7 +41,10 @@ public class ContaminationDetectionJob implements Job {
 		for (int i = 0; i < sequenceIds.size(); i++) {
 			NtSequence ntSeq = t.getSequence(sequenceIds.get(i));
 			System.err.println("sample id:" + ntSeq.getViralIsolate().getSampleId());
-			double cf = ContaminationDetection.clusterFactor(ntSeq, seqDb);
+			Double cf = ContaminationDetection.clusterFactor(ntSeq, seqDb);
+			if (cf == null)
+				continue;
+			
 			System.err.println("cf:" + cf);
 			TestResult tr = new TestResult();
 			tr.setNtSequence(ntSeq);
