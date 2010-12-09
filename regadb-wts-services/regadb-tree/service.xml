@@ -5,7 +5,7 @@
 <inputs>
 	<input>
 		<name>sequences.fasta</name>
-		<description>fasta</description>
+		<description>fasta file of aligned sequences</description>
 	</input>
 </inputs>
 <outputs>

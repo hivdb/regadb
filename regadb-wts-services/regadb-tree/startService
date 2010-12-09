@@ -3,12 +3,11 @@
 monitor_file="$1/.monitor"
 running_file="$1/.running"
 
-echo "Starting tree building" >> $monitor_file
-clustalw -infile="$1/inputs/sequences.fasta" -tree
+echo "Converting fasta to stockholm format" >> $monitor_file
+/usr/local/bin/stockholm "$1/inputs/sequences.fasta" "$1/inputs/sequences.stockholm"
 
-echo "Writing result" >> $monitor_file
-cp "$1/inputs/sequences.ph" "$1/outputs/tree.phy"
+echo "Calculating tree" >> $monitor_file
+/usr/local/bin/quicktree "$1/inputs/sequences.stockholm" > "$1/outputs/tree.phy"
  
 rm "$running_file"
 echo "ENDED_SUCCES" > "$1/.ended"
-
