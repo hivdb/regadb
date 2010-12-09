@@ -12,8 +12,8 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.BlastAnalysis;
-import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
+import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
 import net.sf.regadb.ui.form.query.querytool.widgets.WTabbedPane;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -31,6 +31,7 @@ public class ViralIsolateForm extends FormWidget
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
     private ViralIsolateReportForm reportForm_;
+    private ViralIsolateContaminationForm contaminationForm;
 
     public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
         this(interactionState,formName,null);
@@ -78,6 +79,11 @@ public class ViralIsolateForm extends FormWidget
 			}
 			reportForm_ = new ViralIsolateReportForm(this);
 			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+			
+			if(viralIsolate_ != null && viralIsolate_.getGenome() != null){
+				contaminationForm = new ViralIsolateContaminationForm(this);
+				tabs.addTab(tr("form.viralIsolate.editView.tab.contamination"), contaminationForm);
+			}
         }
         
         fillData();
