@@ -99,7 +99,7 @@ public class ViralIsolateContaminationForm extends TabForm {
 			for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){
 				double r = (double)sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
 				if(r >= threshold){
-					q.setParameter(0, sd.getKey());
+					q.setParameter("sequenceii", sd.getKey());
 					List<Object[]> l = q.list();
 					
 					if(l.size() > 0){
