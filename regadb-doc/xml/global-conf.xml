@@ -224,6 +224,14 @@
         </distributions>
   </contamination>
   
+  <!-- Sequence db configuration -->
+  <sequence-database>
+  	<!-- Sequence db path -->
+	<path>/home/pieter/contamination/</path>
+	<!-- Minimum similarity -->
+	<minimum-similarity>0.975</minimum-similarity>
+  </sequence-database>
+  
   <!-- a list of cron jobs to be run at specified times/intervals
        this element is optional
   -->  
