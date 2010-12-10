@@ -18,6 +18,7 @@ import org.hibernate.Query;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WBreak;
+import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDoubleValidator;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
@@ -25,7 +26,7 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WValidator;
 
-public class ViralSimilarityContaminationForm extends TabForm {
+public class ViralIsolateSimilarityForm extends WContainerWidget {
 
 	private ViralIsolateForm viralIsolateForm;
 	
@@ -34,8 +35,8 @@ public class ViralSimilarityContaminationForm extends TabForm {
 	
 	private WLineEdit minimumSimilarityTF;
 	
-	public ViralSimilarityContaminationForm(ViralIsolateForm viralIsolateForm){
-		super(viralIsolateForm);
+	public ViralIsolateSimilarityForm(ViralIsolateForm viralIsolateForm){
+		super();
 		this.viralIsolateForm = viralIsolateForm;
 	}
 	
