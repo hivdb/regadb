@@ -138,7 +138,7 @@ public class GenerateReport
     		int ai = 1;
     		for(Algorithm alg : vifc.getAlgorithms()){
     			if (vi.getGenome().getOrganismName().equals(alg.getOrganism())) {
-    				rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg +"\\)");
+    				rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg.getName() +"\\)");
     				rtfString = rtfString.replaceAll("\\$ASI_ALGORITHM\\(\\$"+ ai +"\\)", alg.getName());
     				++ai;
     			}
