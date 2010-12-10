@@ -10,7 +10,7 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
-import net.sf.regadb.ui.form.administrator.ContaminationTable;
+import net.sf.regadb.ui.form.administrator.IsolateTable;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -25,61 +25,61 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WValidator;
 
-public class ViralIsolateContaminationForm extends TabForm {
+public class ViralSimilarityContaminationForm extends TabForm {
 
 	private ViralIsolateForm viralIsolateForm;
 	
-	private List<ContaminationTable> tables;
+	private List<IsolateTable> tables;
 	private List<NtSequence> sequences;
 	
-	private WLineEdit thresholdTF;
+	private WLineEdit minimumSimilarityTF;
 	
-	public ViralIsolateContaminationForm(ViralIsolateForm viralIsolateForm){
+	public ViralSimilarityContaminationForm(ViralIsolateForm viralIsolateForm){
 		super(viralIsolateForm);
 		this.viralIsolateForm = viralIsolateForm;
 	}
 	
 	public void initialize(){
 		
-		new WLabel(WString.tr("form.viralIsolate.contamination.threshold"), this);
+		new WLabel(WString.tr("form.viralIsolate.similarity.minimum"), this);
 
-		thresholdTF = new WLineEdit(this);
+		minimumSimilarityTF = new WLineEdit(this);
 		WDoubleValidator dval = new WDoubleValidator();
 		dval.setMandatory(true);
-		thresholdTF.setValidator(dval);
+		minimumSimilarityTF.setValidator(dval);
 		
-		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.contamination.submit"),this);
+		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.similarity.submit"),this);
 		
 		new WBreak(this);
 		
 		Signal.Listener listener = new Signal.Listener() {
             public void trigger() {
-            	if(thresholdTF.validate() == WValidator.State.Valid)
-            		fill(Double.parseDouble(thresholdTF.getText()));
+            	if(minimumSimilarityTF.validate() == WValidator.State.Valid)
+            		fill(Double.parseDouble(minimumSimilarityTF.getText()));
             }
         };
         
-        thresholdTF.enterPressed().addListener(this,listener);
+        minimumSimilarityTF.enterPressed().addListener(this,listener);
         submit.clicked().addListener(this,listener);
 
-		tables = new ArrayList<ContaminationTable>();
+		tables = new ArrayList<IsolateTable>();
 		sequences = new ArrayList<NtSequence>();
 
 		for(NtSequence nt : viralIsolateForm.getViralIsolate().getNtSequences()){
 			sequences.add(nt);
 			
 			new WLabel(nt.getLabel(),this);
-			tables.add(new ContaminationTable(this));
+			tables.add(new IsolateTable(this));
 		}
 
 		//TODO default?
-		double defaultThreshold = 0.5;
-		thresholdTF.setText(defaultThreshold+"");
-		fill(defaultThreshold);
+		double minimumSimilarity = 0.99;
+		minimumSimilarityTF.setText(minimumSimilarity+"");
+		fill(minimumSimilarity);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void fill(double threshold){
+	public void fill(double minimumSimilarity){
 		SequenceDb sdb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -87,29 +87,30 @@ public class ViralIsolateContaminationForm extends TabForm {
 				+ "from NtSequence n join n.viralIsolate v join v.patient p where n.ntSequenceIi = :sequenceii");
 		
 		for(int i=0; i<sequences.size(); ++i){
-			ContaminationTable table = tables.get(i);
+			IsolateTable table = tables.get(i);
 			NtSequence sequence = sequences.get(i);
 			
 			table.clear();
-			table.addHeader();
+			table.addHeader(tr("form.viralIsolate.similarity.similarity"));
 			
 			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, OutputType.ExtraPatient);
 			sdb.query(sequence.getViralIsolate().getGenome(), sdq);
 			
 			for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){
-				double r = (double)sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
-				if(r >= threshold){
+				double diff = (double)sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
+				double similarity = 1.0 - diff;
+				if(similarity >= minimumSimilarity){
 					q.setParameter("sequenceii", sd.getKey());
 					List<Object[]> l = q.list();
 					
 					if(l.size() > 0){
 						Object[] o = l.get(0);
-						table.add((Integer)o[0],
-								  (String)o[1],
-								  (Integer)o[2],
-								  (String)o[3],
-								  (String)o[4],
-								  r +"");
+						table.addRow((Integer)o[0],
+								  	(String)o[1],
+								  	(Integer)o[2],
+								  	(String)o[3],
+								  	(String)o[4],
+								  	similarity + "");
 					}
 				}
 			}

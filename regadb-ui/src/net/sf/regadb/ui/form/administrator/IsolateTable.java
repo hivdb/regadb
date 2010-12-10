@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.administrator;
 
+import java.util.List;
+
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
@@ -10,23 +12,25 @@ import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 
-public class ContaminationTable extends WTable {
+public class IsolateTable extends WTable {
 
-	public ContaminationTable(WContainerWidget parent){
+	public IsolateTable(WContainerWidget parent){
 		super(parent);
-		setStyleClass("datatable contamination");
+		setStyleClass("datatable isolate-table");
 	}
 	
-	public void addHeader(){
-		getElementAt(0,0).addWidget(new WLabel(WString.tr("form.contamination.patientId")));
-		getElementAt(0,1).addWidget(new WLabel(WString.tr("form.contamination.sampleId")));
-		getElementAt(0,2).addWidget(new WLabel(WString.tr("form.contamination.label")));
-		getElementAt(0,3).addWidget(new WLabel(WString.tr("form.contamination.clusterFactor")));
+	public void addHeader(CharSequence ... extraFields){
+		getElementAt(0,0).addWidget(new WLabel(WString.tr("form.isolate-table.patientId")));
+		getElementAt(0,1).addWidget(new WLabel(WString.tr("form.isolate-table.sampleId")));
+		getElementAt(0,2).addWidget(new WLabel(WString.tr("form.isolate-table.label")));
+		
+		for (int i = 0; i < extraFields.length; i++) 
+			getElementAt(0, i + 3).addWidget(new WLabel(extraFields[i]));
 		
 		getRowAt(0).setStyleClass("header");
 	}
 	
-	public void add(final int patientIi, String patientId, final int viralIsolateIi, String sampleId, String label, String value){
+	public void addRow(final int patientIi, String patientId, final int viralIsolateIi, String sampleId, String label, CharSequence ... extraFields){
 		int n = getRowCount();
 
 		WLabel lblPatient = new WLabel(patientId);
@@ -48,13 +52,12 @@ public class ContaminationTable extends WTable {
 		WLabel lblLabel = new WLabel(label);
 		lblLabel.clicked().addListener(this, toViralIsolate);
 		
-		WLabel lblValue = new WLabel(value);
-		lblValue.clicked().addListener(this, toViralIsolate);
-		
 		getElementAt(n,0).addWidget(lblPatient);
 		getElementAt(n,1).addWidget(lblSample);
 		getElementAt(n,2).addWidget(lblLabel);
-		getElementAt(n,3).addWidget(lblValue);
+		
+		for (int i = 0; i < extraFields.length; i++) 
+			getElementAt(n, i + 3).addWidget(new WLabel(extraFields[i]));
 	}
 	
 	public void gotoPatient(int patientIi){

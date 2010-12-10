@@ -31,7 +31,7 @@ public class ViralIsolateForm extends FormWidget
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
     private ViralIsolateReportForm reportForm_;
-    private ViralIsolateContaminationForm contaminationForm;
+    private ViralSimilarityContaminationForm similarityForm;
 
     public ViralIsolateForm(InteractionState interactionState, WString formName, String sampleId, Date sampleDate){
         this(interactionState,formName,null);
@@ -81,8 +81,8 @@ public class ViralIsolateForm extends FormWidget
 			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
 			
 			if(viralIsolate_ != null && viralIsolate_.getGenome() != null){
-				contaminationForm = new ViralIsolateContaminationForm(this);
-				tabs.addTab(tr("form.viralIsolate.editView.tab.contamination"), contaminationForm);
+				similarityForm = new ViralSimilarityContaminationForm(this);
+				tabs.addTab(tr("form.viralIsolate.editView.tab.similarity"), similarityForm);
 			}
         }
         

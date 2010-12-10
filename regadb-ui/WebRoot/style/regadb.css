@@ -672,19 +672,19 @@ table.form-custom-grid > tbody > tr > td {
 	padding-left: 1.5em;
 }
 
-table.contamination .header{
+table.isolate-table .header{
 	cursor: auto;
 	border-bottom:1px solid #bbb;
 }
 
-table.contamination {
+table.isolate-table {
 	cursor: pointer;
 }
 
-table.contamination td{
+table.isolate-table td{
 	border-left:1px solid #bbb;
 }
 
-table.contamination span{
+table.isolate-table span{
 	display: block;
 }

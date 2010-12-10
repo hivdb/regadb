@@ -24,7 +24,7 @@ public class ContaminationOverview extends FormWidget {
 	
 	private WLineEdit threshold;
 	private WPushButton button;
-	private ContaminationTable table;
+	private IsolateTable table;
 
 	public ContaminationOverview() {
 		super(WString.tr("form.contamination"), InteractionState.Viewing);
@@ -52,7 +52,7 @@ public class ContaminationOverview extends FormWidget {
 
 			addWidget(button);
 			
-			table = new ContaminationTable(this);
+			table = new IsolateTable(this);
 			addWidget(table);
 			
 			fill(RegaDBSettings.getInstance().getContaminationConfig().getThreshold());
@@ -65,7 +65,7 @@ public class ContaminationOverview extends FormWidget {
 	@SuppressWarnings("unchecked")
 	private void fill(double threshold){
 		table.clear();
-		table.addHeader();
+		table.addHeader(tr("form.contamination.clusterFactor"));
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		Test test = t.getTest(StandardObjects.getContaminationClusterFactorTest().getDescription());
@@ -83,7 +83,7 @@ public class ContaminationOverview extends FormWidget {
 			
 			List<Object[]> l = q.list();
 			for(Object[] o : l)
-				table.add((Integer)o[4], (String)o[0], (Integer)o[5], (String)o[1], (String)o[2], (String)o[3]);
+				table.addRow((Integer)o[4], (String)o[0], (Integer)o[5], (String)o[1], (String)o[2], (String)o[3]);
 		}
 		
 		t.commit();
