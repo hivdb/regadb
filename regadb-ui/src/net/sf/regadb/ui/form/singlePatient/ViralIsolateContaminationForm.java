@@ -54,8 +54,7 @@ public class ViralIsolateContaminationForm extends TabForm {
 		
 		Signal.Listener listener = new Signal.Listener() {
             public void trigger() {
-            	if(thresholdTF.validate() == WValidator.State.Valid
-            			&& thresholdTF.getText().length() != 0)
+            	if(thresholdTF.validate() == WValidator.State.Valid)
             		fill(Double.parseDouble(thresholdTF.getText()));
             }
         };
@@ -98,7 +97,7 @@ public class ViralIsolateContaminationForm extends TabForm {
 			sdb.query(sequence.getViralIsolate().getGenome(), sdq);
 			
 			for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){
-				double r = sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
+				double r = (double)sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
 				if(r >= threshold){
 					q.setParameter(0, sd.getKey());
 					List<Object[]> l = q.list();
