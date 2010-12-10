@@ -72,8 +72,7 @@ public class ViralSimilarityContaminationForm extends TabForm {
 			tables.add(new IsolateTable(this));
 		}
 
-		//TODO default?
-		double minimumSimilarity = 0.99;
+		double minimumSimilarity = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getMinimumSimilarity();
 		minimumSimilarityTF.setText(minimumSimilarity+"");
 		fill(minimumSimilarity);
 	}

@@ -4,7 +4,8 @@ import org.jdom.Element;
 
 public class SequenceDatabaseConfig extends ConfigParser {
 	private String path;
-	
+	private double minimumSimilarity;
+
 	public SequenceDatabaseConfig() {
 		super("sequence-database");
 	}
@@ -13,11 +14,14 @@ public class SequenceDatabaseConfig extends ConfigParser {
 	public void parseXml(RegaDBSettings settings, Element e) {
 		Element pathE = e.getChild("path");
 		path = pathE.getTextTrim();
+		Element similarityE = e.getChild("minimum-similarity");
+		minimumSimilarity = Double.parseDouble(similarityE.getTextTrim());
 	}
 
 	@Override
 	public void setDefaults() {
 		path = null;
+		minimumSimilarity = 0.99;
 	}
 
 	@Override
@@ -27,5 +31,9 @@ public class SequenceDatabaseConfig extends ConfigParser {
 
 	public String getPath() {
 		return path;
+	}
+	
+	public double getMinimumSimilarity() {
+		return minimumSimilarity;
 	}
 }
