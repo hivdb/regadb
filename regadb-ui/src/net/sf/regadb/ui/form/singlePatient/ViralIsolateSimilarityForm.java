@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +9,8 @@ import java.util.Map;
 import net.sf.regadb.contamination.SequenceDistancesQuery;
 import net.sf.regadb.contamination.SequenceDistancesQuery.OutputType;
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
@@ -17,16 +21,21 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
+import eu.webtoolkit.jwt.AnchorTarget;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WDoubleValidator;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WValidator;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 public class ViralIsolateSimilarityForm extends TabForm {
 
@@ -34,6 +43,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	
 	private List<IsolateTable> tables;
 	private List<NtSequence> sequences;
+	private List<WAnchor> downloadAnchors;
 	
 	private WLineEdit minimumSimilarityTF;
 	private WCheckBox includePatientIsolatesCB;
@@ -72,12 +82,25 @@ public class ViralIsolateSimilarityForm extends TabForm {
 
 		tables = new ArrayList<IsolateTable>();
 		sequences = new ArrayList<NtSequence>();
+		downloadAnchors = new ArrayList<WAnchor>();
 
-		for(NtSequence nt : viralIsolateForm.getViralIsolate().getNtSequences()){
+		for(final NtSequence nt : viralIsolateForm.getViralIsolate().getNtSequences()){
 			sequences.add(nt);
 			
 			new WLabel(nt.getLabel(),this);
-			tables.add(new IsolateTable(this));
+			IsolateTable table = new IsolateTable(this);
+			tables.add(table);
+			
+			WAnchor downloadSequences = new WAnchor(this);
+			downloadSequences.setText(tr("form.viralIsolate.similarity.downloadSequences"));
+			downloadSequences.setResource(new WResource(){
+				protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
+					writeFasta(nt, response.out());
+				}
+			});
+			downloadSequences.setTarget(AnchorTarget.TargetNewWindow);
+			downloadAnchors.add(downloadSequences);
+			downloadSequences.setHidden(true);
 		}
 
 		double minimumSimilarity = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getMinimumSimilarity();
@@ -89,6 +112,40 @@ public class ViralIsolateSimilarityForm extends TabForm {
 		if(minimumSimilarityTF.validate() == WValidator.State.Valid)
 			fill(Double.parseDouble(minimumSimilarityTF.getText()),
 					includePatientIsolatesCB.isChecked());
+	}
+	
+	private OutputType getOutputType(boolean includePatientIsolates) {
+		OutputType type = null;
+		if (!includePatientIsolates)
+			type = OutputType.ExtraPatient;
+		return type;
+	}
+	
+	//TODO refactor
+	private void writeFasta(NtSequence sequence, Writer writer) throws IOException {
+		SequenceDb sdb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
+		
+		SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, getOutputType(includePatientIsolatesCB.isChecked()));
+		sdb.query(sequence.getViralIsolate().getGenome(), sdq);
+		
+		Transaction t = RegaDBMain.getApp().createTransaction();
+		
+		final double minimumSimilarity = Double.parseDouble(minimumSimilarityTF.getText());
+		
+		for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){ 
+			double diff = (double)sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
+			double similarity = 1.0 - diff;
+			if(similarity >= minimumSimilarity){
+				NtSequence ntSeq = t.getSequence(sd.getKey());
+				
+				writer.append(">" + 
+						new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId() +
+						"_" + sequence.getViralIsolate().getSampleId() +
+						"_" + sequence.getLabel().replace(' ', '_') +
+						"\n");
+				writer.append(ntSeq.getNucleotides() + "\n");
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -106,11 +163,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 			table.clear();
 			table.addHeader(tr("form.viralIsolate.similarity.similarity"));
 			
-			OutputType type = null;
-			if (!includePatientIsolates)
-				type = OutputType.ExtraPatient;
-			
-			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, type);
+			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, getOutputType(includePatientIsolates));
 			sdb.query(sequence.getViralIsolate().getGenome(), sdq);
 			
 			for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){
@@ -131,6 +184,8 @@ public class ViralIsolateSimilarityForm extends TabForm {
 					}
 				}
 			}
+			if (table.getRowCount() > 0)
+				downloadAnchors.get(i).setHidden(false);
 		}
 		
 		t.commit();
