@@ -2,8 +2,12 @@ package net.sf.regadb.ui.form.administrator;
 
 import java.util.List;
 
+import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
@@ -73,7 +77,7 @@ public class ContaminationOverview extends FormWidget {
 		if(test != null){
 			int testIi = test.getTestIi();
 			Query q = t.createQuery(
-					"select p.patientId, v.sampleId, nt.label, tr.value, p.patientIi, v.viralIsolateIi" +
+					"select p.id, p.patientId, v, nt, tr" +
 					" from TestResult tr join tr.ntSequence nt join nt.viralIsolate v join v.patient p" +
 					" where tr.test.testIi = :testii" +
 					" and cast(tr.value as double) <= :threshold" +
@@ -82,8 +86,25 @@ public class ContaminationOverview extends FormWidget {
 			q.setDouble("threshold", threshold);
 			
 			List<Object[]> l = q.list();
-			for(Object[] o : l)
-				table.addRow((Integer)o[4], (String)o[0], (Integer)o[5], (String)o[1], (String)o[2], (String)o[3]);
+			for(Object[] o : l) {
+				Integer patientIi = (Integer)o[0];
+				String patientId = (String)o[1];
+				ViralIsolate vi = (ViralIsolate)o[2];
+				NtSequence ntSeq = (NtSequence)o[3];
+				TestResult clusterFactor = (TestResult)o[4];
+				
+				//TODO include in query?
+				boolean noContamination = false;
+				for (TestResult tr : ntSeq.getTestResults()) {
+					if (tr.getTest().getDescription().equals(StandardObjects.getContaminationTest().getDescription())) {
+						noContamination = true;
+						break;
+					}
+				}
+				
+				if (!noContamination)
+					table.addRow(patientIi, patientId, vi.getViralIsolateIi(), vi.getSampleId(), ntSeq.getLabel(), clusterFactor.getValue());
+			}
 		}
 		
 		t.commit();
