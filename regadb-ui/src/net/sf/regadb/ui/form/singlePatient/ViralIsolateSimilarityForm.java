@@ -25,6 +25,7 @@ import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WValidator;
 
 public class ViralIsolateSimilarityForm extends TabForm {
@@ -44,16 +45,17 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	
 	@Override
 	public void initialize() {
-		addWidget(new Label(WString.tr("form.viralIsolate.similarity.minimum")));
-		minimumSimilarityTF = new WLineEdit(this);
+		WTable layout = new WTable(this);
+		layout.getElementAt(0, 0).addWidget(new Label(WString.tr("form.viralIsolate.similarity.minimum")));
+		minimumSimilarityTF = new WLineEdit(layout.getElementAt(0, 1));
 		WDoubleValidator dval = new WDoubleValidator();
 		dval.setMandatory(true);
 		minimumSimilarityTF.setValidator(dval);
 		
-		addWidget(new Label(WString.tr("form.viralIsolate.similarity.includePatientIsolates")));
-		includePatientIsolatesCB = new WCheckBox(this);
+		layout.getElementAt(1, 0).addWidget(new Label(WString.tr("form.viralIsolate.similarity.includePatientIsolates")));
+		includePatientIsolatesCB = new WCheckBox(layout.getElementAt(1, 1));
 		
-		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.similarity.submit"),this);
+		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.similarity.submit"),layout.getElementAt(1, 2));
 		
 		new WBreak(this);
 		
