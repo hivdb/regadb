@@ -19,6 +19,7 @@ import org.hibernate.Query;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WBreak;
+import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WDoubleValidator;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
@@ -34,6 +35,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	private List<NtSequence> sequences;
 	
 	private WLineEdit minimumSimilarityTF;
+	private WCheckBox includePatientIsolatesCB;
 	
 	public ViralIsolateSimilarityForm(ViralIsolateForm viralIsolateForm){
 		super();
@@ -48,18 +50,22 @@ public class ViralIsolateSimilarityForm extends TabForm {
 		dval.setMandatory(true);
 		minimumSimilarityTF.setValidator(dval);
 		
+		addWidget(new Label(WString.tr("form.viralIsolate.similarity.includePatientIsolates")));
+		includePatientIsolatesCB = new WCheckBox(this);
+		
 		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.similarity.submit"),this);
 		
 		new WBreak(this);
 		
 		Signal.Listener listener = new Signal.Listener() {
             public void trigger() {
-            	if(minimumSimilarityTF.validate() == WValidator.State.Valid)
-            		fill(Double.parseDouble(minimumSimilarityTF.getText()));
+            	fill();
             }
         };
         
         minimumSimilarityTF.enterPressed().addListener(this,listener);
+        includePatientIsolatesCB.changed().addListener(this, listener);
+        
         submit.clicked().addListener(this,listener);
 
 		tables = new ArrayList<IsolateTable>();
@@ -74,11 +80,17 @@ public class ViralIsolateSimilarityForm extends TabForm {
 
 		double minimumSimilarity = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getMinimumSimilarity();
 		minimumSimilarityTF.setText(minimumSimilarity+"");
-		fill(minimumSimilarity);
+		fill(minimumSimilarity, false);
+	}
+	
+	private void fill() {
+		if(minimumSimilarityTF.validate() == WValidator.State.Valid)
+			fill(Double.parseDouble(minimumSimilarityTF.getText()),
+					includePatientIsolatesCB.isChecked());
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void fill(double minimumSimilarity){
+	public void fill(double minimumSimilarity, boolean includePatientIsolates){
 		SequenceDb sdb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -92,7 +104,11 @@ public class ViralIsolateSimilarityForm extends TabForm {
 			table.clear();
 			table.addHeader(tr("form.viralIsolate.similarity.similarity"));
 			
-			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, OutputType.ExtraPatient);
+			OutputType type = null;
+			if (!includePatientIsolates)
+				type = OutputType.ExtraPatient;
+			
+			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, type);
 			sdb.query(sequence.getViralIsolate().getGenome(), sdq);
 			
 			for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){
