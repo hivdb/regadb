@@ -20,6 +20,7 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
 public class ViralIsolateForm extends FormWidget
@@ -80,7 +81,9 @@ public class ViralIsolateForm extends FormWidget
 			reportForm_ = new ViralIsolateReportForm(this);
 			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
 			
-			if(viralIsolate_ != null && viralIsolate_.getGenome() != null){
+			if(viralIsolate_ != null 
+					&& viralIsolate_.getGenome() != null 
+					&& RegaDBSettings.getInstance().getSequenceDatabaseConfig().isConfigured()) {
 				similarityForm = new ViralIsolateSimilarityForm(this);
 				tabs.addTab(tr("form.viralIsolate.editView.tab.similarity"), similarityForm);
 			}
