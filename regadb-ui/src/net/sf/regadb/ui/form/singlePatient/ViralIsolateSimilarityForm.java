@@ -12,13 +12,13 @@ import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
 import net.sf.regadb.ui.form.administrator.IsolateTable;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WBreak;
-import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDoubleValidator;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
@@ -26,7 +26,7 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WValidator;
 
-public class ViralIsolateSimilarityForm extends WContainerWidget {
+public class ViralIsolateSimilarityForm extends TabForm {
 
 	private ViralIsolateForm viralIsolateForm;
 	
@@ -40,10 +40,9 @@ public class ViralIsolateSimilarityForm extends WContainerWidget {
 		this.viralIsolateForm = viralIsolateForm;
 	}
 	
-	public void initialize(){
-		
-		new WLabel(WString.tr("form.viralIsolate.similarity.minimum"), this);
-
+	@Override
+	public void initialize() {
+		addWidget(new Label(WString.tr("form.viralIsolate.similarity.minimum")));
 		minimumSimilarityTF = new WLineEdit(this);
 		WDoubleValidator dval = new WDoubleValidator();
 		dval.setMandatory(true);

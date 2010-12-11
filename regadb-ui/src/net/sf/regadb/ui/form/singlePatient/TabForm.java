@@ -6,8 +6,8 @@ public abstract class TabForm extends WContainerWidget {
 	
 	private boolean initialized = false;
 
-	public TabForm(WContainerWidget parent){
-		super(parent);
+	public TabForm(){
+		super();
 	}
 	
 	protected abstract void initialize();
