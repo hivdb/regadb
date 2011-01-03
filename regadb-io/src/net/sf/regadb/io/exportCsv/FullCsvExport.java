@@ -410,7 +410,7 @@ public class FullCsvExport implements ExportPatient {
 		}
 	};
 	
-	public void exportPatient(Patient p) {
+	public void exportPatient(Transaction t, Patient p) {
 		try {
 			patientRow(p, patientFileWriter, attributes);
 
@@ -420,8 +420,8 @@ public class FullCsvExport implements ExportPatient {
 			for (TestResult tr : p.getTestResults()) {
 				testRow(p, tr, testFileWriter);
 			}
-			for (Therapy t : p.getTherapies()) {
-				therapyRow(p, t, therapyFileWriter);
+			for (Therapy th : p.getTherapies()) {
+				therapyRow(p, th, therapyFileWriter);
 			}
 			TreeSet<ViralIsolate> vis = new TreeSet<ViralIsolate>(viralIsolateComparator);
 			for (ViralIsolate vi : p.getViralIsolates())
