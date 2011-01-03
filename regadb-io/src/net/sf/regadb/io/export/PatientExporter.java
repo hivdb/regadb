@@ -1,12 +1,16 @@
 package net.sf.regadb.io.export;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.PatientXMLOutputStream;
 import net.sf.regadb.util.args.Arguments;
@@ -74,13 +78,13 @@ public class PatientExporter<T> {
         return out;
     }
     
-    public static void main(String args[]) throws Exception{
+    public static void main(String args[]) throws FileNotFoundException, WrongUidException, WrongPasswordException, DisabledUserException {
     	Arguments as = new Arguments();
     	PositionalArgument user = as.addPositionalArgument("user", true);
     	PositionalArgument pass = as.addPositionalArgument("pass", true);
     	PositionalArgument output = as.addPositionalArgument("output.xml", true);
     	PositionalArgument ds = as.addPositionalArgument("dataset", true);
-    	PositionalArgument patiendIds = as.addPositionalArgument("patient-ids", true);
+    	final PositionalArgument patiendIds = as.addPositionalArgument("patient-ids", false);
     	ValueArgument conf = as.addValueArgument("conf-dir", "configuration directory", false);
     	
     	if(!as.handle(args))
@@ -91,16 +95,18 @@ public class PatientExporter<T> {
         else
         	RegaDBSettings.createInstance();
         
-        String[] idsArray = patiendIds.getValue().split(",");
         final TreeSet<String> ids = new TreeSet<String>();
-        for(String id : idsArray)
-        	ids.add(id);
+        if (patiendIds.getValue() != null) {
+	        String[] idsArray = patiendIds.getValue().split(",");
+	        for(String id : idsArray)
+	        	ids.add(id);
+        }
         
         FileOutputStream fout = new FileOutputStream(new File(output.getValue()));
         PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout){
         	@Override
         	public void exportPatient(Transaction t, Patient p){
-        		if(ids.contains(p.getPatientId())){
+        		if(patiendIds.getValue() == null || ids.contains(p.getPatientId())){
         			System.err.println("exporting: "+ p.getPatientId());
         			super.exportPatient(t, p);
         		}
