@@ -1516,6 +1516,16 @@ public class Transaction {
         return (DrugGeneric)q.uniqueResult();
     }
     
+
+	public DrugGeneric getGenericDrugByName(String name) 
+	{
+        Query q = session.createQuery("from DrugGeneric as druggeneric where genericName = :name");
+        
+        q.setParameter("name", name);
+        
+        return (DrugGeneric)q.uniqueResult();
+	}
+    
     public DrugCommercial getDrugCommercial(String commercialName)
     {
         Query q = session.createQuery("from DrugCommercial as drugcommercial where name = :commercialName");

@@ -96,8 +96,8 @@ public class Aligner {
 
             for (Protein protein : orf.getProteins()) {
 
-                if ((aligned.getFirstAa() < getLastAa(protein))
-                        && (aligned.getLastAa() > getFirstAa(protein))) {
+                if ((aligned.getFirstAa() < aligned.getAlignedRefPos(getLastAa(protein)))
+                        && (aligned.getLastAa() > aligned.getAlignedRefPos(getFirstAa(protein)))) {
                     AaSequence s = new AaSequence();
                     result.add(s);
 

@@ -81,6 +81,18 @@ public class LocalAlignmentService implements AlignmentService {
             
 
             int refAaPos = result.getFirstAa() - 1;
+            
+            StringBuilder alignedRefAA = new StringBuilder();
+            for(int i = 1; i <= (alignedRef.length() / 3); ++i){
+                int codonStart = (i - 1) * 3 + 1;
+                int codonEnd = i * 3;
+                SymbolList refCodon = alignedRef.subList(codonStart, codonEnd);
+                if (refCodon.seqString().equals("---"))
+                	alignedRefAA.append('-');
+                else
+                	alignedRefAA.append('*');
+            }
+            result.setAlignedRefAA(alignedRefAA.toString());
 
             for (int i = result.getFirstAa(); i <= result.getLastAa(); ++i) {
                 int codonStart = (i - 1) * 3 + 1;

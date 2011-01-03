@@ -16,6 +16,8 @@ public class AlignmentResult {
     private int lastAa;
     private int firstRefAa;
     private int lastRefAa;
+    
+    private String alignedRefAA;
 
     public int getFirstAa() {
         return firstAa;
@@ -48,5 +50,30 @@ public class AlignmentResult {
     }
     public void setLastRefAa(int lastRefAa){
     	this.lastRefAa = lastRefAa;
+    }
+    
+    public String getAlignedRefAA(){
+    	return alignedRefAA;
+    }
+    public void setAlignedRefAA(String s){
+    	alignedRefAA = s;
+    }
+    
+    public int getAlignedRefPos(int unalignedPos){
+    	return getAlignedPos(getAlignedRefAA(),unalignedPos);
+    }
+
+    private int getAlignedPos(String s, int unalignedPos){
+    	int i = 0;
+    	int j = 0;
+    	while(i < unalignedPos && j < s.length()){
+    		if(s.charAt(j) != '-')
+    			++i;
+    		++j;
+    	}
+    	if(i == unalignedPos)
+    		return j+1;
+    	else
+    		return -1;
     }
 }

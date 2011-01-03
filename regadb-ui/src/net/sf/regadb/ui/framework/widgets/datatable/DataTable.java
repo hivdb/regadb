@@ -357,7 +357,7 @@ public class DataTable<DataType> extends WTable
 	public void applyFilter()
 	{
 		for(IFilter f : dataTableInterface_.getFilters())
-			if(!f.isValid())
+			if(f != null && !f.isValid())
 				return;
 		
 		Transaction trans = RegaDBMain.getApp().createTransaction();
