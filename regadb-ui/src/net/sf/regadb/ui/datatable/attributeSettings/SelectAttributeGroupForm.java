@@ -9,7 +9,7 @@ public class SelectAttributeGroupForm extends SelectForm<AttributeGroup>
 {
     public SelectAttributeGroupForm(ObjectTreeNode<AttributeGroup> node)
     {
-        super(tr("form.attributes.attributeGroups.selectAttributeGroupForm"),node);
+        super(tr("form.attributeSettings.attributeGroup.selectForm"),node);
     }
 
     public DataTable<AttributeGroup> createDataTable() 

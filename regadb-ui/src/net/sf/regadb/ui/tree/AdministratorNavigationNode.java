@@ -63,7 +63,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		super(WString.tr("menu.administrator.administrator"), parent);
 		
 		DefaultNavigationNode attributeSettings = new DefaultNavigationNode(WString.tr("menu.attributeSettings.attributeSettings"),this);
-		new ObjectTreeNode<Attribute>("attributeSettings.attributes", attributeSettings){
+		new ObjectTreeNode<Attribute>("attributeSettings.attribute", attributeSettings){
 
 			@Override
 			protected ObjectForm<Attribute> createForm(WString name, InteractionState interactionState, Attribute selectedObject) {
@@ -81,7 +81,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
 		};
 		
-		new ObjectTreeNode<AttributeGroup>("attributeSettings.attributeGroups", attributeSettings){
+		new ObjectTreeNode<AttributeGroup>("attributeSettings.attributeGroup", attributeSettings){
 
 			@Override
 			protected ObjectForm<AttributeGroup> createForm(WString name, InteractionState interactionState, AttributeGroup selectedObject) {
@@ -102,7 +102,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 		
 		DefaultNavigationNode testSettings = new DefaultNavigationNode(WString.tr("menu.testSettings.testSettings"), this);
 		
-		new ObjectTreeNode<TestType>("testSettings.testTypes", testSettings){
+		new ObjectTreeNode<TestType>("testSettings.testType", testSettings){
 			@Override
 			protected ObjectForm<TestType> createForm(WString name, InteractionState interactionState, TestType selectedObject) {
 				return new TestTypeForm(name, interactionState, this, selectedObject);
@@ -119,7 +119,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
 		};
 		
-		new ObjectTreeNode<Test>("testSettings.tests", testSettings){
+		new ObjectTreeNode<Test>("testSettings.test", testSettings){
 			@Override
 			protected ObjectForm<Test> createForm(WString name, InteractionState interactionState, Test selectedObject) {
 				return new TestForm(name,interactionState,this,selectedObject);
@@ -171,9 +171,9 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
 		};
 		
-		DefaultNavigationNode datasetSettings = new DefaultNavigationNode(WString.tr("menu.datasetSettings.dataset"), this);
+		DefaultNavigationNode datasetSettings = new DefaultNavigationNode(WString.tr("menu.datasetSettings"), this);
 		
-		new ObjectTreeNode<Dataset>("datasetSettings.dataset",datasetSettings){
+		new ObjectTreeNode<Dataset>("dataset",datasetSettings){
 			@Override
 			protected ObjectForm<Dataset> createForm(WString name, InteractionState interactionState, Dataset selectedObject) {
 				return new DatasetForm(name, interactionState, this, selectedObject);
@@ -190,9 +190,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
 		};
 		
-		DefaultNavigationNode datasetAccess = new DefaultNavigationNode(WString.tr("menu.dataset.access"), datasetSettings);
-		
-		new ObjectTreeNode<SettingsUser>("dataset.access", datasetAccess, EnumSet.of(InteractionState.Viewing, InteractionState.Editing)){
+		new ObjectTreeNode<SettingsUser>("dataset.access", datasetSettings, EnumSet.of(InteractionState.Viewing, InteractionState.Editing)){
 			@Override
 			protected ObjectForm<SettingsUser> createForm(WString name,
 					InteractionState interactionState,
@@ -211,7 +209,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
 		};
         
-        settingsUser = new ObjectTreeNode<SettingsUser>("administrator.users", this){
+        settingsUser = new ObjectTreeNode<SettingsUser>("administrator.user", this){
 
 			@Override
 			protected ObjectForm<SettingsUser> createForm(WString name, InteractionState interactionState, SettingsUser selectedObject) {
@@ -363,7 +361,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         };
         
         
-        new ObjectTreeNode<File>("log",this){
+        new ObjectTreeNode<File>("log",this,EnumSet.of(InteractionState.Viewing,InteractionState.Deleting)){
 
 			@Override
 			protected ObjectForm<File> createForm(WString name, InteractionState interactionState, File selectedObject) {

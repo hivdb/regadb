@@ -42,15 +42,15 @@ public class EventForm extends ObjectForm<Event> {
 	}
 	
 	private void init() {
-		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("form.event.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
-		lblName = new Label(tr("form.event.edit.name"));
+		lblName = new Label(tr("form.event.name"));
         txtName = new TextField(getInteractionState(), this);
         txtName.setMandatory(true);
         mainFrameTable_.addLineToTable(lblName, txtName);
 		
-        lblType = new Label(tr("event.form.label.type"));
+        lblType = new Label(tr("form.event.type"));
         cmbValueType = new ComboBox<ValueType>(getInteractionState(), this);
         
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -68,7 +68,7 @@ public class EventForm extends ObjectForm<Event> {
         
         mainFrameTable_.addLineToTable(lblType, cmbValueType);
         
-        nominalValuesGroup_= new WGroupBox(tr("event.form.frame.nominal"), this);
+        nominalValuesGroup_= new WGroupBox(tr("form.event.values"), this);
 		
 		addControlButtons();
 	}

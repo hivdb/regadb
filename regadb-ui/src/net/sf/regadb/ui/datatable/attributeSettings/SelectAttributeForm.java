@@ -9,7 +9,7 @@ public class SelectAttributeForm extends SelectForm<Attribute>
 {
     public SelectAttributeForm(ObjectTreeNode<Attribute> node)
     {
-        super(tr("form.attributes.attribute.selectAttributeForm"), node);
+        super(tr("form.attributeSettings.attribute.selectForm"), node);
     }
 
     public DataTable<Attribute> createDataTable() 

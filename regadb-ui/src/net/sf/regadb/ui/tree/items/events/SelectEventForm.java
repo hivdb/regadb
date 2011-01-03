@@ -9,7 +9,7 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 public class SelectEventForm extends SelectForm<Event> {
 	
 	public SelectEventForm(ObjectTreeNode<Event> node) {
-		super(tr("event.form.selectEvent"),node);
+		super(tr("form.event.selectForm"),node);
 	}
 	
 	public DataTable<Event> createDataTable()

@@ -9,7 +9,7 @@ public class SelectTestTypeForm extends SelectForm<TestType>
 {
     public SelectTestTypeForm(ObjectTreeNode<TestType> node)
     {
-        super(tr("form.testSetting.testType.selectTestTypeForm"),node);
+        super(tr("form.testSettings.testType.selectForm"),node);
     }
 
     public DataTable<TestType> createDataTable()
