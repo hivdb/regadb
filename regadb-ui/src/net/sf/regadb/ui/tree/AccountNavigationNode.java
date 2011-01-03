@@ -9,6 +9,8 @@ import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
+import net.sf.regadb.util.settings.AccessPolicyConfig.AccessMode;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WMessageBox;
@@ -138,4 +140,8 @@ public class AccountNavigationNode extends DefaultNavigationNode{
 		return accountAdd;
 	}
 
+	@Override
+	public boolean isDisabled(){
+		return RegaDBSettings.getInstance().getAccessPolicyConfig().getAccessMode() == AccessMode.INTEGRATED;
+	}
 }
