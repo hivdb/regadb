@@ -2,7 +2,6 @@ package net.sf.regadb.ui.tree.items.myAccount;
 
 import net.sf.regadb.ui.forms.login.LoginForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Signal1;
@@ -29,7 +28,7 @@ public class LogoutItem extends TreeMenuNode
                     RegaDBMain.getApp().logout();
                     RegaDBMain.getApp().getWindow().newTree();
                     RegaDBMain.getApp().getTree().getRootTreeNode().refresh();
-                    RegaDBMain.getApp().getTree().getTreeContent().myAccountMain.expand();
+                    RegaDBMain.getApp().getTree().getTreeContent().accountNode.expand();
 				}
 			}
         });
