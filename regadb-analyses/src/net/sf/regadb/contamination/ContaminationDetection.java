@@ -51,10 +51,15 @@ public class ContaminationDetection {
 	}
 	
 	public static Double clusterFactor(NtSequence ntSeq, SequenceDb db) {
-		//TODO allow multiple distributions
-		Distribution distributionSettings = RegaDBSettings.getInstance().getContaminationConfig().getDistributions().get(0);
-		
-		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null);
+		//TODO
+		return 0.0;
+	}
+	
+	/**
+	 * 	Compute the cluster factor for 1 region's distribution.
+	 */
+	private static Double regionClusterFactor(NtSequence ntSeq, SequenceDb db, Distribution ds) {
+		SequenceDistancesQuery distances = new SequenceDistancesQuery(ntSeq, null, new SequenceDistancesQuery.Range(ds.orf, ds.start, ds.end));
 		db.query(ntSeq.getViralIsolate().getGenome(), distances);
 		
 		if (distances.getSequenceDistances().size() == 0)
@@ -68,9 +73,8 @@ public class ContaminationDetection {
 						distances.getSequenceDistances().containsKey(nt.getNtSequenceIi()))
 					intraPatientSeqs.add(nt.getNtSequenceIi());
 		
-		//TODO allow multiple distributions
-		DistributionFunction Fi = new LogNormalDistributionFunction(distributionSettings.Di_mu, distributionSettings.Di_sigma);
-		DistributionFunction Fo = new LogNormalDistributionFunction(distributionSettings.Do_mu, distributionSettings.Do_sigma);
+		DistributionFunction Fi = new LogNormalDistributionFunction(ds.Di_mu, ds.Di_sigma);
+		DistributionFunction Fo = new LogNormalDistributionFunction(ds.Do_mu, ds.Do_sigma);
 		
 		double[] Si = new double[intraPatientSeqs.size()];
 		double[] So = new double[distances.getSequenceDistances().size() - intraPatientSeqs.size()];
