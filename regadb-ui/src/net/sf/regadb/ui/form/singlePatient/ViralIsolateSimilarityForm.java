@@ -125,7 +125,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	private void writeFasta(NtSequence sequence, Writer writer) throws IOException {
 		SequenceDb sdb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 		
-		SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, getOutputType(includePatientIsolatesCB.isChecked()));
+		SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, getOutputType(includePatientIsolatesCB.isChecked()), null);
 		sdb.query(sequence.getViralIsolate().getGenome(), sdq);
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -163,7 +163,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 			table.clear();
 			table.addHeader(tr("form.viralIsolate.similarity.similarity"));
 			
-			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, getOutputType(includePatientIsolates));
+			SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, getOutputType(includePatientIsolates), null);
 			sdb.query(sequence.getViralIsolate().getGenome(), sdq);
 			
 			for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){
