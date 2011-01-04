@@ -13,14 +13,30 @@ import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceQuery;
 import net.sf.regadb.sequencedb.SequenceUtils;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
-import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.settings.ContaminationConfig.Distribution;
 
 public class SequenceDistancesQuery implements SequenceQuery {
+	public static class Range {
+		public Range() {
+			
+		}
+		
+		public Range(String orf, int start, int end) {
+			this.orf = orf;
+			this.start = start;
+			this.end = end;
+		}
+		
+		String orf;
+		int start;
+		int end;
+	}
+	
 	public enum OutputType {
 		IntraPatient,
 		ExtraPatient;
 	}
+	
+	private Range range;
 	
 	private Map<Integer, SequenceDistance> sequenceDistances = new HashMap<Integer, SequenceDistance>();
 	
@@ -29,11 +45,13 @@ public class SequenceDistancesQuery implements SequenceQuery {
 	private OutputType outputType;
 	private Map<String, String> alignments = new HashMap<String, String>();
 	
-	public SequenceDistancesQuery(NtSequence query, OutputType outputType) {
+	public SequenceDistancesQuery(NtSequence query, OutputType outputType, Range range) {
 		this.query = query;
 		this.queryPatient = new Patient(query.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
 		
 		this.outputType = outputType;
+		
+		this.range = range;
 		
 		for (AaSequence aaseq : query.getAaSequences()) {
 			OpenReadingFrame orf = aaseq.getProtein().getOpenReadingFrame();
@@ -50,8 +68,7 @@ public class SequenceDistancesQuery implements SequenceQuery {
 		if (sequenceId == query.getNtSequenceIi())
 			return;
 		
-		//TODO allow multiple distributions
-		if (orf.getName().equals("orf"))
+		if (range != null && !orf.getName().equals(range.orf))
 			return;
 			
 		if (outputType == OutputType.IntraPatient && patientId != queryPatient.getPatientIi())
@@ -64,10 +81,11 @@ public class SequenceDistancesQuery implements SequenceQuery {
 		String queryAlignment = alignments.get(orf.getName());
 		if (queryAlignment != null) {
 			try {
-				Distribution ds = RegaDBSettings.getInstance().getContaminationConfig().getDistributions().get(0);
-				SequenceDistance result = 
-					//TODO allow multiple distributions
-					SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment), ds.start, ds.end);
+				SequenceDistance result;
+				if (range != null)
+					result = SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment), range.start, range.end);
+				else
+					result = SequenceUtils.distance(queryAlignment, SequenceDb.readAlignment(alignment), 0, queryAlignment.length());
 			
 				if (result.numberOfPositions != 0) {
 					if (f == null) {
