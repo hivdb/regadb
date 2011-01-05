@@ -21,7 +21,7 @@ import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 
-public class ApproximateDistributions {
+public class SampleDistances {
 	public static void main(String [] args) throws WrongUidException, WrongPasswordException, DisabledUserException, IOException {
 		if (args.length != 6)
 			System.err.println("user password outputfile.csv I/O orf region");
