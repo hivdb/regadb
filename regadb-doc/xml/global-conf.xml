@@ -208,15 +208,19 @@
     </proxy>
   </proxies>
 
-  <!--  contamination tool configuration
-  		required if you want to use the tool
+  <!--  Contamination tool configuration
+	Optional: Only required when using the contamination tool.
+	Note: This functionality requires a sequence-database.
   -->  
   <contamination>
   	<!-- cluster factor threshold -->
   	<threshold>0.5</threshold>
 
-        <!-- list of distributions per regio 
-            (currently only PR+RT in HIV1 is supported)-->
+        <!-- list of log-normal distribution parameters per region 
+	     (a region is a range within an ORF)
+	     Note: log-normal distributions can be approximated,
+	           a howto can be found in the RegaDB installation manual.
+          -->
         <distributions>
           <distribution organism="HIV-1" orf="pol" start="169" end="1786"
                         Di_mu="-3.896448912" Di_sigma="0.747342409" 
@@ -224,12 +228,18 @@
         </distributions>
   </contamination>
   
-  <!-- Sequence db configuration -->
+  <!-- Sequence database configuration 
+       A sequence database is a directory containing all RegaDB sequences 
+       in an aligned format.
+       When this configuration is completed, logging in to RegaDB will fill the
+       sequence database directory with all sequences currently stored in 
+       RegaDB.
+    -->
   <sequence-database>
-  	<!-- Sequence db path -->
-	<path>/home/pieter/contamination/</path>
-	<!-- Minimum similarity -->
-	<minimum-similarity>0.975</minimum-similarity>
+  	<!-- Sequence database path -->
+	<path>/etc/rega_institute/regadb/sequencedb</path>
+	<!-- Similarity treshold (minimum) -->
+	<similarity-treshold>0.975</similarity-treshold>
   </sequence-database>
   
   <!-- a list of cron jobs to be run at specified times/intervals
