@@ -50,6 +50,7 @@ public class ContaminationConfig extends ConfigParser {
 			d.Do_mu = Double.parseDouble(d_e.getAttributeValue("Do_mu"));
 			d.Do_sigma = Double.parseDouble(d_e.getAttributeValue("Do_sigma"));
 			
+			//TODO support multiple regions
 			if (distributions.size() > 0)
 				throw new RuntimeException("Only the 1 region is currently supported.");
 			else
