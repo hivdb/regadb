@@ -8,7 +8,7 @@ inter <- inter[1:rows,]
 # intra.csv: intra-patient file
 # type;diversity
 intra <- read.csv("intra.csv");
-intra <- subset(intra, intra$type == "O")
+intra <- subset(intra, intra$type == "I")
 
 expintra <- exp(intra$diversity)
 expinter <- exp(inter$diversity)
