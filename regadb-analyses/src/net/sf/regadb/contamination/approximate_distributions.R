@@ -8,6 +8,7 @@ inter <- inter[1:min(100000, length(inter$type)),]
 # type;diversity
 intra <- read.csv("intra.csv");
 intra <- subset(intra, intra$type == "I")
+intra <- intra[1:min(100000, length(intra$type)),]
 
 expintra <- exp(intra$diversity)
 expinter <- exp(inter$diversity)
