@@ -22,3 +22,19 @@ Click \textbf{OK} to confirm this simulation and to load the items into your loc
 \\
 \section{Add a Dataset}
 Navigate to the Administrator, Dataset settings menu, and add a new Dataset to the system.
+\section{Contamination tool}
+\subsection{Approximating distribution parameters}
+The contamination tool uses both inter- and intra-patient sequence distance distributions. These distributions can be configured for multiple regions within a genome. Usually, using the precomputed values (such as offered on our website (TODO add link to our website)) is sufficient, however, it is also possible to esitimate these values on a existing database.
+This is done by sampling a subset of all inter- and intra-patient sequence distances in the database, and afterwards fitting these distances on a log-normal distribution.
+
+To sample the sequences distances for inter- or intra-patient run the SampleDistances program (located in regadb-analyses/src/net/sf/regadb/contamination/), this program accepts the following arguments:
+\begin{itemize}
+\item username 
+\item password 
+\item csv outputfile (eg.: outputfile.csv) 
+\item outputType (intra-patient=I, inter-patient=O) 
+\item ORF (eg.: pol) 
+\item region range relative to the ORF (eg.: 169-1786) 
+\end{itemize}
+
+After sampling distances, the approximation script can be used to fit the distances on a log normal distribution. This script requires both an inter- and intra-patient distances csv file. TODO: explain how to run the script.
