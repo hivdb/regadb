@@ -2,8 +2,7 @@
 # type;diversity
 inter <- read.csv("inter.csv", sep=";")
 inter <- subset(inter, inter$type == "O")
-rows <- min(100000, length(inter$type))
-inter <- inter[1:rows,]
+inter <- inter[1:min(100000, length(inter$type)),]
 
 # intra.csv: intra-patient file
 # type;diversity
