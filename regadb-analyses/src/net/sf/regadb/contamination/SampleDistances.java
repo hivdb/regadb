@@ -3,6 +3,7 @@ package net.sf.regadb.contamination;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 import net.sf.regadb.contamination.SequenceDistancesQuery.OutputType;
@@ -15,6 +16,9 @@ import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.CacheMode;
@@ -23,34 +27,43 @@ import org.hibernate.ScrollableResults;
 
 public class SampleDistances {
 	public static void main(String [] args) throws WrongUidException, WrongPasswordException, DisabledUserException, IOException {
-		if (args.length != 6) {
-			System.err.println("user password outputfile.csv outputType ORF region");
-			return;
-		}
+		Arguments as = new Arguments();
+		PositionalArgument user = as.addPositionalArgument("user", true);
+		PositionalArgument pass = as.addPositionalArgument("pass", true);
+		PositionalArgument file = as.addPositionalArgument("outputfile.csv", true);
+		PositionalArgument orf = as.addPositionalArgument("orf", true);
+		PositionalArgument reg = as.addPositionalArgument("region", true);
+		ValueArgument type = as.addNominalArgument("type", Arrays.asList("i", "o"), false).setValue("i");
+		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
 		
-		RegaDBSettings.createInstance();
+		if(!as.handle(args))
+			return;
+		
+		if(confDir.isSet())
+			RegaDBSettings.createInstance(confDir.getValue());
+		else
+			RegaDBSettings.createInstance();
 		
 		SequenceDb db = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 		
-		Login login = Login.authenticate(args[0], args[1]);
+		Login login = Login.authenticate(user.getValue(), pass.getValue());
 		Transaction t = login.createTransaction();
 		Query q = t.createQuery("from NtSequence");
 		q.setCacheMode(CacheMode.IGNORE);
 		ScrollableResults r = q.scroll();
 		
-		FileWriter fw = new FileWriter(new File(args[2]));
+		FileWriter fw = new FileWriter(new File(file.getValue()));
 		
-		String type = args[3].trim();
 		OutputType outputType = null;
-		if (type.equals("I"))
+		if (type.getValue().equals("i"))
 			outputType = OutputType.IntraPatient;
-		else if (type.equals("O"))
+		else if (type.getValue().equals("o"))
 			outputType = OutputType.ExtraPatient;
 		
 		Range range = new Range();
-		range.orf = args[4];
+		range.orf = orf.getValue();
 		
-		String region[] = args[5].split("-");
+		String region[] = reg.getValue().split("-");
 		range.start = Integer.parseInt(region[0]);
 		range.end = Integer.parseInt(region[1]);
 		
