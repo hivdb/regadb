@@ -33,7 +33,7 @@ public class SampleDistances {
 		PositionalArgument file = as.addPositionalArgument("outputfile.csv", true);
 		PositionalArgument orf = as.addPositionalArgument("orf", true);
 		PositionalArgument reg = as.addPositionalArgument("region", true);
-		ValueArgument type = as.addNominalArgument("type", Arrays.asList("i", "o"), false).setValue("i");
+		ValueArgument type = as.addNominalArgument("type", Arrays.asList("I", "O"), false).setValue("I");
 		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
 		
 		if(!as.handle(args))
@@ -48,6 +48,10 @@ public class SampleDistances {
 		
 		Login login = Login.authenticate(user.getValue(), pass.getValue());
 		Transaction t = login.createTransaction();
+		db.init(t);
+		t.commit();
+		
+		t = login.createTransaction();
 		Query q = t.createQuery("from NtSequence");
 		q.setCacheMode(CacheMode.IGNORE);
 		ScrollableResults r = q.scroll();
@@ -55,9 +59,9 @@ public class SampleDistances {
 		FileWriter fw = new FileWriter(new File(file.getValue()));
 		
 		OutputType outputType = null;
-		if (type.getValue().equals("i"))
+		if (type.getValue().equals("I"))
 			outputType = OutputType.IntraPatient;
-		else if (type.getValue().equals("o"))
+		else if (type.getValue().equals("O"))
 			outputType = OutputType.ExtraPatient;
 		
 		Range range = new Range();
@@ -84,7 +88,7 @@ public class SampleDistances {
 				
 				double diff = ((double)f.numberOfDifferences/f.numberOfPositions);
 				if (f.numberOfPositions != 0){
-					fw.write(type + "," + diff + "\n");
+					fw.write(type.getValue() + "," + diff + "\n");
 					fw.flush();
 				}
 			}
