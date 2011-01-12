@@ -18,7 +18,6 @@ import net.sf.regadb.ui.framework.widgets.warning.WarningMessage.MessageType;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFont;
-import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;

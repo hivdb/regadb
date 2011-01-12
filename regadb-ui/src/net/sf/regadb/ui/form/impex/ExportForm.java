@@ -136,7 +136,7 @@ public class ExportForm extends FormWidget {
         
         String fileName = ds.getDescription() + "_csv_export.zip";
         anchor.setText(fileName);
-        anchor.setResource(new WFileResource("application/zip", exportFile.getAbsolutePath()));
+        anchor.setResource(new WFileResource("application/zip", exportFile.getAbsolutePath(), null));
         anchor.getResource().suggestFileName(fileName);
 	}
 	
@@ -152,7 +152,7 @@ public class ExportForm extends FormWidget {
         
         String fileName = ds.getDescription() + "_export.xml";
         anchor.setText(fileName);
-        WFileResource wfr = new WFileResource("text/txt", exportFile.getAbsolutePath());
+        WFileResource wfr = new WFileResource("text/txt", exportFile.getAbsolutePath(), null);
         anchor.setResource(wfr);
         wfr.suggestFileName(fileName);
 	}

@@ -2,7 +2,6 @@ package net.sf.regadb.ui.framework.widgets.datatable;
 
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
 public class ColumnHeader extends WContainerWidget

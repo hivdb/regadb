@@ -5,7 +5,6 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WLabel;
-import eu.webtoolkit.jwt.WString;
 
 public class Label extends WLabel
 {

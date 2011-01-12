@@ -10,8 +10,8 @@ import net.sf.regadb.ui.form.query.querytool.widgets.WButtonPanel;
 import com.pharmadm.custom.rega.queryeditor.AndClause;
 import com.pharmadm.custom.rega.queryeditor.InclusiveOrClause;
 import com.pharmadm.custom.rega.queryeditor.NotClause;
-import com.pharmadm.custom.rega.queryeditor.WhereClause;
 import com.pharmadm.custom.rega.queryeditor.UniqueNameContext.AssignMode;
+import com.pharmadm.custom.rega.queryeditor.WhereClause;
 
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;

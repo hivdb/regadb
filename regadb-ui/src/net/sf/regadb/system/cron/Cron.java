@@ -4,8 +4,8 @@ import java.text.ParseException;
 import java.util.Map;
 
 import net.sf.regadb.util.settings.CronConfig;
-import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.CronConfig.JobElement;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;

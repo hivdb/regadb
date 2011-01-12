@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WContainerWidget.Overflow;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -25,7 +26,6 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
-import eu.webtoolkit.jwt.WContainerWidget.Overflow;
 
 public class StartImportForm extends WDialog {
 	private ImportToolForm importToolForm;

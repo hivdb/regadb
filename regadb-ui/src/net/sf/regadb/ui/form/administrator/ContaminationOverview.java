@@ -3,7 +3,6 @@ package net.sf.regadb.ui.form.administrator;
 import java.util.List;
 
 import net.sf.regadb.db.NtSequence;
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;

@@ -3,18 +3,17 @@ package net.sf.regadb.ui.form.query.querytool.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WInteractWidget;
 import eu.webtoolkit.jwt.WMenu;
 import eu.webtoolkit.jwt.WMenuItem;
+import eu.webtoolkit.jwt.WMenuItem.LoadPolicy;
 import eu.webtoolkit.jwt.WStackedWidget;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WWidget;
-import eu.webtoolkit.jwt.WMenuItem.LoadPolicy;
 
 /*
  * TODO REMOVE???

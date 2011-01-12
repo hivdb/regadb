@@ -2,7 +2,6 @@ package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import eu.webtoolkit.jwt.JSlot;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WCssDecorationStyle;
 import eu.webtoolkit.jwt.WFormWidget;

@@ -1,6 +1,5 @@
 package net.sf.regadb.system.cron.jobs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.contamination.ContaminationDetection;

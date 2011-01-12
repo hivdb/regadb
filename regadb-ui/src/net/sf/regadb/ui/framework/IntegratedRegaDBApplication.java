@@ -9,7 +9,6 @@ import net.sf.regadb.db.session.Login;
 
 import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
 import eu.webtoolkit.jwt.WEnvironment;

@@ -7,9 +7,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
@@ -17,6 +14,10 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WComboBox;
