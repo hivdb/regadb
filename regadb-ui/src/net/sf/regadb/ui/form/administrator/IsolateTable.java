@@ -1,7 +1,5 @@
 package net.sf.regadb.ui.form.administrator;
 
-import java.util.List;
-
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
