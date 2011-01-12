@@ -34,6 +34,7 @@ public class IsolateTable extends WTable {
 		int n = getRowCount();
 
 		WLabel lblPatient = new WLabel(patientId);
+		lblPatient.setStyleClass("text-link");
 		lblPatient.clicked().addListener(this, new Signal.Listener() {
             public void trigger() {
             	gotoPatient(patientIi);
@@ -47,9 +48,11 @@ public class IsolateTable extends WTable {
 		};
 		
 		WLabel lblSample = new WLabel(sampleId);
+		lblSample.setStyleClass("text-link");
 		lblSample.clicked().addListener(this, toViralIsolate);
 		
 		WLabel lblLabel = new WLabel(label);
+		lblLabel.setStyleClass("text-link");
 		lblLabel.clicked().addListener(this, toViralIsolate);
 		
 		getElementAt(n,0).addWidget(lblPatient);
