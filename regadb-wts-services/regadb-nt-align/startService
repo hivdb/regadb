@@ -1,0 +1,20 @@
+#!/bin/sh
+
+monitor_file="$1/.monitor"
+running_file="$1/.running"
+
+echo "Setting files" >> monitor_file
+
+ref_dir="/soft/wts/services/regadb-nt-align/ref_seq/"
+ 
+organism_name=`cat "$1/inputs/organism_name"`
+nt_sequence_file="$1/inputs/nt_sequences"
+min_signal=`cat "$1/inputs/min_signal"`
+
+echo "Starting calculations" >> $monitor_file
+/usr/local/bin/ntalign  $ref_dir$organism_name.fasta $nt_sequence_file $min_signal > "$1/outputs/aligned_sequences"
+echo "Calculation ended" >> $monitor_file
+
+rm "$running_file"
+
+echo "ENDED_SUCCES" > "$1/.ended"

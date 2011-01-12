@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>RegaDB Nucleotide Alignment tool</description>
+	<version>1.0</version>
+<inputs>
+	<input>
+		<name>organism_name</name>
+		<description>organism name</description>
+	</input>
+        <input>
+            <name>nt_sequences</name>
+            <description>fasta</description>
+        </input>
+        <input>
+        	<name>min_signal</name>
+        	<description>threshold to prune the start and end of the sequences</description>
+        </input>
+</inputs>
+<outputs>
+	<output>
+		<name>aligned_sequences</name>
+		<description>A file containing the aligned (and cut) sequences</description>
+	</output>
+</outputs>
+</service>
