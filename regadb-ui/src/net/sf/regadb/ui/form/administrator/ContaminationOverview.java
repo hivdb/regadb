@@ -92,11 +92,11 @@ public class ContaminationOverview extends FormWidget {
 				NtSequence ntSeq = (NtSequence)o[3];
 				TestResult clusterFactor = (TestResult)o[4];
 				
-				//TODO include in query?
 				boolean noContamination = false;
 				for (TestResult tr : ntSeq.getTestResults()) {
 					if (tr.getTest().getDescription().equals(StandardObjects.getContaminationTest().getDescription())) {
-						noContamination = true;
+						if (tr.getTestNominalValue().getValue().equals("Negative"))
+							noContamination = true;
 						break;
 					}
 				}

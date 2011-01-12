@@ -19,6 +19,7 @@ public class ContaminationConfig extends ConfigParser {
 	}
 	
 	private double threshold;
+	private boolean sendMail;
 	private List<Distribution> distributions = new ArrayList<Distribution>();
 
 	public ContaminationConfig() {
@@ -28,6 +29,7 @@ public class ContaminationConfig extends ConfigParser {
 	@Override
 	public void setDefaults() {
 		threshold = 0.5;
+		sendMail = false;
 	}
 
 	@Override
@@ -35,6 +37,10 @@ public class ContaminationConfig extends ConfigParser {
 		Element ee = e.getChild("threshold");
 		if(ee != null)
 			setThreshold(Double.parseDouble(ee.getText()));
+		
+		ee = e.getChild("send-mail");
+		if(ee != null)
+			setSendMail(Boolean.parseBoolean(ee.getTextTrim()));
 		
 		ee = e.getChild("distributions");
 		for (Object d_o : ee.getChildren("distribution")) {
@@ -74,6 +80,14 @@ public class ContaminationConfig extends ConfigParser {
 	}
 	public void setThreshold(double threshold){
 		this.threshold = threshold;
+	}
+	
+	public boolean isSendMail() {
+		return sendMail;
+	}
+
+	public void setSendMail(boolean sendMail) {
+		this.sendMail = sendMail;
 	}
 	
 	public List<Distribution> getDistributions() {
