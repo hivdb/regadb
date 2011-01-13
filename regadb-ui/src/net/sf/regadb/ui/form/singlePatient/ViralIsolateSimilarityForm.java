@@ -116,7 +116,8 @@ public class ViralIsolateSimilarityForm extends TabForm {
 			IsolateTable table = new IsolateTable(this);
 			table.hide();
 
-			ContaminationTree tree = new ContaminationTree(this);
+			String organism = nt.getAaSequences().iterator().next().getProtein().getOpenReadingFrame().getGenome().getOrganismName();
+			ContaminationTree tree = new ContaminationTree(this, organism);
 			tree.hide();
 
 			sequences.put(nt.getLabel(), nt);
