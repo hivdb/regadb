@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-public class TestQuickTree extends AbstractService {
+public class NucleotideAlignment extends AbstractService {
 
 	private String sequences;
 	private String organism;
@@ -14,7 +14,7 @@ public class TestQuickTree extends AbstractService {
 	
 	private String alignedSequences;
 	
-	public TestQuickTree(String sequences, String organism, String signalThreshold) {
+	public NucleotideAlignment(String sequences, String organism, String signalThreshold) {
 		this.sequences = sequences;
 		this.organism = organism;
 		this.signalThreshold = signalThreshold;
@@ -31,7 +31,11 @@ public class TestQuickTree extends AbstractService {
 	protected void processResults() throws ServiceException {
 		alignedSequences = getOutputs().get("aligned_sequences");		
 	}
-
+	
+	public String getAlignedSequences() {
+		return alignedSequences;
+	}
+	
 	public static void main(String[] args) throws ServiceException, FileNotFoundException {
 		if(args.length != 3) {
 			System.err.println("TreeBuilder sequences.fasta organism signalThreshold");
@@ -46,7 +50,7 @@ public class TestQuickTree extends AbstractService {
 		String organism = args[1];
 		String signalThreshold = args[2];
 		
-		TestQuickTree test = new TestQuickTree(sb.toString(), organism, signalThreshold);
+		NucleotideAlignment test = new NucleotideAlignment(sb.toString(), organism, signalThreshold);
 		test.launch();
 		new TreeBuilder(test.alignedSequences).launch();
 	}

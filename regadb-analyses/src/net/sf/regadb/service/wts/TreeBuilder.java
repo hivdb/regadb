@@ -22,8 +22,11 @@ public class TreeBuilder extends AbstractService {
 	}
 
 	protected void processResults() throws ServiceException {
-		tree = getOutputs().get("tree.phy");
-		System.out.println(tree);
+		tree = getOutputs().get("tree.phy");		
+	}
+	
+	public String getNewickTree() {
+		return tree;
 	}
 
 	public static void main(String[] args) throws ServiceException, FileNotFoundException {
@@ -37,7 +40,9 @@ public class TreeBuilder extends AbstractService {
 		while(s.hasNextLine()) {
 			sb.append(s.nextLine()+"\n");
 		}		
-		new TreeBuilder(sb.toString()).launch();
+		TreeBuilder tb = new TreeBuilder(sb.toString());
+		tb.launch();
+		System.out.println(tb.getNewickTree());
 	}
 
 }
