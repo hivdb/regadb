@@ -10,11 +10,11 @@ public class NucleotideAlignment extends AbstractService {
 
 	private String sequences;
 	private String organism;
-	private String signalThreshold;
+	private double signalThreshold;
 	
 	private String alignedSequences;
 	
-	public NucleotideAlignment(String sequences, String organism, String signalThreshold) {
+	public NucleotideAlignment(String sequences, String organism, double signalThreshold) {
 		this.sequences = sequences;
 		this.organism = organism;
 		this.signalThreshold = signalThreshold;
@@ -50,7 +50,7 @@ public class NucleotideAlignment extends AbstractService {
 		String organism = args[1];
 		String signalThreshold = args[2];
 		
-		NucleotideAlignment test = new NucleotideAlignment(sb.toString(), organism, signalThreshold);
+		NucleotideAlignment test = new NucleotideAlignment(sb.toString(), organism, Double.parseDouble(signalThreshold));
 		test.launch();
 		new TreeBuilder(test.alignedSequences).launch();
 	}
