@@ -37,72 +37,95 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
 public class ViralIsolateSimilarityForm extends TabForm {
 
 	private ViralIsolateForm viralIsolateForm;
-	
-	private Map<String,IsolateTable> tables;
-	private Map<String,Boolean> dirty;
-	private Map<String,NtSequence> sequences;
-	
+
+	private Map<String, IsolateTable> tables;
+	private Map<String, Boolean> dirty;
+	private Map<String, NtSequence> sequences;
+	private Map<String, ContaminationTree> trees;
 	private WLineEdit minimumSimilarityTF;
-	
+
 	private WComboBox sequenceCombo;
-	
+
 	private WAnchor downloadSequences;
-	
-	public ViralIsolateSimilarityForm(ViralIsolateForm viralIsolateForm){
+
+	private WComboBox visualCombo;
+
+	private enum Visualization {
+		TABLE(WString.tr("form.viralIsolate.similarity.table")), TREE(WString.tr("form.viralIsolate.similarity.tree"));
+
+		private WString name;
+
+		private Visualization(WString name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return name.toString();
+		}
+	};
+
+	public ViralIsolateSimilarityForm(ViralIsolateForm viralIsolateForm) {
 		super();
 		this.viralIsolateForm = viralIsolateForm;
 	}
-	
+
 	@Override
 	public void initialize() {
 		WTable layout = new WTable(this);
-		
-        new WLabel(WString.tr("form.viralIsolate.similarity.sequenceLabel"),layout.getElementAt(0,0));
-        sequenceCombo = new WComboBox(layout.getElementAt(0,1));
 
-		layout.getElementAt(1, 0).addWidget(new WLabel(WString.tr("form.viralIsolate.similarity.minimum")));
+		Signal.Listener listener = new Signal.Listener() {
+			public void trigger() {
+				if (validate()) {
+					setAllDirty();
+					showSequence();
+				}
+			}
+		};
+
+		new WLabel(WString.tr("form.viralIsolate.similarity.sequenceLabel"), layout.getElementAt(0, 0));
+		sequenceCombo = new WComboBox(layout.getElementAt(0, 1));
+
+		new WLabel(WString.tr("form.viralIsolate.similarity.minimum"), layout.getElementAt(1, 0));
 		minimumSimilarityTF = new WLineEdit(layout.getElementAt(1, 1));
 		WDoubleValidator dval = new WDoubleValidator();
 		dval.setMandatory(true);
 		minimumSimilarityTF.setValidator(dval);
-				
-		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.similarity.submit"),layout.getElementAt(1, 2));
-		
+		minimumSimilarityTF.enterPressed().addListener(this, listener);
+		double minimumSimilarity = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getMinimumSimilarity();
+		minimumSimilarityTF.setText(minimumSimilarity + "");
+
+		new WLabel(WString.tr("form.viralIsolate.similarity.visualizationLabel"), layout.getElementAt(2, 0));
+		visualCombo = new WComboBox(layout.getElementAt(2, 1));
+		for (Visualization v : Visualization.values()) {
+			visualCombo.addItem(v.toString());
+		}
+		visualCombo.setCurrentIndex(0);
+		visualCombo.changed().addListener(this, listener);
+
+		WPushButton submit = new WPushButton(WString.tr("form.viralIsolate.similarity.submit"), layout.getElementAt(2, 2));
+		submit.clicked().addListener(this, listener);
+
 		new WBreak(this);
-		
-		Signal.Listener listener = new Signal.Listener() {
-            public void trigger() {
-            	if(validate()){
-            		setAllDirty();
-            		showSequence();
-            	}
-            }
-        };
-        
-        minimumSimilarityTF.enterPressed().addListener(this,listener);
-        
-        submit.clicked().addListener(this,listener);
 
-		tables = new TreeMap<String,IsolateTable>();
-		dirty = new TreeMap<String,Boolean>();
-		sequences = new TreeMap<String,NtSequence>();
+		tables = new TreeMap<String, IsolateTable>();
+		trees = new TreeMap<String, ContaminationTree>();
+		dirty = new TreeMap<String, Boolean>();
+		sequences = new TreeMap<String, NtSequence>();
 
-		for(final NtSequence nt : viralIsolateForm.getViralIsolate().getNtSequences()){
-			
+		for (final NtSequence nt : viralIsolateForm.getViralIsolate().getNtSequences()) {
 			IsolateTable table = new IsolateTable(this);
 			table.hide();
-			
-			sequences.put(nt.getLabel(),nt);
-			tables.put(nt.getLabel(),table);
+
+			ContaminationTree tree = new ContaminationTree(this);
+			tree.hide();
+
+			sequences.put(nt.getLabel(), nt);
+			tables.put(nt.getLabel(), table);
+			trees.put(nt.getLabel(), tree);
 			dirty.put(nt.getLabel(), true);
-			
 			sequenceCombo.addItem(nt.getLabel());
 		}
-		downloadSequences = new WAnchor(this);
-		downloadSequences.setText(tr("form.viralIsolate.similarity.downloadSequences"));
-		downloadSequences.setTarget(AnchorTarget.TargetNewWindow);
-		downloadSequences.setHidden(true);
-		
+
 		sequenceCombo.setCurrentIndex(0);
 		sequenceCombo.changed().addListener(this, new Signal.Listener() {
 			@Override
@@ -111,108 +134,114 @@ public class ViralIsolateSimilarityForm extends TabForm {
 			}
 		});
 
-		double minimumSimilarity = RegaDBSettings.getInstance().getSequenceDatabaseConfig().getMinimumSimilarity();
-		minimumSimilarityTF.setText(minimumSimilarity+"");
+		downloadSequences = new WAnchor(this);
+		downloadSequences.setText(tr("form.viralIsolate.similarity.downloadSequences"));
+		downloadSequences.setTarget(AnchorTarget.TargetNewWindow);
+		downloadSequences.setHidden(true);
+
 		showSequence();
 	}
-		
+
 	private void getSimilarSequences(NtSequence sequence, List<NtSequence> similarSequences, List<Double> similarities) {
 		SequenceDb sdb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
-		
+
 		SequenceDistancesQuery sdq = new SequenceDistancesQuery(sequence, OutputType.ExtraPatient, null);
 		sdb.query(sequence.getViralIsolate().getGenome(), sdq);
-		
+
 		Transaction t = RegaDBMain.getApp().createTransaction();
-		
+
 		final double minimumSimilarity = Double.parseDouble(minimumSimilarityTF.getText());
-		
-		for(Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()){ 
-			double diff = (double)sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
+
+		for (Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()) {
+			double diff = (double) sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
 			double similarity = 1.0 - diff;
-			if(similarity >= minimumSimilarity) {
+			if (similarity >= minimumSimilarity) {
 				similarSequences.add(t.getSequence(sd.getKey()));
 				if (similarities != null)
 					similarities.add(similarity);
 			}
 		}
-		
+
 		t.commit();
 	}
-	
+
 	private void writeFasta(NtSequence ntSeq, Writer writer) throws IOException {
 		List<NtSequence> similarSequences = new ArrayList<NtSequence>();
 		getSimilarSequences(ntSeq, similarSequences, null);
-	
+
 		for (NtSequence sequence : similarSequences) {
-			writer.append(">" + 
-					new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId() +
-					"_" + sequence.getViralIsolate().getSampleId() +
-					"_" + sequence.getLabel().replace(' ', '_') +
-					"\n");
+			writer.append(">" + new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId() + "_" + sequence.getViralIsolate().getSampleId() + "_"
+					+ sequence.getLabel().replace(' ', '_') + "\n");
 			writer.append(ntSeq.getNucleotides() + "\n");
 		}
 	}
 
-	private void setAllDirty(){
-		for(Map.Entry<String, Boolean> me : dirty.entrySet()){
+	private void setAllDirty() {
+		for (Map.Entry<String, Boolean> me : dirty.entrySet()) {
 			me.setValue(true);
 		}
 	}
-	
-	private boolean validate(){
+
+	private boolean validate() {
 		return minimumSimilarityTF.validate() == WValidator.State.Valid;
 	}
-	
+
 	private void showSequence() {
-		showSequence(sequenceCombo.getCurrentText().getValue(),
-				Double.parseDouble(minimumSimilarityTF.getText()));
+		showSequence(sequenceCombo.getCurrentText().getValue(), Double.parseDouble(minimumSimilarityTF.getText()));
 	}
-	
-	public void showSequence(String sequenceLabel, double minimumSimilarity){
-		if(dirty.get(sequenceLabel)){
-			fill(sequenceLabel,minimumSimilarity);
+
+	public void showSequence(String sequenceLabel, double minimumSimilarity) {
+		if (dirty.get(sequenceLabel)) {
+			fill(sequenceLabel, minimumSimilarity);
 			dirty.put(sequenceLabel, false);
 		}
-		
-		for(Map.Entry<String, IsolateTable> me : tables.entrySet()){
-			if(me.getKey().equals(sequenceLabel))
+
+		for (Map.Entry<String, IsolateTable> me : tables.entrySet()) {
+			if (me.getKey().equals(sequenceLabel) && visualCombo.getCurrentIndex() == Visualization.TABLE.ordinal())
 				me.getValue().show();
 			else
 				me.getValue().hide();
 		}
-		
-		if(tables.get(sequenceLabel).getRowCount() > 1){ //count header
+		for (Map.Entry<String, ContaminationTree> e : trees.entrySet()) {
+			if (e.getKey().equals(sequenceLabel) && visualCombo.getCurrentIndex() == Visualization.TREE.ordinal())
+				e.getValue().show();
+			else
+				e.getValue().hide();
+		}
+		showDownloadSequence(sequenceLabel);
+	}
+
+	public void showDownloadSequence(String sequenceLabel) {
+		if (tables.get(sequenceLabel).getRowCount() > 1) { // count header
 			final NtSequence nt = sequences.get(sequenceLabel);
-			downloadSequences.setResource(new WResource(){
+			downloadSequences.setResource(new WResource() {
 				protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 					writeFasta(nt, response.out());
 				}
 			});
-			
 			downloadSequences.show();
-		}
-		else
+		} else
 			downloadSequences.hide();
 	}
-	
-	public void fill(String sequenceLabel, double minimumSimilarity){
+
+	public void fill(String sequenceLabel, double minimumSimilarity) {
 		IsolateTable table = tables.get(sequenceLabel);
 		table.clear();
-		
+		ContaminationTree tree = trees.get(sequenceLabel);
+		tree.clear();
+
 		List<NtSequence> similarSequences = new ArrayList<NtSequence>();
 		List<Double> similarities = new ArrayList<Double>();
 		getSimilarSequences(sequences.get(sequenceLabel), similarSequences, similarities);
-		
-		for (int i = 0 ; i < similarSequences.size(); i++) {
+
+		for (int i = 0; i < similarSequences.size(); i++) {
 			NtSequence sequence = similarSequences.get(i);
 			Patient p = new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
-			
-			table.addRow(p.getPatientIi(),
-				  	p.getPatientId(),
-				  	sequence.getViralIsolate().getViralIsolateIi(),
-				  	sequence.getViralIsolate().getSampleId(),
-				  	sequence.getLabel(),
-				  	similarities.get(i) + "");
+
+			tree.addSequence(p.getPatientId(), sequence.getViralIsolate().getSampleId(), sequence.getLabel(), sequence.getNucleotides());
+			table.addRow(p.getPatientIi(), p.getPatientId(), sequence.getViralIsolate().getViralIsolateIi(), sequence.getViralIsolate().getSampleId(), sequence.getLabel(), similarities.get(i) + "");
+
 		}
 	}
+
 }

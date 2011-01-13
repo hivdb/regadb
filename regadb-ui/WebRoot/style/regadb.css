@@ -688,3 +688,7 @@ table.isolate-table td{
 table.isolate-table span{
 	display: block;
 }
+
+.phylotree {
+    background-color: #EEEEEE;
+}
