@@ -37,4 +37,6 @@ To sample the sequences distances for inter- or intra-patient run the SampleDist
 \item region range relative to the ORF (eg.: 169-1786) 
 \end{itemize}
 
-After sampling distances, the approximation script can be used to fit the distances on a log normal distribution. This script requires both an inter- and intra-patient distances csv file. TODO: explain how to run the script.
+After sampling the distances, the approximation script can be used to fit the distances on a log-normal distribution. This script requires both an inter- and intra-patient distances csv file. The script can be found in regadb-analyses/src/net/sf/regadb/contamination and can be invoked with the following command and arguments:
+\\
+\textbf{Rscript regadb-analyses/src/net/sf/regadb/contamination/approximate\_distributions.R --intra intra.csv --inter inter.csv}
