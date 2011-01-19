@@ -60,7 +60,7 @@ public class ContaminationTree extends WContainerWidget {
 		String fastaSequences = sb.toString();
 
 		try {
-			NucleotideAlignment nucAligner = new NucleotideAlignment(fastaSequences, organism, "0.5"); // TODO config?
+			NucleotideAlignment nucAligner = new NucleotideAlignment(sb.toString(), organism, 0.5); // TODO config?
 			nucAligner.launch();
 			String aligned = nucAligner.getAlignedSequences();
 			TreeBuilder tb = new TreeBuilder(aligned);
