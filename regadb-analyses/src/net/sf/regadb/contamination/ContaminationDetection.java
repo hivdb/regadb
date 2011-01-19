@@ -114,7 +114,7 @@ public class ContaminationDetection {
 	private SequenceDistance getDistance(int querySequenceId, int sequenceId, Distribution ds) {
 		String query = sequenceDb.getSequence(ds.organism, ds.orf, querySequenceId);
 		String sequence = sequenceDb.getSequence(ds.organism, ds.orf, sequenceId);
-		if (query == null && sequence == null)
+		if (query != null && sequence != null)
 			return SequenceUtils.distance(query, sequence, ds.start, ds.end);
 		else 
 			return null;
