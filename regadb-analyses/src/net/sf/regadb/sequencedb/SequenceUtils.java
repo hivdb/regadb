@@ -6,7 +6,10 @@ public class SequenceUtils {
 		public int numberOfPositions;
 		
 		public double distance() {
-			return (double)numberOfDifferences / numberOfPositions;
+			if (numberOfPositions != 0)
+				return (double)numberOfDifferences / numberOfPositions;
+			else 
+				return 0.0;
 		}
 	}
 	
