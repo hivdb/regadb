@@ -182,6 +182,12 @@ public class SequenceDb {
 		}
 	}
 	
+	private String getOrfPath(String organism, String orf) {
+		return path.getAbsolutePath() 
+				+ File.separatorChar + organism 
+				+ File.separatorChar + orf;
+	}
+	
 	private File getOrfDir(OpenReadingFrame orf) {
 		return new File(path.getAbsolutePath() 
 					+ File.separatorChar + orf.getGenome().getOrganismName() 
@@ -236,6 +242,44 @@ public class SequenceDb {
 			queryLock.unlock();
 
 			queryImpl(genome, query);
+		} finally {
+			queryLock.lock();
+			queries--;
+			queriesFinishedCondition.signal();
+			queryLock.unlock();
+		}
+	}
+	
+	public String getSequence(String organism, String orf, int sequenceId) {
+		try {
+			queryLock.lock();
+			queries++;
+			queryLock.unlock();
+
+			String fasta = getOrfPath(organism, orf) + File.separatorChar + sequenceId + ".fasta";
+			String sequence = null;
+			if (fasta != null && new File(fasta).exists()) {
+				BufferedReader reader = null;
+				try {
+					reader = new BufferedReader(new FileReader(fasta));
+					reader.readLine();
+					sequence = reader.readLine();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (reader != null)
+						try {
+							reader.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+				}
+				return sequence;
+			}
+			
+			return null;
 		} finally {
 			queryLock.lock();
 			queries--;

@@ -19,6 +19,7 @@ import net.sf.regadb.util.mail.MailUtils;
 import net.sf.regadb.util.settings.ContaminationConfig;
 import net.sf.regadb.util.settings.EmailConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ContaminationConfig.Distribution;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -46,11 +47,13 @@ public class ContaminationDetectionJob implements Job {
 
 		t.commit();
 		t  = new Transaction(null, session);
-		SequenceDb seqDb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
+		List<Distribution> distributions = RegaDBSettings.getInstance().getContaminationConfig().getDistributions();
+		SequenceDb sequenceDb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
+		ContaminationDetection cd = new ContaminationDetection(distributions, sequenceDb);
 		for (int i = 0; i < sequenceIds.size(); i++) {
 			NtSequence ntSeq = t.getSequence(sequenceIds.get(i));
 			System.err.println("sample id:" + ntSeq.getViralIsolate().getSampleId());
-			Double cf = ContaminationDetection.clusterFactor(ntSeq, seqDb);
+			Double cf = cd.clusterFactor(ntSeq, t);
 			if (cf == null)
 				continue;
 			

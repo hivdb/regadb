@@ -43,11 +43,12 @@ public class TestContaminationDetection {
 		File sequenceDbDir = new File("/tmp/test-contam/");
 		SequenceDb seqDb = SequenceDb.getInstance(sequenceDbDir.getAbsolutePath());
 		seqDb.init(t);
-		
+
+		ContaminationDetection cd = new ContaminationDetection(RegaDBSettings.getInstance().getContaminationConfig().getDistributions(), seqDb);
 		for (Patient p : patients) {
 			for (ViralIsolate vi : p.getViralIsolates()) {
 				for (NtSequence ntSeq : vi.getNtSequences()) {
-					double cf = ContaminationDetection.clusterFactor(ntSeq, seqDb);
+					double cf = cd.clusterFactor(ntSeq, t);
 					System.err.println("\"" + ntSeq.getNtSequenceIi() + "\",\"" + cf + "\",\"" + "true" + "\"");
 				}
 			}
