@@ -4,6 +4,10 @@ public class SequenceUtils {
 	public static class SequenceDistance {
 		public int numberOfDifferences;
 		public int numberOfPositions;
+		
+		public double distance() {
+			return (double)numberOfDifferences / numberOfPositions;
+		}
 	}
 	
 	public static SequenceDistance distance(String alignment1, String alignment2, int from, int to) {
