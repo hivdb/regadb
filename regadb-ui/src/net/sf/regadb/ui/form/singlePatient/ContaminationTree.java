@@ -19,12 +19,23 @@ import net.sf.regadb.db.Privileges;
 import net.sf.regadb.service.wts.NucleotideAlignment;
 import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.TreeBuilder;
+import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.WBoxLayout;
+import eu.webtoolkit.jwt.WBoxLayout.Direction;
+import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WComboBox;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WVBoxLayout;
 import figtree.panel.SimpleLabelPainter;
 import figtree.treeviewer.decorators.AttributableDecorator;
 import figtree.treeviewer.decorators.DiscreteColorDecorator;
+import figtree.treeviewer.treelayouts.PolarTreeLayout;
+import figtree.treeviewer.treelayouts.RadialTreeLayout;
+import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
 import figtree.webui.TreeWidget;
 
 public class ContaminationTree extends WContainerWidget {
@@ -36,6 +47,27 @@ public class ContaminationTree extends WContainerWidget {
 	private Map<String, Map<String, String>> sequenceAttributes = new TreeMap<String, Map<String, String>>();
 
 	private TreeWidget treeWidget;
+	private WCheckBox showBootstrapValues;
+	private WComboBox treeLayoutBox;
+	
+	private enum TreeLayout {
+		RADIAL(WString.tr("form.viralIsolate.similarity.tree.layout.radial"), new RadialTreeLayout()),
+		RECTILINEAR(WString.tr("form.viralIsolate.similarity.tree.layout.rectilinear"), new RectilinearTreeLayout()),
+		POLAR(WString.tr("form.viralIsolate.similarity.tree.layout.polar"), new PolarTreeLayout());
+
+		private WString name;
+		private figtree.treeviewer.treelayouts.TreeLayout layout;
+		
+		private TreeLayout(WString name, figtree.treeviewer.treelayouts.TreeLayout layout) {
+			this.name = name;
+			this.layout = layout;
+		}
+
+		public String toString() {
+			return name.toString();
+		}
+	}
+	
 	private String newickTree;
 
 	private SimpleLabelPainter tipPainter;
@@ -43,7 +75,7 @@ public class ContaminationTree extends WContainerWidget {
 
 	public ContaminationTree(WContainerWidget parent, String organism, Map<String, Map<String, String>> annotatedSequences, NtSequence ntSequence) {
 		super(parent);
-
+		
 		this.sequenceAttributes = annotatedSequences;
 		this.sequenceLabel = ntSequence.getLabel();
 		this.sampleId = ntSequence.getViralIsolate().getSampleId();
@@ -60,7 +92,7 @@ public class ContaminationTree extends WContainerWidget {
 		String fastaSequences = sb.toString();
 
 		try {
-			NucleotideAlignment nucAligner = new NucleotideAlignment(sb.toString(), organism, 0.5); // TODO config?
+			NucleotideAlignment nucAligner = new NucleotideAlignment(fastaSequences, organism, 0.5); // TODO config?
 			nucAligner.launch();
 			String aligned = nucAligner.getAlignedSequences();
 			TreeBuilder tb = new TreeBuilder(aligned);
@@ -71,9 +103,43 @@ public class ContaminationTree extends WContainerWidget {
 		}
 
 		WVBoxLayout layout = new WVBoxLayout(this);
-		layout.addWidget(treeWidget = new TreeWidget(), 1);
-		treeWidget.setMinimumSize(new WLength(200), new WLength(sequenceAttributes.size() * 20));
+		WBoxLayout treeSettings = new WBoxLayout(Direction.LeftToRight);
+		layout.addLayout(treeSettings, 0, AlignmentFlag.AlignLeft);
+		
+		WLabel treeLayoutLabel = new WLabel(WString.tr("form.viralIsolate.similarity.tree.layout"));
+		treeSettings.addWidget(treeLayoutLabel);
+		
+		treeLayoutBox = new WComboBox();
+		for(TreeLayout tl : TreeLayout.values()) {
+			treeLayoutBox.addItem(tl.toString());
+		}
+		treeLayoutLabel.setBuddy(treeLayoutBox);
+		treeLayoutBox.changed().addListener(this, new Signal.Listener() {
+			@Override
+			public void trigger() {
+				treeWidget.getTreePane().setTreeLayout(TreeLayout.values()[treeLayoutBox.getCurrentIndex()].layout);
+			}
+		});
+		treeSettings.addWidget(treeLayoutBox);
+
+		
+		showBootstrapValues = new WCheckBox(WString.tr("form.viralIsolate.similarity.tree.show.bootstrap.values"));
+		showBootstrapValues.setChecked(false);
+		showBootstrapValues.changed().addListener(this, new Signal.Listener() {
+			@Override
+			public void trigger() {
+				nodePainter.setVisible(showBootstrapValues.isChecked());
+			}
+		});
+		treeSettings.addWidget(showBootstrapValues);
+		
+		
+		
+				
+		layout.addWidget(treeWidget = new TreeWidget(), 2);
+		treeWidget.setMinimumSize(new WLength(10), new WLength(sequenceAttributes.size() * 20));
 		treeWidget.setStyleClass("phylotree");
+				
 		loadTree(newickTree);
 	}
 
@@ -95,6 +161,7 @@ public class ContaminationTree extends WContainerWidget {
 			nodePainter.setDisplayAttribute("label");
 			nodePainter.setTextDecorator(new AttributableDecorator());
 			nodePainter.setFont(defaultFont);
+			nodePainter.setVisible(false);
 						
 			//set sample ids on tips - coloring indicates patient
 			for(Node n : treeToLoad.getExternalNodes()) {
@@ -109,6 +176,8 @@ public class ContaminationTree extends WContainerWidget {
 			tipPainter.setDisplayAttribute("label");
 			tipPainter.setTextDecorator(new DiscreteColorDecorator("patient", treeToLoad.getExternalNodes(), new Color[]{Color.BLACK, Color.RED}, false));
 			
+			//set tree layout
+			treeWidget.getTreePane().setTreeLayout(TreeLayout.RADIAL.layout);
 			//load tree
 			treeWidget.getTreePane().setTree((RootedTree) trees.get(0));
 		} catch (Exception e) {
