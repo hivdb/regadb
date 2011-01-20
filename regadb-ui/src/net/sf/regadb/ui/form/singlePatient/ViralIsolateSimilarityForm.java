@@ -142,12 +142,16 @@ public class ViralIsolateSimilarityForm extends TabForm {
 
 		similarSequences.clear();
 		similarities.clear();
+		
+		Map<Integer,NtSequence> allseqs = new TreeMap<Integer,NtSequence>();
+		for(NtSequence nt : t.getSequences())
+			allseqs.put(nt.getNtSequenceIi(),nt);
 
 		for (Map.Entry<Integer, SequenceDistance> sd : sdq.getSequenceDistances().entrySet()) {
 			double diff = (double) sd.getValue().numberOfDifferences / sd.getValue().numberOfPositions;
 			double similarity = 1.0 - diff;
 			if (similarity >= minimumSimilarity) {
-				similarSequences.add(t.getSequence(sd.getKey()));
+				similarSequences.add(allseqs.get(sd.getKey()));
 				if (similarities != null)
 					similarities.add(similarity);
 			}
@@ -254,6 +258,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	public IsolateTable createTable(String sequenceLabel, double minimumSimilarity) {
 		IsolateTable table = new IsolateTable(this);
 		table.hide();
+		table.addHeader(WString.tr("form.viralIsolate.similarity.similarity"));
 		
 		for (int i = 0; i < similarSequences.size(); i++) {
 			NtSequence sequence = similarSequences.get(i);
