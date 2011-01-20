@@ -254,6 +254,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	public IsolateTable createTable(String sequenceLabel, double minimumSimilarity) {
 		IsolateTable table = new IsolateTable(this);
 		table.hide();
+		table.addHeader(WString.tr("form.viralIsolate.similarity.similarity"));
 		
 		for (int i = 0; i < similarSequences.size(); i++) {
 			NtSequence sequence = similarSequences.get(i);
