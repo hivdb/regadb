@@ -43,21 +43,21 @@ public class ContaminationTree extends WContainerWidget {
 	private String sequenceLabel;
 	private String sampleId;
 	private String patientId;
-	
+
 	private Map<String, Map<String, String>> sequenceAttributes = new TreeMap<String, Map<String, String>>();
 
 	private TreeWidget treeWidget;
 	private WCheckBox showBootstrapValues;
 	private WComboBox treeLayoutBox;
-	
+
 	private enum TreeLayout {
-		RADIAL(WString.tr("form.viralIsolate.similarity.tree.layout.radial"), new RadialTreeLayout()),
-		RECTILINEAR(WString.tr("form.viralIsolate.similarity.tree.layout.rectilinear"), new RectilinearTreeLayout()),
+		RADIAL(WString.tr("form.viralIsolate.similarity.tree.layout.radial"), new RadialTreeLayout()), 
+		RECTILINEAR(WString.tr("form.viralIsolate.similarity.tree.layout.rectilinear"),	new RectilinearTreeLayout()), 
 		POLAR(WString.tr("form.viralIsolate.similarity.tree.layout.polar"), new PolarTreeLayout());
 
 		private WString name;
 		private figtree.treeviewer.treelayouts.TreeLayout layout;
-		
+
 		private TreeLayout(WString name, figtree.treeviewer.treelayouts.TreeLayout layout) {
 			this.name = name;
 			this.layout = layout;
@@ -67,50 +67,24 @@ public class ContaminationTree extends WContainerWidget {
 			return name.toString();
 		}
 	}
-	
+
 	private String newickTree;
 
 	private SimpleLabelPainter tipPainter;
 	private SimpleLabelPainter nodePainter;
 
-	public ContaminationTree(WContainerWidget parent, String organism, Map<String, Map<String, String>> annotatedSequences, NtSequence ntSequence) {
+	public ContaminationTree(WContainerWidget parent) {
 		super(parent);
-		
-		this.sequenceAttributes = annotatedSequences;
-		this.sequenceLabel = ntSequence.getLabel();
-		this.sampleId = ntSequence.getViralIsolate().getSampleId();
-		this.patientId = new Patient(ntSequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId();
-		
-		StringBuilder sb = new StringBuilder();
-		for (Map.Entry<String, Map<String, String>> e : sequenceAttributes.entrySet()) {
-			sb.append(">");
-			sb.append(e.getKey());
-			sb.append("\n");
-			sb.append(e.getValue().get("nucleotides"));
-			sb.append("\n");
-		}
-		String fastaSequences = sb.toString();
-
-		try {
-			NucleotideAlignment nucAligner = new NucleotideAlignment(fastaSequences, organism, 0.5); // TODO config?
-			nucAligner.launch();
-			String aligned = nucAligner.getAlignedSequences();
-			TreeBuilder tb = new TreeBuilder(aligned);
-			tb.launch();
-			newickTree = tb.getNewickTree();
-		} catch (ServiceException e) {
-			e.printStackTrace();
-		}
 
 		WVBoxLayout layout = new WVBoxLayout(this);
 		WBoxLayout treeSettings = new WBoxLayout(Direction.LeftToRight);
 		layout.addLayout(treeSettings, 0, AlignmentFlag.AlignLeft);
-		
+
 		WLabel treeLayoutLabel = new WLabel(WString.tr("form.viralIsolate.similarity.tree.layout"));
 		treeSettings.addWidget(treeLayoutLabel);
-		
+
 		treeLayoutBox = new WComboBox();
-		for(TreeLayout tl : TreeLayout.values()) {
+		for (TreeLayout tl : TreeLayout.values()) {
 			treeLayoutBox.addItem(tl.toString());
 		}
 		treeLayoutLabel.setBuddy(treeLayoutBox);
@@ -122,7 +96,6 @@ public class ContaminationTree extends WContainerWidget {
 		});
 		treeSettings.addWidget(treeLayoutBox);
 
-		
 		showBootstrapValues = new WCheckBox(WString.tr("form.viralIsolate.similarity.tree.show.bootstrap.values"));
 		showBootstrapValues.setChecked(false);
 		showBootstrapValues.changed().addListener(this, new Signal.Listener() {
@@ -132,20 +105,47 @@ public class ContaminationTree extends WContainerWidget {
 			}
 		});
 		treeSettings.addWidget(showBootstrapValues);
-		
-		
-		
-				
+
 		layout.addWidget(treeWidget = new TreeWidget(), 2);
-		treeWidget.setMinimumSize(new WLength(10), new WLength(sequenceAttributes.size() * 20));
+
 		treeWidget.setStyleClass("phylotree");
-				
-		loadTree(newickTree);
+
 	}
 
-	private void loadTree(String stree) {
+	public void calculateTree(Map<String, Map<String, String>> annotatedSequences, NtSequence ntSequence, String organism) {
+		this.sequenceAttributes = annotatedSequences;
+		this.sequenceLabel = ntSequence.getLabel();
+		this.sampleId = ntSequence.getViralIsolate().getSampleId();
+		this.patientId = new Patient(ntSequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId();
+
 		try {
-			StringReader reader = new StringReader(stree);
+			NucleotideAlignment nucAligner = new NucleotideAlignment(toFasta(annotatedSequences), organism, 0.5); // TODO config?
+			nucAligner.launch();
+			String aligned = nucAligner.getAlignedSequences();
+			TreeBuilder tb = new TreeBuilder(aligned);
+			tb.launch();
+			newickTree = tb.getNewickTree();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String toFasta(Map<String, Map<String, String>> sequenceAttributes) {
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, Map<String, String>> e : sequenceAttributes.entrySet()) {
+			sb.append(">");
+			sb.append(e.getKey());
+			sb.append("\n");
+			sb.append(e.getValue().get("nucleotides"));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	public void showTree() {
+		treeWidget.setMinimumSize(new WLength(10), new WLength(sequenceAttributes.size() * 20));
+		try {
+			StringReader reader = new StringReader(newickTree);
 			List<Tree> trees = new ArrayList<Tree>();
 			NewickImporter importer = new NewickImporter(reader, true);
 			while (importer.hasTree()) {
@@ -153,33 +153,34 @@ public class ContaminationTree extends WContainerWidget {
 				trees.add(tree);
 			}
 			RootedTree treeToLoad = (RootedTree) trees.get(0);
-			
+
 			Font defaultFont = new Font("sans-serif", Font.PLAIN, 10);
-			//show bootstrap values
+			// show bootstrap values
 			treeWidget.getTreePane().setNodeLabelPainter(nodePainter = new SimpleLabelPainter(SimpleLabelPainter.PainterIntent.NODE));
 			nodePainter.setupAttributes(trees);
 			nodePainter.setDisplayAttribute("label");
 			nodePainter.setTextDecorator(new AttributableDecorator());
 			nodePainter.setFont(defaultFont);
 			nodePainter.setVisible(false);
-						
-			//set sample ids on tips - coloring indicates patient
-			for(Node n : treeToLoad.getExternalNodes()) {
+
+			// set sample ids on tips - coloring indicates patient
+			for (Node n : treeToLoad.getExternalNodes()) {
 				Taxon taxon = treeToLoad.getTaxon(n);
 				n.setAttribute("patient", sequenceAttributes.get(taxon.getName()).get("patient").equals(patientId));
-				n.setAttribute("label",sequenceAttributes.get(taxon.getName()).get("sample"));
+				n.setAttribute("label", sequenceAttributes.get(taxon.getName()).get("sample"));
 			}
-			
+
 			treeWidget.getTreePane().setTipLabelPainter(tipPainter = new SimpleLabelPainter(SimpleLabelPainter.PainterIntent.TIP));
 			tipPainter.setupAttributes(trees);
 			tipPainter.setFont(defaultFont);
 			tipPainter.setDisplayAttribute("label");
-			tipPainter.setTextDecorator(new DiscreteColorDecorator("patient", treeToLoad.getExternalNodes(), new Color[]{Color.BLACK, Color.RED}, false));
-			
-			//set tree layout
+			tipPainter.setTextDecorator(new DiscreteColorDecorator("patient", treeToLoad.getExternalNodes(), new Color[] { Color.BLACK, Color.RED }, false));
+
+			// set tree layout
 			treeWidget.getTreePane().setTreeLayout(TreeLayout.RADIAL.layout);
-			//load tree
+			// load tree
 			treeWidget.getTreePane().setTree((RootedTree) trees.get(0));
+			show();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
