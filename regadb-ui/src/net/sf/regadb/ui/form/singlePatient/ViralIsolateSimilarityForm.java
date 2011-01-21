@@ -145,6 +145,8 @@ public class ViralIsolateSimilarityForm extends TabForm {
 
 		sequenceCombo.setCurrentIndex(0);
 		sequenceCombo.changed().addListener(this, listener);
+		
+		showSequence(sequenceCombo.getCurrentText().getValue(), Double.parseDouble(minimumSimilarityTF.getText()));
 	}
 
 	private void initSequenceFields(NtSequence seq) {
