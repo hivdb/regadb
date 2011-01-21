@@ -1,6 +1,7 @@
 package net.sf.regadb.system.cron.jobs;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -17,9 +18,9 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.util.mail.MailUtils;
 import net.sf.regadb.util.settings.ContaminationConfig;
+import net.sf.regadb.util.settings.ContaminationConfig.Distribution;
 import net.sf.regadb.util.settings.EmailConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.settings.ContaminationConfig.Distribution;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -27,12 +28,14 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import eu.webtoolkit.jwt.WString;
-
 public class ContaminationDetectionJob implements Job {
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		RegaDBSettings.createInstance();
+		//TODO localized resource loading
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("net.sf.regadb.ui.i18n.resources.regadb");
+		String subject = resourceBundle.getString("jobs.contamination.subject");
+		String message = resourceBundle.getString("jobs.contamination.message");
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction t  = new Transaction(null, session);
@@ -50,7 +53,7 @@ public class ContaminationDetectionJob implements Job {
 		List<Distribution> distributions = RegaDBSettings.getInstance().getContaminationConfig().getDistributions();
 		SequenceDb sequenceDb = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 		ContaminationDetection cd = new ContaminationDetection(distributions, sequenceDb);
-		for (int i = 0; i < sequenceIds.size(); i++) {
+		for (int i = 0; i < sequenceIds.size(); ++i) {
 			NtSequence ntSeq = t.getSequence(sequenceIds.get(i));
 			System.err.println("sample id:" + ntSeq.getViralIsolate().getSampleId());
 			Double cf = cd.clusterFactor(ntSeq, t);
@@ -64,13 +67,14 @@ public class ContaminationDetectionJob implements Job {
 	                try {
 	                	String patientId 
 	                		= new Patient(ntSeq.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId();
+	                	
 						MailUtils.sendMail(ec.getHost(), ec.getFrom(), ec.getTo(), 
-									WString.tr("jobs.contamination.subject"), 
-									WString.tr("jobs.contamination.message")
-										.arg(patientId)
-										.arg(ntSeq.getViralIsolate().getSampleId())
-										.arg(ntSeq.getLabel())
-										.arg(cf));
+									subject, 
+									message
+										.replace("{1}",patientId)
+										.replace("{2}",ntSeq.getViralIsolate().getSampleId())
+										.replace("{3}",ntSeq.getLabel())
+										.replace("{4}",cf+""));
 					} catch (AddressException e) {
 						e.printStackTrace();
 					} catch (MessagingException e) {
