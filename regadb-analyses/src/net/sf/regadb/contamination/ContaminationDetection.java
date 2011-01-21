@@ -83,7 +83,15 @@ public class ContaminationDetection {
 
 		int id = ntSeq.getNtSequenceIi();
 				
-		return (averageLogFdk(id, Si, Fi) + averageLogFdk(id, So, Fo)) - (averageLogFdk(id, So, Fi) + averageLogFdk(id, Si, Fo));
+		double SiFi = averageLogFdk(id, Si, Fi);
+		double SoFo = averageLogFdk(id, So, Fo);
+		double SoFi = averageLogFdk(id, So, Fi);
+		double SiFo = averageLogFdk(id, Si, Fo);
+		
+		if (SiFi == 0.0 && SoFo == 0.0 && SoFi == 0.0 && SiFo == 0.0)
+			return null;
+		else
+			return (SiFi + SoFo) - (SoFi + SiFo);
 	}
 	
 	private double averageLogFdk(int querySequenceId, Set<Integer> sequencesIds, List<DistributionFunction> dfs) {
