@@ -97,7 +97,6 @@ public abstract class ObjectTreeNode<Type> extends TreeMenuNode{
         selected.getLabel().getText().changeArg(0, value);
         
         if(item != null){
-        	getSelectedActionItem().expand();
         	getSelectedActionItem().enable();
         	getViewActionItem().selectNode();
         }
