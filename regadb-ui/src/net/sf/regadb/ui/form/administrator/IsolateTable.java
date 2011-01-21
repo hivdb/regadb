@@ -66,7 +66,9 @@ public class IsolateTable extends WTable {
 		Patient p = t.getPatient(patientIi);
 		t.commit();
 		
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.expand();
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedActionItem().expand();
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViewActionItem().prograSelectNode();
 	}
 	
@@ -76,6 +78,7 @@ public class IsolateTable extends WTable {
 		ViralIsolate v = t.getViralIsolate(viralIsolateIi);
 		t.commit();
 		
+		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.expand();
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedActionItem().expand();
 		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(v);
