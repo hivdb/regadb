@@ -206,6 +206,9 @@ public abstract class TreeMenuNode extends WTreeNode
 					node.collapse();
 				}
 			}
+			
+			getParentNode().openOnlyOneMenuPath();
+			getParentNode().expand();
 		}
 	}
 
