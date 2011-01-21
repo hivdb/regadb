@@ -193,12 +193,9 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	public void openOnlyOneMenuPath()
 	{
-		if(getParent()==null)
-		{
-		return;	
-		}
-		
-		if(getParentNode() != null){
+		if(getParentNode()==null)
+			return;	
+		else{
 			for(WTreeNode node : getParentNode().getChildNodes())
 			{
 				if(node.isExpanded() && node!=this)
