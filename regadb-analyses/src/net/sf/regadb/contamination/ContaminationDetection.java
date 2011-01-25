@@ -83,7 +83,15 @@ public class ContaminationDetection {
 
 		int id = ntSeq.getNtSequenceIi();
 				
-		return (averageLogFdk(id, Si, Fi) + averageLogFdk(id, So, Fo)) - (averageLogFdk(id, So, Fi) + averageLogFdk(id, Si, Fo));
+		double SiFi = averageLogFdk(id, Si, Fi);
+		double SoFo = averageLogFdk(id, So, Fo);
+		double SoFi = averageLogFdk(id, So, Fi);
+		double SiFo = averageLogFdk(id, Si, Fo);
+		
+		if (SiFi == 0.0 && SoFo == 0.0 && SoFi == 0.0 && SiFo == 0.0)
+			return null;
+		else
+			return (SiFi + SoFo) - (SoFi + SiFo);
 	}
 	
 	private double averageLogFdk(int querySequenceId, Set<Integer> sequencesIds, List<DistributionFunction> dfs) {
@@ -100,15 +108,20 @@ public class ContaminationDetection {
 	
 	private double logFdk(int querySequenceId, int sequenceId, List<DistributionFunction> dfs) {
 		double v = 0.0;
+		int L = 0;
 		for (int i = 0; i < distributions.size(); i++) {
 			Distribution ds = distributions.get(i);
 			SequenceDistance d = getDistance(querySequenceId, sequenceId, ds);
-
-			if (d != null)
+			
+			if (d != null) {
 				v += d.numberOfPositions * Math.log(dfs.get(i).f(d.distance()));
+				L += d.numberOfPositions;
+			}
 		}
 		
-		return v;
+		if (L != 0)
+			return v/L;
+		else return 0.0;
 	}
 	
 	private SequenceDistance getDistance(int querySequenceId, int sequenceId, Distribution ds) {
