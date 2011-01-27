@@ -90,6 +90,7 @@ public class CodonAlign {
     public Alignment compute(Sequence ref, Sequence target, int maxFrameShifts)
             throws AlignmentException, IllegalSymbolException {
         try {
+        	target = DNATools.createDNASequence(target.seqString().replace("-",""), "target"); 
             ScoredAlignment ntAlignment = ntNeedleman.pairwiseAlignment(ref, target);
 
             if (ntAlignment.getScore() < minNtScore)
@@ -129,7 +130,7 @@ public class CodonAlign {
 
             System.err.println("Scores: " + ntAlignment.getScore() + " " + ntCodonAlignment.getScore());
             
-            if (ntAlignment.getScore() - ntCodonAlignment.getScore() > 50) {
+            if (ntAlignment.getScore() - ntCodonAlignment.getScore() > 100) {
                 /*
                  * a possible frameshift
                  */
@@ -156,7 +157,7 @@ public class CodonAlign {
                             if (refGapStart == -1)
                                 refGapStart = i;
                         } else {
-                            if (refGapStart > 0) {
+                            if (refGapStart > 1) {
                                 int refGapStop = i;
 
                                 if ((refGapStop - refGapStart) % 3 != 0) {
@@ -182,7 +183,7 @@ public class CodonAlign {
                                          * fix it !
                                          */
                                         for (int j = 0; j < 3 - (refGapStop - refGapStart) % 3; ++j) {
-                                            targetFixed.edit(new Edit(seq2pos, 0, DNATools.createDNA("n"))); 
+                                        	targetFixed.edit(new Edit(seq2pos + 1, 0, DNATools.createDNA("n"))); 
                                         }
 
                                         fixed = true;
@@ -229,7 +230,7 @@ public class CodonAlign {
                                         // (targetGapStop - targetGapStart) % 3,
                                         // Nucleotide::N);
                                         for (int j = 0; j < (targetGapStop - targetGapStart) % 3; ++j) {
-                                            targetFixed.edit(new Edit(seq2pos, 0, DNATools.createDNA("n"))); 
+                                        	targetFixed.edit(new Edit(seq2pos + 1, 0, DNATools.createDNA("n"))); 
                                         }
 
                                         fixed = true;
@@ -274,6 +275,17 @@ public class CodonAlign {
 
           return false;
     }
+    
+    private boolean noGapAt(SymbolList nucleotideSequence, int i){
+		if((i - 1) * 3 == nucleotideSequence.length()){
+			return true;
+		}
+		else{
+			return nucleotideSequence.symbolAt((i - 1) * 3 + 1) != nucleotideSequence.getAlphabet().getGapSymbol() &&
+			nucleotideSequence.symbolAt((i - 1) * 3 + 2) != nucleotideSequence.getAlphabet().getGapSymbol() &&
+			nucleotideSequence.symbolAt((i - 1) * 3 + 3) != nucleotideSequence.getAlphabet().getGapSymbol() ;
+		}
+	}
 
     private ScoredAlignment alignLikeAA(SymbolList seq1, SymbolList seq2,
             int ORF, SymbolList seqAA1, SymbolList seqAA2)
@@ -283,7 +295,7 @@ public class CodonAlign {
         
         SymbolList seq2ORFLead = ORF == 0 ? null : seq2.subList(1, ORF);
         seq2 = new SimpleSymbolList(seq2.subList(ORF + 1, seq2.length()));
-
+        
         int aaLength = seq2.length() / 3;
 
         SymbolList seq2ORFEnd = (aaLength * 3 == seq2.length()) ? null : seq2.subList(aaLength * 3 + 1, seq2.length());
@@ -294,11 +306,11 @@ public class CodonAlign {
         int lastNonGap = -1;
 
         for (int i = 1; i <= seqAA1.length(); ++i) {
-            if (seqAA1.symbolAt(i) == seqAA1.getAlphabet().getGapSymbol()) {
+            if (seqAA1.symbolAt(i) == seqAA1.getAlphabet().getGapSymbol() && noGapAt(seq1, i)) {
                 seq1.edit(new Edit((i - 1) * 3 + 1, 0, DNATools.createDNA("---")));
             }
 
-            if (seqAA2.symbolAt(i) == seqAA2.getAlphabet().getGapSymbol()) {
+            if (seqAA2.symbolAt(i) == seqAA2.getAlphabet().getGapSymbol() && noGapAt(seq2, i)) {
                 seq2.edit(new Edit((i - 1) * 3 + 1, 0, DNATools.createDNA("---")));
             } else {
                 if (firstNonGap == -1)
@@ -306,18 +318,21 @@ public class CodonAlign {
                 lastNonGap = i * 3;
             }
         }
-
-        if (seq2ORFLead != null)
-            for (int i = 1; i <= seq2ORFLead.length(); ++i)
-                if ((firstNonGap - seq2ORFLead.length() + i -1) >= 1)
-                    seq2.edit(new Edit(firstNonGap - seq2ORFLead.length() + i -1,
-                            seq2ORFLead.getAlphabet(), seq2ORFLead.symbolAt(i)));
-
-        if (seq2ORFEnd != null)
-            for (int i = 1; i <= seq2ORFEnd.length(); ++i)
-                if (lastNonGap + i <= seq2.length())
-                    seq2.edit(new Edit(lastNonGap + i, seq2ORFEnd.getAlphabet(),
-                            seq2ORFEnd.symbolAt(i)));
+        
+        if (seq2ORFLead != null){
+			if(firstNonGap - seq2ORFLead.length() < 1){
+				//no need to add lead because it will match a region before the reference sequence
+			} else {
+				seq2.edit(new Edit(firstNonGap - seq2ORFLead.length(), seq2ORFLead.length(), seq2ORFLead));
+			}
+        }
+        if (seq2ORFEnd != null){
+        	if(lastNonGap + 1 > seq2.length()){
+        		        		
+        	} else {
+        		seq2.edit(new Edit(lastNonGap + 1, seq2ORFEnd.length(), seq2ORFEnd));
+        	}
+        }
 
         Map<String, SymbolList> alignment = new HashMap<String, SymbolList>();
         alignment.put("ref", seq1);
@@ -333,7 +348,8 @@ public class CodonAlign {
                 new SubstitutionMatrix(DNATools.getDNA(), nuc4_4, "NUC4.4");
 
             blosum30matrix =
-                new SubstitutionMatrix(ProteinTools.getTAlphabet(), blosum30, "BLOSUM30");
+                new AASubstitutionMatrix(ProteinTools.getTAlphabet(), blosum30, "BLOSUM30");
+            
         } catch (BioException e) {
             e.printStackTrace();
         }

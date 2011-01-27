@@ -19,8 +19,6 @@ then
 fi
 
 apt-get -y install tomcat6
-
 sed -i 's/#TOMCAT6_SECURITY=yes/TOMCAT6_SECURITY=no/' "$CONFFILE"
 sed -i "s/#JAVA_OPTS=\"/JAVA_OPTS=\"-Duser.timezone=$TIMEZONE /" "$CONFFILE"
 echo sed -i "s/Xmx[0-9]\+M/Xmx$RAM\M/" "$CONFFILE"
-

@@ -1,156 +1,181 @@
 package net.sf.regadb.service.wts;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import net.sf.regadb.align.local.ScoredAlignment;
+import net.sf.regadb.db.AaInsertion;
+import net.sf.regadb.db.AaInsertionId;
+import net.sf.regadb.db.AaMutation;
+import net.sf.regadb.db.AaMutationId;
+import net.sf.regadb.db.AaSequence;
+import net.sf.regadb.db.AnalysisStatus;
+import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.OpenReadingFrame;
+import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.db.session.Login;
+import net.sf.regadb.service.IAnalysis;
 
-import org.biojava.bio.seq.DNATools;
-import org.biojava.bio.seq.ProteinTools;
-import org.biojava.bio.seq.Sequence;
-import org.biojava.bio.symbol.Alignment;
-import org.biojava.bio.symbol.IllegalSymbolException;
-import org.biojava.bio.symbol.SimpleAlignment;
+public class AlignService extends AbstractService implements IAnalysis{
+	private int viralIsolateIi;
+	private String sequences;
+	private String genome;
+	
+	private Login login;
+	
+	private static final Pattern mutationPattern = Pattern.compile("^([^0-9]*)([0-9]+)([^0-9]*)$");
 
-public class AlignService extends AbstractService {
-	@SuppressWarnings("serial")
-	public static class AlignServiceException extends ServiceException{
-		private IllegalSymbolException symbolException;
-
-		public AlignServiceException(String service, String url, IllegalSymbolException symbolException) {
-			super(service, url);
-			this.symbolException = symbolException;
-		}
-		
-		public IllegalSymbolException getSymbolException(){
-			return symbolException;
-		}
+	public AlignService(ViralIsolate viralIsolate, String genome){
+		this.viralIsolateIi = viralIsolate.getViralIsolateIi();
+		this.genome = genome;
+		this.sequences = ViralIsolateAnalysisHelper.toFasta(viralIsolate);
 	}
 	
-	public static enum SubstitutionMatrix{BLOSUM, IUB, NUC4_4};
-	
-	private Sequence sequence1, sequence2;
-	private Sequence alignedSequence1, alignedSequence2;
-	private double score;
-	
-	private SubstitutionMatrix matrix;
-	private double gapOpenScore, gapExtScore;
-	private boolean aa;
-	
-	public AlignService(boolean aa, double gapOpenScore, double gapExtScore, SubstitutionMatrix matrix){
-		setAa(aa);
-		setSequence1(sequence1);
-		setSequence2(sequence2);
-	}
 	@Override
 	protected void init() {
-		setService("regadb-align-clustalw");
+		setService("regadb-align");
 		
-		String fasta = toFasta(getSequence1(),getSequence2());
-		getInputs().put("sequences",fasta);
-		getInputs().put("matrix", getMatrix().name());
-		getInputs().put("gapopen", getGapOpenScore()+"");
-		getInputs().put("gapext", getGapExtScore()+"");
-	}
-	
-	public static String toFasta(Sequence... sequences){
-		StringBuilder sb = new StringBuilder();
-		
-		for(Sequence sequence : sequences)
-			sb.append('>'+ sequence.getName() +'\n'+ sequence.seqString() +'\n');
-			
-		return sb.toString();
+		getInputs().put("genome", genome);
+		getInputs().put("sequences", sequences);
+		getOutputs().put("mutations", null);
 	}
 
 	@Override
 	protected void processResults() throws ServiceException {
-		String seqs[] = getOutputs().get("sequences").split(">");
-		String seq1 = seqs[0].substring(seqs[0].indexOf('\n')).replace("\n", "").trim();
-		String seq2 = seqs[1].substring(seqs[1].indexOf('\n')).replace("\n", "").trim();
+		String lines[] = getOutputs().get("mutations").split("\n");
 		
-		try{
-			if(isAa()){
-				setAlignedSequence1(ProteinTools.createGappedProteinSequence(seq1, getSequence1().getName()));
-				setAlignedSequence2(ProteinTools.createGappedProteinSequence(seq2, getSequence2().getName()));
-			}
-			else{
-				setAlignedSequence1(DNATools.createGappedDNASequence(seq1, getSequence1().getName()));
-				setAlignedSequence2(DNATools.createGappedDNASequence(seq2, getSequence2().getName()));
-			}
-		}
-		catch (IllegalSymbolException e) {
-			e.printStackTrace();
-			throw new AlignServiceException(getService(),getUrl(),e);
-		}
+		Transaction t = login.createTransaction();
+		ViralIsolate vi = t.getViralIsolate(viralIsolateIi);
+		Genome g = t.getGenome(genome);
 		
-		setScore(Double.parseDouble(getOutputs().get("score")));
-	}
+		NtSequence nt = null;
+		
+		for(int i=0; i<lines.length; ++i){
+			if(lines[i].startsWith("sequence=")){
+				String label = lines[i].substring("sequence=".length());
+				
+				for(NtSequence nti : vi.getNtSequences()){
+					if(nti.getLabel().replace(' ','_').replace(',','-').equals(label)){
+						nt = nti;
+						break;
+					}
+				}
+				
+				System.out.println("Sequence: '"+ label +"'");
+			}
+			else if(lines[i].startsWith("protein=") && nt != null){
+				String f[] = lines[i].split(",");
+				String protein = f[0].substring("protein=".length());
+				String start = f[1].substring("start=".length());
+				String stop = f[2].substring("end=".length());
+				String muts[] = f[3].substring("mutations=".length()).trim().split(" ");
+				
+				Protein pr = null;
+				for(OpenReadingFrame orf : g.getOpenReadingFrames()){
+					for(Protein pri : orf.getProteins()){
+						if(pri.getAbbreviation().equals(protein)){
+							pr = pri;
+							break;
+						}
+					}
+					if(pr != null)
+						break;
+				}
+				if(pr != null){
+					int prevPos = 0;
+					short insertionOrder = 0;
+					
+					AaSequence aaseq = new AaSequence(nt, pr,
+							Short.parseShort(start), Short.parseShort(stop));
+					
+					for(String mut : muts){
+						int pos = mut.indexOf(';');
+						if(pos == -1)
+							continue;
+						String aaMut = mut.substring(0,pos);
+						String ntMut = mut.substring(pos+1);
+						
+						
+						Matcher m = mutationPattern.matcher(aaMut);
+						if(!m.matches())
+							System.err.println(aaMut);
 	
-	public ScoredAlignment pairwiseAlignment(Sequence seq1, Sequence seq2) throws ServiceException{
-		launch();
+						String aaref = m.group(1);
+						pos = Integer.parseInt(m.group(2));
+						String aatar = m.group(3);
+							
+						m = mutationPattern.matcher(ntMut);
+						if(!m.matches())
+							System.err.println(ntMut);
+	
+						String ntref = m.group(1).toLowerCase();
+						String nttar = m.group(3).toLowerCase();
+						
+						
+						if(aaref.equals("-")){
+							AaInsertion aains = new AaInsertion();
+							aains.setAaInsertion(aatar);
+							aains.setNtInsertionCodon(nttar);
+							
+							if(pos == prevPos)
+								++insertionOrder;
+							else
+								insertionOrder=0;
+							
+							prevPos = pos;
+							
+							aains.setId(new AaInsertionId((short)pos, aaseq, insertionOrder));
+							aaseq.getAaInsertions().add(aains);
+						}
+						else{
+							AaMutation aamut = new AaMutation();
+							aamut.setAaReference(aaref);
+							aamut.setAaMutation(aatar);
+							aamut.setNtReferenceCodon(ntref);
+							aamut.setNtMutationCodon(nttar);
+							aamut.setId(new AaMutationId((short)pos, aaseq));
+							aaseq.getAaMutations().add(aamut);
+						}
+					}
+					nt.setAligned(true);
+					nt.getAaSequences().add(aaseq);
+				}
+			}
+		}
 		
-		Map<String, Sequence> m = new HashMap<String, Sequence>();
-        m.put(getAlignedSequence1().getName(), getAlignedSequence1());
-        m.put(getAlignedSequence2().getName(), getAlignedSequence2());
-        Alignment result = new SimpleAlignment(m);
+		t.commit();
+	}
 
-        return new ScoredAlignment(result, getScore());
+    //IAnalysis methods
+    public AnalysisStatus getStatus() 
+    {
+        return null;
     }
-	
-	
-	public void setSequence1(Sequence sequence1) {
-		this.sequence1 = sequence1;
-	}
-	public Sequence getSequence1() {
-		return sequence1;
-	}
-	public void setSequence2(Sequence sequence2) {
-		this.sequence2 = sequence2;
-	}
-	public Sequence getSequence2() {
-		return sequence2;
-	}
-	public void setMatrix(SubstitutionMatrix matrix) {
-		this.matrix = matrix;
-	}
-	public SubstitutionMatrix getMatrix() {
-		return matrix;
-	}
-	public void setGapOpenScore(double gapOpenScore) {
-		this.gapOpenScore = gapOpenScore;
-	}
-	public double getGapOpenScore() {
-		return gapOpenScore;
-	}
-	public void setGapExtScore(double gapExtScore) {
-		this.gapExtScore = gapExtScore;
-	}
-	public double getGapExtScore() {
-		return gapExtScore;
-	}
-	public void setAa(boolean aa) {
-		this.aa = aa;
-	}
-	public boolean isAa() {
-		return aa;
-	}
-	protected void setAlignedSequence2(Sequence alignedSequence2) {
-		this.alignedSequence2 = alignedSequence2;
-	}
-	public Sequence getAlignedSequence2() {
-		return alignedSequence2;
-	}
-	protected void setAlignedSequence1(Sequence alignedSequence1) {
-		this.alignedSequence1 = alignedSequence1;
-	}
-	public Sequence getAlignedSequence1() {
-		return alignedSequence1;
-	}
-	protected void setScore(double score) {
-		this.score = score;
-	}
-	public double getScore() {
-		return score;
-	}
 
+    public String getUser() 
+    {
+        return null;
+    }
+
+    public void kill() 
+    {
+        
+    }
+
+    public void pause()
+    {
+        
+    }
+
+    public Long removeFromLogging()
+    {
+        return 10000L;
+    }
+
+    public void launch(Login sessionSafeLogin) throws ServiceException{
+        this.login = sessionSafeLogin;
+        launch();
+    }
 }

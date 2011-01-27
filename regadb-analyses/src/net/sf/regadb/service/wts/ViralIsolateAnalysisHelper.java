@@ -91,4 +91,14 @@ public class ViralIsolateAnalysisHelper
         else
             return result;
     }
+    
+    public static String toFasta(ViralIsolate vi){
+    	StringBuilder sb = new StringBuilder();
+    	
+    	for(NtSequence nt : vi.getNtSequences())
+			sb.append('>').append(nt.getLabel().replace(' ','_').replace(',','-')).append('\n')
+				.append(nt.getNucleotides()).append('\n');
+    	
+    	return sb.toString();
+    }
 }
