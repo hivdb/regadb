@@ -21,15 +21,25 @@ import net.sf.regadb.service.IAnalysis;
 public class AlignService extends AbstractService implements IAnalysis{
 	private int viralIsolateIi;
 	private String sequences;
-	private String genome;
+	private String organismName;
 	
-	private Login login;
+	private Login login = null;
+	
+	private ViralIsolate viralIsolate = null;
+	private Genome genome = null;
 	
 	private static final Pattern mutationPattern = Pattern.compile("^([^0-9]*)([0-9]+)([^0-9]*)$");
 
-	public AlignService(ViralIsolate viralIsolate, String genome){
+	public AlignService(ViralIsolate viralIsolate, String organismName){
 		this.viralIsolateIi = viralIsolate.getViralIsolateIi();
+		this.organismName = organismName;
+		this.sequences = ViralIsolateAnalysisHelper.toFasta(viralIsolate);
+	}
+	
+	public AlignService(ViralIsolate viralIsolate, Genome genome){
+		this.viralIsolate = viralIsolate;
 		this.genome = genome;
+		this.organismName = genome.getOrganismName();
 		this.sequences = ViralIsolateAnalysisHelper.toFasta(viralIsolate);
 	}
 	
@@ -37,7 +47,7 @@ public class AlignService extends AbstractService implements IAnalysis{
 	protected void init() {
 		setService("regadb-align");
 		
-		getInputs().put("genome", genome);
+		getInputs().put("genome", organismName);
 		getInputs().put("sequences", sequences);
 		getOutputs().put("mutations", null);
 	}
@@ -46,9 +56,15 @@ public class AlignService extends AbstractService implements IAnalysis{
 	protected void processResults() throws ServiceException {
 		String lines[] = getOutputs().get("mutations").split("\n");
 		
-		Transaction t = login.createTransaction();
-		ViralIsolate vi = t.getViralIsolate(viralIsolateIi);
-		Genome g = t.getGenome(genome);
+		ViralIsolate vi = this.viralIsolate;
+		Genome g = this.genome;
+		Transaction t = null;
+		
+		if(login != null){
+			t = login.createTransaction();
+			vi = t.getViralIsolate(viralIsolateIi);
+			g = t.getGenome(organismName);
+		}
 		
 		NtSequence nt = null;
 		
@@ -145,7 +161,8 @@ public class AlignService extends AbstractService implements IAnalysis{
 			}
 		}
 		
-		t.commit();
+		if(t != null)
+			t.commit();
 	}
 
     //IAnalysis methods

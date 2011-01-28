@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.sf.regadb.align.Aligner;
-import net.sf.regadb.align.local.LocalAlignmentService;
-import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
@@ -20,6 +17,7 @@ import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.io.importXML.ImportHandler;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
+import net.sf.regadb.service.wts.AlignService;
 import net.sf.regadb.service.wts.BlastAnalysis;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.service.wts.ServiceException;
@@ -36,7 +34,6 @@ import org.xml.sax.SAXException;
 public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
 {
     private int countViralIsolates = 0;
-    private Aligner aligner_;
     
     private Test subType_;
     
@@ -47,8 +44,6 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     private List<Test> resistanceTests_;
     
-    private List<AaSequence> aaSeqs_;
-    
     public IOAssistImportHandler(FileWriter fw)
     {    
         this(fw, null);
@@ -56,8 +51,6 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     public IOAssistImportHandler(FileWriter fw, String wtsURL)
     {        
-        aligner_ = new Aligner(new LocalAlignmentService());
-        
         subType_ = RegaDBWtsServer.getSubtypeTest();
         
         export_ = new ExportToXML();
@@ -86,10 +79,9 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         }
         
         object.setGenome(genome);
+        align(object,genome);
         
         for(final NtSequence ntseq : object.getNtSequences()) {
-            align(ntseq, genome);
-
             doSubtypeAnalysis(ntseq, subType_, genome);
         }
         
@@ -107,21 +99,13 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
         System.err.println("Processed viral isolate nr "+countViralIsolates);
     }
     
-    private void align(final NtSequence ntseq, Genome genome) {
-        try {
-            aaSeqs_ = aligner_.align(ntseq, genome);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if(aaSeqs_!=null) {
-            for(AaSequence aaseq : aaSeqs_) {
-                aaseq.setNtSequence(ntseq);
-                ntseq.getAaSequences().add(aaseq);
-            }
-        }
-        
-        ntseq.setAligned(true);
+    private void align(ViralIsolate viralIsolate, Genome genome) {
+    	try {
+        	AlignService as = new AlignService(viralIsolate, genome);
+			as.launch();
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
     }
     
     private void calculateRI(ViralIsolate object, Genome genome) {
