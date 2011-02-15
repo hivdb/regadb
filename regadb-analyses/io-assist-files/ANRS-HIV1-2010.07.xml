@@ -5,6 +5,7 @@
 <!-- ANRS algorithm (version 18 2009) in XML format -->
 <!--
 History:
+11-JAN-11 TFL Updated algorithm based on http://www.medpocket.com/ as of JUL-2010
 13-OCT-09 TFL Updated algorithm based on http://www.medpocket.com/ as of 13-OCT-2009
 29-SEP-08 TFL Updated algorithm based on http://www.hivfrenchresistance.org/2008/tab4.html
 01-OCT-07 TFL Updated algorithm based on the PDF version
@@ -22,7 +23,7 @@ History:
 
 <ALGORITHM>
      <ALGNAME>ANRS</ALGNAME>
-     <ALGVERSION>2009.07</ALGVERSION>
+     <ALGVERSION>2010.07</ALGVERSION>
 
      <DEFINITIONS>
          <LEVEL_DEFINITION>
@@ -45,7 +46,7 @@ History:
 
          <DRUGCLASS>
              <NAME>PI</NAME>
-             <DRUGLIST>IDV,SQV/r,NFV,FosAPV/r,LPV/r,ATV/r,TPV/r,DRV/r</DRUGLIST>
+             <DRUGLIST>IDV,SQV/r,NFV,FPV/r,LPV/r,ATV/r,TPV/r,DRV/r</DRUGLIST>
          </DRUGCLASS>
 
          <DRUGCLASS>
@@ -55,7 +56,7 @@ History:
 
          <DRUGCLASS>
              <NAME>NNRTI</NAME>
-             <DRUGLIST>NVP,EFV,ETV</DRUGLIST>
+             <DRUGLIST>NVP,EFV,ETR</DRUGLIST>
          </DRUGCLASS>
 
          <DRUGCLASS>
@@ -73,6 +74,7 @@ History:
 
      <DRUG>
          <NAME>ZDV</NAME>
+         <FULLNAME>zidovudine</FULLNAME>
          <RULE>
              <CONDITION>
                  215YF
@@ -117,6 +119,7 @@ History:
 
      <DRUG>
          <NAME>D4T</NAME>
+         <FULLNAME>stavudine</FULLNAME>
          <RULE>
              <CONDITION>
                  75MSAT
@@ -136,6 +139,14 @@ History:
          <RULE>
              <CONDITION>
                  SELECT ATLEAST 3 FROM (41L,67N,70R,210W,215ACDEGHILNSV,219QE)
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>3</LEVEL>
+             </ACTIONS>
+         </RULE>
+         <RULE>
+             <CONDITION>
+                 65R
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -169,6 +180,7 @@ History:
 
      <DRUG>
          <NAME>DDI</NAME>
+         <FULLNAME>didanosine</FULLNAME>
 <!-- ***** the following 3 rules for ddi are an interpretation of the following anrs rule ***** -->
 <!-- ***** at least a score of +2 among: M41L +T69D +L74VI +T215FY +K219QE -K70R -M184VI ***** -->
          <RULE>
@@ -236,6 +248,7 @@ History:
 
      <DRUG>
          <NAME>3TC</NAME>
+         <FULLNAME>lamivudine</FULLNAME>
          <RULE>
              <CONDITION>
                  184VI
@@ -272,6 +285,7 @@ History:
 
      <DRUG>
          <NAME>FTC</NAME>
+         <FULLNAME>emtricitabine</FULLNAME>
          <RULE>
              <CONDITION>
                  184VI
@@ -308,6 +322,7 @@ History:
 
      <DRUG>
          <NAME>ABC</NAME>
+         <FULLNAME>abacavir</FULLNAME>
          <RULE>
              <CONDITION>
                  SELECT ATLEAST 5 FROM (41L,67N,74VI,184VI,210W,215YF)
@@ -371,9 +386,10 @@ History:
 
      <DRUG>
          <NAME>TDF</NAME>
+         <FULLNAME>tenofovir</FULLNAME>
          <RULE>
              <CONDITION>
-                 SELECT ATLEAST 6 FROM (41L,44D,67N,69DNS,74V,210W,215YF)
+                 SELECT ATLEAST 6 FROM (41L,44D,67N,69DNS,74VI,210W,215YF)
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -397,7 +413,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 SELECT ATLEAST 3 AND NOTMORETHAN 5 FROM (41L,44D,67N,69DNS,74V,210W,215YF)
+                 SELECT ATLEAST 3 AND NOTMORETHAN 5 FROM (41L,44D,67N,69DNS,74VI,210W,215YF)
              </CONDITION>
              <ACTIONS>
                  <LEVEL>2</LEVEL>
@@ -417,6 +433,7 @@ History:
 
      <DRUG>
          <NAME>EFV</NAME>
+         <FULLNAME>efavirenz</FULLNAME>
          <RULE>
              <CONDITION>
                  100I
@@ -493,6 +510,7 @@ History:
 
      <DRUG>
          <NAME>NVP</NAME>
+         <FULLNAME>nevirapine</FULLNAME>
          <RULE>
 <!--  "résistance" for HIV-1 subtype C and "résistance possible" for HIV-1 other than subtype C; Deshpande A et al. Resistance mutations in subtype C HIV type 1 isolates from Indian patients of Mumbai receiving NRTIs plus NNRTIs and experiencing a treatment failure: resistance to AR. AIDS Res Hum Retroviruses 2007; 23 : 335-40  -->
              <CONDITION>
@@ -567,12 +585,14 @@ History:
              </ACTIONS>
          </RULE>
      </DRUG>
+
      <DRUG>
-         <NAME>ETV</NAME>
+         <NAME>ETR</NAME>
+         <FULLNAME>etravirine</FULLNAME>
          <RULE>
              <CONDITION>
                  SELECT ATLEAST 4 FROM 
-                 (90I,98G,100I,101EP,106I,179DF,181CI,190AS)
+                 (90I,98G,100I,101EHIPR,106I,179DFILMT,181CI,190AS,230L)
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -588,8 +608,16 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
+                 181C AND 221Y
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>3</LEVEL>
+             </ACTIONS>
+         </RULE>
+         <RULE>
+             <CONDITION>
                  SELECT ATLEAST 3 AND NOTMORETHAN 3 FROM 
-                 (90I,98G,100I,101EP,106I,179DF,181CI,190AS)
+                 (90I,98G,100I,101EHIPR,106I,179DFILMT,181CI,190AS,230L)
              </CONDITION>
              <ACTIONS>
                  <LEVEL>2</LEVEL>
@@ -597,7 +625,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 138A
+                 138AGKQR
              </CONDITION>
              <ACTIONS>
                  <LEVEL>2</LEVEL>
@@ -608,6 +636,7 @@ History:
 
      <DRUG>
          <NAME>IDV</NAME>
+         <FULLNAME>indinavir</FULLNAME>
          <RULE>
              <CONDITION>
                  46IL
@@ -654,6 +683,7 @@ History:
 
      <DRUG>
          <NAME>SQV/r</NAME>
+         <FULLNAME>saquinavir/r</FULLNAME>
          <RULE>
              <CONDITION>
                  48V
@@ -684,6 +714,7 @@ History:
 
      <DRUG>
          <NAME>NFV</NAME>
+         <FULLNAME>nelfinavir</FULLNAME>
          <RULE>
              <CONDITION>
                  30N
@@ -728,7 +759,8 @@ History:
      </DRUG>
 
      <DRUG>
-         <NAME>FosAPV/r</NAME>
+         <NAME>FPV/r</NAME>
+         <FULLNAME>fosamprenavir/r</FULLNAME>
          <RULE>
              <CONDITION>
                  50V
@@ -758,6 +790,7 @@ History:
 
      <DRUG>
          <NAME>LPV/r</NAME>
+         <FULLNAME>lopinavir/r</FULLNAME>
          <RULE>
              <CONDITION>
                  SELECT ATLEAST 6 FROM 
@@ -796,6 +829,7 @@ History:
 
      <DRUG>
          <NAME>ATV/r</NAME>
+         <FULLNAME>atazanavir/r</FULLNAME>
          <RULE>
              <CONDITION>
                  50L
@@ -816,6 +850,7 @@ History:
 
      <DRUG>
          <NAME>TPV/r</NAME>
+         <FULLNAME>tipranavir/r</FULLNAME>
 <!-- ***** the following 2 rules for ddi are an interpretation of the following ANRS rule ***** -->
 <!-- ***** at least a score of +3 among: 36ILV +58E +69IKNQRY +89IMRTV -53LWY ***** -->
 <!-- ***** for HIV1 subtype B only ***** -->
@@ -837,6 +872,7 @@ History:
                  <LEVEL>3</LEVEL>
              </ACTIONS>
          </RULE>
+
 <!-- ***** the following 2 rules for ddi are an interpretation of the following anrs rule ***** -->
 <!-- ***** at least a score of +2 among: 36ILV +58E +69IKNQRY +89IMRTV -53LWY ***** -->
 <!-- ***** for HIV1 subtype B only ***** -->
@@ -862,6 +898,7 @@ History:
 
      <DRUG>
          <NAME>DRV/r</NAME>
+         <FULLNAME>darunavir/r</FULLNAME>
          <RULE>
              <CONDITION>
                  SELECT ATLEAST 4 FROM 
@@ -885,6 +922,7 @@ History:
 
      <DRUG>
          <NAME>T20</NAME>
+         <FULLNAME>enfuvirtide</FULLNAME>
          <RULE>
              <CONDITION>
                  36ADESV
@@ -947,6 +985,7 @@ History:
 
      <DRUG>
          <NAME>RAL</NAME>
+         <FULLNAME>raltegravir</FULLNAME>
          <RULE>
              <CONDITION>
                  148HGKRE 
@@ -981,16 +1020,34 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
+                 140AS
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>3</LEVEL>
+             </ACTIONS>
+         </RULE>
+         <RULE>
+             <CONDITION>
                  143CHR
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
              </ACTIONS>
          </RULE>
+         <RULE>
+             <CONDITION>
+                 SELECT ATLEAST 3 AND NOTMORETHAN 3 FROM 
+ (72I,74M,97A,151I,163R,230R)
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>2</LEVEL>
+             </ACTIONS>
+         </RULE>
      </DRUG>
 
      <DRUG>
          <NAME>EVG</NAME>
+         <FULLNAME>elvitegravir</FULLNAME>
          <RULE>
              <CONDITION>
                  66IAK
@@ -1002,6 +1059,30 @@ History:
          <RULE>
              <CONDITION>
                  92Q
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>3</LEVEL>
+             </ACTIONS>
+         </RULE>
+         <RULE>
+             <CONDITION>
+                 138K
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>3</LEVEL>
+             </ACTIONS>
+         </RULE>
+         <RULE>
+             <CONDITION>
+                 140CS
+             </CONDITION>
+             <ACTIONS>
+                 <LEVEL>3</LEVEL>
+             </ACTIONS>
+         </RULE>
+         <RULE>
+             <CONDITION>
+                 147G
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
