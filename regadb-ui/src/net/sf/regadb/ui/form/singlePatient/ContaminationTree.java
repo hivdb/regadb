@@ -36,7 +36,6 @@ import figtree.treeviewer.decorators.DiscreteColorDecorator;
 import figtree.treeviewer.treelayouts.PolarTreeLayout;
 import figtree.treeviewer.treelayouts.RadialTreeLayout;
 import figtree.treeviewer.treelayouts.RectilinearTreeLayout;
-import figtree.webui.TreeWidget;
 
 public class ContaminationTree extends WContainerWidget {
 
