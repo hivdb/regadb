@@ -118,7 +118,7 @@ public class StartImportForm extends WDialog {
 					public void run() {
 						app.attachThread();
 						
-						final Login workerLogin = RegaDBMain.getApp().getLogin().copyLogin();
+						final Login workerLogin = app.getLogin().copyLogin();
 						try {
 							final Transaction tr = workerLogin.getTransaction(true);
 	
