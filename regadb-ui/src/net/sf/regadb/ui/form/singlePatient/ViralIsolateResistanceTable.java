@@ -28,7 +28,7 @@ public class ViralIsolateResistanceTable extends WTable {
         this.setStyleClass("datatable datatable-resistance");
     }
     
-    public void loadTable(Collection<String> drugClasses, boolean showMutations, Set<TestResult> testResults, TestType gssTestType) {
+    public void loadTable(Collection<String> drugClasses, boolean showMutations, boolean showAllAlgorithms, Set<TestResult> testResults, TestType gssTestType) {
         clear();
         
         if(gssTestType == null){
@@ -45,7 +45,7 @@ public class ViralIsolateResistanceTable extends WTable {
         col = getColumnCount();
         getElementAt(0, col).addWidget(new WText(""));
         int maxWidth = 0;
-        for(Test test : getAlgorithms(t, gssTestType)) {
+        for(Test test : getAlgorithms(t, gssTestType, showAllAlgorithms)) {
             if(test.getAnalysis()!=null
                     && Equals.isSameTestType(gssTestType, test.getTestType()) )
             {
@@ -117,11 +117,11 @@ public class ViralIsolateResistanceTable extends WTable {
         }
     }
     
-    private List<Test> getAlgorithms(Transaction t, TestType gssTT) {
+    private List<Test> getAlgorithms(Transaction t, TestType gssTT, boolean showAllAlgorithms) {
     	ViralIsolateFormConfig config = 
     		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
     	
-    	if (config.getAlgorithms() == null) {
+    	if (config.getAlgorithms() == null || showAllAlgorithms) {
     		return t.getTests();
     	} else {
     		List<Test> tests = new ArrayList<Test>();

@@ -26,6 +26,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     private ViralIsolateResistanceTable resistanceTable_;
     private WPushButton refreshButton_;
     private WCheckBox showMutations_;
+    private WCheckBox showAllAlgorithms_;
     
     public ViralIsolateResistanceForm(ViralIsolateForm viralIsolateForm)
     {
@@ -62,6 +63,15 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                     }
                 });
         
+        showAllAlgorithms_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showAllAlgorithmsCB"), wrapper.getElementAt(0, 0));
+        showAllAlgorithms_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
+                {
+                    public void trigger(WMouseEvent a)
+                    {
+                        refreshTable();
+                    }
+                });
+        
         
         //TODO
         //is this still required?????
@@ -83,7 +93,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         Collection<String> drugClasses = getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi());
         
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
-        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
+        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), showAllAlgorithms_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
         
         t.commit();
     }
