@@ -105,7 +105,7 @@ public class Import {
 				vi.setSampleDate(sampleDate);
 				
 				NtSequence nt = new NtSequence(vi);
-				nt.setNucleotides(nucleotides.replaceAll("\\?", ""));
+				nt.setNucleotides(cleanNucleotides(nucleotides));
 				nt.setLabel("Sequence 1");
 				vi.getNtSequences().add(nt);
 				
@@ -135,6 +135,13 @@ public class Import {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String cleanNucleotides(String nucleotides){
+		return nucleotides.replaceAll("\\?", "")
+						.replaceAll("\n", "")
+						.replaceAll("\r", "")
+						.replaceAll("-", "");
 	}
 	
 	private TestResult createTestResult(ViralIsolate vi, Test test, Date date, String sampleId, String value){
