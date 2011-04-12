@@ -225,13 +225,13 @@ public class HicdepExporter {
 			}
 		}
 		
-		q = t.createQuery("select t.patient.patientId, t.startDate, t.stopDate, tg.id.drugGeneric.genericId, t.therapyMotivation.value" +
-				" from Therapy t join t.therapyGenerics tg" +
+		q = t.createQuery("select t.patient.patientId, tg.id.drugGeneric.genericId, t.startDate, t.stopDate, m.value " +
+				" from Therapy t left outer join t.therapyMotivation m join t.therapyGenerics tg" +
 				" order by t.patient.patientId, t.startDate");
 		printART((List<Object[]>)q.list());
 		
-		q = t.createQuery("select t.patient.patientId, t.startDate, t.stopDate, dg.genericId, t.therapyMotivation.value" +
-				" from Therapy t join t.therapyCommercials tc join tc.id.drugCommercial.drugGenerics dg" +
+		q = t.createQuery("select t.patient.patientId, dg.genericId, t.startDate, t.stopDate, m.value" +
+				" from Therapy t left outer join t.therapyMotivation m join t.therapyCommercials tc join tc.id.drugCommercial.drugGenerics dg" +
 				" order by t.patient.patientId, t.startDate");
 		printART((List<Object[]>)q.list());
 		
@@ -306,10 +306,10 @@ public class HicdepExporter {
 		
 		for(Object[] o : queryResult){
 			values[0] = (String)o[0];
-			values[1] = drugs.a2b((String)o[1]);
+			values[1] = drugs.b2a((String)o[1]);
 			values[2] = format((Date)o[2]);
 			values[3] = format((Date)o[3]);
-			values[4] = reason.a2b((String)o[4]);
+			values[4] = reason.b2a((String)o[4]);
 			
 			printInsert("tblART", columns, values);
 		}
@@ -377,9 +377,8 @@ public class HicdepExporter {
 		
 		Login login = Login.authenticate(user.getValue(), pass.getValue());
 		
-		HicdepCsvExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
+		HicdepExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
 		he.export(data.getValue());
-		he.close();
 		
 		login.closeSession();
 	}
