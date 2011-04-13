@@ -14,7 +14,7 @@ public class SequenceDatabaseConfig extends ConfigParser {
 	public void parseXml(RegaDBSettings settings, Element e) {
 		Element pathE = e.getChild("path");
 		path = pathE.getTextTrim();
-		Element similarityE = e.getChild("similarity-treshold");
+		Element similarityE = e.getChild("similarity-threshold");
 		minimumSimilarity = Double.parseDouble(similarityE.getTextTrim());
 	}
 

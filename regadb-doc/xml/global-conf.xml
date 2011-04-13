@@ -248,7 +248,7 @@
   	<!-- Sequence database path -->
 	<path>/etc/rega_institute/regadb/sequencedb</path>
 	<!-- Similarity treshold (minimum) -->
-	<similarity-treshold>0.975</similarity-treshold>
+	<similarity-threshold>0.975</similarity-threshold>
   </sequence-database>
   
   <!-- a list of cron jobs to be run at specified times/intervals
