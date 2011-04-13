@@ -311,8 +311,8 @@ public class QueryToolRunnable implements Runnable {
     private Set<Integer> getAccessiblePatients(Transaction t) {
 		ScrollableQueryResult result = new HibernateStatement(t).executeScrollableQuery(
 				"select pd.id.patient.patientIi from PatientDataset pd where " +
-				"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ originalLogin.getUid() +"') "+
-				"or pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + originalLogin.getUid() + "')", null);
+				/*"pd.id.dataset.id in (select ds.id from Dataset ds where ds.settingsUser.uid = '"+ originalLogin.getUid() +"') "+*/
+				"pd.id.dataset.id in (select da.id.dataset.id from DatasetAccess da where da.id.settingsUser.uid = '" + originalLogin.getUid() + "')", null);
 		Set<Integer> results = new HashSet<Integer>();
 		while (!result.isLast()) {
 			results.add((Integer) result.get()[0]);
