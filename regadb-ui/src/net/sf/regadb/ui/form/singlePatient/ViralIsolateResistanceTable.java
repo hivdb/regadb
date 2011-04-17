@@ -22,6 +22,7 @@ import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig.Algorithm;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WWidget;
 
@@ -141,15 +142,21 @@ public class ViralIsolateResistanceTable extends WTable {
     	int cols = getColumnCount();
     	for (int i = 0; i < getRowCount(); i++) {
     		for (int j = 0; j < cols; j++) {
-    			List<WWidget> children = getElementAt(i, j).getChildren();
-    			if (children.size() > 0) {
-    				WText t = (WText)children.get(0);
-    				w.write(t.getText().toString());
-    			}
+    			writeCell(w, getElementAt(i, j), 0);
+    			writeCell(w, getElementAt(i, j), 1);
+    			
     			if (j != (cols - 1))
     				w.write(",");
     		}
     		w.write("\n");
     	}
+    }
+    
+    private void writeCell(Writer w, WTableCell cell, int index) throws IOException {
+    	List<WWidget> children = cell.getChildren();
+		if (children.size() > index && children.get(index) instanceof WText) {
+			WText t = (WText)children.get(index);
+			w.write(t.getText().toString());
+		}
     }
 }
