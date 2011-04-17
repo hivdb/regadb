@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -24,18 +25,53 @@ public class SimpleCsvMapper {
 		load(br);
 	}
 	
+	private String[] split(String line){
+		ArrayList<String> r = new ArrayList<String>();
+		
+		boolean escaped = false;
+		int b = 0;
+		
+		for(int i=0; i<line.length(); i++){
+			char c = line.charAt(i);
+			
+			if(c == '"')
+				escaped = !escaped;
+			else if(!escaped && c == ','){
+				if(i == b)
+					r.add("");
+				else
+					r.add(trim(line.substring(b, i).trim()));
+				b = i+1;
+			}
+		}
+		if(b < (line.length()-1)){
+			r.add(trim(line.substring(b)));
+		}
+		else
+			r.add("");
+		
+		return r.toArray(new String[r.size()]);
+	}
+	
+	private String trim(String s){
+		if(s.length() > 1 && s.startsWith("\"") && s.endsWith("\"")){
+			return s.substring(1,s.length()-1);
+		}
+		return s;
+	}
+	
 	protected void load(BufferedReader br){
 		try {
 			String line = br.readLine();
 			if(line == null)
 				return;
 			
-			String[] c = line.split(",");
+			String[] c = split(line);
 			a = c[0];
 			b = c[1];
 			
 			while((line = br.readLine()) != null){
-				c = line.split(",",-1);
+				c = split(line);
 				
 				if(!a2b.containsKey(c[0]))
 					a2b.put(c[0], c[1]);

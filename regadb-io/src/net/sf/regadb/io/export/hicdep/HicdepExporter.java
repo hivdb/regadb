@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -31,6 +32,18 @@ public class HicdepExporter {
 	
 	public HicdepExporter(Login login){
 		this.login = login;
+	}
+	
+	private HashMap<String, SimpleCsvMapper> mappers = new HashMap<String, SimpleCsvMapper>();
+	
+	private SimpleCsvMapper getMapper(String name){
+		SimpleCsvMapper mapper = mappers.get(name);
+		if(mapper == null){
+			mapper = createMapper(name);
+			mappers.put(name, mapper);
+		}
+		
+		return mapper;
 	}
 	
 	private SimpleCsvMapper createMapper(String name){
@@ -98,8 +111,8 @@ public class HicdepExporter {
 		values2 = new String[columns2.length];
 		values2[1] = values2[2] = values2[3] = values2[6] = values2[7] = values2[8] = null;
 		
-		SimpleCsvMapper genderMap = createMapper("gender.csv");
-		SimpleCsvMapper transmissionMap = createMapper("transmission_group.csv");		
+		SimpleCsvMapper genderMap = getMapper("gender.csv");
+		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");		
 
 		Random height = new Random();
 		
@@ -183,20 +196,123 @@ public class HicdepExporter {
 		};
 		values = new String[columns.length];
 		
-		q = t.createQuery("select r.patient.patientId, r.testDate from TestResult r join r.test t join t.testType tt" +
-				" where tt.description = '"+ StandardObjects.getContactTestType().getDescription() +"'");
+		columns2 = new String[]{
+				"PATIENT",
+				"RNA_D",
+				"RNA_V"
+//				"RNA_L",
+//				"RNA_T"
+		};
+		values2 = new String[columns2.length];
+		
+		q = t.createQuery("select r.patient.patientId, r.testDate, tt.description, r.value from TestResult r join r.test t join t.testType tt" +
+				" where tt.description = '"+ StandardObjects.getContactTestType().getDescription() +"'"+
+				" ");
+		for(Object[] o : (List<Object[]>)q.list()){
+			values[0] = values2[0] = (String)o[0];
+			values[1] = values2[1] = format((Date)o[1]);
+			
+			if(o[2].equals(StandardObjects.getContactTestType().getDescription())){
+				values[2] = "999";
+				values[3] = "9";
+				values[4] = "9";
+			
+				printInsert("tblVIS", columns, values);
+			} else if(o[2].equals(StandardObjects.getViralLoadDescription())){
+				values2[2] = ((String)o[3]).replace('>', '-').replace('>', '-').replaceAll("=", "");
+				
+				printInsert("tblLAB_RNA", columns2, values2);
+			}
+		}
+		
+		q = t.createQuery("select t.patient.patientId, tg.id.drugGeneric.genericId, t.startDate, t.stopDate, m.value " +
+				" from Therapy t left outer join t.therapyMotivation m join t.therapyGenerics tg" +
+				" order by t.patient.patientId, t.startDate");
+		printART((List<Object[]>)q.list());
+		
+		q = t.createQuery("select t.patient.patientId, dg.genericId, t.startDate, t.stopDate, m.value" +
+				" from Therapy t left outer join t.therapyMotivation m join t.therapyCommercials tc join tc.id.drugCommercial.drugGenerics dg" +
+				" order by t.patient.patientId, t.startDate");
+		printART((List<Object[]>)q.list());
+		
+		
+		columns = new String[]{
+				"SAMP_ID",
+				"SEQTYPE",
+				"SEQ_START",
+				"SEQ_STOP",
+				"SEQ_NUQ"
+		};
+		values = new String[columns.length];
+		q = t.createQuery("select n.viralIsolate.sampleId, p.abbreviation, a.firstAaPos, a.lastAaPos, n.nucleotides" +
+				" from NtSequence n join n.aaSequences a join a.protein p");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
-			values[1] = format((Date)o[1]);
+			values[1] = (String)o[1];
+			values[2] = ""+ o[2];
+			values[3] = ""+ o[3];
+			values[4] = (String)o[4];
 			
-			values[2] = "999";
-			values[3] = "9";
-			values[4] = "9";
+			printInsert("tblLAB_RES_LVL_1", columns, values);
+		}
+		
+		columns = new String[]{
+				"SAMP_ID",
+				"GENE",
+				"AA_POS",
+				"AA_POS_SUB",
+				"AA_FOUND_1"
+		};
+		values = new String[columns.length];
+		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, m.id.mutationPosition, m.aaMutation" +
+				" from AaSequence a join a.aaMutations m join a.protein p");
+		for(Object[] o : (List<Object[]>)q.list()){
+			values[0] = (String)o[0];
+			values[1] = (String)o[1];
+			values[2] = ""+ o[2];
+			values[3] = null;
+			values[4] = (String)o[3];
 			
-			printInsert("tblVIS", columns, values);
+			printInsert("tblLAB_RES_LVL_2", columns, values);
+		}
+		
+		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, i.id.insertionPosition, i.id.insertionOrder, i.aaInsertion" +
+		" from AaSequence a join a.aaInsertions i join a.protein p");
+		for(Object[] o : (List<Object[]>)q.list()){
+			values[0] = (String)o[0];
+			values[1] = (String)o[1];
+			values[2] = ""+ o[2];
+			values[3] = ""+ (char)(Character.getNumericValue('a') + (Short)o[3]);
+			values[4] = (String)o[4];
+			
+			printInsert("tblLAB_RES_LVL_2", columns, values);
 		}
 		
 		t.commit();
+	}
+	
+	private void printART(List<Object[]> queryResult){
+		String[] columns = new String[]{
+				"PATIENT",
+				"ART_ID",
+				"ART_SD",
+				"ART_ED",
+				"ART_RS"
+		};
+		String[] values = new String[columns.length];
+		
+		SimpleCsvMapper reason = getMapper("therapy_stopreason.csv");
+		SimpleCsvMapper drugs = getMapper("drugs.csv");
+		
+		for(Object[] o : queryResult){
+			values[0] = (String)o[0];
+			values[1] = drugs.b2a((String)o[1]);
+			values[2] = format((Date)o[2]);
+			values[3] = format((Date)o[3]);
+			values[4] = reason.b2a((String)o[4]);
+			
+			printInsert("tblART", columns, values);
+		}
 	}
 	
 	protected void printInsert(String table, String[] columns, String[] values){
@@ -240,7 +356,7 @@ public class HicdepExporter {
 	}
 	
 	private String format(Date date){
-		return sdf.format(date);
+		return date == null ? null : sdf.format(date);
 	}
 
 	
@@ -261,9 +377,8 @@ public class HicdepExporter {
 		
 		Login login = Login.authenticate(user.getValue(), pass.getValue());
 		
-		HicdepCsvExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
+		HicdepExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
 		he.export(data.getValue());
-		he.close();
 		
 		login.closeSession();
 	}

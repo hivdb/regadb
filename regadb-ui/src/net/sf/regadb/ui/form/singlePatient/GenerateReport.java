@@ -545,7 +545,7 @@ public class GenerateReport
         while((asiString = getSubString(rtfBuffer_, "$BEGIN_MULTIASI", "$END_MULTIASI", bpos)) != null){
         	SubString paramString = getSubString(asiString.result,"(",")");
         	DrugFormat drugFormat = DrugFormat.Name;
-        	if(paramString.result.length() > 0){
+        	if(paramString.result.trim().length() > 0 && asiString.result.substring(0, paramString.bpos).trim().length() == 0){
         		asiString.result = asiString.result.substring(paramString.epos);
         		
         		String [] parameters = paramString.result.split(",");
