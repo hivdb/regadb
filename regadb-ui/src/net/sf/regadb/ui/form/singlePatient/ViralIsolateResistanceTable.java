@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import net.sf.regadb.util.settings.ViralIsolateFormConfig.Algorithm;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
 
 public class ViralIsolateResistanceTable extends WTable {
     public ViralIsolateResistanceTable(WContainerWidget parent) {
@@ -131,6 +134,22 @@ public class ViralIsolateResistanceTable extends WTable {
     				tests.add(test);
     		}
     		return tests;
+    	}
+    }
+    
+    public void writeTableToCsv(Writer w) throws IOException {
+    	int cols = getColumnCount();
+    	for (int i = 0; i < getRowCount(); i++) {
+    		for (int j = 0; j < cols; j++) {
+    			List<WWidget> children = getElementAt(i, j).getChildren();
+    			if (children.size() > 0) {
+    				WText t = (WText)children.get(0);
+    				w.write(t.getText().toString());
+    			}
+    			if (j != (cols - 1))
+    				w.write(",");
+    		}
+    		w.write("\n");
     	}
     }
 }
