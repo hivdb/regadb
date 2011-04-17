@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,11 +14,15 @@ import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 
 public class ViralIsolateResistanceForm extends WContainerWidget
 {
@@ -26,6 +31,8 @@ public class ViralIsolateResistanceForm extends WContainerWidget
     private ViralIsolateResistanceTable resistanceTable_;
     private WPushButton refreshButton_;
     private WCheckBox showMutations_;
+    private WCheckBox showAllAlgorithms_;
+    private WAnchor downloadAsCsv_;
     
     public ViralIsolateResistanceForm(ViralIsolateForm viralIsolateForm)
     {
@@ -53,8 +60,26 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                     }
                 });
         
+        downloadAsCsv_ = new WAnchor(wrapper.getElementAt(0, 0));
+        downloadAsCsv_.setText(tr("form.viralIsolate.editView.resistance.downloadAsCsv"));
+        downloadAsCsv_.setResource(new WResource() {
+			protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
+				resistanceTable_.writeTableToCsv(response.out());
+			}
+        });
+        downloadAsCsv_.getResource().suggestFileName("resistance-table.csv");
+        
         showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.getElementAt(0, 0));
         showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
+                {
+                    public void trigger(WMouseEvent a)
+                    {
+                        refreshTable();
+                    }
+                });
+        
+        showAllAlgorithms_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showAllAlgorithmsCB"), wrapper.getElementAt(0, 0));
+        showAllAlgorithms_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
                 {
                     public void trigger(WMouseEvent a)
                     {
@@ -83,7 +108,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
         Collection<String> drugClasses = getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi());
         
         TestType gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
-        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
+        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), showAllAlgorithms_.isChecked(), viralIsolateForm_.getViralIsolate().getTestResults(),gssTestType);
         
         t.commit();
     }

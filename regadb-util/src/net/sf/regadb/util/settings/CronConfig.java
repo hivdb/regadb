@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import org.jdom.Element;
 
-public class CronConfig implements IConfigParser{
+public class CronConfig extends ConfigParser{
 	private List<JobElement> jobs = new LinkedList<JobElement>();
 	
 	public static class JobElement{
@@ -80,8 +80,8 @@ public class CronConfig implements IConfigParser{
 		}
 	}
 
-	public String getXmlTag() {
-		return "cron";
+	public CronConfig() {
+		super("cron");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {

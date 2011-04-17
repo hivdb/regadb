@@ -17,7 +17,6 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig.ScoreInfo;

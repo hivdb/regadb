@@ -160,14 +160,14 @@ public class QueryToolRunnable implements Runnable {
 	
     public WFileResource getTableDownloadResource(){
     	if (isDone()) {
-    		return new WFileResource("application/csv", csvFile.getAbsolutePath());
+    		return new WFileResource("application/csv", csvFile.getAbsolutePath(), null);
     	}
     	return null;
     }
     
     public WFileResource getFastaDownloadResource() {
     	if (isDone() && fastaFile != null) {
-    		return new WFileResource("application/fasta", fastaFile.getAbsolutePath());
+    		return new WFileResource("application/fasta", fastaFile.getAbsolutePath(), null);
     	}
     	return null;
     }

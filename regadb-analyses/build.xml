@@ -105,6 +105,18 @@
   	<attribute name="Class-Path" value="${jar-dependencies}"/>
       </manifest>
     </jar>
+    <jar jarfile="${dist}/sequence-db.jar" basedir="${build}">
+      <manifest>
+  	<attribute name="Main-Class" value="net.sf.regadb.sequencedb.SequenceDb"/>
+  	<attribute name="Class-Path" value="${jar-dependencies}"/>
+      </manifest>
+    </jar>
+    <jar jarfile="${dist}/approximate-contamination-distributions.jar" basedir="${build}">
+      <manifest>
+  	<attribute name="Main-Class" value="net.sf.regadb.contamination.ApproximateDistributions"/>
+  	<attribute name="Class-Path" value="${jar-dependencies}"/>
+      </manifest>
+    </jar>
     <antcall target="create-package" />
   </target>
   

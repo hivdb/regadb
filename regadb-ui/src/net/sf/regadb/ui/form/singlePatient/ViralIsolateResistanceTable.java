@@ -1,5 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +22,9 @@ import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig.Algorithm;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WWidget;
 
 public class ViralIsolateResistanceTable extends WTable {
     public ViralIsolateResistanceTable(WContainerWidget parent) {
@@ -28,7 +32,7 @@ public class ViralIsolateResistanceTable extends WTable {
         this.setStyleClass("datatable datatable-resistance");
     }
     
-    public void loadTable(Collection<String> drugClasses, boolean showMutations, Set<TestResult> testResults, TestType gssTestType) {
+    public void loadTable(Collection<String> drugClasses, boolean showMutations, boolean showAllAlgorithms, Set<TestResult> testResults, TestType gssTestType) {
         clear();
         
         if(gssTestType == null){
@@ -45,7 +49,7 @@ public class ViralIsolateResistanceTable extends WTable {
         col = getColumnCount();
         getElementAt(0, col).addWidget(new WText(""));
         int maxWidth = 0;
-        for(Test test : getAlgorithms(t, gssTestType)) {
+        for(Test test : getAlgorithms(t, gssTestType, showAllAlgorithms)) {
             if(test.getAnalysis()!=null
                     && Equals.isSameTestType(gssTestType, test.getTestType()) )
             {
@@ -117,11 +121,11 @@ public class ViralIsolateResistanceTable extends WTable {
         }
     }
     
-    private List<Test> getAlgorithms(Transaction t, TestType gssTT) {
+    private List<Test> getAlgorithms(Transaction t, TestType gssTT, boolean showAllAlgorithms) {
     	ViralIsolateFormConfig config = 
     		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
     	
-    	if (config.getAlgorithms() == null) {
+    	if (config.getAlgorithms() == null || showAllAlgorithms) {
     		return t.getTests();
     	} else {
     		List<Test> tests = new ArrayList<Test>();
@@ -132,5 +136,27 @@ public class ViralIsolateResistanceTable extends WTable {
     		}
     		return tests;
     	}
+    }
+    
+    public void writeTableToCsv(Writer w) throws IOException {
+    	int cols = getColumnCount();
+    	for (int i = 0; i < getRowCount(); i++) {
+    		for (int j = 0; j < cols; j++) {
+    			writeCell(w, getElementAt(i, j), 0);
+    			writeCell(w, getElementAt(i, j), 1);
+    			
+    			if (j != (cols - 1))
+    				w.write(",");
+    		}
+    		w.write("\n");
+    	}
+    }
+    
+    private void writeCell(Writer w, WTableCell cell, int index) throws IOException {
+    	List<WWidget> children = cell.getChildren();
+		if (children.size() > index && children.get(index) instanceof WText) {
+			WText t = (WText)children.get(index);
+			w.write(t.getText().toString());
+		}
     }
 }

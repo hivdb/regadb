@@ -1,10 +1,7 @@
 package net.sf.regadb.ui.datatable.patient;
 
-import net.sf.regadb.db.Patient;
-import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
-import net.sf.regadb.util.pair.Pair;
 
 public class SelectPatientForm extends SelectForm
 {

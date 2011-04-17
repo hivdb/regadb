@@ -17,7 +17,6 @@ import org.apache.commons.io.FileUtils;
 
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WMemoryResource;
-import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WWidget;
 
 public class IAnalysisDataEditableTable implements IEditableTable<AnalysisData>

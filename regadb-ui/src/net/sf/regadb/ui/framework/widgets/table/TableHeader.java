@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.framework.widgets.table;
 
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;
 

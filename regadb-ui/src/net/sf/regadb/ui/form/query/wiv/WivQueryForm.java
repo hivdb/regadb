@@ -312,7 +312,7 @@ public abstract class WivQueryForm extends FormWidget implements Signal1.Listene
      
     public void setDownloadLink(File file){
         link_.setText("Download Query Result [" + new Date(System.currentTimeMillis()).toString() + "]");
-        WFileResource res = new WFileResource("application/csv", file.getAbsolutePath());
+        WFileResource res = new WFileResource("application/csv", file.getAbsolutePath(), null);
         res.suggestFileName(filename_ +".csv");
         link_.setResource(res);
     }

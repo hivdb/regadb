@@ -19,6 +19,7 @@ import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
+import net.sf.regadb.ui.form.administrator.ContaminationOverview;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.administrator.VersionForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
@@ -80,6 +81,7 @@ import net.sf.regadb.ui.tree.items.testSettings.TestSelectedItem;
 import net.sf.regadb.ui.tree.items.testSettings.TestTypeSelectedItem;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
 public class TreeContent
@@ -1077,6 +1079,16 @@ public class TreeContent
                     RegaDBMain.getApp().getFormContainer().setForm(new LogForm(WWidget.tr("form.log.view"), InteractionState.Deleting, logSelectedItem.getSelectedItem()));
                 }
             });
+            
+            if(RegaDBSettings.getInstance().getContaminationConfig().isConfigured()){
+	            new ActionItem(WString.tr("menu.contamination"),administratorMain, new ITreeAction()
+	            {
+	                public void performAction(TreeMenuNode node) 
+	                {
+	                    RegaDBMain.getApp().getFormContainer().setForm(new ContaminationOverview());
+	                }
+	            });
+            }
             
             version = new ActionItem(WResource.tr("menu.version"),administratorMain, new ITreeAction()
             {

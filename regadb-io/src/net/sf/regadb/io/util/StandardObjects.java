@@ -115,6 +115,9 @@ public class StandardObjects {
     
     private static Test genericHAVIgGTest;
     private static Test genericHAVIgMTest;
+    
+    private static Test contaminationTest;
+    private static Test contaminationClusterFactorTest;
        
 //    private static Test anrs200607Test;
 //    private static Test hivdb429Test;
@@ -231,6 +234,16 @@ public class StandardObjects {
         
         aidsDefiningIllnessEvent = createAidsDefiningIllnessEvent();
         pregnancyEvent = createPregnancyEvent();
+        
+        tt = new TestType(sequenceAnalysisTestObject,"Contamination");
+        tt.setGenome(null);
+        tt.setValueType(nominalValueType);
+        tt.getTestNominalValues().add(new TestNominalValue(tt, "Positive"));
+        tt.getTestNominalValues().add(new TestNominalValue(tt, "Negative"));
+        contaminationTest = createTest(tt, "Contamination");
+        
+        tt = new TestType(numberValueType, null, sequenceAnalysisTestObject, "Contamination Cluster Factor", new TreeSet<TestNominalValue>());
+        contaminationClusterFactorTest = createTest(tt, "Contamination Cluster Factor");
     }
     
     private static TestObject createTestObject(String description, int id){
@@ -678,6 +691,20 @@ public class StandardObjects {
     }
     public static TestType getHAVIgMTestType(){
     	return genericHAVIgMTest.getTestType();
+    }
+    
+    public static Test getContaminationTest(){
+    	return contaminationTest;
+    }
+    public static TestType getContaminationTestType(){
+    	return getContaminationTest().getTestType();
+    }
+    
+    public static Test getContaminationClusterFactorTest(){
+    	return contaminationClusterFactorTest;
+    }
+    public static TestType getContaminactionClusterFactorTestType(){
+    	return getContaminationClusterFactorTest().getTestType();
     }
     
 //    public static Test getAnrs200607Test(){

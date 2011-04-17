@@ -159,7 +159,7 @@ public abstract class CustomQuery extends FormWidget{
 	
 	private void showDownload(File result){
 		download.setText(getFileName() +" [" + df.format(new Date()) + "]");
-        WFileResource res = new WFileResource(getMimeType(), result.getAbsolutePath());
+        WFileResource res = new WFileResource(getMimeType(), result.getAbsolutePath(), null);
         res.suggestFileName(getFileName());
         download.setResource(res);
 	}

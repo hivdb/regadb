@@ -28,7 +28,7 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 
 	private static final String newLine = "<br/>";
 
-	public void addNt(char reference, char target, int codonIndex) {
+	public void addNt(char reference, char target, int codonIndex, boolean insertion) {
 		if (reference == target || target == '-') {
 			refNt.append(reference);
 			tarNt.append(target);

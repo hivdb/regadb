@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.regadb.csv.Table;
-import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WAbstractItemModel;

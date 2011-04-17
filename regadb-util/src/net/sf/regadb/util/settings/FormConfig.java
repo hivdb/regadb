@@ -2,15 +2,12 @@ package net.sf.regadb.util.settings;
 
 import org.jdom.Element;
 
-public abstract class FormConfig implements IConfigParser{
+public abstract class FormConfig extends ConfigParser{
 	private String formName;
 	
 	public FormConfig(String formName){
+		super("form");
 		setFormName(formName);
-	}
-
-	public String getXmlTag() {
-		return "form";
 	}
 
 	public Element toXml() {

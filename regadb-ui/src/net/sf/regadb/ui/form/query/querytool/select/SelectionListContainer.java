@@ -7,13 +7,13 @@ import net.sf.regadb.ui.form.query.querytool.QueryToolApp;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 
 import com.pharmadm.custom.rega.queryeditor.ConfigurableWord;
+import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.queryeditor.InputVariable;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Selection;
 import com.pharmadm.custom.rega.queryeditor.SelectionListChangeListener;
 import com.pharmadm.custom.rega.queryeditor.SimpleSelection;
 import com.pharmadm.custom.rega.queryeditor.TableSelection;
-import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WText;

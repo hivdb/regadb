@@ -107,7 +107,7 @@ public class GenerateReport
         replace("$PATIENT_ID", patient.getPatientId());
         replace("$PATIENT_CLINICAL_FILE_NR", getPatientAttributeValue(patient,StandardObjects.getClinicalFileNumberAttribute().getName()));
         replace("$SAMPLE_ID", vi.getSampleId());
-        replace("$REFERENCE_SEQUENCE", vi.getGenome() == null ? "" : vi.getGenome().getOrganismDescription());
+        replace("$REFERENCE_SEQUENCE", vi.getGenome() == null ? "" : vi.getGenome().getGenbankNumber());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate()));
         
@@ -138,7 +138,7 @@ public class GenerateReport
     		int ai = 1;
     		for(Algorithm alg : vifc.getAlgorithms()){
     			if (vi.getGenome().getOrganismName().equals(alg.getOrganism())) {
-    				rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg +"\\)");
+    				rtfString = rtfString.replaceAll("\\$ASI_([A-Z]+[12])\\(\\$"+ ai +"\\)", "\\$ASI_$1\\("+ alg.getName() +"\\)");
     				rtfString = rtfString.replaceAll("\\$ASI_ALGORITHM\\(\\$"+ ai +"\\)", alg.getName());
     				++ai;
     			}

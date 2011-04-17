@@ -12,6 +12,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.regadb.service.align.AlignmentAnalysis;
@@ -23,10 +24,14 @@ public class FullAnalysis implements IAnalysis {
     private Genome genome;
     
     private ViralIsolate viralIsolate;
+    
+    private SequenceDb sequenceDb;
 
-    public FullAnalysis(ViralIsolate viralIsolate, Genome genome) {
+    public FullAnalysis(ViralIsolate viralIsolate, Genome genome, SequenceDb sequenceDb) {
         setViralIsolate(viralIsolate);
         setGenome(genome);
+        
+        this.sequenceDb = sequenceDb; 
     }
 
     public Date getEndTime() {
@@ -64,7 +69,8 @@ public class FullAnalysis implements IAnalysis {
                     {
                         launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
                         		sessionSafeLogin.getUid(), 
-                        		genome.getOrganismName()), sessionSafeLogin);
+                        		genome.getOrganismName(), 
+                        		sequenceDb), sessionSafeLogin);
                         launchAnalysis(new SubtypeAnalysis(ntseq,
                         		subTypeTest,
                                 genome,

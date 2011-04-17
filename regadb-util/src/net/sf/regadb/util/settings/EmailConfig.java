@@ -5,13 +5,13 @@ import java.util.Set;
 
 import org.jdom.Element;
 
-public class EmailConfig implements IConfigParser {
+public class EmailConfig extends ConfigParser {
 	private String host;
 	private String from;
 	private Set<String> to = new HashSet<String>();
 	
-	public String getXmlTag() {
-		return "e-mail";
+	public EmailConfig() {
+		super("e-mail");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {

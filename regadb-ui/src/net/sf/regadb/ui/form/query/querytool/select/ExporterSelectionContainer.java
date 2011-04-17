@@ -1,9 +1,9 @@
 package net.sf.regadb.ui.form.query.querytool.select;
 
 
+import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.queryeditor.FieldExporter;
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
-import com.pharmadm.custom.rega.queryeditor.ExporterSelection;
 import com.pharmadm.custom.rega.savable.Savable;
 
 import eu.webtoolkit.jwt.Signal1;

@@ -361,7 +361,11 @@ public class ViralIsolateMainForm extends WContainerWidget
             	RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
 
             t.delete(ntseq);
+                        
             viralIsolateForm_.getViralIsolate().getNtSequences().remove(ntseq);
+            
+            if (RegaDBMain.getApp().getSequenceDb() != null)
+            	RegaDBMain.getApp().getSequenceDb().sequenceDeleted(ntseq);
         }
         
         NtSequence ntseqref;
@@ -430,7 +434,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     {
         ViralIsolate vi = viralIsolateForm_.getViralIsolate();
         if(vi.getNtSequences().size() > 0){
-            FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate(), genome);
+            FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate(), genome, RegaDBMain.getApp().getSequenceDb());
             AnalysisPool.getInstance().launchAnalysis(fullAnalysis, RegaDBMain.getApp().getLogin());
         }
     }
