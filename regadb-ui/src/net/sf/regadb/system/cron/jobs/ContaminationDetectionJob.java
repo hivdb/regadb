@@ -103,6 +103,7 @@ public class ContaminationDetectionJob implements Job {
 	}
 	
 	public static void main(String [] args) {
+		RegaDBSettings.createInstance();
 		ContaminationDetectionJob j = new ContaminationDetectionJob();
 		try {
 			j.execute(null);
