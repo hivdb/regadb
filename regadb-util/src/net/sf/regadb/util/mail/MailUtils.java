@@ -44,6 +44,10 @@ public class MailUtils {
 	}
 	
 	public static void main(String args[]){
+		//When the configuration file has an EmailConfig block, 
+		//only the message and subject need to be pass
+		//eg.: java -jar regadb-util-test-email.jar -m "test message" -s "test subject"
+		
 		Arguments as = new Arguments();
 		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
 		ValueArgument aTo = as.addValueArgument("t", "recipient-csv-list", false);
