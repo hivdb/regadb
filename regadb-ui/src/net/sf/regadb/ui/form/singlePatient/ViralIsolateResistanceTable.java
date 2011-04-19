@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -122,7 +124,7 @@ public class ViralIsolateResistanceTable extends WTable {
     		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
     	
     	if (config.getAlgorithms() == null || showAllAlgorithms) {
-    		return filterTests(t.getTests(), gssTT);
+    		return sortGSSTests(filterTests(t.getTests(), gssTT));
     	} else {
     		List<Test> tests = new ArrayList<Test>();
     		for (Algorithm a : config.getAlgorithms()) {
@@ -132,6 +134,55 @@ public class ViralIsolateResistanceTable extends WTable {
     		}
     		return filterTests(tests, gssTT);
     	}
+    }
+    
+    private List<Test> sortGSSTests(List<Test> tests) {
+    	final boolean nameDescending = true;
+    	final boolean versionDescending = true;
+    	Collections.sort(tests, new Comparator<Test>(){
+			@Override
+			public int compare(Test t1, Test t2) {
+				String d1 = getDescription(t1);
+				String d2 = getDescription(t2);
+				Integer v1 = getVersion(t1);
+				Integer v2 = getVersion(t2);
+				
+				if (d1.equals(d2))
+					if (!versionDescending)
+						return v1.compareTo(v2);
+					else
+						return v2.compareTo(v1);
+				else
+					if (nameDescending)
+						return d1.compareTo(d2);
+					else
+						return d2.compareTo(d1);
+			}
+			
+			private String getDescription(Test t) {
+				return t.getDescription().split(" ")[0];
+			}
+			
+			private int getVersion(Test t) {
+				int version = -1;
+				String [] parts = t.getDescription().split(" ");
+				if (parts.length > 1) {
+					try {
+						StringBuffer buffer = new StringBuffer();
+						for (int i = 0; i < parts[1].length(); i++) {
+							if (Character.isDigit(parts[1].charAt(i)))
+								buffer.append(parts[1].charAt(i));
+						}
+						version = Integer.parseInt(buffer.toString());
+					} catch (Exception e) {
+						
+					}
+				}
+				return version;
+			}
+    	});
+    	
+    	return tests;
     }
     
     private List<Test> filterTests(List<Test> tests, TestType gssTT) {
