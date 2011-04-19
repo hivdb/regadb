@@ -50,16 +50,12 @@ public class ViralIsolateResistanceTable extends WTable {
         getElementAt(0, col).addWidget(new WText(""));
         int maxWidth = 0;
         for(Test test : getAlgorithms(t, gssTestType, showAllAlgorithms)) {
-            if(test.getAnalysis()!=null
-                    && Equals.isSameTestType(gssTestType, test.getTestType()) )
-            {
-                col = getColumnCount();
-                getElementAt(0, col).addWidget(new TableHeader(test.getDescription()));
-                getElementAt(0, col).setStyleClass("column-title");
+        	col = getColumnCount();
+            getElementAt(0, col).addWidget(new TableHeader(test.getDescription()));
+            getElementAt(0, col).setStyleClass("column-title");
                 
-                algoColumn.put(test.getDescription(), col);
-                maxWidth += test.getDescription().length();
-            }
+            algoColumn.put(test.getDescription(), col);
+            maxWidth += test.getDescription().length();
         }
         
         //drug names - row position
@@ -126,7 +122,7 @@ public class ViralIsolateResistanceTable extends WTable {
     		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
     	
     	if (config.getAlgorithms() == null || showAllAlgorithms) {
-    		return t.getTests();
+    		return filterTests(t.getTests(), gssTT);
     	} else {
     		List<Test> tests = new ArrayList<Test>();
     		for (Algorithm a : config.getAlgorithms()) {
@@ -134,8 +130,18 @@ public class ViralIsolateResistanceTable extends WTable {
     			if (test != null && a.getOrganism().equals(gssTT.getGenome().getOrganismName()))
     				tests.add(test);
     		}
-    		return tests;
+    		return filterTests(tests, gssTT);
     	}
+    }
+    
+    private List<Test> filterTests(List<Test> tests, TestType gssTT) {
+		List<Test> filteredTest = new ArrayList<Test>();
+		for (Test test : tests) {
+			if(test.getAnalysis()!=null
+                    && Equals.isSameTestType(gssTT, test.getTestType()))
+				filteredTest.add(test);
+		}
+		return filteredTest;
     }
     
     public void writeTableToCsv(Writer w) throws IOException {
