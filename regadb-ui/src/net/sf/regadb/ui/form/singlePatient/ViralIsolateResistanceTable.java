@@ -137,8 +137,8 @@ public class ViralIsolateResistanceTable extends WTable {
     }
     
     private List<Test> sortGSSTests(List<Test> tests) {
-    	final boolean nameDescending = true;
-    	final boolean versionDescending = true;
+    	final boolean nameAscending = true;
+    	final boolean versionAscending = false;
     	Collections.sort(tests, new Comparator<Test>(){
 			@Override
 			public int compare(Test t1, Test t2) {
@@ -148,12 +148,12 @@ public class ViralIsolateResistanceTable extends WTable {
 				Integer v2 = getVersion(t2);
 				
 				if (d1.equals(d2))
-					if (!versionDescending)
+					if (versionAscending)
 						return v1.compareTo(v2);
 					else
 						return v2.compareTo(v1);
 				else
-					if (nameDescending)
+					if (nameAscending)
 						return d1.compareTo(d2);
 					else
 						return d2.compareTo(d1);
