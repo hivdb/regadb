@@ -6,8 +6,11 @@ import java.util.Collection;
 import java.util.List;
 
 import net.sf.regadb.db.Genome;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
@@ -67,7 +70,9 @@ public class ViralIsolateResistanceForm extends WContainerWidget
 				resistanceTable_.writeTableToCsv(response.out());
 			}
         });
-        downloadAsCsv_.getResource().suggestFileName("resistance-table.csv");
+        String patientId = new Patient(viralIsolateForm_.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getPatientId().replaceAll("_", "");
+        String sampleId = viralIsolateForm_.getViralIsolate().getSampleId().replaceAll(" ", "_");
+        downloadAsCsv_.getResource().suggestFileName("resistance-table_" + patientId + "_" + sampleId + " .csv");
         
         showMutations_ = new WCheckBox(tr("form.viralIsolate.editView.resistance.showMutationsCB"), wrapper.getElementAt(0, 0));
         showMutations_.clicked().addListener(this, new Signal1.Listener<WMouseEvent>()
