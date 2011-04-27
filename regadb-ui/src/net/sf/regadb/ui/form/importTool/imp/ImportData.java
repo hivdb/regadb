@@ -205,7 +205,7 @@ public class ImportData {
 			} else if (type == Rule.Type.AttributeValue) {
 				if (!value.equals("")) {
 					Attribute a = t.getAttributes(r.getTypeName()).get(0);
-					value = handleValueType(r, a.getValueType(), value);
+					value = handleValueType(r, a.getValueType(), value, a.getValidationString());
 					if (value != null)
 						attributes.put(a, value);
 					else 
@@ -455,6 +455,10 @@ public class ImportData {
 	}
 	
 	private String handleValueType(Rule r, ValueType valueType, String value) {
+		return handleValueType(r, valueType, value, null);
+	}
+	
+	private String handleValueType(Rule r, ValueType valueType, String value, String validationString) {
 		if (ValueTypes.getValueType(valueType) == ValueTypes.DATE) {
 			Date d = handleDateValue(r, value);
 			if (d != null)
@@ -477,7 +481,10 @@ public class ImportData {
 		} else if (ValueTypes.getValueType(valueType) == ValueTypes.NOMINAL_VALUE) {
 			return r.getMappingDetails().getMappings().get(value);
 		} else if (ValueTypes.getValueType(valueType) == ValueTypes.STRING) {
-			return value;
+			if(ValueTypes.isValidString(value, validationString))
+				return value;
+			else
+				return null;
 		}
 		return null;
 	}
