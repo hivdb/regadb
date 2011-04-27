@@ -4,7 +4,7 @@ create table regadbschema.aa_sequence (aa_sequence_ii int identity not null, ver
 create table regadbschema.analysis (analysis_ii int identity not null, analysis_type_ii int not null, url varchar(100) null, account varchar(50) null, password varchar(100) null, baseinputfile varchar(50) null, baseoutputfile varchar(50) null, service_name varchar(100) null, dataoutputfile varchar(50) null, primary key (analysis_ii));
 create table regadbschema.analysis_data (analysis_data_ii int identity not null, analysis_ii int not null, name varchar(50) null, data varbinary(MAX) null, mimetype varchar(50) not null, primary key (analysis_data_ii));
 create table regadbschema.analysis_type (analysis_type_ii int identity not null, type varchar(50) null, primary key (analysis_type_ii));
-create table regadbschema.attribute (attribute_ii int identity not null, version int not null, value_type_ii int null, attribute_group_ii int null, name varchar(50) not null, primary key (attribute_ii));
+create table regadbschema.attribute (attribute_ii int identity not null, version int not null, value_type_ii int null, attribute_group_ii int null, name varchar(50) not null, validation_string varchar(100) null, primary key (attribute_ii));
 create table regadbschema.attribute_group (attribute_group_ii int identity not null, version int not null, group_name varchar(50) null, primary key (attribute_group_ii));
 create table regadbschema.attribute_nominal_value (nominal_value_ii int identity not null, version int not null, attribute_ii int not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table regadbschema.combined_query (combined_query_ii int identity not null, name varchar(50) not null, primary key (combined_query_ii));

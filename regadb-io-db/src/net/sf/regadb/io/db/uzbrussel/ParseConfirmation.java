@@ -49,7 +49,7 @@ public class ParseConfirmation {
             new String[] { "male", "female" } );
     
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
-    private Attribute commentAttribute = new Attribute(StandardObjects.getStringValueType(),regadbAttributeGroup_,"Comment",new TreeSet<AttributeNominalValue>());
+    private Attribute commentAttribute = new Attribute(StandardObjects.getStringValueType(),regadbAttributeGroup_,"Comment", null, new TreeSet<AttributeNominalValue>());
     
     public ParseConfirmation(String basePath, ParseIds parseIds, Map<Integer, Patient> patients) {
         basePath_ = basePath;

@@ -18,6 +18,8 @@ public class Attribute implements java.io.Serializable {
     private AttributeGroup attributeGroup;
 
     private String name;
+    
+    private String validationString;
 
     private Set<AttributeNominalValue> attributeNominalValues = new HashSet<AttributeNominalValue>(
             0);
@@ -30,10 +32,11 @@ public class Attribute implements java.io.Serializable {
     }
 
     public Attribute(ValueType valueType, AttributeGroup attributeGroup,
-            String name, Set<AttributeNominalValue> attributeNominalValues) {
+            String name, String validationString, Set<AttributeNominalValue> attributeNominalValues) {
         this.valueType = valueType;
         this.attributeGroup = attributeGroup;
         this.name = name;
+        this.validationString = validationString;
         this.attributeNominalValues = attributeNominalValues;
     }
 
@@ -75,6 +78,14 @@ public class Attribute implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getValidationString() {
+    	return validationString;
+    }
+    
+    public void setValidationString(String validationString) {
+    	this.validationString = validationString;
     }
 
     public Set<AttributeNominalValue> getAttributeNominalValues() {

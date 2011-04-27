@@ -3,7 +3,6 @@ package net.sf.regadb.io.db.fiocruz.htlv;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,9 +57,9 @@ public class ImportHtlv {
 			new NominalAttribute("Geographic origin", geographicOriginMappingTable, demographics, Utils.selectAttribute("Geographic origin", regadbAttributes));
 		NominalAttribute genderA = new NominalAttribute("Gender", null, personal, Utils.selectAttribute("Gender", regadbAttributes));
 		NominalAttribute ethnicityA = new NominalAttribute("Ethnicity", ethnicityMappingTable, personal, Utils.selectAttribute("Ethnicity", regadbAttributes));
-		Attribute ageA = new Attribute(StandardObjects.getNumberValueType(),personal,"Age",new TreeSet<AttributeNominalValue>());
-		Attribute regionA = new Attribute(StandardObjects.getStringValueType(),demographics,"Region",new TreeSet<AttributeNominalValue>());
-		Attribute clinicalStatusA = new Attribute(StandardObjects.getNominalValueType(),personal,"Clinical Status", new HashSet<AttributeNominalValue>());
+		Attribute ageA = new Attribute(StandardObjects.getNumberValueType(),personal,"Age", null, new TreeSet<AttributeNominalValue>());
+		Attribute regionA = new Attribute(StandardObjects.getStringValueType(),demographics,"Region", null ,new TreeSet<AttributeNominalValue>());
+		Attribute clinicalStatusA = new Attribute(StandardObjects.getNominalValueType(),personal,"Clinical Status", null , new HashSet<AttributeNominalValue>());
 		
 		HashMap<String, Patient> patients = new HashMap<String, Patient>();
 		

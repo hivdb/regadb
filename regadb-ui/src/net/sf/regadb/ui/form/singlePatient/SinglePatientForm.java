@@ -38,6 +38,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WRegExpValidator;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 
@@ -256,13 +257,21 @@ public class SinglePatientForm extends FormWidget
                     {
                         ValueTypes vt = ValueTypes.getValueType(attrEl.getKey().getValueType());
                     	attributeFieldTF = getTextField(vt);
-                        if(attrEl.getValue()!=null && attrEl.getValue().getValue()!=null)
-                        {
-                            if(vt == ValueTypes.DATE){
-                                attributeFieldTF.setText(DateUtils.format(attrEl.getValue().getValue()));
-                            }
-                            else
-                                attributeFieldTF.setText(attrEl.getValue().getValue());
+                    	
+                        if(attrEl.getValue()!=null){
+                        	String validation = attrEl.getValue().getAttribute().getValidationString();
+                        	if(getInteractionState() != InteractionState.Viewing
+                        		&& validation != null && validation.length() > 0){
+                        		attributeFieldTF.setValidator(new WRegExpValidator(validation));
+                        	}
+                        	
+                        	if(attrEl.getValue().getValue()!=null){
+	                            if(vt == ValueTypes.DATE){
+	                                attributeFieldTF.setText(DateUtils.format(attrEl.getValue().getValue()));
+	                            }
+	                            else
+	                                attributeFieldTF.setText(attrEl.getValue().getValue());
+	                        }
                         }
                         attributesGroupTable_.getElementAt(rowToPlace, 1).addWidget(attributeFieldTF);
                     }

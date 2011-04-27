@@ -18,8 +18,8 @@ import net.sf.regadb.util.xls.ExcelTable;
 
 public class MateibalsUtils {
 	public static Attribute nameA = new Attribute();
-	public static Attribute countyA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"County", new HashSet<AttributeNominalValue>());
-	public static Attribute residenceA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"Residence", new HashSet<AttributeNominalValue>());
+	public static Attribute countyA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"County", null, new HashSet<AttributeNominalValue>());
+	public static Attribute residenceA = new Attribute(StandardObjects.getNominalValueType(), StandardObjects.getDemographicsAttributeGroup(),"Residence", null, new HashSet<AttributeNominalValue>());
 	
 	public static Test viCommentT;
 	public static Test viSetNoT;
