@@ -34,6 +34,8 @@ public class EditableTable<DataType> extends WContainerWidget
     
     private ArrayList<DataType> itemList_ = new ArrayList<DataType>();
     private ArrayList<DataType> removedItemList_ = new ArrayList<DataType>();
+    
+    private Signal.Listener addListener;
         
     public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, List<DataType> items)
     {
@@ -46,6 +48,13 @@ public class EditableTable<DataType> extends WContainerWidget
     
     public void init()
     {
+    	addListener = new Signal.Listener() {
+			@Override
+			public void trigger() {
+				addAction();
+			}
+		};
+    	
         //item table
         itemTable_ = new WTable(this);
         itemTable_.setStyleClass("datatable datatable-grid");
@@ -83,15 +92,9 @@ public class EditableTable<DataType> extends WContainerWidget
         
         for(WWidget w : widgets) {
             if(w instanceof IFormField) {
-                Signal.Listener se = null;
                 if(lineToAdd) {
-                    se = new Signal.Listener() {
-                        public void trigger() {
-                            addAction();
-                        }
-                    };
+                	((IFormField)w).setConfirmAction(addListener);
                 }
-                ((IFormField)w).setConfirmAction(se);
             }
         }
         
