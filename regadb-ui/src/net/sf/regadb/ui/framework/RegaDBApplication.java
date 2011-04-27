@@ -45,6 +45,7 @@ public class RegaDBApplication extends WApplication
 	{
 		super(env);
 		
+		setTitle("RegaDB");
 		System.err.println("new regadb app");
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
