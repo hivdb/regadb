@@ -22,7 +22,7 @@
       <column name="name" length="50" not-null="true" />
     </property>
 	<property name="validationString" type="string">
-      <column name="validation_string" length="100" not-null="true" />
+      <column name="validation_string" length="100" not-null="false" />
     </property>
     <set name="attributeNominalValues" inverse="true" cascade="all">
       <key>
