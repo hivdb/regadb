@@ -126,14 +126,12 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
             {
                 inp.parse(new InputSource(new ByteArrayInputStream(result)));
             } 
-            catch (SAXException e) 
+            catch (Exception e) 
             {
                 e.printStackTrace();
+                t.rollback();
+                return;
             } 
-            catch (IOException e) 
-            {
-                e.printStackTrace();
-            }
             
             t.update(vi);
             t.commit();
