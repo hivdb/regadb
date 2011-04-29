@@ -125,18 +125,22 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
             try 
             {
                 inp.parse(new InputSource(new ByteArrayInputStream(result)));
+                t.update(vi);
+                t.commit();
             } 
             catch (SAXException e) 
             {
                 e.printStackTrace();
+                t.rollback();
+                t.clearCache();
             } 
             catch (IOException e) 
             {
                 e.printStackTrace();
+                t.rollback();
+                t.clearCache();
             }
             
-            t.update(vi);
-            t.commit();
         }
         
         endTime_ = new Date(System.currentTimeMillis());
