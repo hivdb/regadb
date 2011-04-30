@@ -29,10 +29,12 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WComboBox;
+import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class ExportForm extends FormWidget {
 	private FormTable table_;
@@ -41,6 +43,8 @@ public class ExportForm extends FormWidget {
 	private WAnchor anchor;
 	private File exportFile;
 	private WCheckBox exportMutations;
+	
+	private WContainerWidget errorsContainer;
 	
 	public ExportForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
@@ -105,10 +109,14 @@ public class ExportForm extends FormWidget {
 			}
 		});
 		
+		errorsContainer = table_.getElementAt(table_.getRowCount(), 0);
+		
 		addControlButtons();
     }
 	
 	private void exportCsv(Dataset ds) {
+		errorsContainer.clear();
+		
 		exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "zip");
 		
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
@@ -124,10 +132,12 @@ public class ExportForm extends FormWidget {
             }
         }
         
+        List<String> errors = null;
 		try {
 			FullCsvExport fullCsvExport = new FullCsvExport(t.getMaxAmountOfSequences(), t.getAttributes(), resistanceTestsDrugs, exportFile, exportMutations.isChecked());
 	        PatientExporter<Patient> csvExport = new PatientExporter<Patient>(RegaDBMain.getApp().getLogin(), ds.getDescription(), fullCsvExport);
 	        csvExport.run();
+	        errors = csvExport.getErrors();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -138,15 +148,20 @@ public class ExportForm extends FormWidget {
         anchor.setText(fileName);
         anchor.setResource(new WFileResource("application/zip", exportFile.getAbsolutePath(), null));
         anchor.getResource().suggestFileName(fileName);
+        
+        showErrors(errors);
 	}
 	
 	private void exportXml(Dataset ds) throws FileNotFoundException {
+		errorsContainer.clear();
+		
         exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "xml");
         FileOutputStream fout = new FileOutputStream(exportFile);
         PatientXMLOutputStream xmlout = new PatientXMLOutputStream(fout);
         
         PatientExporter<Patient> exportPatient = new PatientExporter<Patient>(RegaDBMain.getApp().getLogin(),ds.getDescription(),xmlout);
         exportPatient.run();
+        List<String> errors = exportPatient.getErrors();
         
         table_.getElementAt(0, 2).clear();
         
@@ -155,6 +170,15 @@ public class ExportForm extends FormWidget {
         WFileResource wfr = new WFileResource("text/txt", exportFile.getAbsolutePath(), null);
         anchor.setResource(wfr);
         wfr.suggestFileName(fileName);
+        
+        showErrors(errors);
+	}
+	
+	private void showErrors(List<String> errors) {
+        if (errors != null && errors.size() != 0) {
+        	for (String error : errors)
+        		errorsContainer.addWidget(new WText(error));
+        }
 	}
 	
 	public void fillData() {
