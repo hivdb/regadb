@@ -16,7 +16,6 @@ import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class ResistanceInterpretationAnalysis implements IAnalysis
 {
@@ -125,16 +124,15 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
             try 
             {
                 inp.parse(new InputSource(new ByteArrayInputStream(result)));
+                t.update(vi);
+                t.commit();
             } 
             catch (Exception e) 
             {
                 e.printStackTrace();
                 t.rollback();
-                return;
-            } 
-            
-            t.update(vi);
-            t.commit();
+                t.clearCache();
+            }
         }
         
         endTime_ = new Date(System.currentTimeMillis());
