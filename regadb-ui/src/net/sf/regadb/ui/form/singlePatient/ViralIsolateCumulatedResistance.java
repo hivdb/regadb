@@ -19,6 +19,8 @@ import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
+import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WCheckBox;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -64,6 +66,7 @@ public class ViralIsolateCumulatedResistance extends FormWidget
                         refreshTable();
                     }
                 });
+        showAllAlgorithms_.setHidden(RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig().getAlgorithms() == null);
         
         refreshTable();
     }

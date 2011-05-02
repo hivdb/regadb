@@ -15,6 +15,7 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WAnchor;
@@ -91,6 +92,7 @@ public class ViralIsolateResistanceForm extends WContainerWidget
                         refreshTable();
                     }
                 });
+        showAllAlgorithms_.setHidden(RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig().getAlgorithms() == null);
         
         
         //TODO
