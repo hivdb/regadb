@@ -1,9 +1,14 @@
 package net.sf.regadb.system.cron.jobs;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
@@ -19,13 +24,15 @@ import net.sf.regadb.service.wts.BlastAnalysis;
 import net.sf.regadb.service.wts.ResistanceInterpretationAnalysis;
 import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.SubtypeAnalysis;
+import net.sf.regadb.util.mail.MailUtils;
+import net.sf.regadb.util.settings.EmailConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 import org.quartz.JobExecutionException;
 
 public class RetrySequenceAnalysis extends ParameterizedJob {
-
+	
 	@Override
 	public void execute() throws JobExecutionException {
 		execute(getParam("user"), getParam("pass"));
@@ -44,47 +51,68 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 	}
 
 	public void execute(Login login){
-			
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:ii:ss");
+		StringBuilder log = new StringBuilder();
+		
+		log.append("Batch analysis started at: "+ dateFormat.format(new Date()) +"\n\n");
+
 		try{
 			
-			retryBlast(login);
-			retryResistanceAnalysis(login);
-			retrySubtypeAnalysis(login);
+			retryBlast(login, log);
+			retryResistanceAnalysis(login, log);
+			retrySubtypeAnalysis(login, log);
 			
+			checkAlignments(login, log);
+			
+			log.append("Batch analysis finished at: "+ dateFormat.format(new Date()) +"\n\n");
+
 		} catch(Exception e){
+			log.append("Batch analysis stopped at: "+ dateFormat.format(new Date()) +"\n"+
+					"stop reason:\n"+ e.getMessage());
 			e.printStackTrace();
 		} finally{
 			login.closeSession();
 		}
+
+		sendLog(log.toString());
 	}
 
 	@SuppressWarnings("unchecked")
-	public void retryBlast(Login login){
+	public void retryBlast(Login login, StringBuilder log){
+		log.append("blast analyses:\n");
+		
 		Transaction t = login.createTransaction();
 		Query q = t.createQuery("select v from ViralIsolate v where v.genome is null");
 
 		for(ViralIsolate v : (List<ViralIsolate>)q.list()){
 			if(v.getNtSequences().size() > 0){
-				doBlastAnalysis(v, login.getUid());
+				log.append("\t"+ v.getSampleId() +",");
+				try {
+					doBlastAnalysis(v, login.getUid());
+					log.append("ok");
+				} catch (ServiceException e) {
+					log.append("fail,"+ e.getMessage());
+					e.printStackTrace();
+				}
+				log.append("\n");
 			}
 		}
 
 		t.commit();
 	}
 	
-	private void doBlastAnalysis(ViralIsolate v, String uid){
+	private void doBlastAnalysis(ViralIsolate v, String uid) throws ServiceException{
 		BlastAnalysis blastAnalysis = new BlastAnalysis(v.getNtSequences().iterator().next(), uid);
-        try{
-            blastAnalysis.launch();
-            Genome g = blastAnalysis.getGenome();
-            v.setGenome(g);
-        } catch(Exception e){
-        	e.printStackTrace();
-        }
+        blastAnalysis.launch();
+        Genome g = blastAnalysis.getGenome();
+        v.setGenome(g);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void retryResistanceAnalysis(Login login){
+	private void retryResistanceAnalysis(Login login, StringBuilder log){
+		log.append("resistance analysis:\n");
+		
 		Transaction t = login.createTransaction();
 		Map<Integer,List<Test>> gssTests = getGssTests(t);
 	
@@ -92,12 +120,23 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 			Integer genomeIi = me.getKey();
 			
 			for(Test gssTest : me.getValue()){
+				log.append("\t"+ gssTest.getDescription() +":\n");
+				
 				Query q = t.createQuery("select v from ViralIsolate v where v.genome.genomeIi = "+ genomeIi +" and v.viralIsolateIi not in "
 						+"(select distinct tr.viralIsolate.viralIsolateIi from TestResult tr where tr.test.testIi = "+ gssTest.getTestIi()+") "
 						+"order by v.sampleId");
 				
 				for(ViralIsolate v : (List<ViralIsolate>)q.list()){
-					doResistanceAnalysis(login, v, gssTest);
+					log.append("\t\t"+ v.getSampleId() +",");
+					
+					try{
+						doResistanceAnalysis(login, v, gssTest);
+						log.append("ok");
+					}catch(Exception e){
+						log.append("fail,"+ e.getMessage());
+					}
+					
+					log.append("\n");
 				}
 			}
 		}
@@ -106,36 +145,39 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 	}
 
 	private void doResistanceAnalysis(Login login, ViralIsolate v, Test gssTest){
-		log(v, gssTest);
-		
 		ResistanceInterpretationAnalysis ria = new ResistanceInterpretationAnalysis(v, gssTest, login.getUid());
 		ria.launch(login);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void retrySubtypeAnalysis(Login login){
+	private void retrySubtypeAnalysis(Login login, StringBuilder log){
+		log.append("subtype analysis:\n");
+		
 		Transaction t = login.createTransaction();
 		Test subtypeTest = t.getTest(StandardObjects.getSubtypeTestDescription());
-		Query q = t.createQuery("select g, nt from ViralIsolate v join v.genome g join v.ntSequence nt where nt.ntSequenceIi not in " +
+		Query q = t.createQuery("select g, nt, v from ViralIsolate v join v.genome g join v.ntSequence nt where nt.ntSequenceIi not in " +
 				"(select ntSequenceIi from TestResult tr where tr.test.testIi = "+ subtypeTest.getTestIi() +")");
 	
 		for(Object[] o : (List<Object[]>)q.list()){
 			Genome g = (Genome)o[0];
 			NtSequence nt = (NtSequence)o[1];
+			ViralIsolate v = (ViralIsolate)o[2];
 			
+			log.append("\t"+ v.getSampleId() +","+ nt.getLabel() +",");
 			try{
 				dosubtypeAnalysis(login, nt, subtypeTest, g);
+				log.append("ok");
 			} catch(Exception e){
 				e.printStackTrace();
+				log.append("fail,"+ e.getMessage());
 			}
+			log.append("\n");
 		}
 	
 		t.commit();
 	}
 	
 	private void dosubtypeAnalysis(Login login, NtSequence nt, Test subtypeTest, Genome genome) throws ServiceException {
-		log(nt, subtypeTest);
-		
 		SubtypeAnalysis sa = new SubtypeAnalysis(nt, subtypeTest, genome, login.getUid());
 		sa.launch(login);
 	}
@@ -162,12 +204,30 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 		return gssTests;
 	}
 	
-	private void log(ViralIsolate v, Test t){
-		System.err.println(v.getSampleId() +","+ t.getDescription());
+	@SuppressWarnings("unchecked")
+	private void checkAlignments(Login login, StringBuilder log){
+		log.append("alignments:");
+		
+		Transaction t = login.createTransaction();
+		Query q = t.createQuery("select from ViralIsolate v where v.genome is null or v.viralIsolateIi not in " +
+				"(select distinct nt.viralIsolate.viralIsolateIi from AaSequence aa join aa.ntSequence nt)");
+		for(ViralIsolate v : (List<ViralIsolate>)q.list()){
+			log.append("\t"+ v.getSampleId() +"\n");
+		}
+		t.commit();
 	}
 	
-	private void log(NtSequence nt, Test t){
-		System.err.println(nt.getViralIsolate().getSampleId() +","+ nt.getLabel() +","+ t.getDescription());
+	private void sendLog(String log){
+		EmailConfig ecfg = RegaDBSettings.getInstance().getInstituteConfig().getEmailConfig();
+		if(ecfg != null){
+			try {
+				MailUtils.sendMail(ecfg.getHost(), ecfg.getFrom(), ecfg.getTo(), "RegaDB batch analysis retry log", log);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static void main(String[] args) throws JobExecutionException{
