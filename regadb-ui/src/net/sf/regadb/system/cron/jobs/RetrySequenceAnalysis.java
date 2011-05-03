@@ -52,7 +52,7 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 
 	public void execute(Login login){
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:ii:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		StringBuilder log = new StringBuilder();
 		
 		log.append("Batch analysis started at: "+ dateFormat.format(new Date()) +"\n\n");
@@ -115,6 +115,7 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 		
 		Transaction t = login.createTransaction();
 		Map<Integer,List<Test>> gssTests = getGssTests(t);
+		t.commit();
 	
 		for(Map.Entry<Integer, List<Test>> me : gssTests.entrySet()){
 			Integer genomeIi = me.getKey();
@@ -140,11 +141,9 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 				}
 			}
 		}
-		
-		t.commit();
 	}
 
-	private void doResistanceAnalysis(Login login, ViralIsolate v, Test gssTest){
+	private void doResistanceAnalysis(Login login, ViralIsolate v, Test gssTest) throws ServiceException {
 		ResistanceInterpretationAnalysis ria = new ResistanceInterpretationAnalysis(v, gssTest, login.getUid());
 		ria.launch(login);
 	}
@@ -155,10 +154,12 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 		
 		Transaction t = login.createTransaction();
 		Test subtypeTest = t.getTest(StandardObjects.getSubtypeTestDescription());
-		Query q = t.createQuery("select g, nt, v from ViralIsolate v join v.genome g join v.ntSequence nt where nt.ntSequenceIi not in " +
-				"(select ntSequenceIi from TestResult tr where tr.test.testIi = "+ subtypeTest.getTestIi() +")");
-	
-		for(Object[] o : (List<Object[]>)q.list()){
+		Query q = t.createQuery("select g, nt, v from ViralIsolate v join v.genome g join v.ntSequences nt where nt.ntSequenceIi not in " +
+				"(select tr.ntSequence.ntSequenceIi from TestResult tr where tr.test.testIi = "+ subtypeTest.getTestIi() +")");
+		List<Object[]> list = (List<Object[]>)q.list();
+		t.commit();
+		
+		for(Object[] o : list){
 			Genome g = (Genome)o[0];
 			NtSequence nt = (NtSequence)o[1];
 			ViralIsolate v = (ViralIsolate)o[2];
@@ -173,8 +174,6 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 			}
 			log.append("\n");
 		}
-	
-		t.commit();
 	}
 	
 	private void dosubtypeAnalysis(Login login, NtSequence nt, Test subtypeTest, Genome genome) throws ServiceException {
@@ -206,10 +205,10 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 	
 	@SuppressWarnings("unchecked")
 	private void checkAlignments(Login login, StringBuilder log){
-		log.append("alignments:");
+		log.append("alignments:\n");
 		
 		Transaction t = login.createTransaction();
-		Query q = t.createQuery("select from ViralIsolate v where v.genome is null or v.viralIsolateIi not in " +
+		Query q = t.createQuery("select v from ViralIsolate v where v.genome is null or v.viralIsolateIi not in " +
 				"(select distinct nt.viralIsolate.viralIsolateIi from AaSequence aa join aa.ntSequence nt)");
 		for(ViralIsolate v : (List<ViralIsolate>)q.list()){
 			log.append("\t"+ v.getSampleId() +"\n");
@@ -228,6 +227,8 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 				e.printStackTrace();
 			}
 		}
+		
+		System.out.println(log);
 	}
 	
 	public static void main(String[] args) throws JobExecutionException{

@@ -134,7 +134,11 @@ public class BatchTestRunningTest extends Thread {
 		}
 
 		public void runSingleTest(ViralIsolate t, Login l) {
-			new ResistanceInterpretationAnalysis(t, test, l.getUid()).launch(l);
+			try {
+				new ResistanceInterpretationAnalysis(t, test, l.getUid()).launch(l);
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

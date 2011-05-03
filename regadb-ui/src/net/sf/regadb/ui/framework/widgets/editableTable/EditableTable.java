@@ -15,6 +15,7 @@ import net.sf.regadb.ui.framework.widgets.table.TableHeader;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
@@ -110,6 +111,16 @@ public class EditableTable<DataType> extends WContainerWidget
         
         if(lineToAdd)
         {
+        	for(WWidget w : widgets){
+        		if(w instanceof WFormWidget){
+        			((WFormWidget)w).setFocus();
+        			break;
+        		} else if(w instanceof FormField){
+        			((FormField)w).getFormWidget().setFocus();
+        			break;
+        		}
+        	}
+        	
             WPushButton addButton = new WPushButton(tr("editableDataTable.button.addItem"));
             itemTable_.getElementAt(rowNum, colIndex).addWidget(addButton);
             itemTable_.getElementAt(rowNum, colIndex).setStyleClass("column-action");            
