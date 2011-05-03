@@ -23,6 +23,7 @@ import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.qc.QC;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -108,7 +109,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
 	                }
 	                ((ComboBox)testResultField).sort();
-	                if (ti.defaultValue != null)
+	                if (ti.defaultValue != null && viralIsolateForm_.getInteractionState() == InteractionState.Adding)
 	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
 	            } else {
 	                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
