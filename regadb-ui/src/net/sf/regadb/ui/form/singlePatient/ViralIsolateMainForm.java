@@ -109,7 +109,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
 	                }
 	                ((ComboBox)testResultField).sort();
-	                if (ti.defaultValue != null && viralIsolateForm_.getInteractionState() == InteractionState.Adding)
+	                if (ti.defaultValue != null && viralIsolateForm_.isEditable())
 	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
 	            } else {
 	                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
