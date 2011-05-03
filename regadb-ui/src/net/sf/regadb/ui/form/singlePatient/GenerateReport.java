@@ -430,6 +430,10 @@ public class GenerateReport
     }
     
     private String getRITable(String algorithm, Collection<String> drugs, String asiString){
+    	RIResults ariresults = riresults.get(algorithm);
+    	if(ariresults == null)
+    		return "[Unknown algorithm: "+ algorithm +"]";
+    	
     	asiString = asiString.replace("$ASI_ALGORITHM", algorithm);
     	
     	final Pattern pattern = Pattern.compile("\\$ASI_[A-Z_]+1");
@@ -448,7 +452,6 @@ public class GenerateReport
     	String line = asiString.substring(bpos,epos);
     	StringBuilder result = new StringBuilder(asiString.substring(0, bpos));
     	
-    	RIResults ariresults = riresults.get(algorithm);
     	if(ariresults.isTdr())
     		drugs = tdrDrugs;
     	
