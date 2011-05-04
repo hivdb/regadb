@@ -191,7 +191,7 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 		
 		Map<Integer,List<Test>> gssTests = new HashMap<Integer,List<Test>>();
 		Query q = t.createQuery("select tt.genome.genomeIi, t from Test t join t.testType tt where tt.description = '"+ StandardObjects.getGssDescription()
-				+"' order by tt.genome.genomeIi");
+				+"' or tt.description = '"+ StandardObjects.getTDRDescription() +"' order by tt.genome.genomeIi");
 		
 		for(Object[] o : (List<Object[]>)q.list()){
 			Integer genomeIi = (Integer)o[0];
