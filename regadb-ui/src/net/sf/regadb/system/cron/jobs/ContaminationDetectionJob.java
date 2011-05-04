@@ -61,7 +61,7 @@ public class ContaminationDetectionJob implements Job {
 				continue;
 			
 			ContaminationConfig cc = RegaDBSettings.getInstance().getContaminationConfig();
-			if (cc.isSendMail() && cf > cc.getThreshold()) {
+			if (cc.isSendMail() && cf <= cc.getThreshold()) {
 				EmailConfig ec = RegaDBSettings.getInstance().getInstituteConfig().getEmailConfig();
                 if (ec != null) {
 	                try {
