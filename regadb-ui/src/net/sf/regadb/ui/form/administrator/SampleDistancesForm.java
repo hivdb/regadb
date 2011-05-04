@@ -185,6 +185,7 @@ public class SampleDistancesForm extends FormWidget {
 	public void writeDistances(Writer writer) throws IOException {
 		//FIXME check organism 
 		//TODO ZIP - separate files 
+		int desiredNumberOfDistances = 10000;
 		
 		Login login = RegaDBMain.getApp().getLogin().copyLogin();
 		Transaction t = login.createTransaction();
@@ -200,6 +201,9 @@ public class SampleDistancesForm extends FormWidget {
 		while (r.next()) {
 			NtSequence seq = (NtSequence) r.get(0);
 			for (OutputType outputType : OutputType.values()) {
+				if(outputType == OutputType.ExtraPatient && o >= desiredNumberOfDistances) {
+					continue;
+				}
 				SequenceDistancesQuery distances = new SequenceDistancesQuery(seq, outputType, range);
 				db.query(seq.getViralIsolate().getGenome(), distances);
 
@@ -224,7 +228,7 @@ public class SampleDistancesForm extends FormWidget {
 				}
 			}
 
-			if (i >= 10000 & o >= 10000) {
+			if (i >= desiredNumberOfDistances & o >= desiredNumberOfDistances) {
 				break;
 			}
 		}
