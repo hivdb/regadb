@@ -1,10 +1,12 @@
 package net.sf.regadb.ui.form.administrator;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import net.sf.regadb.contamination.SequenceDistancesQuery;
 import net.sf.regadb.contamination.SequenceDistancesQuery.OutputType;
@@ -12,14 +14,14 @@ import net.sf.regadb.contamination.SequenceDistancesQuery.Range;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.OpenReadingFrame;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
-import net.sf.regadb.service.wts.util.Utils;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -34,19 +36,19 @@ import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WComboBox;
 import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
-import eu.webtoolkit.jwt.WResource;
+import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
-import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.servlet.WebResponse;
 
 public class SampleDistancesForm extends FormWidget {
 
 	private WComboBox organismsCombo;
 	private WComboBox orfsCombo;
 	private RegionWidget regionWidget;
+	private WPushButton submitButton;
 	private WAnchor downloadDistances;
 
 	private List<Genome> genomes;
@@ -164,10 +166,20 @@ public class SampleDistancesForm extends FormWidget {
 		downloadDistances = new WAnchor(this);
 		downloadDistances.setText(tr("form.sample-distances.download"));
 		downloadDistances.setTarget(AnchorTarget.TargetNewWindow);
+		downloadDistances.hide();
 
-		downloadDistances.setResource(new WResource() {
-			protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
-				writeDistances(response.out());
+		submitButton = new WPushButton(WString.tr("form.sample-distances.submit"), this);
+		submitButton.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				try {
+					downloadDistances.hide();
+					writeDistances();
+					submitButton.hide();
+					downloadDistances.show();
+					downloadDistances.setResource(new WFileResource("application/zip", getTempFileName()));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}
@@ -185,16 +197,7 @@ public class SampleDistancesForm extends FormWidget {
 		copyLogin.closeSession();
 	}
 
-	public void writeDistances(Writer writer) throws IOException {
-		//TODO ZIP - separate files 
-		int desiredNumberOfDistances = 10000;
-
-		Login login = RegaDBMain.getApp().getLogin().copyLogin();
-		Transaction t = login.createTransaction();
-		Query q = t.createQuery("from NtSequence");
-		q.setCacheMode(CacheMode.IGNORE);
-		ScrollableResults r = q.scroll();
-
+	private void writeDistances() throws IOException {
 		Range range = new Range(orfsCombo.getCurrentText().toString(), regionWidget.getStart(), regionWidget.getStop());
 		Genome genome = null;
 		for (Genome g : genomes) {
@@ -203,20 +206,35 @@ public class SampleDistancesForm extends FormWidget {
 				break;
 			}
 		}
-
 		SequenceDb db = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 
+		ZipOutputStream out = new ZipOutputStream(new FileOutputStream(getTempFileName()));
+		writeDistances(out, OutputType.ExtraPatient, db, genome, range);
+		writeDistances(out, OutputType.IntraPatient, db, genome, range);
+		out.close();
+	}
+
+	private String getTempFileName() {
+		return RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath() + "sample-distances.zip";
+	}
+
+	private void writeDistances(ZipOutputStream out, OutputType type, SequenceDb db, Genome g, Range range) throws IOException {
+		int desiredNumberOfDistances = 10000;
+		Login login = RegaDBMain.getApp().getLogin().copyLogin();
+		Transaction t = login.createTransaction();
+		Query q = t.createQuery("from NtSequence");
+		q.setCacheMode(CacheMode.IGNORE);
+		ScrollableResults r = q.scroll();
+
+		out.putNextEntry(new ZipEntry(type == OutputType.ExtraPatient ? "inter.csv" : "intra.csv"));
+		byte[] buf;
 		int i = 0;
-		int o = 0;
 		while (r.next()) {
 			NtSequence seq = (NtSequence) r.get(0);
-			if (Equals.isSameGenome(genome, seq.getViralIsolate().getGenome())) {
-				for (OutputType outputType : OutputType.values()) {
-					if (outputType == OutputType.ExtraPatient && o >= desiredNumberOfDistances) {
-						continue;
-					}
-					SequenceDistancesQuery distances = new SequenceDistancesQuery(seq, outputType, range);
-					db.query(genome, distances);
+			if (Equals.isSameGenome(g, seq.getViralIsolate().getGenome())) {
+				if (type == OutputType.ExtraPatient || new Patient(seq.getViralIsolate().getPatient(), Privileges.READONLY.getValue()).getViralIsolates().size() > 1) {
+					SequenceDistancesQuery distances = new SequenceDistancesQuery(seq, type, range);
+					db.query(seq.getViralIsolate().getGenome(), distances);
 
 					for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
 						if (e.getKey().equals(seq.getNtSequenceIi())) {
@@ -227,23 +245,18 @@ public class SampleDistancesForm extends FormWidget {
 
 						double diff = ((double) f.numberOfDifferences / f.numberOfPositions);
 						if (f.numberOfPositions != 0) {
-							if (outputType == OutputType.IntraPatient) {
-								writer.write("I," + diff + "\n");
-								i++;
-							} else {
-								writer.write("O," + diff + "\n");
-								o++;
-							}
-							writer.flush();
+							buf = type == OutputType.IntraPatient ? ("I," + diff + "\n").getBytes() : ("O," + diff + "\n").getBytes();
+							out.write(buf, 0, buf.length);
+							i++;
 						}
 					}
 				}
-
-				if (i >= desiredNumberOfDistances & o >= desiredNumberOfDistances) {
-					break;
-				}
+			}
+			if (i >= desiredNumberOfDistances) {
+				break;
 			}
 		}
+		out.closeEntry();
 		t.commit();
 		login.closeSession();
 	}
