@@ -14,9 +14,12 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.OpenReadingFrame;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.sequencedb.SequenceUtils.SequenceDistance;
+import net.sf.regadb.service.wts.util.Utils;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -183,10 +186,9 @@ public class SampleDistancesForm extends FormWidget {
 	}
 
 	public void writeDistances(Writer writer) throws IOException {
-		//FIXME check organism 
 		//TODO ZIP - separate files 
 		int desiredNumberOfDistances = 10000;
-		
+
 		Login login = RegaDBMain.getApp().getLogin().copyLogin();
 		Transaction t = login.createTransaction();
 		Query q = t.createQuery("from NtSequence");
@@ -194,42 +196,52 @@ public class SampleDistancesForm extends FormWidget {
 		ScrollableResults r = q.scroll();
 
 		Range range = new Range(orfsCombo.getCurrentText().toString(), regionWidget.getStart(), regionWidget.getStop());
+		Genome genome = null;
+		for (Genome g : genomes) {
+			if (g.getOrganismName().equals(organismsCombo.getCurrentText().toString())) {
+				genome = g;
+				break;
+			}
+		}
+
 		SequenceDb db = SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 
 		int i = 0;
 		int o = 0;
 		while (r.next()) {
 			NtSequence seq = (NtSequence) r.get(0);
-			for (OutputType outputType : OutputType.values()) {
-				if(outputType == OutputType.ExtraPatient && o >= desiredNumberOfDistances) {
-					continue;
-				}
-				SequenceDistancesQuery distances = new SequenceDistancesQuery(seq, outputType, range);
-				db.query(seq.getViralIsolate().getGenome(), distances);
-
-				for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
-					if (e.getKey().equals(seq.getNtSequenceIi())) {
+			if (Equals.isSameGenome(genome, seq.getViralIsolate().getGenome())) {
+				for (OutputType outputType : OutputType.values()) {
+					if (outputType == OutputType.ExtraPatient && o >= desiredNumberOfDistances) {
 						continue;
 					}
+					SequenceDistancesQuery distances = new SequenceDistancesQuery(seq, outputType, range);
+					db.query(genome, distances);
 
-					SequenceDistance f = e.getValue();
-
-					double diff = ((double) f.numberOfDifferences / f.numberOfPositions);
-					if (f.numberOfPositions != 0) {
-						if (outputType == OutputType.IntraPatient) {
-							writer.write("I," + diff + "\n");
-							i++;
-						} else {
-							writer.write("O," + diff + "\n");
-							o++;
+					for (Map.Entry<Integer, SequenceDistance> e : distances.getSequenceDistances().entrySet()) {
+						if (e.getKey().equals(seq.getNtSequenceIi())) {
+							continue;
 						}
-						writer.flush();
+
+						SequenceDistance f = e.getValue();
+
+						double diff = ((double) f.numberOfDifferences / f.numberOfPositions);
+						if (f.numberOfPositions != 0) {
+							if (outputType == OutputType.IntraPatient) {
+								writer.write("I," + diff + "\n");
+								i++;
+							} else {
+								writer.write("O," + diff + "\n");
+								o++;
+							}
+							writer.flush();
+						}
 					}
 				}
-			}
 
-			if (i >= desiredNumberOfDistances & o >= desiredNumberOfDistances) {
-				break;
+				if (i >= desiredNumberOfDistances & o >= desiredNumberOfDistances) {
+					break;
+				}
 			}
 		}
 		t.commit();
