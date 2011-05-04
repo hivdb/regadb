@@ -32,9 +32,12 @@ import org.hibernate.Query;
 import org.quartz.JobExecutionException;
 
 public class RetrySequenceAnalysis extends ParameterizedJob {
+	private boolean sendMail;
 	
 	@Override
 	public void execute() throws JobExecutionException {
+		sendMail = false;
+		
 		execute(getParam("user"), getParam("pass"));
 	}
 	
@@ -87,6 +90,8 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 
 		for(ViralIsolate v : (List<ViralIsolate>)q.list()){
 			if(v.getNtSequences().size() > 0){
+				sendMail = true;
+				
 				log.append("\t"+ v.getSampleId() +",");
 				try {
 					doBlastAnalysis(v, login.getUid());
@@ -128,6 +133,8 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 						+"order by v.sampleId");
 				
 				for(ViralIsolate v : (List<ViralIsolate>)q.list()){
+					sendMail = true;
+
 					log.append("\t\t"+ v.getSampleId() +",");
 					
 					try{
@@ -163,6 +170,8 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 			Genome g = (Genome)o[0];
 			NtSequence nt = (NtSequence)o[1];
 			ViralIsolate v = (ViralIsolate)o[2];
+			
+			sendMail = true;
 			
 			log.append("\t"+ v.getSampleId() +","+ nt.getLabel() +",");
 			try{
@@ -217,6 +226,9 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 	}
 	
 	private void sendLog(String log){
+		if (!sendMail)
+			return;
+		
 		EmailConfig ecfg = RegaDBSettings.getInstance().getInstituteConfig().getEmailConfig();
 		if(ecfg != null){
 			try {
