@@ -20,6 +20,7 @@ import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.form.administrator.ContaminationOverview;
+import net.sf.regadb.ui.form.administrator.SampleDistancesForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.administrator.VersionForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
@@ -1087,6 +1088,12 @@ public class TreeContent
 	                {
 	                    RegaDBMain.getApp().getFormContainer().setForm(new ContaminationOverview());
 	                }
+	            });
+	            new ActionItem(WString.tr("menu.sample-distances"), administratorMain, new ITreeAction(){
+	            	public void performAction(TreeMenuNode node)
+	            	{
+	            		RegaDBMain.getApp().getFormContainer().setForm(new SampleDistancesForm());
+	            	}
 	            });
             }
             
