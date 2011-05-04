@@ -50,8 +50,8 @@ public class ContaminationTree extends WContainerWidget {
 	private WComboBox treeLayoutBox;
 
 	private enum TreeLayout {
-		RADIAL(WString.tr("form.viralIsolate.similarity.tree.layout.radial"), new RadialTreeLayout()), 
 		RECTILINEAR(WString.tr("form.viralIsolate.similarity.tree.layout.rectilinear"),	new RectilinearTreeLayout()), 
+		RADIAL(WString.tr("form.viralIsolate.similarity.tree.layout.radial"), new RadialTreeLayout()), 
 		POLAR(WString.tr("form.viralIsolate.similarity.tree.layout.polar"), new PolarTreeLayout());
 
 		private WString name;
@@ -108,7 +108,6 @@ public class ContaminationTree extends WContainerWidget {
 		layout.addWidget(treeWidget = new TreeWidget(), 2);
 
 		treeWidget.setStyleClass("phylotree");
-
 	}
 
 	public void calculateTree(Map<String, Map<String, String>> annotatedSequences, NtSequence ntSequence, String organism) {
@@ -176,7 +175,7 @@ public class ContaminationTree extends WContainerWidget {
 			tipPainter.setTextDecorator(new DiscreteColorDecorator("patient", treeToLoad.getExternalNodes(), new Color[] { Color.BLACK, Color.RED }, false));
 
 			// set tree layout
-			treeWidget.getTreePane().setTreeLayout(TreeLayout.RADIAL.layout);
+			treeWidget.getTreePane().setTreeLayout(TreeLayout.RECTILINEAR.layout);
 			// load tree
 			treeWidget.getTreePane().setTree((RootedTree) trees.get(0));
 			show();
