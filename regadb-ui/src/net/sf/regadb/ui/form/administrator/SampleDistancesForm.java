@@ -222,7 +222,7 @@ public class SampleDistancesForm extends FormWidget {
 		int desiredNumberOfDistances = 10000;
 		Login login = RegaDBMain.getApp().getLogin().copyLogin();
 		Transaction t = login.createTransaction();
-		Query q = t.createQuery("from NtSequence");
+		Query q = t.createQuery("from NtSequence order by rand()");
 		q.setCacheMode(CacheMode.IGNORE);
 		ScrollableResults r = q.scroll();
 
