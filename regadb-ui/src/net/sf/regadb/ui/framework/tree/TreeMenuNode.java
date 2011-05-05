@@ -205,6 +205,7 @@ public abstract class TreeMenuNode extends WTreeNode
 			}
 			
 			getParentNode().openOnlyOneMenuPath();
+			expand();
 		}
 	}
 
