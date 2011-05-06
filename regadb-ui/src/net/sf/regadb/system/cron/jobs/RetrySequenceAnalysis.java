@@ -150,10 +150,10 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 				Query q = t.createQuery("select v from ViralIsolate v where v.genome.genomeIi = "+ genomeIi +" and v.viralIsolateIi not in "
 						+"(select distinct tr.viralIsolate.viralIsolateIi from TestResult tr where tr.test.testIi = "+ gssTest.getTestIi()+") "
 						+"order by v.sampleId");
-					sendMail = true;
 				List<ViralIsolate> r = (List<ViralIsolate>)q.list();
 				log("\t"+ gssTest.getDescription() +"("+ r.size() +"):\n");
 				for(ViralIsolate v : r){
+					sendMail = true;
 					log("\t\t"+ v.getSampleId() +",");
 					
 					try{
