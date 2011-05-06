@@ -76,9 +76,9 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 		}
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		log("Batch analysis started at: "+ dateFormat.format(new Date()) +"\n\n");
-
+		
 		try{
+			log("Batch analysis started at: "+ dateFormat.format(new Date()) +"\n\n");
 			
 			retryBlast(login);
 			retryResistanceAnalysis(login);
@@ -94,10 +94,10 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 			e.printStackTrace();
 		} finally{
 			login.closeSession();
+			
+			if(logOutput != System.err)
+				logOutput.close();
 		}
-		
-		if(logOutput != System.err)
-			logOutput.close();
 
 		sendLog();
 	}
