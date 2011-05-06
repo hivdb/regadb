@@ -23,7 +23,6 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.HibernateUtil;
 import net.sf.regadb.tools.exportFasta.ExportAaSequence;
 import net.sf.regadb.tools.exportFasta.FastaExporter.Symbol;
@@ -228,11 +227,16 @@ public class SequenceDb {
 	}
 	
 	public static String readAlignment(File f) throws IOException {
-		BufferedReader input = new BufferedReader(new FileReader(f));
-		input.readLine();
-		String alignment = input.readLine();
-		input.close();
-		return alignment;
+		BufferedReader input = null;
+		try{
+			input = new BufferedReader(new FileReader(f));
+			input.readLine();
+			String alignment = input.readLine();
+			return alignment;
+		} finally {
+			if(input != null)
+				input.close();
+		}
 	}
 	
 	public void query(Genome genome, SequenceQuery query) {
