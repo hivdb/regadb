@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
@@ -131,5 +132,21 @@ public class ContaminationDetection {
 			return SequenceUtils.distance(query, sequence, ds.start, ds.end);
 		else 
 			return null;
+	}
+	
+	public boolean supports(NtSequence nt){
+		for(AaSequence aa : nt.getAaSequences()){
+			int start = aa.getProtein().getStartPosition();
+			int stop = aa.getProtein().getStopPosition();
+			String orf = aa.getProtein().getOpenReadingFrame().getName();
+			String genome = aa.getProtein().getOpenReadingFrame().getGenome().getOrganismName();
+			
+			for(Distribution d : distributions){
+				if( !(start >= d.end || stop <= d.start) 
+						&& d.organism.equals(genome) && d.orf.equals(orf))
+					return true;
+			}
+		}
+		return false;
 	}
 }
