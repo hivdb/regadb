@@ -11,8 +11,10 @@ import java.util.TreeMap;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.io.db.util.ConsoleLogger;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.export.hicdep.SimpleCsvMapper;
 import net.sf.regadb.io.util.IOUtils;
 import net.sf.regadb.io.util.StandardObjects;
@@ -37,6 +39,9 @@ public class WivImport {
 		Attribute aPatcode = new Attribute("PatCode");
 		aPatcode.setValueType(StandardObjects.getStringValueType());
 		aPatcode.setAttributeGroup(StandardObjects.getClinicalAttributeGroup());
+		
+		Attribute aBirthDate = StandardObjects.getBirthDateAttribute();
+		Attribute aGender = StandardObjects.getGenderAttribute();
 		
 		int cPatcode = wivTable.findColumn("CODE_PAT");
 		int cEad = wivTable.findColumn("pt EADnr");
@@ -84,8 +89,14 @@ public class WivImport {
 				patients.put(ead, p);
 				
 				p.createPatientAttributeValue(aPatcode).setValue(patcode);
+				p.createPatientAttributeValue(aBirthDate).setValue(getDate(dateFormat, wivTable.valueAt(cBirthDate, i)));
+				
+				AttributeNominalValue gender = getGender(wivTable.valueAt(cSex, i));
+				if(gender != null)
+					p.createPatientAttributeValue(aGender).setAttributeNominalValue(gender);
 				
 				WivObjects.createPatientAttributeValue(p, "REF_LABO", wivTable.valueAt(cRefLabo, i));
+				WivObjects.createPatientAttributeValue(p, "DATE_TEST", getDate(dateFormat, wivTable.valueAt(cDateTest, i)));
 				WivObjects.createPatientAttributeValue(p, "NATION", wivTable.valueAt(cNation, i));
 				WivObjects.createPatientAttributeValue(p, "COUNTRY", wivTable.valueAt(cCountry, i));
 				WivObjects.createPatientAttributeValue(p, "RESID_B", wivTable.valueAt(cResidB, i));
@@ -113,6 +124,21 @@ public class WivImport {
 		IOUtils.exportPatientsXML(patients.values(), output.getAbsolutePath() + File.separatorChar +"patients.xml", ConsoleLogger.getInstance());
 		
 		System.err.println("done");
+	}
+	
+	private AttributeNominalValue getGender(String value){
+		if(value == null)
+			return null;
+
+		Attribute gender = StandardObjects.getGenderAttribute();
+
+		value = value.trim().toUpperCase();
+		if(value.equals("M"))
+			return Utils.getNominalValue(gender, "male");
+		if(value.equals("F"))
+			return Utils.getNominalValue(gender, "female");
+		
+		return null;
 	}
 	
 	private String getDate(DateFormat format, String value){
