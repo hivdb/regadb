@@ -14,6 +14,7 @@ import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.db.meta.Equals;
 
 public class WivObjects {
     private static Map<String,Attribute> attributes_ = new HashMap<String,Attribute>();
@@ -157,12 +158,25 @@ public class WivObjects {
         return nominalValues_.get(getAttributeNominalValueKey(a, nominalValue));
     }
     
-    public static PatientAttributeValue createPatientAttributeNominalValue(String attributeName, char nominalAbbrev, Patient p){
-        Attribute attribute = attributes_.get(attributeName);
-        if(attribute==null)
-            return null;
-        
-        AttributeNominalValue anv = getANVFromAbbrev(attribute, nominalAbbrev+"");
+    public static PatientAttributeValue createPatientAttributeValue(Patient p, String attributeName, String value){
+    	if(value == null)
+    		return null;
+    	value = value.trim();
+    	if(value.length() == 0)
+    		return null;
+    	
+    	Attribute attribute = attributes_.get(attributeName);
+    	if(attribute == null)
+    		return null;
+    	
+    	if(Equals.isSameValueType(attribute.getValueType(), StandardObjects.getNominalValueType()))
+    		return createPatientAttributeNominalValue(attribute, value, p);
+    	else
+    		return createPatientAttributeValue(attribute, value, p);
+    }
+    
+    public static PatientAttributeValue createPatientAttributeNominalValue(Attribute attribute, String nominalAbbrev, Patient p){
+        AttributeNominalValue anv = getANVFromAbbrev(attribute, nominalAbbrev);
         if(anv==null) {
             return null;
         }
@@ -171,6 +185,14 @@ public class WivObjects {
         pav.setAttributeNominalValue(anv);
         
         return pav;
+    }
+    
+    public static PatientAttributeValue createPatientAttributeNominalValue(String attributeName, String nominalAbbrev, Patient p){
+        Attribute attribute = attributes_.get(attributeName);
+        if(attribute==null)
+            return null;
+        
+        return createPatientAttributeNominalValue(attribute, nominalAbbrev, p);
     }
     
     public static PatientAttributeValue createCountryPANV(String attributeName, String abbrev, Patient p){
@@ -191,16 +213,20 @@ public class WivObjects {
         
         return pav;
     }
+
+    public static PatientAttributeValue createPatientAttributeValue(Attribute attribute, String value, Patient p){
+        PatientAttributeValue pav = p.createPatientAttributeValue(attribute);
+        pav.setValue(value);
+        
+        return pav;
+    }
     
     public static PatientAttributeValue createPatientAttributeValue(String attributeName, String value, Patient p){
         Attribute attribute = attributes_.get(attributeName);
         if(attribute==null)
             return null;
         
-        PatientAttributeValue pav = p.createPatientAttributeValue(attribute);
-        pav.setValue(value);
-        
-        return pav;
+        return createPatientAttributeValue(attribute, value, p);
     }
     
     private static void createAttributeNominalValues(Attribute a, List<String> values){
