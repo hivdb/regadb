@@ -55,8 +55,8 @@ public class WivObjects {
         createAttribute("LYMPHO", str);
         createAttribute("VIRLOAD", str);
         
-        createAttribute("RESID_B",num);
-        createAttribute("ARRIVAL_B",dat);
+        createAttribute("RESID_B",str);
+        createAttribute("ARRIVAL_B",str);
         createAttribute("SEXCONTACT",nom,new String[]{"A: Other sex","B: Same sex","C: Both","D: None"});
         createAttribute("SEXPARTNER",nom,new String[]{"A: HIV+", "B: IVDU", "C: Nationality", "D: Prostitution", "E: Unknown by patient"});
         
@@ -64,14 +64,14 @@ public class WivObjects {
         createAttributeNominalValues(a, countryCodes);
         
         createAttribute("BLOODBORNE",nom,new String[]{"A: IVDU", "B: Hemophilia", "C: Transfusion", "D: None"});
-        createAttribute("YEARTRANSF",dat);
+        createAttribute("YEARTRANSF",str);
         
         a = createAttribute("TRANCOUNTR",nom);
         createAttributeNominalValues(a, countryCodes);
         
         createAttribute("CHILD",nom,new String[]{"A: Yes","B: No"});
         createAttribute("PROFRISK",nom,new String[]{"M: Medical","P: Sexual","O: Other", "N: No risk"});
-        createAttribute("PROBYEAR",dat);
+        createAttribute("PROBYEAR",str);
         
         a = createAttribute("PROBCOUNTR",nom);
         createAttributeNominalValues(a, countryCodes);
