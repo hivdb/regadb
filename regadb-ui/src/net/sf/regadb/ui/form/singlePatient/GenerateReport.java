@@ -121,13 +121,33 @@ public class GenerateReport
         		rtfBuffer_.delete(bpos, bpos + "$ATTRIBUTE(".length());
         	}
         }
+        
+        while((bpos = rtfBuffer_.indexOf("$NT_TEST(")) > -1){
+        	int epos = rtfBuffer_.indexOf(")",bpos);
+        	if(epos > -1){
+        		String testName = rtfBuffer_.substring(bpos + "$NT_TEST(".length(),epos);
+        		replace("$NT_TEST("+ testName +")", getNtSequenceTestResults(vi, testName));
+        	} else {
+        		rtfBuffer_.delete(bpos, bpos + "$NT_TEST(".length());
+        	}
+        }
 
+        while((bpos = rtfBuffer_.indexOf("$VI_TEST(")) > -1){
+        	int epos = rtfBuffer_.indexOf(")",bpos);
+        	if(epos > -1){
+        		String testName = rtfBuffer_.substring(bpos + "$VI_TEST(".length(),epos);
+        		replace("$VI_TEST("+ testName +")", getViralIsolateTestResults(vi, testName));
+        	} else {
+        		rtfBuffer_.delete(bpos, bpos + "$VI_TEST(".length());
+        	}
+        }
+        
         replaceTestResult(patient, vi, StandardObjects.getHiv1ViralLoadTestType(), dateTolerance, "VIRAL_LOAD_RNA");
         replaceTestResult(patient, vi, StandardObjects.getCd4TestType(), dateTolerance, "CD4_COUNT");
         
         replace("$ORGANISM", getOrganismName(vi));
-        replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
-        replace("$MANUAL_SUBTYPE", getType(vi, StandardObjects.getManualSubtypeTest().getDescription()));
+        replace("$SUBTYPE", getNtSequenceTestResults(vi, StandardObjects.getSubtypeTestDescription()));
+        replace("$MANUAL_SUBTYPE", getNtSequenceTestResults(vi, StandardObjects.getManualSubtypeTest().getDescription()));
         
         replace("$ASI_ALGORITHMS", algorithmsToString(algorithms));
         
@@ -202,19 +222,33 @@ public class GenerateReport
         return null;
     }
     
-    private String getType(ViralIsolate vi, String typeTest)
+    private String getNtSequenceTestResults(ViralIsolate vi, String test)
     {
-    	TreeSet<String> subtypes = new TreeSet<String>();
+    	TreeSet<String> values = new TreeSet<String>();
         for(NtSequence ntSeq : vi.getNtSequences())
         {
             for(TestResult testResult : ntSeq.getTestResults())
             {
-                if(testResult.getTest().getDescription().equals(typeTest))
-                    subtypes.add(testResult.getValue());
+                if(testResult.getTest().getDescription().equals(test))
+                    values.add(testResult.getValue() == null && testResult.getTestNominalValue() != null ?
+                    		testResult.getTestNominalValue().getValue() : testResult.getValue());
             }
         }
         
-        return subtypes.size() == 0 ? "":subtypes.toString().replace("[", "").replace("]", "");
+        return values.size() == 0 ? "":values.toString().replace("[", "").replace("]", "");
+    }
+    
+    private String getViralIsolateTestResults(ViralIsolate vi, String test)
+    {
+    	TreeSet<String> values = new TreeSet<String>();
+        for(TestResult testResult : vi.getTestResults())
+        {
+            if(testResult.getTest().getDescription().equals(test))
+                values.add(testResult.getValue() == null && testResult.getTestNominalValue() != null ?
+                		testResult.getTestNominalValue().getValue() : testResult.getValue());
+        }
+        
+        return values.size() == 0 ? "":values.toString().replace("[", "").replace("]", "");
     }
     
     private String getOrganismName(ViralIsolate vi){
