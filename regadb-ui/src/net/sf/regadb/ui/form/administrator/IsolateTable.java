@@ -4,6 +4,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.tree.items.singlePatient.PatientTreeNode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLabel;
@@ -66,7 +67,9 @@ public class IsolateTable extends WTable {
 		Patient p = t.getPatient(patientIi);
 		t.commit();
 		
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
+		PatientTreeNode patientTreeNode = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode;
+		patientTreeNode.setSelectedItem(p);
+		patientTreeNode.getSelectedActionItem().expandFromRoot();
 	}
 	
 	public void gotoViralIsolate(int patientIi, int viralIsolateIi){
@@ -75,7 +78,9 @@ public class IsolateTable extends WTable {
 		ViralIsolate v = t.getViralIsolate(viralIsolateIi);
 		t.commit();
 		
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode().setSelectedItem(v);
+		PatientTreeNode patientTreeNode = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode;
+		patientTreeNode.setSelectedItem(p);
+		patientTreeNode.getViralIsolateTreeNode().setSelectedItem(v);
+		patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem().expandFromRoot();
 	}
 }
