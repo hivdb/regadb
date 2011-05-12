@@ -25,6 +25,8 @@ public class InstituteConfig extends ConfigParser {
 	private boolean sampleDateMandatory = true;
 	private String logo;
 	private boolean trugeneFix = false;
+	
+	private String defaultDataset = null;
 
 	private WivConfig wivConfig;
 	
@@ -98,6 +100,10 @@ public class InstituteConfig extends ConfigParser {
 		ee = e.getChild("sample-date-mandatory");
 		if(ee != null)
 			sampleDateMandatory = Boolean.parseBoolean(ee.getText());
+		
+		ee = e.getChild("default-dataset");
+		if(ee != null)
+			setDefaultDataset(ee.getTextTrim());
 			
 		ee = e.getChild("forms");
 		if(ee != null){
@@ -197,6 +203,12 @@ public class InstituteConfig extends ConfigParser {
 			r.addContent(new Comment("Only show test types, tests, drugs linked with this organism, i.e. 'HIV*' will only show HIV-1, HIV-2A/B, ... items."));
 			e = new Element("organism-filter");
 			e.setText(organismFilter.getConfigString());
+			r.addContent(e);
+		}
+		
+		if(defaultDataset != null){
+			e = new Element("default-dataset");
+			e.setText(getDefaultDataset());
 			r.addContent(e);
 		}
 		
@@ -347,5 +359,13 @@ public class InstituteConfig extends ConfigParser {
 	
 	public boolean isTrugeneFix() {
 		return trugeneFix;
+	}
+	
+	public String getDefaultDataset(){
+		return defaultDataset;
+	}
+	
+	public void setDefaultDataset(String dataset){
+		this.defaultDataset = dataset;
 	}
 }

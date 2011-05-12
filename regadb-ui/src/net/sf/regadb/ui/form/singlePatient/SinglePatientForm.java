@@ -31,6 +31,7 @@ import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.pair.Pair;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -168,6 +169,10 @@ public class SinglePatientForm extends FormWidget
                 sourceDatasetCB.selectItem(ds.getDescription());
             }
         }
+        
+        if(getInteractionState() == InteractionState.Adding
+        		&& RegaDBSettings.getInstance().getInstituteConfig().getDefaultDataset() != null)
+        	sourceDatasetCB.selectItem(RegaDBSettings.getInstance().getInstituteConfig().getDefaultDataset());
         
         idTF.setText(patient.getPatientId());
         

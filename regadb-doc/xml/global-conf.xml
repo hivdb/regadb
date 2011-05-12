@@ -40,6 +40,9 @@
     <!--  Automatically split trugene sequences with > 100 n symbols (Optional)-->
     <trugene-fix>true</trugene-fix>
     
+    <!-- default selected dataset when adding a patient, optional -->
+    <default-dataset>dataset name</default-dataset>
+    
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
     -->
