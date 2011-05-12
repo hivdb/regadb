@@ -155,6 +155,22 @@ public class ViralIsolateFormConfig extends FormConfig {
         }
 	}
 	
+	public boolean containsAlgorithm(String algorithm, String genome){
+		if(algorithms == null)
+			return false;
+		
+		algorithm = algorithm.trim().toLowerCase();
+		genome = genome.trim().toLowerCase();
+		
+		for(Algorithm algo : algorithms){
+			if(algo.getName().toLowerCase().equals(algorithm)
+					&& algo.getOrganism().toLowerCase().equals(genome))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	private void readScoreInfos(Element eee, List<ScoreInfo> gssInfo) {
 		if (eee == null) 
 			return;
