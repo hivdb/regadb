@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<service>
+	<description>
+	RegaDB Drug Resistance Interpretation Tool (mutation list)
+	</description>
+	<version>
+	1.0
+	</version>
+<inputs>
+	<input>
+		<name>
+		viral_isolate	
+		</name>
+		<description>
+		a file with the mutation list parameter for the interprete service
+		</description>
+	</input>
+	<input>
+		<name>
+		asi_rules
+		</name>
+		<description>
+		An XML file describing the drug ranking rules in ASI format	
+		</description>
+	</input>
+</inputs>
+<outputs>
+	<output>
+		<name>
+		interpretation	
+		</name>
+		<description>
+		A file containing the drug resistance interpretation in XML format 
+		</description>
+	</output>
+</outputs>
+</service>
