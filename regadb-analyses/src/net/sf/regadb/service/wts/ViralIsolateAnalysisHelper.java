@@ -3,6 +3,9 @@ package net.sf.regadb.service.wts;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
@@ -95,7 +98,7 @@ public class ViralIsolateAnalysisHelper
             return result;
     }
     
-    public static byte[] runMutlist(ViralIsolate vi_, Test test_, int waitDelay_)
+    public static byte[] runMutlist(Collection<ViralIsolate> vis, Test test_, int waitDelay_)
     {
     	File resultFile = null; 
     	
@@ -104,42 +107,44 @@ public class ViralIsolateAnalysisHelper
         
         byte[] result = null;
         StringBuilder input = new StringBuilder();
-        for(NtSequence ntseq : vi_.getNtSequences())
+        for(ViralIsolate vi_ : vis)
         {
-        	for(AaSequence aa : ntseq.getAaSequences()){
-        		input.append(aa.getProtein().getAbbreviation()).append(',');
-        		input.append(aa.getFirstAaPos()).append('-').append(aa.getLastAaPos());
-        		input.append(":");
-        		
-        		boolean first = true;
-        		
-        		for(AaMutation m : aa.getAaMutations()){
-        			if(first)
-        				first = false;
-        			else
-            			input.append(",");
-        			
-        			input.append(m.getAaReference());
-        			input.append(m.getId().getMutationPosition());
-        			input.append(m.getAaMutation());
-        		}
-        		
-        		for(AaInsertion i : aa.getAaInsertions()){
-        			if(first)
-        				first = false;
-        			else
-            			input.append(",");
-        			
-        			input.append("i");
-        			input.append(i.getId().getInsertionPosition());
-        			input.append(i.getAaInsertion());
-        			input.append(",");
-        		}
-        		
-        		input.append(";");
-        	}
+	        for(NtSequence ntseq : vi_.getNtSequences())
+	        {
+	        	for(AaSequence aa : ntseq.getAaSequences()){
+	        		input.append(aa.getProtein().getAbbreviation()).append(',');
+	        		input.append(aa.getFirstAaPos()).append('-').append(aa.getLastAaPos());
+	        		input.append(":");
+	        		
+	        		boolean first = true;
+	        		
+	        		for(AaMutation m : aa.getAaMutations()){
+	        			if(first)
+	        				first = false;
+	        			else
+	            			input.append(",");
+	        			
+	        			input.append(m.getAaReference());
+	        			input.append(m.getId().getMutationPosition());
+	        			input.append(m.getAaMutation());
+	        		}
+	        		
+	        		for(AaInsertion i : aa.getAaInsertions()){
+	        			if(first)
+	        				first = false;
+	        			else
+	            			input.append(",");
+	        			
+	        			input.append("i");
+	        			input.append(i.getId().getInsertionPosition());
+	        			input.append(i.getAaInsertion());
+	        			input.append(",");
+	        		}
+	        		
+	        		input.append(";");
+	        	}
+	        }
         }
-        
         String challenge;
         String ticket = null;
         try 
@@ -195,5 +200,12 @@ public class ViralIsolateAnalysisHelper
             return null;
         else
             return result;
+    }
+    
+    public static byte[] runMutlist(ViralIsolate vi_, Test test_, int waitDelay_)
+    {
+    	List<ViralIsolate> vis = new ArrayList<ViralIsolate>(1);
+    	vis.add(vi_);
+    	return runMutlist(vis, test_, waitDelay_);
     }
 }
