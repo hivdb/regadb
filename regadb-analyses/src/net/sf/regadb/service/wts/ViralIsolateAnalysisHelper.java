@@ -138,7 +138,6 @@ public class ViralIsolateAnalysisHelper
 	        			input.append("i");
 	        			input.append(i.getId().getInsertionPosition());
 	        			input.append(i.getAaInsertion());
-	        			input.append(",");
 	        		}
 	        		
 	        		input.append(";");
