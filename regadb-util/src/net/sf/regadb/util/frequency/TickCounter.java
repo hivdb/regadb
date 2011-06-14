@@ -2,10 +2,10 @@ package net.sf.regadb.util.frequency;
 
 
 public class TickCounter{
-    private long n=0;
-    private long t=0;
-    private long total=0;
-    private long start=0;
+    long n=0;
+    long t=0;
+    long total=0;
+    long start=0;
     
     public double getRate(){
         double e = (double)(System.currentTimeMillis() - t)/(double)1000;
