@@ -28,6 +28,10 @@ public class ProgressCounter extends TickCounter {
 		return getTotal() +"/"+ targetCount +" ("+ Math.round(getProgressPercentage()) +") "+ toHumanString(getTimeRemaining());
 	}
 	
+	public String getAvgProgressString(){
+		return getTotal() +"/"+ targetCount +" ("+ Math.round(getProgressPercentage()) +") "+ toHumanString(getAvgTimeRemaining());
+	}
+	
 	public static String toHumanString(double seconds){
 		StringBuilder sb = new StringBuilder();
 		
@@ -69,5 +73,21 @@ public class ProgressCounter extends TickCounter {
 		sb.append(" "+ seconds +" "+ Frequency.strSecond);
 		
 		return sb.toString();
+	}
+	
+	public static void main(String[] args) throws InterruptedException{
+		int n = 100;
+		ProgressCounter pc = new ProgressCounter(n);
+		pc.start();
+		
+		for(int i = 0; i < n; i++){
+			pc.tick();
+			Thread.sleep(1000);
+			
+			if(pc.getTotal() % (n/10) == 1){
+				System.out.println(pc.getProgressString());
+				System.out.println(pc.getAvgProgressString());
+			}
+		}
 	}
 }
