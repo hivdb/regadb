@@ -124,9 +124,9 @@ public class ViralIsolateAnalysisHelper
 	        			else
 	            			input.append(",");
 	        			
-	        			input.append(m.getAaReference());
+	        			input.append(m.getAaReference() == null ? "-" : m.getAaReference());
 	        			input.append(m.getId().getMutationPosition());
-	        			input.append(m.getAaMutation());
+	        			input.append(m.getAaMutation() == null ? "-" : m.getAaMutation());
 	        		}
 	        		
 	        		for(AaInsertion i : aa.getAaInsertions()){
@@ -144,6 +144,7 @@ public class ViralIsolateAnalysisHelper
 	        	}
 	        }
         }
+        
         String challenge;
         String ticket = null;
         try 
