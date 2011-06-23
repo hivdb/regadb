@@ -123,19 +123,16 @@ public class SequenceUtils {
 					cmut = new AaMutation();
 					cmut.setId(id);
 					cmut.setAaReference(mut.getAaReference());
-					cmut.setAaMutation(mut.getAaMutation());
+					cmut.setAaMutation(mut.getAaMutation() == null ? "-" : mut.getAaMutation());
 					result.getAaMutations().add(cmut);
 					
 					muts.put(id.getMutationPosition(), cmut);
 				} else {
-					if(mut.getAaMutation() != null){
-						for(int i = 0; i < mut.getAaMutation().length(); ++i){
-							char AA = mut.getAaMutation().charAt(i);
-							if(!cmut.getAaMutation().contains(AA +""))
-								cmut.setAaMutation(cmut.getAaMutation() + AA);
-						}
-					} else {
-						cmut.setAaMutation(cmut.getAaMutation() + "-");
+					String m = mut.getAaMutation() == null ? "-" : mut.getAaMutation();
+					for(int i = 0; i < m.length(); ++i){
+						char AA = m.charAt(i);
+						if(!cmut.getAaMutation().contains(AA +""))
+							cmut.setAaMutation(cmut.getAaMutation() + AA);
 					}
 				}
 			}
