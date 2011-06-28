@@ -123,12 +123,14 @@ public class SequenceUtils {
 					cmut = new AaMutation();
 					cmut.setId(id);
 					cmut.setAaReference(mut.getAaReference());
-					cmut.setAaMutation(mut.getAaMutation() == null ? "-" : mut.getAaMutation());
+					cmut.setAaMutation(mut.getAaMutation() == null || mut.getAaMutation().length() == 0
+							? "-" : mut.getAaMutation());
 					result.getAaMutations().add(cmut);
 					
 					muts.put(id.getMutationPosition(), cmut);
 				} else {
-					String m = mut.getAaMutation() == null ? "-" : mut.getAaMutation();
+					String m = mut.getAaMutation() == null || mut.getAaMutation().length() == 0
+						? "-" : mut.getAaMutation();
 					for(int i = 0; i < m.length(); ++i){
 						char AA = m.charAt(i);
 						if(!cmut.getAaMutation().contains(AA +""))

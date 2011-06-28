@@ -124,9 +124,11 @@ public class ViralIsolateAnalysisHelper
 	        			else
 	            			input.append(",");
 	        			
-	        			input.append(m.getAaReference() == null ? "-" : m.getAaReference());
+	        			input.append(m.getAaReference() == null || m.getAaReference().length() == 0 ?
+	        					"-" : m.getAaReference());
 	        			input.append(m.getId().getMutationPosition());
-	        			input.append(m.getAaMutation() == null ? "-" : m.getAaMutation());
+	        			input.append(m.getAaMutation() == null || m.getAaReference().length() == 0 ?
+	        					"-" : m.getAaMutation());
 	        		}
 	        		
 	        		for(AaInsertion i : aa.getAaInsertions()){
