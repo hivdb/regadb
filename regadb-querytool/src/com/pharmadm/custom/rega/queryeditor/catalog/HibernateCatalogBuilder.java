@@ -1405,6 +1405,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addRelations("SplicingPosition", "protein", "Protein", null, false, "is in a", "has a");
         addRelations("Protein", "openReadingFrame", "OpenReadingFrame", null, false, "is transcribed from an", "transcribes a");
         addRelations("OpenReadingFrame", "genome", "Genome", null, false, "is from a", "has an");
+        addRelations("ViralIsolate", "genome", "Genome", null, false, "is from a", "has an");
         
         addRelations("NtSequence", "viralIsolate", "ViralIsolate", null, false, "comes from a",  "has a" );       
         addRelations("NtSequence", "viralIsolate.patient", "PatientImpl", null, false, "comes from a",  "has a");
@@ -1593,6 +1594,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         
         
         catalog.addAll(getRelationClauses("NtSequence", "ViralIsolate"));
+        catalog.addAll(getRelationClauses("ViralIsolate", "Genome"));
  
         
         ///////////////////////////////////////
