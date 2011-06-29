@@ -101,7 +101,7 @@ public class IOAssistImportHandler implements ImportHandler<ViralIsolate>
     
     private void align(ViralIsolate viralIsolate, Genome genome) {
     	try {
-        	AlignService as = new AlignService(viralIsolate, genome);
+        	AlignService as = new AlignService(viralIsolate, genome, null);
 			as.launch();
 		} catch (ServiceException e) {
 			e.printStackTrace();

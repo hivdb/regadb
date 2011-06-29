@@ -16,6 +16,7 @@ import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.IAnalysis;
 
 public class AlignService extends AbstractService implements IAnalysis{
@@ -28,19 +29,23 @@ public class AlignService extends AbstractService implements IAnalysis{
 	private ViralIsolate viralIsolate = null;
 	private Genome genome = null;
 	
+	private SequenceDb sequenceDb;
+	
 	private static final Pattern mutationPattern = Pattern.compile("^([^0-9]*)([0-9]+)([^0-9]*)$");
 
-	public AlignService(ViralIsolate viralIsolate, String organismName){
+	public AlignService(ViralIsolate viralIsolate, String organismName, SequenceDb sequenceDb){
 		this.viralIsolateIi = viralIsolate.getViralIsolateIi();
 		this.organismName = organismName;
 		this.sequences = ViralIsolateAnalysisHelper.toFasta(viralIsolate);
+		this.sequenceDb = sequenceDb;
 	}
 	
-	public AlignService(ViralIsolate viralIsolate, Genome genome){
+	public AlignService(ViralIsolate viralIsolate, Genome genome, SequenceDb sequenceDb){
 		this.viralIsolate = viralIsolate;
 		this.genome = genome;
 		this.organismName = genome.getOrganismName();
 		this.sequences = ViralIsolateAnalysisHelper.toFasta(viralIsolate);
+		this.sequenceDb = sequenceDb;
 	}
 	
 	@Override
@@ -163,6 +168,11 @@ public class AlignService extends AbstractService implements IAnalysis{
 		
 		if(t != null)
 			t.commit();
+		
+		if(sequenceDb != null){
+			for(NtSequence ntseq : vi.getNtSequences())
+				sequenceDb.sequenceAligned(ntseq);
+		}
 	}
 
     //IAnalysis methods

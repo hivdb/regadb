@@ -60,7 +60,7 @@ public class FullAnalysis implements IAnalysis {
             Test subTypeTest = t.getTest(StandardObjects.getSubtypeTestDescription(), StandardObjects.getSubtypeTestTypeDescription());
             t.commit();
             
-            launchAnalysis(new AlignService(getViralIsolate(), genome.getOrganismName()), sessionSafeLogin);
+            launchAnalysis(new AlignService(getViralIsolate(), genome.getOrganismName(), sequenceDb), sessionSafeLogin);
 
             for(NtSequence ntseq : getViralIsolate().getNtSequences())
             {
