@@ -12,7 +12,12 @@ interpretation_file="$1/outputs/interpretation"
 
 echo "Starting HIV Drug Resistance Interpretation..." >> $monitor_file
 
-LD_LIBRARY_PATH=/soft/lib:$LD_LIBRARY_PATH /soft/bin/interpretservice $viral_isolate_file $asi_rules_file >> $interpretation_file 2>> $monitor_file 
+if [`head -n 1 "$viral_isolate_file" | grep '>'`]
+then
+  LD_LIBRARY_PATH=/soft/lib:$LD_LIBRARY_PATH /soft/bin/interpretservice $viral_isolate_file $asi_rules_file >> $interpretation_file 2>> $monitor_file 
+else
+  LD_LIBRARY_PATH=/soft/lib:$LD_LIBRARY_PATH /soft/bin/interpretservice_mutlist "`cat $viral_isolate_file`" $asi_rules_file >> $interpretation_file 2>> $monitor_file
+fi
 
 echo "Calculation ended" >> $monitor_file
 

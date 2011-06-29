@@ -14,6 +14,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.AnalysisPool;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 
 public class FullAnalysis implements IAnalysis {
@@ -60,7 +61,7 @@ public class FullAnalysis implements IAnalysis {
             Test subTypeTest = t.getTest(StandardObjects.getSubtypeTestDescription(), StandardObjects.getSubtypeTestTypeDescription());
             t.commit();
             
-            launchAnalysis(new AlignService(getViralIsolate(), genome.getOrganismName(), sequenceDb), sessionSafeLogin);
+            AnalysisThread alignmentThread = launchAnalysis(new AlignService(getViralIsolate(), genome.getOrganismName(), sequenceDb), sessionSafeLogin);
 
             for(NtSequence ntseq : getViralIsolate().getNtSequences())
             {
@@ -75,6 +76,15 @@ public class FullAnalysis implements IAnalysis {
                             sessionSafeLogin.getUid()), 
                             sessionSafeLogin); 
                 }
+            }
+            
+            //wait for alignment thread to finish
+            if(alignmentThread != null){
+	            try {
+					alignmentThread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
             }
             
             t = sessionSafeLogin.createTransaction();
@@ -97,8 +107,8 @@ public class FullAnalysis implements IAnalysis {
         setEndTime(new Date());
     }
     
-    protected void launchAnalysis(IAnalysis analysis, Login login) {
-    	AnalysisPool.getInstance().launchAnalysis(analysis, login);
+    protected AnalysisThread launchAnalysis(IAnalysis analysis, Login login) {
+    	return AnalysisPool.getInstance().launchAnalysis(analysis, login);
     }
 
     public void pause() {
