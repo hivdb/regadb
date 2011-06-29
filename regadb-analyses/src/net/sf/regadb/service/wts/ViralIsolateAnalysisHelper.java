@@ -152,7 +152,7 @@ public class ViralIsolateAnalysisHelper
         try 
         {
         challenge = client.getChallenge(test_.getAnalysis().getAccount());
-        String serviceName = "regadb-hiv-resist-mutlist"; // test_.getAnalysis().getServiceName();
+        String serviceName = test_.getAnalysis().getServiceName();
         ticket = client.login(test_.getAnalysis().getAccount(), challenge, test_.getAnalysis().getPassword(), serviceName);
         
         client.upload(ticket, serviceName, test_.getAnalysis().getBaseinputfile(), input.toString().getBytes());
