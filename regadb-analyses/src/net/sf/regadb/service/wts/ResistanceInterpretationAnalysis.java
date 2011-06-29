@@ -1,7 +1,6 @@
 package net.sf.regadb.service.wts;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -14,9 +13,9 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
+import net.sf.regadb.service.wts.ServiceException.InvalidResultException;
 
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class ResistanceInterpretationAnalysis implements IAnalysis
 {
@@ -58,7 +57,7 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
         
     }
 
-    public void launch(Login sessionSafeLogin)
+    public void launch(Login sessionSafeLogin) throws ServiceException
     {
         startTime_ = new Date(System.currentTimeMillis());
         
@@ -125,18 +124,17 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
             try 
             {
                 inp.parse(new InputSource(new ByteArrayInputStream(result)));
+                t.update(vi);
+                t.commit();
             } 
-            catch (SAXException e) 
+            catch (Exception e) 
             {
                 e.printStackTrace();
-            } 
-            catch (IOException e) 
-            {
-                e.printStackTrace();
+                t.rollback();
+                t.clearCache();
+                
+                throw new InvalidResultException("", "", e.getMessage());
             }
-            
-            t.update(vi);
-            t.commit();
         }
         
         endTime_ = new Date(System.currentTimeMillis());

@@ -2,17 +2,13 @@ package net.sf.regadb.util.settings;
 
 import org.jdom.Element;
 
-public class WivConfig implements IConfigParser{
+public class WivConfig extends ConfigParser{
 	private String centreName;
 	private TestTypeConfig viralLoadTestType;
 	private AttributeConfig arcPatientFilter;
 	
 	public WivConfig(){
-		setDefaults();
-	}
-
-	public String getXmlTag() {
-		return "wiv";
+		super("wiv");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {

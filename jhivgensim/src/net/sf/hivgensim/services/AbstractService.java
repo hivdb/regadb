@@ -7,7 +7,7 @@ import net.sf.wts.client.WtsClient;
 
 public abstract class AbstractService {
 	
-	private String url = "http://localhost:8080/wts/services/";
+	private String url = "http://regadb.med.kuleuven.be/wts/services/";
 	private String uid = "public";
 	private String passwd = "public";
 	

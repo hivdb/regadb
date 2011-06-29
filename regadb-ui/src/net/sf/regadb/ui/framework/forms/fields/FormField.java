@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -19,6 +20,8 @@ public abstract class FormField extends WContainerWidget implements IFormField
     private boolean _unique=false;
     
     private IForm form;
+    
+    private Signal.Listener confirmListener = null;
     
     public FormField(IForm form) {
     	this.form = form;
@@ -123,12 +126,25 @@ public abstract class FormField extends WContainerWidget implements IFormField
         return this;
     }
     
+    protected void setDefaultConfirmAction(){
+    	if(form instanceof IConfirmForm){
+    		setConfirmAction(new Signal.Listener() {
+				@Override
+				public void trigger() {
+					((IConfirmForm)form).confirmAction();
+				}
+			});
+    	}
+    }
+    
     public void setConfirmAction(Signal.Listener se) {
-//        if(getFormWidget()!=null) {
-//        getFormWidget().enterPressed().removeAllListeners();
-//        if(se!=null)
-//            getFormWidget().enterPressed().addListener(this, se);
-//        }
+    	if(confirmListener != null)
+    		getFormWidget().enterPressed().removeListener(confirmListener);
+    	
+    	confirmListener = se;
+    	
+        if(getFormWidget()!=null && se!=null)
+            getFormWidget().enterPressed().addListener(this, se);
     }
     
     public boolean isUnique(){

@@ -49,7 +49,7 @@ public class ParseConfirmation {
             new String[] { "male", "female" } );
     
     private AttributeGroup regadbAttributeGroup_ = new AttributeGroup("RegaDB");
-    private Attribute commentAttribute = new Attribute(StandardObjects.getStringValueType(),regadbAttributeGroup_,"Comment",new TreeSet<AttributeNominalValue>());
+    private Attribute commentAttribute = new Attribute(StandardObjects.getStringValueType(),regadbAttributeGroup_,"Comment", null, new TreeSet<AttributeNominalValue>());
     
     public ParseConfirmation(String basePath, ParseIds parseIds, Map<Integer, Patient> patients) {
         basePath_ = basePath;
@@ -380,7 +380,7 @@ public class ParseConfirmation {
             ConsoleLogger.getInstance().logWarning("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
             return;
         }
-        if(WivObjects.createPatientAttributeNominalValue(attributeName, attributeNominalValue.toUpperCase().charAt(0), p)==null) {
+        if(WivObjects.createPatientAttributeNominalValue(attributeName, attributeNominalValue.toUpperCase().charAt(0) +"", p)==null) {
             ConsoleLogger.getInstance().logWarning("Cannot handle WIV attribute - attributeNominalVal: " + attributeName + " - " + attributeNominalValue + " (for Patient " + p.getPatientId() +")" );
         }
     }

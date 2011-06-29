@@ -1,5 +1,7 @@
 package net.sf.regadb.db;
 
+import java.util.regex.Pattern;
+
 public enum ValueTypes 
 {
     NUMBER,
@@ -65,4 +67,11 @@ public enum ValueTypes
         return false;
     }
 
+    public static boolean isValidString(String value, String validationString){
+		if(validationString != null && validationString.length() > 0){
+			Pattern p = Pattern.compile(validationString);
+			return p.matcher(value).matches();
+		}
+		return true;
+    }
 }

@@ -854,7 +854,7 @@ public class Utils {
          }
      }
      
-     private static AttributeNominalValue getANV(NominalAttribute na, String value) {
+     public static AttributeNominalValue getANV(NominalAttribute na, String value) {
     	 for (AttributeNominalValue anvt : na.attribute.getAttributeNominalValues()) {
     		 if (anvt.getValue().equalsIgnoreCase(value)) 
     			 return anvt;

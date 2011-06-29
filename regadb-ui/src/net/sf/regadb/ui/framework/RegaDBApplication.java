@@ -17,12 +17,12 @@ import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
 
 import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
-import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateConnector;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
 import eu.webtoolkit.jwt.TextFormat;
@@ -44,8 +44,9 @@ public class RegaDBApplication extends WApplication
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
-		System.err.println("new regadb app");
 		
+		setTitle("RegaDB");
+		System.err.println("new regadb app");
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
 		window_.init();
@@ -186,6 +187,10 @@ public class RegaDBApplication extends WApplication
 		new WText(new WString(sw.toString()), TextFormat.PlainText, wc);
 		quit();
 		throw new RuntimeException("Unrecoverable error", e);
+	}
+	  
+	public SequenceDb getSequenceDb() {
+		return SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
 	}
 	
 	@Override

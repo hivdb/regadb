@@ -31,7 +31,7 @@ public class DateField extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
 			_fieldEdit = new WLineEdit();
-            ConfirmUtils.addConfirmAction(form, _fieldEdit);
+            setDefaultConfirmAction();
 			addWidget(_fieldEdit);
 			WDatePicker dp = new WDatePicker(calendarIcon_, _fieldEdit, this);
 			dp.setFormat(RegaDBSettings.getInstance().getDateFormat());

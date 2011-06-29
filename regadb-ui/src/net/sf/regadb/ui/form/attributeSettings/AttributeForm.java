@@ -34,6 +34,8 @@ public class AttributeForm extends FormWidget
     private TextField nameTF;
     private Label valueTypeL;
     private ComboBox<ValueType> valueTypeCB;
+    private Label validationStringL;
+    private TextField validationStringTF;
     private Label groupL;
     private ComboBox<AttributeGroup> groupCB;
     private Label usageL;
@@ -58,18 +60,27 @@ public class AttributeForm extends FormWidget
     {
         generalGroup_ = new WGroupBox(tr("form.attributeSettings.attribute.editView.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
+
         nameL = new Label(tr("form.attributeSettings.attribute.editView.name"));
         nameTF = new TextField(getInteractionState(), this);
         nameTF.setMandatory(true);
         generalGroupTable_.addLineToTable(nameL, nameTF);
+
         valueTypeL = new Label(tr("form.attributeSettings.attribute.editView.valueType"));
         valueTypeCB = new ComboBox<ValueType>(getInteractionState(), this);
         valueTypeCB.setMandatory(true);
         generalGroupTable_.addLineToTable(valueTypeL, valueTypeCB);
+        
+        validationStringL = new Label(tr("form.attributeSettings.attribute.editView.validationString"));
+        validationStringTF = new TextField(getInteractionState(), this);
+        validationStringTF.setMandatory(false);
+        generalGroupTable_.addLineToTable(validationStringL, validationStringTF);
+
         groupL = new Label(tr("form.attributeSettings.attribute.editView.group"));
         groupCB = new ComboBox<AttributeGroup>(getInteractionState(), this);
         groupCB.setMandatory(true);
         generalGroupTable_.addLineToTable(groupL, groupCB);
+
         if(getInteractionState()!=InteractionState.Adding)
         {
             usageL = new Label(tr("form.attributeSettings.attribute.editView.usage"));
@@ -99,6 +110,12 @@ public class AttributeForm extends FormWidget
         nominalValuesGroup_ = new WGroupBox(tr("form.attributeSettings.attribute.editView.nominalValues"), this);
                 
         addControlButtons();
+    }
+    
+    private void setValidationString(){
+        boolean hide = (ValueTypes.getValueType(valueTypeCB.currentValue()) != ValueTypes.STRING);
+        validationStringL.setHidden(hide);
+        validationStringTF.setHidden(hide);
     }
     
     private void setNominalValuesGroup()
@@ -156,18 +173,21 @@ public class AttributeForm extends FormWidget
             nameTF.setText(attribute_.getName());
             valueTypeCB.selectItem(attribute_.getValueType().getDescription());
             groupCB.selectItem(attribute_.getAttributeGroup().getGroupName());
+            validationStringTF.setText(attribute_.getValidationString());
             
             usageTF.setText(t.getAttributeUsage(attribute_)+"");
             
             t.commit();
         }
         
+        setValidationString();
         setNominalValuesGroup();
         
         valueTypeCB.addComboChangeListener(new Signal.Listener()
                 {
                     public void trigger()
                     {
+                    	setValidationString();
                         setNominalValuesGroup();
                     }
                 });
@@ -198,6 +218,7 @@ public class AttributeForm extends FormWidget
         attribute_.setName(nameTF.text());
         attribute_.setValueType(vt);
         attribute_.setAttributeGroup(ag);
+        attribute_.setValidationString(validationStringTF.text());
         
         if(!nominalValuesGroup_.isHidden())
         {

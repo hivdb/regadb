@@ -2,7 +2,6 @@ package net.sf.regadb.ui.framework.widgets;
 
 import eu.webtoolkit.jwt.WComboBox;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WString;
 
 public class MyComboBox extends WComboBox {
 

@@ -3,7 +3,6 @@ package net.sf.regadb.ui.framework.widgets.expandtable;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WIconPair;
 import eu.webtoolkit.jwt.WMouseEvent;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WTableCell;
 import eu.webtoolkit.jwt.WText;

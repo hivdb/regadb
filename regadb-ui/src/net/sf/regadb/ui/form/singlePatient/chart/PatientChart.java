@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -33,10 +32,6 @@ import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.AaMutInsertion;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.DrugGeneric;
@@ -56,6 +51,9 @@ import net.sf.regadb.db.compare.TestResultComparator;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class PatientChart
 {

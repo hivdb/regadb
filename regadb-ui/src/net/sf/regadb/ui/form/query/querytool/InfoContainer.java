@@ -6,10 +6,10 @@ import java.io.IOException;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
+import net.sf.regadb.ui.framework.forms.fields.FileUpload.FileBlob;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.forms.fields.FileUpload.FileBlob;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 
 import org.apache.commons.io.FileUtils;

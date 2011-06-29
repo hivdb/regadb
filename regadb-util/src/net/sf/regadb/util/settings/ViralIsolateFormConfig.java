@@ -14,12 +14,14 @@ public class ViralIsolateFormConfig extends FormConfig {
         public TestItem(String d){
             description = d;
         }
-        public TestItem(String d, String o){
+        public TestItem(String d, String o, String defaultValue){
             description = d;
             organism = o;
+            this.defaultValue = defaultValue;
         }
         public String description = null;
         public String organism = null;
+        public String defaultValue = null;
     }
 	
 	public static class ScoreInfo {
@@ -129,8 +131,9 @@ public class ViralIsolateFormConfig extends FormConfig {
         for(Object o : ee.getChildren()){
         	String d = ((Element)o).getAttributeValue("description");
         	String g = ((Element)o).getAttributeValue("organism");
+        	String defaultValue = ((Element)o).getAttributeValue("defaultValue");
         	if(d != null)
-        		tests.add(new TestItem(d,g));
+        		tests.add(new TestItem(d,g,defaultValue));
         }
         
         ee = e.getChild("resistance");
@@ -150,6 +153,22 @@ public class ViralIsolateFormConfig extends FormConfig {
 	        eee = ee.getChild("scores");
 	        readScoreInfos(eee, gss);
         }
+	}
+	
+	public boolean containsAlgorithm(String algorithm, String genome){
+		if(algorithms == null)
+			return false;
+		
+		algorithm = algorithm.trim().toLowerCase();
+		genome = genome.trim().toLowerCase();
+		
+		for(Algorithm algo : algorithms){
+			if(algo.getName().toLowerCase().equals(algorithm)
+					&& algo.getOrganism().toLowerCase().equals(genome))
+				return true;
+		}
+		
+		return false;
 	}
 	
 	private void readScoreInfos(Element eee, List<ScoreInfo> gssInfo) {

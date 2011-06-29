@@ -207,6 +207,14 @@ public abstract class TreeMenuNode extends WTreeNode
 			getParentNode().openOnlyOneMenuPath();
 		}
 	}
+	
+	public void expandFromRoot(){
+		if(getParentNode() != null)
+			getParentNode().expandFromRoot();
+		
+		if(!isExpanded() && getChildNodes().size() > 0)
+			expand();
+	}
 
 	public abstract ITreeAction getFormAction();
 }

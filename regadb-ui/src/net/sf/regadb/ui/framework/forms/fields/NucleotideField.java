@@ -26,7 +26,7 @@ public class NucleotideField extends FormField
             _fieldEdit = new WTextArea();
             _fieldEdit.setColumns(70);
             _fieldEdit.setRows(15);
-            ConfirmUtils.addConfirmAction(form, _fieldEdit);
+            setDefaultConfirmAction();
             
             
             addWidget(_fieldEdit);

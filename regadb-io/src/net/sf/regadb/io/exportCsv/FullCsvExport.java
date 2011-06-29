@@ -324,7 +324,8 @@ public class FullCsvExport implements ExportPatient {
 			for(PatientAttributeValue pav : p.getPatientAttributeValues()) {
 				if(pav.getAttribute().getName().equals(sortedAttributes.get(i).getName())) {
 					found = true;
-					String value = pav.getValue()==null?pav.getAttributeNominalValue().getValue():pav.getValue();
+					String value = pav.getValue()==null ?
+							(pav.getAttributeNominalValue() == null ? "" : pav.getAttributeNominalValue().getValue()) : pav.getValue();
 					ValueTypes vt = ValueTypes.getValueType(pav.getAttribute().getValueType());
                     if(vt == ValueTypes.DATE){
                         value = DateUtils.format(value);

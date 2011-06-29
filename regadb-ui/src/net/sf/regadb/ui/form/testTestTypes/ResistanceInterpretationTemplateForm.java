@@ -116,7 +116,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         
         boolean notExists = getInteractionState()==InteractionState.Editing?true:t.getResRepTemplate(templateTF.text())==null;
         
-        if(notExists && upload.getFileUpload().getSpoolFileName()!=null)
+        if(notExists && !upload.getFileUpload().getSpoolFileName().equals(""))
         {
             resRepTemplate_.setName(templateTF.text());
             update(resRepTemplate_, t);
@@ -125,7 +125,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
             RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.setSelectedItem(resRepTemplate_);
             redirectToView(RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected, RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateView);
         }
-        else if(upload.getFileUpload().getSpoolFileName()==null)
+        else if(upload.getFileUpload().getSpoolFileName().equals(""))
         {
             UIUtils.showWarningMessageBox(this, tr("form.resistance.report.template.warning.noFileSpecified"));
         }

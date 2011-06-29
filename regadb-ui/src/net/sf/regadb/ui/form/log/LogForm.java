@@ -89,7 +89,7 @@ public class LogForm extends FormWidget {
             
             if(!logFile.isDirectory()){
 	            fileDownloadA.setText(logFile.getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
-	            fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath()).generateUrl());
+	            fileDownloadA.setRef(new WFileResource("text/txt", logFile.getAbsolutePath(), null).generateUrl());
             }
             try{
                 fileContentTA.setText(parseContent(logFile));
