@@ -83,8 +83,6 @@ public class AlignService extends AbstractService implements IAnalysis{
 						break;
 					}
 				}
-				
-				System.out.println("Sequence: '"+ label +"'");
 			}
 			else if(lines[i].startsWith("protein=") && nt != null){
 				String f[] = lines[i].split(",");
