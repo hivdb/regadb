@@ -1,6 +1,7 @@
 package net.sf.regadb.service.wts;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sf.regadb.db.AnalysisStatus;
@@ -14,6 +15,7 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.AnalysisPool;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.regadb.service.align.AlignmentAnalysis;
 
@@ -63,20 +65,31 @@ public class FullAnalysis implements IAnalysis {
                         
             if(genome != null){
                 
+            	List<AnalysisThread> alignThreads = new LinkedList<AnalysisThread>();
+            	
                 for(NtSequence ntseq : getViralIsolate().getNtSequences())
                 {
                     if(ntseq.getAaSequences().size()==0)
                     {
-                        launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
+                        alignThreads.add(launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
                         		sessionSafeLogin.getUid(), 
                         		genome.getOrganismName(), 
-                        		sequenceDb), sessionSafeLogin);
+                        		sequenceDb), sessionSafeLogin));
                         launchAnalysis(new SubtypeAnalysis(ntseq,
                         		subTypeTest,
                                 genome,
                                 sessionSafeLogin.getUid()), 
                                 sessionSafeLogin); 
                     }
+                }
+                
+                //wait for alignment to finish
+                for(AnalysisThread thread : alignThreads){
+					try {
+						thread.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
                 }
                 
                 t = sessionSafeLogin.createTransaction();
@@ -100,8 +113,8 @@ public class FullAnalysis implements IAnalysis {
         setEndTime(new Date());
     }
     
-    protected void launchAnalysis(IAnalysis analysis, Login login) {
-    	AnalysisPool.getInstance().launchAnalysis(analysis, login);
+    protected AnalysisThread launchAnalysis(IAnalysis analysis, Login login) {
+    	return AnalysisPool.getInstance().launchAnalysis(analysis, login);
     }
 
     public void pause() {

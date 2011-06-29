@@ -46,11 +46,12 @@ public class AnalysisPool
         threadList_.removeAll(toBeRemoved);
     }
     
-    public synchronized void launchAnalysis(final IAnalysis analysis, Login login)
+    public synchronized AnalysisThread launchAnalysis(final IAnalysis analysis, Login login)
     {
         AnalysisThread t = new AnalysisThread(analysis, login);
         t.start();
         threadList_.add(t);
+        return t;
     }
     
     //The items returned by this list might be cleaned up by a job thread
