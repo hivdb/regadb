@@ -86,7 +86,8 @@ public class FullAnalysis implements IAnalysis {
                 //wait for alignment to finish
                 for(AnalysisThread thread : alignThreads){
 					try {
-						thread.join();
+						if(thread != null)
+							thread.join();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

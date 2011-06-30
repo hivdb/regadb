@@ -4,6 +4,7 @@ import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.sequencedb.SequenceDb;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.service.wts.ServiceException;
@@ -13,7 +14,7 @@ public class NonThreadedFullAnalysis extends FullAnalysis{
 		super(viralIsolate, genome, sequenceDb);
 	}
 	
-	protected void launchAnalysis(IAnalysis analysis, Login login) {
+	protected AnalysisThread launchAnalysis(IAnalysis analysis, Login login) {
 		Login copiedLogin = login.copyLogin();
         try {
 			analysis.launch(copiedLogin);
@@ -22,5 +23,7 @@ public class NonThreadedFullAnalysis extends FullAnalysis{
 		} finally {
 			copiedLogin.closeSession();
 		}
+		
+		return null;
 	}
 }
