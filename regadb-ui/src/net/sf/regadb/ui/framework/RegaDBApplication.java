@@ -190,7 +190,8 @@ public class RegaDBApplication extends WApplication
 	}
 	  
 	public SequenceDb getSequenceDb() {
-		return SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath());
+		return RegaDBSettings.getInstance().getSequenceDatabaseConfig().isConfigured() ?
+			SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath()) : null;
 	}
 	
 	@Override
