@@ -21,6 +21,7 @@ public class InstituteConfig extends ConfigParser {
 	private String wtsUrl;
 	private boolean wtsUrlSubtyping = false;
 	private boolean wtsUrlUpdates = false;
+	private boolean wtsUrlAlignment = false;
 	
 	private boolean sampleDateMandatory = true;
 	private String logo;
@@ -119,6 +120,8 @@ public class InstituteConfig extends ConfigParser {
 			setUseWtsUrlForSubtyping(v != null && v.toLowerCase().equals("true"));
 			v = ee.getAttributeValue("useForUpdates");
 			setUseWtsUrlForUpdates(v != null && v.toLowerCase().equals("true"));
+			v = ee.getAttributeValue("useForAlignment");
+			setUseWtsUrlForAlignment(v != null && v.toLowerCase().equals("true"));
 		}
 	}
 	
@@ -224,6 +227,7 @@ public class InstituteConfig extends ConfigParser {
 		e.setText(getWtsUrl().toString());
 		e.setAttribute("useForSubtyping", getUseWtsUrlForSubtyping()+"");
 		e.setAttribute("useForUpdates", getUseWtsUrlForUpdates()+"");
+		e.setAttribute("useForAlignment", getUseWtsUrlForAlignment()+"");
 		r.addContent(e);
 		
 		return r;
@@ -332,6 +336,14 @@ public class InstituteConfig extends ConfigParser {
 	
 	public void setUseWtsUrlForSubtyping(boolean b){
 		this.wtsUrlSubtyping = b;
+	}
+	
+	public boolean getUseWtsUrlForAlignment(){
+		return wtsUrlAlignment;
+	}
+	
+	public void setUseWtsUrlForAlignment(boolean b){
+		this.wtsUrlAlignment = b;
 	}
 	
 	public void setWtsUrl(String wtsUrl) {

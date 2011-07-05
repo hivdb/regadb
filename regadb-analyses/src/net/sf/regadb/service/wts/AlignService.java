@@ -18,6 +18,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.IAnalysis;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class AlignService extends AbstractService implements IAnalysis{
 	private int viralIsolateIi;
@@ -202,5 +203,13 @@ public class AlignService extends AbstractService implements IAnalysis{
     public void launch(Login sessionSafeLogin) throws ServiceException{
         this.login = sessionSafeLogin;
         launch();
+    }
+    
+    @Override
+    public String getUrl(){
+    	if(RegaDBSettings.getInstance().getInstituteConfig().getUseWtsUrlForAlignment())
+    		return RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl();
+    	else
+    		return super.getUrl();
     }
 }
