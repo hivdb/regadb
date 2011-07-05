@@ -10,7 +10,7 @@ sequences="$1/inputs/sequences"
 
 mutations="$1/outputs/mutations"
 
-/soft/bin/regadb_align /soft/wts/file-providers/regadb-genomes/genomes.xml "$genome" "$sequences" | tee "$mutations" >> $monitor_file 2>> $monitor_file
+/soft/bin/regadb_align /soft/wts/file-providers/regadb-genomes/genomes.xml "$genome" "$sequences" > "$mutations" 2>> $monitor_file
 
 echo "Calculation ended" >> $monitor_file
 
