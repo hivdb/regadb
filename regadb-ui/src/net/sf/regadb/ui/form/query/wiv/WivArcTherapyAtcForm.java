@@ -132,7 +132,7 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
 	        	}
 	        	else{
 		            for(DrugGeneric dg : dc.getDrugGenerics()){
-		            	String ss[] = dg.getAtcCode().split(getAtcCode(dg));
+		            	String ss[] = getAtcCode(dg).split("[+]");
 		            	for(String s : ss){
 		            		atcs.add(s.trim());
 		            	}
