@@ -230,11 +230,15 @@ public class Chart extends WCartesianChart{
 			
 				double x2 = this.mapToDevice(stopDate,0).getX();
 				
-				for(String drug : me.getValue()){
-					double i = drugsUsed.get(drug);
-	
-					painter.drawRect(x1 + therapyLineWidth, i + therapyLineWidth + therapySpacing, 
-							x2-x1 - therapyLineWidth, therapyHeight);
+				for(TherapyCommercial tc : me.getKey().getTherapyCommercials()){
+					for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+						drawDrug(painter, dg, x1, x2, tc.isBlind(), tc.isPlacebo());
+					}
+				}
+				
+				for(TherapyGeneric tg : me.getKey().getTherapyGenerics()){
+					drawDrug(painter, tg.getId().getDrugGeneric(), x1, x2,
+							tg.isBlind(), tg.isPlacebo());
 				}
 			}
 		}
@@ -253,6 +257,32 @@ public class Chart extends WCartesianChart{
 		}
 
 		painter.setRenderHint(RenderHint.Antialiasing,true);
+	}
+	
+	private void drawDrug(WPainter painter, DrugGeneric drug, double x1, double x2, boolean blind, boolean placebo){
+		double i = drugsUsed.get(drug.getGenericId());
+
+		double x = x1 + therapyLineWidth;
+		double y = i + therapyLineWidth + therapySpacing;
+		double w = x2 - x1 - therapyLineWidth;
+		double h = therapyHeight;
+			
+		painter.drawRect(x, y, w, h);
+		
+		if(blind || placebo){
+			WPen oldPen = painter.getPen();
+			
+			WPen pen = new WPen(WColor.white);
+			pen.setWidth(new WLength(therapyLineWidth, Unit.Pixel));
+			painter.setPen(pen);
+			
+			if(blind)
+				painter.drawLine(x, y+(h/4), x+w, y+(h/4));
+			if(placebo)
+				painter.drawLine(x, y+(3*h/4), x+w, y+(3*h/4));
+			
+			painter.setPen(oldPen);
+		}
 	}
 	
 	private TreeMap<Therapy,TreeSet<String>> drugsMap = new TreeMap<Therapy,TreeSet<String>>(
