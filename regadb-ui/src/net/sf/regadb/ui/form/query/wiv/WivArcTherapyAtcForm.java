@@ -83,11 +83,7 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
         }
         for(Map.Entry<String, HashSet<String>> me : patcodeAtcs.entrySet()){
             for(String s : me.getValue()){
-                String atc = s;
-                if(atc == null || atc.length() == 0)
-                    atc = "9999";
-    
-                addRow(out, me.getKey(), date, atc);
+                addRow(out, me.getKey(), date, s);
             }
         }
 
@@ -117,22 +113,40 @@ public class WivArcTherapyAtcForm extends WivIntervalQueryForm {
     private void addTherapy(HashSet<String> atcs, Therapy tp){
 
         for(TherapyGeneric tg : tp.getTherapyGenerics()){
-            atcs.add(tg.getId().getDrugGeneric().getAtcCode());
+        	if(tg.isPlacebo())
+        		continue;
+        	else if(tg.isBlind())
+        		atcs.add("ART_01");
+        	else
+        		atcs.add(getAtcCode(tg.getId().getDrugGeneric()));
         }
         for(TherapyCommercial tc : tp.getTherapyCommercials()){
         	DrugCommercial dc = tc.getId().getDrugCommercial();
-        	if(dc.getAtcCode() != null && dc.getAtcCode().length() != 0){
-        		atcs.add(dc.getAtcCode());
-        	}
+        	if(tc.isPlacebo())
+        		continue;
+        	else if(tc.isBlind())
+        		atcs.add("ART_01");
         	else{
-	            for(DrugGeneric dg : dc.getDrugGenerics()){
-	            	String ss[] = dg.getAtcCode().split("[+]");
-	            	for(String s : ss){
-	            		atcs.add(s.trim());
-	            	}
-	            }
+	        	if(dc.getAtcCode() != null && dc.getAtcCode().length() != 0){
+	        		atcs.add(dc.getAtcCode());
+	        	}
+	        	else{
+		            for(DrugGeneric dg : dc.getDrugGenerics()){
+		            	String ss[] = dg.getAtcCode().split(getAtcCode(dg));
+		            	for(String s : ss){
+		            		atcs.add(s.trim());
+		            	}
+		            }
+	        	}
         	}
         }
+    }
+    
+    private String getAtcCode(DrugGeneric dg){
+    	if(dg.getGenericId().toLowerCase().startsWith("unknown"))
+    		return "9999";
+    	else
+    		return dg.getAtcCode() == null ? "" : dg.getAtcCode();
     }
     
     private void addEmptyTherapy(Table table, PatientAttributeValue pav, String date){
