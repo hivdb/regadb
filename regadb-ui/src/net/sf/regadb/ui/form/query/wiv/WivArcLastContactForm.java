@@ -85,15 +85,18 @@ public class WivArcLastContactForm extends WivIntervalQueryForm {
         	
         	List<TestResult> trs = getTestResults(p, StandardObjects.getContactTestType());
         	
-        	Date maxDate = sdate;
+        	Date maxDate = null;
         	for(TestResult tr : trs){
         		Date d = tr.getTestDate();
         		
-        		if(d != null && maxDate.before(d) && d.before(edate)){
+        		if(d != null 
+        				&& !d.before(sdate)
+        				&& !d.after(edate)
+        				&& (maxDate == null || d.after(maxDate))){
         			maxDate = d;
         		}
         	}
-        	if(maxDate != sdate){
+        	if(maxDate != null){
 	            row = new ArrayList<String>();
 	            
 	            row.add(getCentreName());
