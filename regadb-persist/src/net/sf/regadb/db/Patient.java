@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.beanlib.hibernate.HibernateBeanReplicator;
+import net.sf.regadb.db.meta.Equals;
 
 public class Patient implements Serializable {
 
@@ -334,6 +335,17 @@ public class Patient implements Serializable {
     
     public void addDataset(Dataset ds){
         getPatient().getPatientDatasets().add(new PatientDataset(new PatientDatasetId(ds,getPatient())));
+    }
+
+    public void removeDataset(Dataset ds, Transaction t){
+    	for(PatientDataset pds : getPatient().getPatientDatasets()){
+    		if(Equals.isSameDataset(ds, pds.getId().getDataset())){
+    			getPatient().getPatientDatasets().remove(pds);
+    			if(t != null)
+    				t.delete(pds);
+    			break;
+    		}
+    	}
     }
     
     public Patient copy(HibernateBeanReplicator rep) {
