@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.tree.RootMenuNode;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.query.CustomQueryNavigation;
 import net.sf.regadb.ui.tree.items.query.QueryToolNavigation;
@@ -15,12 +16,12 @@ public class TreeContent
 	public AccountNavigationNode accountNode;
     
     
-	public TreeMenuNode setContent(RootItem rootItem)
+	public TreeMenuNode setContent(RootMenuNode rootItem)
 	{
 		return createNavigation(rootItem);
 	}
     
-    public TreeMenuNode createNavigation(RootItem root){
+    public TreeMenuNode createNavigation(RootMenuNode root){
     	
     	patientTreeNode = new PatientTreeNode(root);
     	

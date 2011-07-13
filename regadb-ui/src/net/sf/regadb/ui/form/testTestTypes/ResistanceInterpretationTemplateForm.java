@@ -115,13 +115,13 @@ public class ResistanceInterpretationTemplateForm extends ObjectForm<ResistanceI
         
         boolean notExists = getInteractionState()==InteractionState.Editing?true:t.getResRepTemplate(templateTF.text())==null;
         
-        if(notExists && upload.getFileUpload().getSpoolFileName()!=null)
+        if(notExists && !upload.getFileUpload().getSpoolFileName().equals(""))
         {
         	getObject().setName(templateTF.text());
             update(getObject(), t);
             t.commit();
         }
-        else if(upload.getFileUpload().getSpoolFileName()==null)
+        else if(upload.getFileUpload().getSpoolFileName().equals(""))
         {
             UIUtils.showWarningMessageBox(this, tr("form.resistance.report.template.warning.noFileSpecified"));
         }

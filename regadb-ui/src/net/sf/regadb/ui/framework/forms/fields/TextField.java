@@ -20,7 +20,7 @@ public class TextField extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
 			_fieldEdit = new WLineEdit();
-            ConfirmUtils.addConfirmAction(form, _fieldEdit);
+            setDefaultConfirmAction();
             
             addWidget(_fieldEdit);
 			flagValid();

@@ -23,6 +23,7 @@ import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.qc.QC;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -108,6 +109,8 @@ public class ViralIsolateMainForm extends WContainerWidget
 	                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
 	                }
 	                ((ComboBox)testResultField).sort();
+	                if (ti.defaultValue != null && viralIsolateForm_.isEditable())
+	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
 	            } else {
 	                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
 	            }
@@ -361,7 +364,11 @@ public class ViralIsolateMainForm extends WContainerWidget
             	RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
 
             t.delete(ntseq);
+                        
             viralIsolateForm_.getViralIsolate().getNtSequences().remove(ntseq);
+            
+            if (RegaDBMain.getApp().getSequenceDb() != null)
+            	RegaDBMain.getApp().getSequenceDb().sequenceDeleted(ntseq);
         }
         
         NtSequence ntseqref;
@@ -430,7 +437,7 @@ public class ViralIsolateMainForm extends WContainerWidget
     {
         ViralIsolate vi = viralIsolateForm_.getViralIsolate();
         if(vi.getNtSequences().size() > 0){
-            FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate(), genome);
+            FullAnalysis fullAnalysis = new FullAnalysis(viralIsolateForm_.getViralIsolate(), genome, RegaDBMain.getApp().getSequenceDb());
             AnalysisPool.getInstance().launchAnalysis(fullAnalysis, RegaDBMain.getApp().getLogin());
         }
     }

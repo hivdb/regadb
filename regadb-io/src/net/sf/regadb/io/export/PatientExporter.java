@@ -3,7 +3,13 @@ package net.sf.regadb.io.export;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import net.sf.regadb.db.Patient;
@@ -23,6 +29,8 @@ public class PatientExporter<T> {
     private Login login;
     private String dataset;
     private ExportPatient<T> out;
+    
+    private List<String> errors = new ArrayList<String>();
     
     public PatientExporter(Login login, String dataset, ExportPatient<T> xmlout){
         setLogin(login);
@@ -46,13 +54,42 @@ public class PatientExporter<T> {
             t = getLogin().createTransaction();
 
             Collection<Patient> patients = t.getPatients(t.getDataset(getDataset()),i,maxResults);
-            for(Patient p : patients)
-                getOut().exportPatient(t, p);
+            for(Patient p : patients) {
+            	try { 
+            		getOut().exportPatient(t, p);
+            	} catch (Exception e) {
+            		String error 
+            			= "<p><b>An exception was thrown while exporting patient " + p.getPatientId() + ".</b></p>"
+            			+ "<p>" + stackTraceToString(e) + "</p>";
+            		errors.add(error);
+            	}
+            }
         }
         getOut().stop(t);
         
         t.commit();
     }
+    
+	private String stackTraceToString(Throwable e) {
+		String retValue = null;
+		StringWriter sw = null;
+		PrintWriter pw = null;
+		try {
+			sw = new StringWriter();
+			pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			retValue = sw.toString();
+		} finally {
+			try {
+				if (pw != null)
+					pw.close();
+				if (sw != null)
+					sw.close();
+			} catch (IOException ignore) {
+			}
+		}
+		return retValue;
+	}
 
     protected void setLogin(Login login) {
         this.login = login;
@@ -117,5 +154,9 @@ public class PatientExporter<T> {
         
         PatientExporter<Patient> exportPatient = new PatientExporter<Patient>(login,ds.getValue(),xmlout);
         exportPatient.run();
+    }
+    
+    public List<String> getErrors() {
+    	return errors;
     }
 }

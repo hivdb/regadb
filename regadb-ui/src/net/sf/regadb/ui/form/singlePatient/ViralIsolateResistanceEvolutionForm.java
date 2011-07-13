@@ -98,7 +98,8 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 				Test test = tr.getTest();
 				if(StandardObjects.getGssDescription().equals(test.getTestType().getDescription())){
 					if(tests.add(test.getDescription())) {
-						if (config != null && config.getAlgorithms() != null && !config.getAlgorithms().contains(test.getDescription()))
+						if (config != null && config.getAlgorithms() != null
+								&& !config.containsAlgorithm(test.getDescription(), test.getTestType().getGenome().getOrganismName()))
 							continue;
 						
 						asiCombo_.addItem(new DataComboMessage<Test>(test, test.getDescription()));

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.jdom.Element;
 
-public class Role implements IConfigParser{
+public class Role extends ConfigParser{
 	private String name;
 	private boolean admin;
 	private boolean singlePatientView;
@@ -13,13 +13,9 @@ public class Role implements IConfigParser{
 	private List<AttributeConfig> blockedAttributes = new ArrayList<AttributeConfig>();
 
 	public Role(){
-		setDefaults();
+		super("role");
 	}
 	
-	public String getXmlTag() {
-		return "role";
-	}
-
 	public void parseXml(RegaDBSettings settings, Element e) {
 		name = e.getChildTextTrim("name");
 		admin = "true".equals(e.getChildTextTrim("admin"));

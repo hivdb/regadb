@@ -12,6 +12,7 @@ import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 
@@ -24,12 +25,14 @@ public class AlignmentAnalysis implements IAnalysis
     private Date endTime_;
     private String user_;
     private String organismName_;
+    private SequenceDb sequenceDb_;
     
-    public AlignmentAnalysis(Integer ntseq, String user, String organismName)
+    public AlignmentAnalysis(Integer ntseq, String user, String organismName, SequenceDb sequenceDb)
     {
         seqIi_ = ntseq;
         user_ = user;
         organismName_ = organismName;
+        sequenceDb_ = sequenceDb;
     }
 
     public Date getEndTime() 
@@ -102,6 +105,9 @@ public class AlignmentAnalysis implements IAnalysis
             
             t.update(ntseq);
             t.commit();
+            
+            if (sequenceDb_ != null)
+            	sequenceDb_.sequenceAligned(ntseq);
         }        
         endTime_ = new Date(System.currentTimeMillis());
     }

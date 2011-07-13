@@ -40,6 +40,7 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.wts.BlastAnalysis;
 import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
 import net.sf.regadb.service.wts.ServiceException;
@@ -103,7 +104,7 @@ public class ImportData {
 	 * @param simulate
 	 * @return an empty list in case there were no errors
 	 */
-	public List<WString> doImport(Transaction tr, boolean simulate) {
+	public List<WString> doImport(Transaction tr, SequenceDb sequenceDb, boolean simulate) {
 		Map<String, Test> testsMap = new HashMap<String, Test>();
 		for (Test t : tr.getTests()) {
 			testsMap.put(Rule.getTestName(t), t);
@@ -134,7 +135,7 @@ public class ImportData {
 					for (ViralIsolate vi : p.getViralIsolates()) {
 						Login copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
 						try {
-						NonThreadedFullAnalysis analysis = new NonThreadedFullAnalysis(vi, vi.getGenome());
+						NonThreadedFullAnalysis analysis = new NonThreadedFullAnalysis(vi, vi.getGenome(), sequenceDb);
 						analysis.launch(copiedLogin);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -198,11 +199,13 @@ public class ImportData {
 					p = new Patient();
 					p.setPatientId(value);
 					p.addDataset(this.dataset);
+				} else {
+					return WString.tr("importTool.import.nonUniquePatientId").arg(row);
 				}
 			} else if (type == Rule.Type.AttributeValue) {
 				if (!value.equals("")) {
 					Attribute a = t.getAttributes(r.getTypeName()).get(0);
-					value = handleValueType(r, a.getValueType(), value);
+					value = handleValueType(r, a.getValueType(), value, a.getValidationString());
 					if (value != null)
 						attributes.put(a, value);
 					else 
@@ -452,6 +455,10 @@ public class ImportData {
 	}
 	
 	private String handleValueType(Rule r, ValueType valueType, String value) {
+		return handleValueType(r, valueType, value, null);
+	}
+	
+	private String handleValueType(Rule r, ValueType valueType, String value, String validationString) {
 		if (ValueTypes.getValueType(valueType) == ValueTypes.DATE) {
 			Date d = handleDateValue(r, value);
 			if (d != null)
@@ -474,7 +481,10 @@ public class ImportData {
 		} else if (ValueTypes.getValueType(valueType) == ValueTypes.NOMINAL_VALUE) {
 			return r.getMappingDetails().getMappings().get(value);
 		} else if (ValueTypes.getValueType(valueType) == ValueTypes.STRING) {
-			return value;
+			if(ValueTypes.isValidString(value, validationString))
+				return value;
+			else
+				return null;
 		}
 		return null;
 	}

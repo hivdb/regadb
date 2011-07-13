@@ -87,12 +87,16 @@ public class NtSequenceForm extends WContainerWidget{
 		fillData();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private FormField getTextField(TestType tt){
+		return getTextField(tt, getInteractionState());
+	}
+	
+	@SuppressWarnings("unchecked")
+	private FormField getTextField(TestType tt, InteractionState interactionState){
 		ValueTypes vt = ValueTypes.getValueType(tt.getValueType());
 		FormField f = FormField.getTextField(
 				vt,
-				getInteractionState(),
+				interactionState,
 				getViralIsolateForm());
 		
 		if(vt == ValueTypes.NOMINAL_VALUE){
@@ -128,7 +132,7 @@ public class NtSequenceForm extends WContainerWidget{
 		for(Test test : tests){
 			Label label = null;
 			FormField input = null;
-			if(isEditable()){
+			if(isEditable() && isEditable(test)){
 				label = new Label(test.getDescription());
 				input = getTextField(test.getTestType());
 				table.addLineToTable(label,input);
@@ -222,6 +226,10 @@ public class NtSequenceForm extends WContainerWidget{
         }
 	}
 	
+	private boolean isEditable(Test test){
+		return !test.getDescription().equals(StandardObjects.getContaminationClusterFactorTest().getDescription());
+	}
+	
 	void uninit(){
 		getViralIsolateForm().removeFormField(labelF);
 		getViralIsolateForm().removeFormField(seqDateF);
@@ -262,9 +270,9 @@ public class NtSequenceForm extends WContainerWidget{
 					if(Equals.isSameTest(trr.getTest(),tests.get(i))){
 						FormField input;
 						
-						if(!isEditable()){
+						if(!isEditable() || !isEditable(trr.getTest())){
 							Label label = new Label(tests.get(i).getDescription());
-							input = getTextField(tests.get(i).getTestType());
+							input = getTextField(tests.get(i).getTestType(),InteractionState.Viewing);
 							testInputs.set(i, input);
 							table.addLineToTable(testRow, label, input);
 						}
@@ -295,51 +303,58 @@ public class NtSequenceForm extends WContainerWidget{
 			if(t == null)
 				continue;
 			
-			FormField f = testInputs.get(i);
-			ValueTypes vt = ValueTypes.getValueType(t.getTestType().getValueType());
-			
-			if(vt == ValueTypes.NOMINAL_VALUE){
-				TestNominalValue value = (TestNominalValue)((ComboBox)f).currentValue();
-				if(value == null){
-					if(testResults.get(i) != null)
-						removedTestResult.add(testResults.get(i));
+			if(isEditable(t)){
+				FormField f = testInputs.get(i);
+				ValueTypes vt = ValueTypes.getValueType(t.getTestType().getValueType());
+				
+				if(vt == ValueTypes.NOMINAL_VALUE){
+					TestNominalValue value = (TestNominalValue)((ComboBox)f).currentValue();
+					if(value == null){
+						if(testResults.get(i) != null)
+							removedTestResult.add(testResults.get(i));
+					}
+					else{
+						TestResult tr = testResults.get(i);
+						if(tr == null){
+							tr = new TestResult();
+							tr.setNtSequence(ntSequence);
+							ntSequence.getTestResults().add(tr);
+							tr.setTest(t);
+						}
+						tr.setTestNominalValue(value);
+					}
 				}
 				else{
-					TestResult tr = testResults.get(i);
-					if(tr == null){
-						tr = new TestResult();
-						tr.setNtSequence(ntSequence);
-						ntSequence.getTestResults().add(tr);
-						tr.setTest(t);
+					String value = null;
+					if(vt == ValueTypes.DATE){
+						value = ((DateField)f).getDate() == null ? null : ((DateField)f).getDate().getTime() +"";
 					}
-					tr.setTestNominalValue(value);
+					else{
+						value = f.getFormText();
+						if("".equals(value))
+							value = null;
+					}
+					
+					if(value == null){
+						if(testResults.get(i) != null)
+							removedTestResult.add(testResults.get(i));
+					}
+					else{
+						TestResult tr = testResults.get(i);
+						if(tr == null){
+							tr = new TestResult();
+							tr.setNtSequence(ntSequence);
+							ntSequence.getTestResults().add(tr);
+							tr.setTest(t);
+						}
+						tr.setValue(value);
+					}
 				}
 			}
-			else{
-				String value = null;
-				if(vt == ValueTypes.DATE){
-					value = ((DateField)f).getDate() == null ? null : ((DateField)f).getDate().getTime() +"";
-				}
-				else{
-					value = f.getFormText();
-					if("".equals(value))
-						value = null;
-				}
-				
-				if(value == null){
-					if(testResults.get(i) != null)
-						removedTestResult.add(testResults.get(i));
-				}
-				else{
-					TestResult tr = testResults.get(i);
-					if(tr == null){
-						tr = new TestResult();
-						tr.setNtSequence(ntSequence);
-						ntSequence.getTestResults().add(tr);
-						tr.setTest(t);
-					}
-					tr.setValue(value);
-				}
+			else{ // not editable, calculated automatically
+				TestResult tr = testResults.get(i);
+				if(tr != null)
+					removedTestResult.add(tr);
 			}
 		}
 	}

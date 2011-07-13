@@ -21,6 +21,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
 public class ViralIsolateForm extends ObjectForm<ViralIsolate>
@@ -30,6 +31,7 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
     private ViralIsolateReportForm reportForm_;
+    private ViralIsolateSimilarityForm similarityForm;
 
     public ViralIsolateForm(WString formName, InteractionState interactionState, ObjectTreeNode<ViralIsolate> node, String sampleId, Date sampleDate){
         this(formName,interactionState,node,null);
@@ -76,6 +78,13 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
 			}
 			reportForm_ = new ViralIsolateReportForm(this);
 			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+			
+			if(getObject() != null 
+					&& getObject().getGenome() != null 
+					&& RegaDBSettings.getInstance().getSequenceDatabaseConfig().isConfigured()) {
+				similarityForm = new ViralIsolateSimilarityForm(this);
+				tabs.addTab(tr("form.viralIsolate.editView.tab.similarity"), similarityForm);
+			}
         }
         
         fillData();
@@ -178,9 +187,13 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
         
         for(TestResult tr : getObject().getTestResults())
         	p.getTestResults().remove(tr);
-        for(NtSequence nt : getObject().getNtSequences())
+        for(NtSequence nt : getObject().getNtSequences()) {
         	for(TestResult tr : nt.getTestResults())
         		p.getTestResults().remove(tr);
+        	
+        	if (RegaDBMain.getApp().getSequenceDb() != null) 
+        		RegaDBMain.getApp().getSequenceDb().sequenceDeleted(nt);
+        }
         
         p.getViralIsolates().remove(getObject());
         

@@ -168,9 +168,9 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
         selected.getLabel().getText().changeArg(0, value);
         
         if(item != null){
-        	getSelectedItemNavigationNode().expand();
-        	getSelectedItemNavigationNode().enable();
-        	getViewNavigationNode().selectNode();
+			getSelectedItemNavigationNode().enable();
+			getSelectedItemNavigationNode().expand();
+			getSelectedItemNavigationNode().selectNode();
         }
         else{
         	getSelectedItemNavigationNode().collapse();

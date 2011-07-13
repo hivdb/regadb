@@ -22,7 +22,7 @@ public class LimitedNumberField extends FormField
         if(state == InteractionState.Adding || state == InteractionState.Editing)
         {
             fieldEdit_ = new WLineEdit();
-            ConfirmUtils.addConfirmAction(form, fieldEdit_);
+            setDefaultConfirmAction();
 
             limiterField_ = new MyComboBox();
             limiterField_.addItem("<");

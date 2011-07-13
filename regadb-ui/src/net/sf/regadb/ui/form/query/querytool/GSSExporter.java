@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.form.query.querytool;
 
-import com.pharmadm.custom.rega.queryeditor.FieldExporter;
-
 import net.sf.regadb.db.TestResult;
+
+import com.pharmadm.custom.rega.queryeditor.FieldExporter;
 
 public class GSSExporter extends FieldExporter {
 	private static final String[] names = new String[]{ "drug","level","description","sir","gss","mutations","remarks" };

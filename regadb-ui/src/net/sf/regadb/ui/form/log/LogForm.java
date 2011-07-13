@@ -86,7 +86,7 @@ public class LogForm extends ObjectForm<File> {
             
             if(!getObject().isDirectory()){
 	            fileDownloadA.setText(getObject().getName() +" ["+ new Date(System.currentTimeMillis()).toString() +"]");
-	            fileDownloadA.setRef(new WFileResource("text/txt", getObject().getAbsolutePath()).generateUrl());
+	            fileDownloadA.setRef(new WFileResource("text/txt", getObject().getAbsolutePath(), null).generateUrl());
             }
             try{
                 fileContentTA.setText(parseContent(getObject()));

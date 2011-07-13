@@ -17,19 +17,29 @@ import org.jdom.output.XMLOutputter;
  * the configuration directory to be used to get the settings from.
  */
 public class RegaDBSettings {
-	private HashMap<String, IConfigParser> configs = new HashMap<String, IConfigParser>();
+	private HashMap<String, ConfigParser> configs = new HashMap<String, ConfigParser>();
 
     private static RegaDBSettings instance_ = null;
     
+    private HibernateConfig hibernateCfg = new HibernateConfig();
+    private ProxyConfig proxyCfg = new ProxyConfig();
+    private AccessPolicyConfig apCfg = new AccessPolicyConfig();
+    private InstituteConfig instituteCfg = new InstituteConfig();
+    private CronConfig cronCfg = new CronConfig();
+    private SequenceDatabaseConfig seqdbCfg = new SequenceDatabaseConfig();
+    private ContaminationConfig contCfg = new ContaminationConfig();
+    
     RegaDBSettings() {
-    	addConfig(new HibernateConfig());
-    	addConfig(new ProxyConfig());
-    	addConfig(new AccessPolicyConfig());
-    	addConfig(new InstituteConfig());
-    	addConfig(new CronConfig());
+    	addConfig(hibernateCfg);
+    	addConfig(proxyCfg);
+    	addConfig(apCfg);
+    	addConfig(instituteCfg);
+    	addConfig(cronCfg);
+    	addConfig(seqdbCfg);
+    	addConfig(contCfg);
     }
     
-    private void addConfig(IConfigParser cfg){
+    private void addConfig(ConfigParser cfg){
     	configs.put(cfg.getXmlTag(),cfg);
     }
     
@@ -71,6 +81,9 @@ public class RegaDBSettings {
     }
     
     private void parseConfFile(File confFile) {
+    	for(ConfigParser cp : configs.values())
+    		cp.setDefaults();
+    	
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
         try {
@@ -85,9 +98,10 @@ public class RegaDBSettings {
         for(Object o : root.getChildren()){
         	Element e = (Element)o;
         	
-        	IConfigParser cfg = configs.get(e.getName());
+        	ConfigParser cfg = configs.get(e.getName());
         	if(cfg != null){
         		cfg.parseXml(this, e);
+        		cfg.setConfigured(true);
         	}
         	else{
         		System.err.println("Config element not supported: "+ e.getName());
@@ -97,7 +111,7 @@ public class RegaDBSettings {
     
     public void write(File confFile) {
         Element root = new Element("regadb-settings");
-        for(IConfigParser cfg : configs.values())
+        for(ConfigParser cfg : configs.values())
         	root.addContent(cfg.toXml());
         writeXMLFile(root, confFile.getAbsolutePath());
     }
@@ -129,21 +143,28 @@ public class RegaDBSettings {
                 + "skeleton-settings.xml"));
     }
 
+    public SequenceDatabaseConfig getSequenceDatabaseConfig(){
+    	return seqdbCfg;
+    }
+    
+    public ContaminationConfig getContaminationConfig(){
+    	return contCfg;
+    }
     
     public HibernateConfig getHibernateConfig(){
-    	return (HibernateConfig)configs.get("hibernate");
+    	return hibernateCfg;
     }
     public InstituteConfig getInstituteConfig(){
-    	return (InstituteConfig)configs.get("institute");
+    	return instituteCfg;
     }
     public ProxyConfig getProxyConfig(){
-    	return (ProxyConfig)configs.get("proxies");
+    	return proxyCfg;
     }
     public AccessPolicyConfig getAccessPolicyConfig(){
-    	return (AccessPolicyConfig)configs.get("access-policies");
+    	return apCfg;
     }
     public CronConfig getCronConfig(){
-    	return (CronConfig)configs.get("cron");
+    	return cronCfg;
     }
     
     public String getDateFormat(){

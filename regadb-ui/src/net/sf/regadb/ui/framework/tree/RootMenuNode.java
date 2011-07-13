@@ -5,8 +5,8 @@ import eu.webtoolkit.jwt.WTreeNode;
 
 public class RootMenuNode extends TreeMenuNode {
 	
-	public RootMenuNode(String intlText, WTreeNode root) {
-		super(tr(intlText), root);
+	public RootMenuNode() {
+		super(tr("menu.root.rootItem"), null);
 	}
 	
 	@Override
@@ -16,5 +16,10 @@ public class RootMenuNode extends TreeMenuNode {
 	
 	public void doAction(){
 		
+	}
+
+	@Override
+	public boolean matchesInternalPath(String[] path, int depth) {
+		return true;
 	}
 }

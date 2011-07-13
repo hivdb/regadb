@@ -6,6 +6,11 @@ public class ServiceException extends Exception {
     private String url;
 
     public ServiceException(String service, String url){
+    	this(service, url, null);
+    }
+    
+    public ServiceException(String service, String url, String msg){
+    	super(msg);
         setService(service);
         setUrl(url);
     }
@@ -32,5 +37,12 @@ public class ServiceException extends Exception {
             super(service, url);
         }
 
+    }
+    
+    public static class InvalidResultException extends ServiceException{
+    	
+    	public InvalidResultException(String service, String url, String msg){
+    		super(service, url, msg);
+    	}
     }
 }

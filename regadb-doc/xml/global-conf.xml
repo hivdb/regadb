@@ -40,6 +40,9 @@
     <!--  Automatically split trugene sequences with > 100 n symbols (Optional)-->
     <trugene-fix>true</trugene-fix>
     
+    <!-- default selected dataset when adding a patient, optional -->
+    <default-dataset>dataset name</default-dataset>
+    
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
     -->
@@ -116,6 +119,8 @@
         <tests>
           <test description="Authors" />
           <test description="Article" />
+          <!-- a nominal value test may define a default value -->
+          <test description="Sample Source" defaultValue="Plasma"/>
         </tests>
         <!--  This element is optional -->
         <resistance>
@@ -207,6 +212,49 @@
       <password>pass1</password>
     </proxy>
   </proxies>
+
+  <!--  Contamination tool configuration
+	Optional: Only required when using the contamination tool.
+	Note: This functionality requires a sequence-database.
+  -->  
+  <contamination>
+  	<!-- cluster factor threshold -->
+  	<threshold>0.5</threshold>
+        
+        <!-- a positive value for the boolean sendmail option will make the 
+             contamination tool send an e-mail if it's value is true each 
+             time a contamination was detected (an e-mail configuration is 
+             required to make this work).
+             
+             Optional: by default no mail will be sent
+        -->
+        <send-mail>true</send-mail>
+
+        <!-- list of log-normal distribution parameters per region 
+	     (a region is a range within an ORF)
+	     Note: log-normal distributions can be approximated,
+	           a howto can be found in the RegaDB installation manual.
+          -->
+        <distributions>
+          <distribution organism="HIV-1" orf="pol" start="169" end="1786"
+                        Di_mu="-3.896448912" Di_sigma="0.747342409" 
+                        Do_mu="-2.6001244697" Do_sigma="0.3277675448"/>
+        </distributions>
+  </contamination>
+  
+  <!-- Sequence database configuration 
+       A sequence database is a directory containing all RegaDB sequences 
+       in an aligned format.
+       When this configuration is completed, logging in to RegaDB will fill the
+       sequence database directory with all sequences currently stored in 
+       RegaDB.
+    -->
+  <sequence-database>
+  	<!-- Sequence database path -->
+	<path>/etc/rega_institute/regadb/sequencedb</path>
+	<!-- Similarity treshold (minimum) -->
+	<similarity-threshold>0.975</similarity-threshold>
+  </sequence-database>
   
   <!-- a list of cron jobs to be run at specified times/intervals
        this element is optional

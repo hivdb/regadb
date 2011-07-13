@@ -151,7 +151,7 @@ public class QueryDefinitionRunForm extends ObjectForm<QueryDefinitionRun>
             
             if(getObject().getStatus() != QueryDefinitionRunStatus.Running.getValue())
             {
-                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + getObject().getResult());
+                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + getObject().getResult(), null);
                 res.suggestFileName("result.csv");
             	resultLink = new WAnchor(res, getObject().getResult(), queryDefinitionRunGroupTable.getElementAt(row, 1));
                 resultLink.setStyleClass("link");

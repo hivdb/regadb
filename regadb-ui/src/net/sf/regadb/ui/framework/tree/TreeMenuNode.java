@@ -191,12 +191,9 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	public void openOnlyOneMenuPath()
 	{
-		if(getParent()==null)
-		{
-		return;	
-		}
-		
-		if(getParentNode() != null){
+		if(getParentNode()==null)
+			return;	
+		else{
 			for(WTreeNode node : getParentNode().getChildNodes())
 			{
 				if(node.isExpanded() && node!=this)
@@ -204,7 +201,17 @@ public abstract class TreeMenuNode extends WTreeNode
 					node.collapse();
 				}
 			}
+			
+			getParentNode().openOnlyOneMenuPath();
 		}
+	}
+	
+	public void expandFromRoot(){
+		if(getParentNode() != null)
+			getParentNode().expandFromRoot();
+		
+		if(!isExpanded() && getChildNodes().size() > 0)
+			expand();
 	}
 
 	public String getMyInternalPath(){
@@ -213,6 +220,25 @@ public abstract class TreeMenuNode extends WTreeNode
 	public String getInternalPath() {
 		TreeMenuNode node = (TreeMenuNode)this.getParentNode();
 		return node==null?"":node.getInternalPath() + "/" + getMyInternalPath();
+	}
+	
+	public boolean matchesInternalPath(String[] path, int depth){
+		return path[depth].equals(getMyInternalPath());
+	}
+
+	public boolean gotoInternalPath(String[] path, int depth){
+		if(matchesInternalPath(path, depth)){
+			doAction();
+			
+			if(depth < path.length-1){
+				for(TreeMenuNode child : getChildren()){
+					if(child.gotoInternalPath(path, depth+1)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	public abstract void doAction();

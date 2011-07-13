@@ -17,6 +17,8 @@ import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.sequencedb.SequenceDb;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
 
@@ -24,6 +26,7 @@ import com.pharmadm.custom.rega.queryeditor.catalog.HibernateCatalogBuilder;
 import com.pharmadm.custom.rega.queryeditor.port.DatabaseManager;
 import com.pharmadm.custom.rega.queryeditor.port.hibernate.HibernateQuery;
 
+import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -43,32 +46,25 @@ public class RegaDBApplication extends WApplication
 	public RegaDBApplication(WEnvironment env, ServletContext servletContext)
 	{
 		super(env);
-		System.err.println("new regadb app");
 		
+		setTitle("RegaDB");
+		System.err.println("new regadb app");
 		servletContext_ = servletContext;
 		window_ = new RegaDBWindow();
 		window_.init();
 		getRoot().addWidget(window_);
 		
-//		internalPathChanged().addListener(this.getRoot(), new Signal1.Listener<String>(){
-//			public void trigger(String ip) {
+		internalPathChanged().addListener(this.getRoot(), new Signal1.Listener<String>(){
+			public void trigger(String ip) {
 //                if (!getNavigation().getSelectedNode().canLeaveNode())
 //                	return;
-//				
-//				String[] paths = ip.split("/");
-//				
-//				NavigationNode currentNode = navigation.getRootNode();
-//				for (String path : paths) {
-//					if (!path.equals(""))
-//						for (WTreeNode tn : currentNode.getChildNodes()) {
-//							if (((NavigationNode) tn).selectNode(path)) {
-//								currentNode = (NavigationNode) tn;
-//								break;
-//							}
-//						}
-//				}
-//			}
-//		});
+				
+				String[] paths = ip.split("/");
+				
+				TreeMenuNode currentNode = window_.getTree_().getRootTreeNode();
+				currentNode.gotoInternalPath(paths, 0);
+			}
+		});
 	}
 
 	public RegaDBWindow getWindow()
@@ -205,6 +201,11 @@ public class RegaDBApplication extends WApplication
 		new WText(new WString(sw.toString()), TextFormat.PlainText, wc);
 		quit();
 		throw new RuntimeException("Unrecoverable error", e);
+	}
+	  
+	public SequenceDb getSequenceDb() {
+		return RegaDBSettings.getInstance().getSequenceDatabaseConfig().isConfigured() ?
+			SequenceDb.getInstance(RegaDBSettings.getInstance().getSequenceDatabaseConfig().getPath()) : null;
 	}
 	
 	@Override

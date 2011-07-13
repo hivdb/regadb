@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.jdom.Comment;
 import org.jdom.Element;
 
-public class InstituteConfig implements IConfigParser {
+public class InstituteConfig extends ConfigParser {
 	public final static String WTS_URL = "$WTS_URL";
 	
 	private Filter organismFilter = null;
@@ -25,6 +25,8 @@ public class InstituteConfig implements IConfigParser {
 	private boolean sampleDateMandatory = true;
 	private String logo;
 	private boolean trugeneFix = false;
+	
+	private String defaultDataset = null;
 
 	private WivConfig wivConfig;
 	
@@ -32,12 +34,8 @@ public class InstituteConfig implements IConfigParser {
 
 	private HashMap<String, FormConfig> forms = new HashMap<String, FormConfig>();
 	
-	public String getXmlTag() {
-		return "institute";
-	}
-	
 	public InstituteConfig(){
-		setDefaults();
+		super("institute");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
@@ -102,6 +100,10 @@ public class InstituteConfig implements IConfigParser {
 		ee = e.getChild("sample-date-mandatory");
 		if(ee != null)
 			sampleDateMandatory = Boolean.parseBoolean(ee.getText());
+		
+		ee = e.getChild("default-dataset");
+		if(ee != null)
+			setDefaultDataset(ee.getTextTrim());
 			
 		ee = e.getChild("forms");
 		if(ee != null){
@@ -201,6 +203,12 @@ public class InstituteConfig implements IConfigParser {
 			r.addContent(new Comment("Only show test types, tests, drugs linked with this organism, i.e. 'HIV*' will only show HIV-1, HIV-2A/B, ... items."));
 			e = new Element("organism-filter");
 			e.setText(organismFilter.getConfigString());
+			r.addContent(e);
+		}
+		
+		if(defaultDataset != null){
+			e = new Element("default-dataset");
+			e.setText(getDefaultDataset());
 			r.addContent(e);
 		}
 		
@@ -351,5 +359,13 @@ public class InstituteConfig implements IConfigParser {
 	
 	public boolean isTrugeneFix() {
 		return trugeneFix;
+	}
+	
+	public String getDefaultDataset(){
+		return defaultDataset;
+	}
+	
+	public void setDefaultDataset(String dataset){
+		this.defaultDataset = dataset;
 	}
 }

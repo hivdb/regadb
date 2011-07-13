@@ -1,5 +1,6 @@
 package net.sf.regadb.ui.framework.forms.fields;
 
+import net.sf.regadb.ui.framework.forms.IConfirmForm;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import eu.webtoolkit.jwt.Signal;
@@ -25,7 +26,14 @@ public class CheckBox extends WContainerWidget implements IFormField
         
         if(state!=InteractionState.Viewing)
         {
-            ConfirmUtils.addConfirmAction(form, checkBox_);
+            if(form instanceof IConfirmForm){
+            	setConfirmAction(new Signal.Listener() {
+					@Override
+					public void trigger() {
+						((IConfirmForm)CheckBox.this.form).confirmAction();
+					}
+				});
+            }
         }
         
         if(form!=null)

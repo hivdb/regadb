@@ -48,7 +48,11 @@ public class PatientChartForm extends WGroupBox implements IForm
 		List<ViralLoadSeries> vlSeries = new LinkedList<ViralLoadSeries>();
 		for(Genome genome : StandardObjects.getGenomes())
 			vlSeries.add(new ViralLoadSeries(genome, Axis.Y2Axis));
-		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.YAxis);
+		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.YAxis){
+			public String getName(){
+				return "CD4";
+			}
+		};
 		
 		for(ViralLoadSeries vl : vlSeries)
 			model.getSeries().add(vl);

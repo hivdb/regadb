@@ -26,7 +26,7 @@ public class ViralLoadSeries extends LimitedValueSeries {
 
 	@Override
 	public String getName(){
-		return "Viral Load ("+ getGenome().getOrganismName() +") (log10)";
+		return "Viral Load ("+ getGenome().getOrganismName() +")";
 	}
 
 	@Override

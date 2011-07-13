@@ -26,6 +26,7 @@ import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.meta.WtsMetaClient;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WGroupBox;
@@ -316,7 +317,7 @@ public class TestForm extends ObjectForm<Test>
 					return true;
 				}
 				else{
-		            WtsMetaClient wtsMC = new WtsMetaClient(urlTF.text());
+		            WtsMetaClient wtsMC = new WtsMetaClient(RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(urlTF.text()));
 		            
 		            byte[] array = getServices(wtsMC);
 		            
