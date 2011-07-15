@@ -12,6 +12,7 @@ import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeForm;
 import net.sf.regadb.ui.datatable.attributeSettings.SelectAttributeGroupForm;
 import net.sf.regadb.ui.datatable.datasetSettings.SelectDatasetAccessUserForm;
@@ -48,6 +49,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.items.events.SelectEventForm;
+import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WString;
 
@@ -79,6 +81,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			public String getArgument(Attribute type) {
 				return type.getName();
 			}
+
+			@Override
+			protected String getObjectId(Attribute object) {
+				return object.getAttributeIi() +"";
+			}
+
+			@Override
+			protected Attribute getObjectById(Transaction t, String id) {
+				return t.getAttribute(Integer.parseInt(id));
+			}
 		};
 		
 		new ObjectTreeNode<AttributeGroup>("attributeSettings.attributeGroup", attributeSettings){
@@ -96,6 +108,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			@Override
 			public String getArgument(AttributeGroup type) {
 				return type.getGroupName();
+			}
+
+			@Override
+			protected String getObjectId(AttributeGroup object) {
+				return object.getAttributeGroupIi() +"";
+			}
+
+			@Override
+			protected AttributeGroup getObjectById(Transaction t, String id) {
+				return t.getAttributeGroup(Integer.parseInt(id));
 			}
 			
 		};
@@ -117,6 +139,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			public String getArgument(TestType type) {
 				return type.getDescription();
 			}
+
+			@Override
+			protected String getObjectId(TestType object) {
+				return object.getTestTypeIi() +"";
+			}
+
+			@Override
+			protected TestType getObjectById(Transaction t, String id) {
+				return t.getTestType(Integer.parseInt(id));
+			}
 		};
 		
 		new ObjectTreeNode<Test>("testSettings.test", testSettings){
@@ -133,6 +165,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			@Override
 			public String getArgument(Test type) {
 				return type.getDescription();
+			}
+
+			@Override
+			protected String getObjectId(Test object) {
+				return object.getTestIi() +"";
+			}
+
+			@Override
+			protected Test getObjectById(Transaction t, String id) {
+				return t.getTest(Integer.parseInt(id));
 			}
 		};
 		
@@ -152,6 +194,17 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			public String getArgument(ResistanceInterpretationTemplate type) {
 				return type.getName();
 			}
+
+			@Override
+			protected String getObjectId(ResistanceInterpretationTemplate object) {
+				return object.getTemplateIi() +"";
+			}
+
+			@Override
+			protected ResistanceInterpretationTemplate getObjectById(
+					Transaction t, String id) {
+				return t.getResistanceInterpretationTemplate(Integer.parseInt(id));
+			}
 		};
 		
 		new ObjectTreeNode<Event>("event", this){
@@ -168,6 +221,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			@Override
 			public String getArgument(Event type) {
 				return type.getName();
+			}
+
+			@Override
+			protected String getObjectId(Event object) {
+				return object.getEventIi() +"";
+			}
+
+			@Override
+			protected Event getObjectById(Transaction t, String id) {
+				return t.getEvent(Integer.parseInt(id));
 			}
 		};
 		
@@ -188,6 +251,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			public String getArgument(Dataset type) {
 				return type.getDescription();
 			}
+
+			@Override
+			protected String getObjectId(Dataset object) {
+				return object.getDescription();
+			}
+
+			@Override
+			protected Dataset getObjectById(Transaction t, String id) {
+				return t.getDataset(id);
+			}
 		};
 		
 		new ObjectTreeNode<SettingsUser>("dataset.access", datasetSettings, EnumSet.of(InteractionState.Viewing, InteractionState.Editing)){
@@ -207,6 +280,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			public String getArgument(SettingsUser type) {
 				return type.getUid();
 			}
+
+			@Override
+			protected String getObjectId(SettingsUser object) {
+				return object.getUid();
+			}
+
+			@Override
+			protected SettingsUser getObjectById(Transaction t, String id) {
+				return t.getSettingsUser(id);
+			}
 		};
         
         settingsUser = new ObjectTreeNode<SettingsUser>("administrator.user", this){
@@ -224,6 +307,16 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			@Override
 			public String getArgument(SettingsUser type) {
 				return type.getUid() == null ? type.getFirstName() : type.getUid();
+			}
+
+			@Override
+			protected String getObjectId(SettingsUser object) {
+				return object.getUid();
+			}
+
+			@Override
+			protected SettingsUser getObjectById(Transaction t, String id) {
+				return t.getSettingsUser(id);
 			}
         	
         };
@@ -291,6 +384,19 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			@Override
 			public String getArgument(ImportDefinition type) {
 				return type.getDescription();
+			}
+
+			@Override
+			protected String getObjectId(ImportDefinition object) {
+				return object.getXmlFile().getName();
+			}
+
+			@Override
+			protected ImportDefinition getObjectById(Transaction t, String id) {
+				File f = new File(
+						RegaDBSettings.getInstance().getInstituteConfig().getImportToolDir().getAbsolutePath()
+						+ File.separatorChar + id);
+				return ImportDefinition.getImportDefinition(f);
 			}
         };
         
@@ -376,6 +482,17 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			@Override
 			public String getArgument(File type) {
 				return type.getName();
+			}
+
+			@Override
+			protected String getObjectId(File object) {
+				return object.getName();
+			}
+
+			@Override
+			protected File getObjectById(Transaction t, String id) {
+				return new File(RegaDBSettings.getInstance().getInstituteConfig().getLogDir().getAbsolutePath()
+						+ File.separatorChar + id);
 			}
         	
         };

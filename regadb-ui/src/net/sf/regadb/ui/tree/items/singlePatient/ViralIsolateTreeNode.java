@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.datatable.viralisolate.SelectViralIsolateForm;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateCumulatedResistance;
@@ -96,5 +97,15 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 	@Override
 	protected IForm createSelectionForm() {
 		return new SelectViralIsolateForm(this);
+	}
+
+	@Override
+	protected String getObjectId(ViralIsolate object) {
+		return object.getViralIsolateIi() +"";
+	}
+
+	@Override
+	protected ViralIsolate getObjectById(Transaction t, String id) {
+		return t.getViralIsolate(Integer.parseInt(id));
 	}
 }

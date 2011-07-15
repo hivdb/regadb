@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.tree.items.query;
 
 import net.sf.regadb.db.QueryDefinition;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.query.SelectQueryToolQueryForm;
 import net.sf.regadb.ui.form.query.querytool.QueryToolForm;
 import net.sf.regadb.ui.framework.forms.IForm;
@@ -31,5 +32,15 @@ public class QueryToolNavigation extends ObjectTreeNode<QueryDefinition> {
 	protected ObjectForm<QueryDefinition> createForm(WString name,
 			InteractionState interactionState, QueryDefinition selectedObject) {
 		return new QueryToolForm(name, interactionState, QueryToolNavigation.this, selectedObject);
+	}
+
+	@Override
+	protected String getObjectId(QueryDefinition object) {
+		return object.getQueryDefinitionIi() +"";
+	}
+
+	@Override
+	protected QueryDefinition getObjectById(Transaction t, String id) {
+		return t.getQueryDefinition(Integer.parseInt(id));
 	}
 }

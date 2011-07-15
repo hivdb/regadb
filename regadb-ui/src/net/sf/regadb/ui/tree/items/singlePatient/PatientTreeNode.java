@@ -2,6 +2,7 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
@@ -80,6 +81,14 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		return contact;
 	}
 
+	protected Patient getObjectById(Transaction t, String id){
+		return t.getPatient(Integer.parseInt(id));
+	}
+	
+	protected String getObjectId(Patient object){
+		return object.getPatientIi() +"";
+	}
+	
     @Override
     public String getArgument(Patient type) 
     {

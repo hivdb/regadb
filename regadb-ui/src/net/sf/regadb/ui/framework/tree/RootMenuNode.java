@@ -1,7 +1,6 @@
 package net.sf.regadb.ui.framework.tree;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
-import eu.webtoolkit.jwt.WTreeNode;
 
 public class RootMenuNode extends TreeMenuNode {
 	

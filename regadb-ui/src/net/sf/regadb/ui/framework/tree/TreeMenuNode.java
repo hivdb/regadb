@@ -75,7 +75,10 @@ public abstract class TreeMenuNode extends WTreeNode
 			
 			doAction();
 			
-			RegaDBMain.getApp().setInternalPath(getInternalPath());
+			if(!RegaDBMain.getApp().getInternalPath().equals(getInternalPath())){
+				RegaDBMain.getApp().setInternalPath(getInternalPath());
+				RegaDBMain.getApp().setTitle(getInternalPath());
+			}
 		}
 	}
 
@@ -215,7 +218,10 @@ public abstract class TreeMenuNode extends WTreeNode
 	}
 
 	public String getMyInternalPath(){
-		return getLabel().getText().getValue().replace(' ', '_').toLowerCase();
+		return getLabel().getText().getValue()
+			.replace(' ', '_')
+			.replace('/', '-')
+			.toLowerCase();
 	}
 	public String getInternalPath() {
 		TreeMenuNode node = (TreeMenuNode)this.getParentNode();
@@ -223,18 +229,19 @@ public abstract class TreeMenuNode extends WTreeNode
 	}
 	
 	public boolean matchesInternalPath(String[] path, int depth){
-		return path[depth].equals(getMyInternalPath());
+		if(depth < path.length)
+			return path[depth].equals(getMyInternalPath());
+		else
+			return false;
 	}
 
 	public boolean gotoInternalPath(String[] path, int depth){
 		if(matchesInternalPath(path, depth)){
 			doAction();
 			
-			if(depth < path.length-1){
-				for(TreeMenuNode child : getChildren()){
-					if(child.gotoInternalPath(path, depth+1)){
-						return true;
-					}
+			for(TreeMenuNode child : getChildren()){
+				if(child.gotoInternalPath(path, depth+1)){
+					return true;
 				}
 			}
 		}

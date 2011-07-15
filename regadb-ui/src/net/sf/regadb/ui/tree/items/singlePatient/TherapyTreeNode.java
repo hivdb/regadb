@@ -3,6 +3,7 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.therapy.SelectTherapyForm;
 import net.sf.regadb.ui.form.singlePatient.TherapyForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -78,5 +79,15 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 	@Override
 	protected IForm createSelectionForm() {
 		return new SelectTherapyForm(this);
+	}
+
+	@Override
+	protected String getObjectId(Therapy object) {
+		return object.getTherapyIi() +"";
+	}
+
+	@Override
+	protected Therapy getObjectById(Transaction t, String id) {
+		return t.getTherapy(Integer.parseInt(id));
 	}
 }
