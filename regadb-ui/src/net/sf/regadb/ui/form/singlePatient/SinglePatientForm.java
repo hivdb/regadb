@@ -74,7 +74,7 @@ public class SinglePatientForm extends ObjectForm<Patient>
         //general group
         generalGroup_ = new WGroupBox(tr("form.patient.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
+        sourceDatasetL = new Label(tr("form.patient.sourceDataset"));
         sourceDatasetCB = new SelectionBox<Dataset>(getInteractionState(), this);
         sourceDatasetCB.setMandatory(true);
         sourceDatasetCB.setSelectionMode(SelectionMode.ExtendedSelection);
