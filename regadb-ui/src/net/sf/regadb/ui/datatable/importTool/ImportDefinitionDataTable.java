@@ -1,8 +1,6 @@
 package net.sf.regadb.ui.datatable.importTool;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,9 +12,6 @@ import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.util.settings.RegaDBSettings;
-
-import com.thoughtworks.xstream.XStream;
-
 import eu.webtoolkit.jwt.WString;
 
 public class ImportDefinitionDataTable extends DefaultDataTable<ImportDefinition> {
@@ -47,20 +42,10 @@ public class ImportDefinitionDataTable extends DefaultDataTable<ImportDefinition
 		if (files.size() < untill)
 			untill = files.size();
 		
-		XStream xstream = new XStream();
-		
 		List<File> subSection = files.subList(startIndex, untill);
 		List<ImportDefinition> definitions = new ArrayList<ImportDefinition>();
 		for (File file : subSection) {
-			ImportDefinition id = null;
-			try {
-				id = (ImportDefinition)xstream.fromXML(new FileReader(file));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			id.setXmlFile(file);
-			id.setDescription(id.getXmlFile().getName().substring(0, id.getXmlFile().getName().indexOf(".")));
-			definitions.add(id);
+			definitions.add(ImportDefinition.getImportDefinition(file));
 		}
 		
 		return definitions;
