@@ -77,7 +77,6 @@ public abstract class TreeMenuNode extends WTreeNode
 			
 			if(!RegaDBMain.getApp().getInternalPath().equals(getInternalPath())){
 				RegaDBMain.getApp().setInternalPath(getInternalPath());
-				RegaDBMain.getApp().setTitle(getInternalPath());
 			}
 		}
 	}
