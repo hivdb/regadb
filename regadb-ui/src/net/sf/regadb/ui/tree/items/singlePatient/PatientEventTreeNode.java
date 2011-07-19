@@ -3,6 +3,7 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.singlePatient.PatientEventForm;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
@@ -42,6 +43,10 @@ public class PatientEventTreeNode extends ObjectTreeNode<PatientEventValue> {
 
 	@Override
 	protected PatientEventValue getObjectById(Transaction t, String id) {
-		return t.getPatientEventValue(Integer.parseInt(id));
+		PatientEventValue pev = t.getPatientEventValue(Integer.parseInt(id));
+		if(RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().contains(pev))
+			return pev;
+		else
+			return null;
 	}
 }

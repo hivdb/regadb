@@ -106,6 +106,10 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 
 	@Override
 	protected ViralIsolate getObjectById(Transaction t, String id) {
-		return t.getViralIsolate(Integer.parseInt(id));
+		ViralIsolate vi = t.getViralIsolate(Integer.parseInt(id));
+		if(RegaDBMain.getApp().getSelectedPatient().getViralIsolates().contains(vi))
+			return vi;
+		else
+			return null;
 	}
 }

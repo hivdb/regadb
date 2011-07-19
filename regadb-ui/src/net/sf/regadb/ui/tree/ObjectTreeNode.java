@@ -132,15 +132,7 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 				return false;
 			}
         };
-//		selected = new ActionItem(getResource("selected"), this, new ITreeAction()
-//        {
-//            public void performAction(TreeMenuNode node) 
-//            {
-//                doSelected();
-//            }
-//        });
 		selected.getLabel().getText().arg("");
-//		selected.disable();
 
 		if(canView()){
 	        view = new FormNavigationNode(getMenuResource("view"), selected){

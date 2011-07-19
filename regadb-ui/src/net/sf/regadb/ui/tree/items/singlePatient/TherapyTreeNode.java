@@ -88,6 +88,11 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 
 	@Override
 	protected Therapy getObjectById(Transaction t, String id) {
-		return t.getTherapy(Integer.parseInt(id));
+		Therapy therapy = t.getTherapy(Integer.parseInt(id));
+		
+		if(RegaDBMain.getApp().getSelectedPatient().getTherapies().contains(therapy))
+			return therapy;
+		else
+			return null;
 	}
 }

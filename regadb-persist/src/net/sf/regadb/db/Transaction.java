@@ -1791,9 +1791,9 @@ public class Transaction {
      * @param ii database id
      * @return
      */
-    public TestResult getTestResult(int ii){
-    	Query q = session.createQuery("from TestResult a where a.id = :ii");
-    	q.setParameter("ii", ii);
+    public TestResult getTestResult(int testIi){
+    	Query q = session.createQuery("from TestResult a where a.id = :testii");
+    	q.setParameter("testii", testIi);
     	return (TestResult)q.uniqueResult();
     }
     
@@ -1802,9 +1802,9 @@ public class Transaction {
      * @param ii database id
      * @return
      */
-    public Therapy getTherapy(int ii){
-    	Query q = session.createQuery("from Therapy a where a.id = :ii");
-    	q.setParameter("ii", ii);
+    public Therapy getTherapy(int therapyIi){
+    	Query q = session.createQuery("from Therapy a where a.id = :therapyii");
+    	q.setParameter("therapyii", therapyIi);
     	return (Therapy)q.uniqueResult();
     }
     
@@ -1813,9 +1813,9 @@ public class Transaction {
      * @param ii database id
      * @return
      */
-    public PatientAttributeValue getPatientAttributeValue(int ii){
-    	Query q = session.createQuery("from PatientAttributeValue a where a.id = :ii");
-    	q.setParameter("ii", ii);
+    public PatientAttributeValue getPatientAttributeValue(int pavIi){
+    	Query q = session.createQuery("from PatientAttributeValue a where a.id = :pavii");
+    	q.setParameter("pavii", pavIi);
     	return (PatientAttributeValue)q.uniqueResult();
     }
     
@@ -1824,9 +1824,9 @@ public class Transaction {
      * @param ii database id
      * @return
      */
-    public PatientEventValue getPatientEventValue(int ii){
-    	Query q = session.createQuery("from PatientEventValue a where a.id = :ii");
-    	q.setParameter("ii", ii);
+    public PatientEventValue getPatientEventValue(int pevIi){
+    	Query q = session.createQuery("from PatientEventValue a where a.id = :pevii");
+    	q.setParameter("pevii", pevIi);
     	return (PatientEventValue)q.uniqueResult();
     }
 }

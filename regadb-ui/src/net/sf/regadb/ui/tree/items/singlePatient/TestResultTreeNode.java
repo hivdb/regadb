@@ -4,6 +4,7 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
@@ -45,6 +46,10 @@ public class TestResultTreeNode extends ObjectTreeNode<TestResult>{
 
 	@Override
 	protected TestResult getObjectById(Transaction t, String id) {
-		return t.getTestResult(Integer.parseInt(id));
+		TestResult tr = t.getTestResult(Integer.parseInt(id));
+		if(RegaDBMain.getApp().getSelectedPatient().getTestResults().contains(tr))
+			return tr;
+		else
+			return null;
 	}
 }
