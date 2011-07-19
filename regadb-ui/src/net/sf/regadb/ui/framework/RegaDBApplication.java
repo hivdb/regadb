@@ -18,6 +18,7 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.sequencedb.SequenceDb;
+import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.Role;
@@ -105,7 +106,12 @@ public class RegaDBApplication extends WApplication
     
     public Transaction createTransaction()
     {
-    	return login_.createTransaction();
+    	if(login_ == null){
+    		setError("Unauthorized access, log in first.", null, new NullPointerException());
+    		return null;
+    	}
+    	else
+    		return login_.createTransaction();
     }
 
 	public ServletContext getServletContext()
@@ -155,6 +161,10 @@ public class RegaDBApplication extends WApplication
 				return Privileges.getPrivilege(da.getPermissions());
 		}
 		return Privileges.NONE;
+	}
+	
+	public Privileges getPrivilege(Patient patient){
+		return getPrivilege(patient.getSourceDataset());
 	}
 	
 	 protected void notify(WEvent event) throws IOException {
@@ -214,5 +224,11 @@ public class RegaDBApplication extends WApplication
 			login_.closeSession();
 
 		super.finalize();
+	}
+
+	public boolean isPatientInteractionAllowed(InteractionState interactionState){
+	    Privileges privileges = getPrivilege(getSelectedPatient());
+	    return !(privileges == Privileges.NONE
+	    		|| (privileges == Privileges.READONLY && interactionState != InteractionState.Viewing));
 	}
 }

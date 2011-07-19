@@ -63,13 +63,15 @@ public class TherapyForm extends ObjectForm<Therapy>
 	{
 		super(formName,interactionState,node,therapy);
 		
-		if(interactionState==InteractionState.Adding && therapy != null){
-		    setPreviousTherapy(therapy);
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(interactionState)){
+			if(interactionState==InteractionState.Adding && therapy != null){
+			    setPreviousTherapy(therapy);
+			}
+			
+			init();
+			
+			fillData();
 		}
-		
-		init();
-		
-		fillData();
 	}
 
 	public void init()

@@ -40,8 +40,10 @@ public class PatientEventForm extends ObjectForm<PatientEventValue>
 	public PatientEventForm(WString formName, InteractionState state, ObjectTreeNode<PatientEventValue> node, PatientEventValue patientEvent) {
 		super(formName, state, node, patientEvent);
 		
-		init();
-		fillData();
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(state)){
+			init();
+			fillData();
+		}
 	}
 	
 	private void init()

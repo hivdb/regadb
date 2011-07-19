@@ -44,17 +44,17 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
 	{
 		super(formName, interactionState, node, viralIsolate);
         
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            setObject(new ViralIsolate());
-            getObject().getNtSequences().add(new NtSequence(getObject()));
-        }
-        else
-        {
-        	RegaDBMain.getApp().createTransaction().refresh(getObject());
-        }
-
-		init();	
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(interactionState)){
+			if(getInteractionState()==InteractionState.Adding){
+				setObject(new ViralIsolate());
+				getObject().getNtSequences().add(new NtSequence(getObject()));
+			}
+			else{
+				RegaDBMain.getApp().createTransaction().refresh(getObject());
+			}
+	
+			init();
+		}
 	}
 
 	public void init()

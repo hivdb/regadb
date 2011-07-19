@@ -76,8 +76,11 @@ public abstract class GridForm extends FormWidget{
 
 	public GridForm(InteractionState interactionState, TreeMenuNode lastItem) {
 		super(tr("form.custom.grid"), interactionState);
-		this.lastItem = lastItem;
-		init();
+		
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(interactionState)){
+			this.lastItem = lastItem;
+			init();
+		}
 	}
 	
 	protected void init(){

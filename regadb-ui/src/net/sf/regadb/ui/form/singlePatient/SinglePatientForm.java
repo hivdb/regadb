@@ -24,7 +24,6 @@ import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
-import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.SelectionBox;
@@ -59,14 +58,16 @@ public class SinglePatientForm extends ObjectForm<Patient>
     
     private WGroupBox attributesGroup_;
     private WTable attributesGroupTable_;
-    private ArrayList<Pair<IFormField, PatientAttributeValue>> attributeList_ = new ArrayList<Pair<IFormField, PatientAttributeValue>>();
     
     private HashMap<Label, Attribute> attributePairs_ = new HashMap<Label, Attribute>();
     
     public SinglePatientForm(WString formName, InteractionState interactionState, ObjectTreeNode<Patient> node, Patient object)
 	{
         super(formName, interactionState, node, object);
-        init();
+        
+        if(interactionState == InteractionState.Adding
+        		|| RegaDBMain.getApp().isPatientInteractionAllowed(interactionState))
+        	init();
 	}
     
     public void init()

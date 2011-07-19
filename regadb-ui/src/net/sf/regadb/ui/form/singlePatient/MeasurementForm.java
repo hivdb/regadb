@@ -47,7 +47,8 @@ public class MeasurementForm extends ObjectForm<TestResult>
 	public MeasurementForm(WString formName, InteractionState interactionState, ObjectTreeNode<TestResult> node, TestResult testResult)
 	{
 		super(formName, interactionState, node, testResult);
-		init();
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(interactionState))
+			init();
 	}
 	
 	public void init()

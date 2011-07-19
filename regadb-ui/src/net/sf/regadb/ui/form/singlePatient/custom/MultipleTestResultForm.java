@@ -66,28 +66,31 @@ public abstract class MultipleTestResultForm extends FormWidget {
 
     public MultipleTestResultForm(WString name, InteractionState state, TreeMenuNode lastItem) {
         super(name, state);
+        
+        if(RegaDBMain.getApp().isPatientInteractionAllowed(state)){
 
-        Transaction t = RegaDBMain.getApp().createTransaction();
-
-        tests_ = new ArrayList<Test>();
-        for(TestItem ti : RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getTests()){
-        	Test test = t.getTestByGenome(ti.description, ti.organism);
-        	if(test != null)
-        		tests_.add(test);
+	        Transaction t = RegaDBMain.getApp().createTransaction();
+	
+	        tests_ = new ArrayList<Test>();
+	        for(TestItem ti : RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getTests()){
+	        	Test test = t.getTestByGenome(ti.description, ti.organism);
+	        	if(test != null)
+	        		tests_.add(test);
+	        }
+	        
+	        events_ = new ArrayList<Event>();
+	        for(EventItem ei : RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getEvents()){
+	        	Event event = t.getEvent(ei.name);
+	        	if(event != null)
+	        		events_.add(event);
+	        }
+	
+	        t.commit();
+	        
+	        lastItem_ = lastItem;
+	        
+	        init();
         }
-        
-        events_ = new ArrayList<Event>();
-        for(EventItem ei : RegaDBSettings.getInstance().getInstituteConfig().getContactFormConfig().getEvents()){
-        	Event event = t.getEvent(ei.name);
-        	if(event != null)
-        		events_.add(event);
-        }
-
-        t.commit();
-        
-        lastItem_ = lastItem;
-        
-        init();
     }
     
     @SuppressWarnings("unchecked")
