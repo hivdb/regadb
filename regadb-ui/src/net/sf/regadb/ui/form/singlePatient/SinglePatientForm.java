@@ -3,8 +3,10 @@ package net.sf.regadb.ui.form.singlePatient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -15,6 +17,8 @@ import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.db.meta.Equals;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.exportXML.ExportToXML;
 import net.sf.regadb.ui.framework.IntegratedRegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
@@ -26,6 +30,7 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
+import net.sf.regadb.ui.framework.forms.fields.SelectionBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
@@ -38,6 +43,7 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WRegExpValidator;
 import eu.webtoolkit.jwt.WString;
@@ -49,7 +55,7 @@ public class SinglePatientForm extends FormWidget
     private WGroupBox generalGroup_;
     private FormTable generalGroupTable_;
     private Label sourceDatasetL;
-    private ComboBox<Dataset> sourceDatasetCB;
+    private SelectionBox<Dataset> sourceDatasetCB;
     private Label idL;
     private TextField idTF;
     
@@ -74,8 +80,10 @@ public class SinglePatientForm extends FormWidget
         generalGroup_ = new WGroupBox(tr("form.singlePatient.editView.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
         sourceDatasetL = new Label(tr("form.singlePatient.editView.sourceDataset"));
-        sourceDatasetCB = new ComboBox<Dataset>(getInteractionState()==InteractionState.Adding?InteractionState.Adding:InteractionState.Viewing, this);
+        sourceDatasetCB = new SelectionBox<Dataset>(getInteractionState(), this);
         sourceDatasetCB.setMandatory(true);
+        sourceDatasetCB.setSelectionMode(SelectionMode.ExtendedSelection);
+        
         generalGroupTable_.addLineToTable(sourceDatasetL, sourceDatasetCB);
         idL = new Label(tr("form.singlePatient.editView.patientId"));
         idTF = new TextField(getInteractionState(), this){
@@ -110,9 +118,12 @@ public class SinglePatientForm extends FormWidget
         boolean unique=true;
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        Patient p = t.getPatient(sourceDatasetCB.currentValue(), id);
-        if(p != null && !p.getPatientIi().equals(patient_.getPatientIi())){
-            unique = false;
+        for(DataComboMessage<Dataset> ds : sourceDatasetCB.currentItems()){
+	        Patient p = t.getPatient(ds.getDataValue(), id);
+	        if(p != null && !p.getPatientIi().equals(patient_.getPatientIi())){
+	            unique = false;
+	            break;
+	        }
         }
         
         t.commit();
@@ -349,9 +360,33 @@ public class SinglePatientForm extends FormWidget
             t.attach(patient_);
         }
         
-        if(getInteractionState() == InteractionState.Adding)
+        if(getInteractionState() == InteractionState.Adding || getInteractionState() == InteractionState.Editing)
         {
-            patient_.setSourceDataset(sourceDatasetCB.currentValue(), t);
+        	for(Dataset dataset : patient_.getDatasets()){
+        		boolean found = false;
+        		for(DataComboMessage<Dataset> ds : sourceDatasetCB.currentItems()){
+        			if(Equals.isSameDataset(ds.getDataValue(), dataset)){
+        				found = true;
+        				break;
+        			}
+        		}
+        		
+        		if(!found)
+        			patient_.removeDataset(dataset, t);
+        	}
+
+        	for(DataComboMessage<Dataset> ds : sourceDatasetCB.currentItems()){
+        		boolean found = false;
+        		for(Dataset dataset : patient_.getDatasets()){
+        			if(Equals.isSameDataset(ds.getDataValue(), dataset)){
+        				found = true;
+        				break;
+        			}
+        		}
+        		
+        		if(!found)
+        			patient_.addDataset(ds.getDataValue());
+        	}
         }
         
         patient_.setPatientId(getNulled(idTF.text()));
