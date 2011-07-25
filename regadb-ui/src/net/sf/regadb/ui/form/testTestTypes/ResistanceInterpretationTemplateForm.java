@@ -105,6 +105,7 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
             templateTF.setText(resRepTemplate_.getName());
             WMemoryResource memResource = new WMemoryResource("application/rtf");
             memResource.setData(resRepTemplate_.getDocument());
+            memResource.suggestFileName(resRepTemplate_.getFilename());
             upload.setAnchor(resRepTemplate_.getFilename(), memResource.generateUrl());
         }
     }
