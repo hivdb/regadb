@@ -104,6 +104,7 @@ public class ResistanceInterpretationTemplateForm extends ObjectForm<ResistanceI
             templateTF.setText(getObject().getName());
             WMemoryResource memResource = new WMemoryResource("application/rtf");
             memResource.setData(getObject().getDocument());
+            memResource.suggestFileName(getObject().getFilename());
             upload.setAnchor(getObject().getFilename(), memResource.generateUrl());
         }
     }
