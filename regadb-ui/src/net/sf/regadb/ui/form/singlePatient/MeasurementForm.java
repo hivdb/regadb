@@ -23,9 +23,11 @@ import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WText;
 
 public class MeasurementForm extends ObjectForm<TestResult>
 {
@@ -80,11 +82,15 @@ public class MeasurementForm extends ObjectForm<TestResult>
         generalGroupTable_.getElementAt(row,0).setStyleClass("form-label-area");
         
         //set the comboboxes
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        testTypeCB.fill(t, true, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
-        testTypeCB.selectIndex(0);
-
-        t.commit();
+        if(getInteractionState() != InteractionState.Viewing){
+	        Transaction t = RegaDBMain.getApp().createTransaction();
+	        testTypeCB.fill(t, true, RegaDBSettings.getInstance().getInstituteConfig().getOrganismFilter());
+	        testTypeCB.selectIndex(0);
+	        
+	        testNameCB.fill(t, testTypeCB.currentValue());
+	
+	        t.commit();
+        }
         
         fillData();
         
@@ -93,52 +99,67 @@ public class MeasurementForm extends ObjectForm<TestResult>
 	
 	private void fillData()
 	{
-		if(!(getInteractionState()==InteractionState.Adding))
+		if(getInteractionState() == InteractionState.Editing
+				|| getInteractionState() == InteractionState.Adding)
 		{
-	       	testTypeCB.selectItem(getObject().getTest().getTestType());
-	        testNameCB.selectItem(getObject().getTest());
-	        
-	        dateTF.setDate(getObject().getTestDate());
-            
-            sampleIdTF_.setText(getObject().getSampleId());
+			if(getInteractionState() == InteractionState.Editing){
+				Transaction t = RegaDBMain.getApp().createTransaction();
+				TestType type = getObject().getTest().getTestType();
+				setTestCombo(t, type);
+				t.commit();
+				
+				testTypeCB.selectItem(type);
+				testNameCB.selectItem(getObject().getTest());
+				
+	            setResultField(type.getValueType(), type);
+	            
+	            if(testResultField_ instanceof ComboBox)
+	            {
+	                ((ComboBox)testResultField_).selectItem(getObject().getTestNominalValue().getValue());
+	            }
+	            else if(ValueTypes.getValueType(type.getValueType()) == ValueTypes.DATE)
+	            {
+	            	((DateField) testResultField_).setDate(DateUtils.parseDate(getObject().getValue()));
+	            }
+	            else
+	            {
+	                testResultField_.setText(getObject().getValue());
+	            }
+			}
+			else{
+	            setResultField(testTypeCB.currentValue().getValueType(), testTypeCB.currentValue());
+			}
+			
+	        testTypeCB.addComboChangeListener(new Signal.Listener()
+            {
+    			public void trigger()
+    			{
+                    TestType testType = testTypeCB.currentValue();
+                    
+    				Transaction t = RegaDBMain.getApp().createTransaction();
+    				setTestCombo(t, testType);
+    				t.commit();
+                    
+                    setResultField(testType.getValueType(), testType);
+    			}
+            });
+		}
+		else{
+			testTypeCB.setText(
+					TestTypeComboBox.getLabel(getObject().getTest().getTestType()));
+			testNameCB.setText(
+					TestComboBox.getLabel(getObject().getTest()));
+			
+			new WText(	getObject().getTestNominalValue() == null ?
+							getObject().getValue() : getObject().getTestNominalValue().getValue(),
+						TextFormat.PlainText,
+						testResultC);
 		}
         
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        TestType type = testTypeCB.currentValue();
-        setTestCombo(t, type);
-        t.commit();
-        
-        setResultField(type.getValueType(), type);
-        
-        if(!(getInteractionState()==InteractionState.Adding))
-        {
-            if(testResultField_ instanceof ComboBox)
-            {
-                ((ComboBox)testResultField_).selectItem(getObject().getTestNominalValue().getValue());
-            }
-            else if(ValueTypes.getValueType(getObject().getTest().getTestType().getValueType()) == ValueTypes.DATE)
-            {
-            	((DateField) testResultField_).setDate(DateUtils.parseDate(getObject().getValue()));
-            }
-            else
-            {
-                testResultField_.setText(getObject().getValue());
-            }
-        }
-		
-        testTypeCB.addComboChangeListener(new Signal.Listener()
-                {
-        			public void trigger()
-        			{
-                        TestType testType = testTypeCB.currentValue();
-                        
-        				Transaction t = RegaDBMain.getApp().createTransaction();
-        				setTestCombo(t, testType);
-        				t.commit();
-                        
-                        setResultField(testType.getValueType(), testType);
-        			}
-                });
+		if(getInteractionState() != InteractionState.Adding){
+	        dateTF.setDate(getObject().getTestDate());
+            sampleIdTF_.setText(getObject().getSampleId());
+		}
 	}
 	
 	private void setTestCombo(Transaction t, TestType testType)

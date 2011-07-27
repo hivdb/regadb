@@ -31,6 +31,7 @@ import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WComboBox;
+import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDoubleValidator;
 import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WLabel;
@@ -39,6 +40,7 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
+import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
 import eu.webtoolkit.jwt.WValidator;
 import eu.webtoolkit.jwt.servlet.WebRequest;
@@ -52,7 +54,11 @@ public class ViralIsolateSimilarityForm extends TabForm {
 
 	private WLineEdit minimumSimilarityTF;
 	private WComboBox sequenceCombo;
+	
+	private WContainerWidget download;
 	private WAnchor downloadSequences;
+	private WAnchor downloadCsv;
+
 	private WComboBox visualCombo;
 
 	private IsolateTable table;
@@ -134,8 +140,13 @@ public class ViralIsolateSimilarityForm extends TabForm {
 		table.hide();
 		tree = new ContaminationTree(this);
 		tree.hide();
-		downloadSequences = new WAnchor(this);
-		downloadSequences.hide();
+		
+		download = new WContainerWidget(this);
+		new WText(tr("form.viralIsolate.similarity.download"), download);
+		downloadSequences = new WAnchor(download);
+		new WText(", ", download);
+		downloadCsv = new WAnchor(download);
+		download.hide();
 
 		sequences = new TreeMap<String, NtSequence>();
 		for (final NtSequence nt : viralIsolateForm.getViralIsolate().getNtSequences()) {
@@ -217,7 +228,7 @@ public class ViralIsolateSimilarityForm extends TabForm {
 
 	private void showSequence(final String sequenceLabel, final double minimumSimilarity) {
 		// hide widgets
-		downloadSequences.hide();
+		download.hide();
 		tree.hide();
 		table.hide();
 
@@ -271,6 +282,8 @@ public class ViralIsolateSimilarityForm extends TabForm {
 	}
 
 	private void showDownloadSequence() {
+		download.show();
+		
 		downloadSequences.setText(tr("form.viralIsolate.similarity.downloadSequences"));
 		downloadSequences.setTarget(AnchorTarget.TargetNewWindow);
 
@@ -279,7 +292,15 @@ public class ViralIsolateSimilarityForm extends TabForm {
 				writeFasta(response.out());
 			}
 		});
-		downloadSequences.show();
+		
+		downloadCsv.setText(tr("form.viralIsolate.similarity.downloadCsv"));
+		downloadCsv.setTarget(AnchorTarget.TargetNewWindow);
+		
+		downloadCsv.setResource(new WResource() {
+			protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
+				writeCsv(response.out());
+			}
+		});
 	}
 
 	private void fillTable() {
@@ -289,6 +310,32 @@ public class ViralIsolateSimilarityForm extends TabForm {
 			NtSequence sequence = similarSequences.get(i);
 			Patient p = new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
 			table.addRow(p.getPatientIi(), p.getPatientId(), sequence.getViralIsolate().getViralIsolateIi(), sequence.getViralIsolate().getSampleId(), sequence.getLabel(), similarities.get(i) + "");
+		}
+	}
+
+	private void writeCsv(Writer writer) throws IOException {
+		char delimiter = ',';
+		
+		writer.append(tr("form.isolate-table.patientId")).append(delimiter);
+		writer.append(tr("form.isolate-table.sampleId")).append(delimiter);
+		writer.append(tr("form.isolate-table.label")).append(delimiter);
+		writer.append(tr("form.viralIsolate.similarity.similarity")).append(delimiter);
+		writer.append("Nucleotides");
+		
+		for (int i = 0; i < similarSequences.size(); i++) {
+			writer.append("\n");
+
+			NtSequence sequence = similarSequences.get(i);
+			Patient p = new Patient(sequence.getViralIsolate().getPatient(), Privileges.READONLY.getValue());
+			writer.append('"').append(p.getPatientId()).append('"');
+			writer.append(delimiter);
+			writer.append('"').append(sequence.getViralIsolate().getSampleId()).append('"');
+			writer.append(delimiter);
+			writer.append('"').append(sequence.getLabel()).append('"');
+			writer.append(delimiter);
+			writer.append(similarities.get(i) + "");
+			writer.append(delimiter);
+			writer.append('"').append(sequence.getNucleotides()).append('"');
 		}
 	}
 
