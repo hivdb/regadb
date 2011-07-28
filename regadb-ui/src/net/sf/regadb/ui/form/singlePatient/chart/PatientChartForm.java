@@ -140,7 +140,6 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		viTable.clear();
 		viTable.getElementAt(0, 0).addWidget(new WText(v.getSampleId(), TextFormat.PlainText));
-//		viTable.getElementAt(0, 1).addWidget(new WText(DateUtils.format(v.getSampleDate()), TextFormat.PlainText));
 
 		int i = 1;
 		for(NtSequence nt : v.getNtSequences()){

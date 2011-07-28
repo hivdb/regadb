@@ -25,6 +25,7 @@ import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WFont;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WFont.GenericFamily;
 import eu.webtoolkit.jwt.WFont.Size;
 import eu.webtoolkit.jwt.WLength;
@@ -63,7 +64,7 @@ public class Chart extends WCartesianChart{
 		axis.setScale(AxisScale.LinearScale);
 		axis.setLabelFormat("%.2f");
 		axis.setVisible(true);
-		axis.setTitle("log10");
+		axis.setTitle(WString.tr("form.patient.chart.Y2Axis"));
 		axis.setMinimum(0);
 		axis.setAutoLimits(AxisValue.MaximumValue);
 		
@@ -72,7 +73,7 @@ public class Chart extends WCartesianChart{
 		axis.setLabelFormat("%.0f");
 		axis.setGridLinesEnabled(true);
 		axis.setVisible(true);
-		axis.setTitle("cells/ul");
+		axis.setTitle(WString.tr("form.patient.chart.YAxis"));
 		axis.setMinimum(0);
 		axis.setAutoLimits(AxisValue.MaximumValue);
 
