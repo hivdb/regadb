@@ -661,17 +661,6 @@ table.form-custom-grid > tbody > tr > td {
 	padding: 0.5em;
 }
 
-.chart-popup{
-	background-image: url('../pics/marker.gif');
-	background-repeat: no-repeat;
-	font-family: sans-serif;
-	font-size: 10px;
-	font-weight: bold;
-	margin-left: -6px;
-	margin-top: -6px;
-	padding-left: 1.5em;
-}
-
 table.isolate-table .header{
 	cursor: auto;
 	border-bottom:1px solid #bbb;
@@ -691,4 +680,12 @@ table.isolate-table span{
 
 .phylotree {
     background-color: #EEEEEE;
+}
+
+.chart-date-limit{
+	width: auto;
+	border: 1px solid silver;
+}
+.chart-date-limit td{
+	padding: 0.5em;
 }
