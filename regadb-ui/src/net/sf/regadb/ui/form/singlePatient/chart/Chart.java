@@ -50,8 +50,9 @@ public class Chart extends WCartesianChart{
 	private Date cutoffDate;
 	private Date minDate = null;
 	private Date maxDate = null;
+	private boolean fixedInterval = false;
 	
-	public Chart(WContainerWidget widget) {
+	public Chart(WContainerWidget widget, Date min, Date max) {
 		super(ChartType.ScatterPlot, widget);
 		setPreferredMethod(Method.InlineSvgVml);
 		
@@ -86,11 +87,18 @@ public class Chart extends WCartesianChart{
 		cal.set(1900, 1, 1);
 		cutoffDate = cal.getTime();
 		
-		//prevent crash when no dates are set
-		WDate now = new WDate(new Date());
-		getAxis(Axis.XAxis).setRange(
-				now.addMonths(-1).toJulianDay(),
-				now.toJulianDay());
+		if(min == null || max == null){
+			//prevent crash when no dates are set
+			WDate now = new WDate(new Date());
+			getAxis(Axis.XAxis).setRange(
+					now.addMonths(-1).toJulianDay(),
+					now.toJulianDay());
+		}else{
+			fixedInterval = true;
+			minDate = min;
+			maxDate = max;
+			setDateRange(min, max);
+		}
 	}
 	
 	public static WColor[] generateColors(int n){
@@ -131,13 +139,15 @@ public class Chart extends WCartesianChart{
 	}
 	
 	public void addSeries(TestResultSeries series){
-		if(series.getMinDate() != null){
-			if(cutoffDate.before(series.getMinDate()) && (minDate == null || series.getMinDate().before(minDate)))
-				minDate = series.getMinDate();
-			if(cutoffDate.before(series.getMaxDate()) && (maxDate == null || series.getMaxDate().after(maxDate)))
-				maxDate = series.getMaxDate();
+		if(!fixedInterval){
+			if(series.getMinDate() != null){
+				if(cutoffDate.before(series.getMinDate()) && (minDate == null || series.getMinDate().before(minDate)))
+					minDate = series.getMinDate();
+				if(cutoffDate.before(series.getMaxDate()) && (maxDate == null || series.getMaxDate().after(maxDate)))
+					maxDate = series.getMaxDate();
+			}
+			setDateRange(minDate, maxDate);
 		}
-		setDateRange(minDate, maxDate);
 		
 		WColor c = getColor(getSeries().size());
 		WPen p = new WPen(c);
@@ -189,7 +199,7 @@ public class Chart extends WCartesianChart{
 		
 		sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
 		width = getWidth().getValue() - getPlotAreaPadding(Side.Right) + 60;
-
+		
 		if(drugsUsed.size() > 0){
 			painter.setRenderHint(RenderHint.Antialiasing,false);
 			painter.drawLine(0, sy, width, sy);
@@ -217,6 +227,9 @@ public class Chart extends WCartesianChart{
 			WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
 			WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
 			
+			double minX = this.mapToDevice(new WDate(minDate),0).getX();
+			double maxX = this.mapToDevice(new WDate(maxDate),0).getX();
+			
 			painter.setRenderHint(RenderHint.Antialiasing,false);
 			for(Map.Entry<Therapy, TreeSet<String>> me : drugsMap.entrySet()){
 				double x1 = this.mapToDevice(new WDate(me.getKey().getStartDate()), 0).getX();
@@ -233,12 +246,17 @@ public class Chart extends WCartesianChart{
 				
 				for(TherapyCommercial tc : me.getKey().getTherapyCommercials()){
 					for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
-						drawDrug(painter, dg, x1, x2, tc.isBlind(), tc.isPlacebo());
+						drawDrug(painter, dg,
+								Math.max(minX, x1),
+								Math.min(maxX, x2),
+								tc.isBlind(), tc.isPlacebo());
 					}
 				}
 				
 				for(TherapyGeneric tg : me.getKey().getTherapyGenerics()){
-					drawDrug(painter, tg.getId().getDrugGeneric(), x1, x2,
+					drawDrug(painter, tg.getId().getDrugGeneric(),
+							Math.max(minX, x1),
+							Math.min(maxX, x2),
 							tg.isBlind(), tg.isPlacebo());
 				}
 			}
@@ -302,31 +320,35 @@ public class Chart extends WCartesianChart{
 		for(Therapy t : p.getTherapies()){
 			TreeSet<String> drugs = new TreeSet<String>();
 			
-			for(TherapyCommercial tc : t.getTherapyCommercials()){
-				String name = tc.getId().getDrugCommercial().getName();
-				List<String> ids = commercialGeneric.get(name);
-				if(ids == null){
-					ids = new LinkedList<String>();
-					
-					for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
-						ids.add(dg.getGenericId());
-						drugsUsed.put(dg.getGenericId(), 0d);
+			if(!fixedInterval ||
+					(!t.getStartDate().after(maxDate)
+							&& (t.getStopDate() == null || !t.getStopDate().before(minDate)))){
+				for(TherapyCommercial tc : t.getTherapyCommercials()){
+					String name = tc.getId().getDrugCommercial().getName();
+					List<String> ids = commercialGeneric.get(name);
+					if(ids == null){
+						ids = new LinkedList<String>();
+						
+						for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+							ids.add(dg.getGenericId());
+							drugsUsed.put(dg.getGenericId(), 0d);
+						}
+						
+						commercialGeneric.put(name, ids);
 					}
 					
-					commercialGeneric.put(name, ids);
+					drugs.addAll(ids);
+				}
+				for(TherapyGeneric tg : t.getTherapyGenerics()){
+					drugs.add(tg.getId().getDrugGeneric().getGenericId());
+					drugsUsed.put(tg.getId().getDrugGeneric().getGenericId(), 0d);
 				}
 				
-				drugs.addAll(ids);
+				drugsMap.put(t, drugs);
 			}
-			for(TherapyGeneric tg : t.getTherapyGenerics()){
-				drugs.add(tg.getId().getDrugGeneric().getGenericId());
-				drugsUsed.put(tg.getId().getDrugGeneric().getGenericId(), 0d);
-			}
-			
-			drugsMap.put(t, drugs);
 		}
 		
-		if(drugsMap.size() > 0){
+		if(!fixedInterval && drugsMap.size() > 0){
 			Date d = drugsMap.firstKey().getStartDate();
 			if(cutoffDate.before(d) && (minDate == null || d.before(minDate)))
 				minDate = d;
@@ -352,15 +374,20 @@ public class Chart extends WCartesianChart{
 			return;
 		
 		for(ViralIsolate vi : p.getViralIsolates()){
-			if(cutoffDate.before(vi.getSampleDate()) && (minDate == null || vi.getSampleDate().before(minDate)))
-				minDate = vi.getSampleDate();
-			if(cutoffDate.before(vi.getSampleDate()) && (maxDate == null || vi.getSampleDate().after(maxDate)))
-				maxDate = vi.getSampleDate();
+			if(!fixedInterval){
+				if(cutoffDate.before(vi.getSampleDate()) && (minDate == null || vi.getSampleDate().before(minDate)))
+					minDate = vi.getSampleDate();
+				if(cutoffDate.before(vi.getSampleDate()) && (maxDate == null || vi.getSampleDate().after(maxDate)))
+					maxDate = vi.getSampleDate();
+			}
 			
-			viralisolates.add(vi);
+			if(!fixedInterval || 
+					(!vi.getSampleDate().before(minDate) && !vi.getSampleDate().after(maxDate)))
+				viralisolates.add(vi);
 		}
 		
-		setDateRange(minDate, maxDate);
+		if(!fixedInterval)
+			setDateRange(minDate, maxDate);
 	}
 	
 	public int calculateAddedHeight(){
