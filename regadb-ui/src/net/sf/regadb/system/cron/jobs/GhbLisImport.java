@@ -22,7 +22,7 @@ public class GhbLisImport extends ParameterizedJob {
 */
 	
 	public void execute() throws JobExecutionException {
-		System.err.println(DateUtils.format(new Date())+" started LIS import.");
+		System.err.println(DateUtils.format(new Date())+" started LIS import cron.");
 		try {
 			File newLisExportDir = new File(getParam("newLisDir"));
 			File oldLisExportDir = new File(getParam("oldLisDir"));
@@ -34,16 +34,15 @@ public class GhbLisImport extends ParameterizedJob {
 					getParam("dataset"));
 			
 			for(File f : newLisExportDir.listFiles()){
-				if(f.isFile()){
+				if(f.isFile() && !f.getName().toLowerCase().endsWith(".log")){
 					ai.run(f);
-					System.out.println(DateUtils.format(new Date())+" finished LIS import: "+ f.getAbsolutePath());
 					
 					File f2 = new File(oldLisExportDir.getAbsolutePath() + File.separatorChar + f.getName());
 					f.renameTo(f2);
 				}
 			}
 		} catch (Exception e){
-			System.err.println("critical error during LIS import: "+ e.getLocalizedMessage());
+			System.err.println("critical error during LIS import cron: "+ e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
