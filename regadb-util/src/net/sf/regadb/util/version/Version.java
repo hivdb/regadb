@@ -1,38 +1,47 @@
 package net.sf.regadb.util.version;
 
-import java.io.IOException;
-import java.util.Properties;
+import java.io.InputStream;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 public class Version {
-	private static final Properties properties;
+	private static Properties properties = null;
 
 	static {
-		properties = new Properties();
-		try { 
-			properties.load(Version.class.getResourceAsStream("version.properties"));
-		} catch(IOException e) {
+		try {
+			InputStream in = Version.class.getResourceAsStream("version.properties");
+			if(in != null){
+				properties = new Properties();
+				properties.load(in);
+			}
+		} catch(Exception e) {
 			e.printStackTrace();
 		} 
 	}
 	
 	public static String getCommitId(){
-		return properties.getProperty("commit.id");
+		return properties == null ? "n/a" :
+				properties.getProperty("commit.id");
 	}
 	public static String getCommitAuthor(){
-		return properties.getProperty("commit.author");
+		return properties == null ? "n/a" :
+			 properties.getProperty("commit.author");
 	}
 	public static String getCommitTime(){
-		return properties.getProperty("commit.time");
+		return properties == null ? "n/a" :
+			 properties.getProperty("commit.time");
 	}
 	public static String getBuildTime(){
-		return properties.getProperty("build.time");
+		return properties == null ? "n/a" :
+			 properties.getProperty("build.time");
 	}
 	public static String getBuildAuthor(){
-		return properties.getProperty("build.author");
+		return properties == null ? "n/a" :
+			 properties.getProperty("build.author");
 	}
 	public static String getBuildSystem(){
-		return properties.getProperty("build.system");
+		return properties == null ? "n/a" :
+			 properties.getProperty("build.system");
 	}
 	
 	public static final Properties getProperties(){

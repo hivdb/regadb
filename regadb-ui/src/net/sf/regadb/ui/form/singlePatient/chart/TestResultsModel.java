@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient.chart;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.db.Patient;
@@ -23,14 +24,14 @@ public class TestResultsModel extends WStandardItemModel{
 		return series;
 	}
 	
-	public void loadResults(Patient p){
+	public void loadResults(Patient p, Date minDate, Date maxDate){
 		int col = 1;
 		int row = 0;
 
 		insertColumn(0);
 		
 		for(TestResultSeries s : series){
-			s.loadResults(p);
+			s.loadResults(p, minDate, maxDate);
 
 			if(s instanceof LimitedValueSeries){
 				LimitedValueSeries lvs = (LimitedValueSeries)s;
