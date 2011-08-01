@@ -21,11 +21,15 @@ public class VersionForm extends FormWidget {
 		WTable t = new WTable(this);
 		
 		int i = 0;
-		for(Entry<Object, Object> e : Version.getProperties().entrySet()){
-			t.insertRow(i);
-			t.getElementAt(i, 0).addWidget(new WText(tr("form.version."+ (String)e.getKey())));
-			t.getElementAt(i, 1).addWidget(new WText(e.getValue().toString(),TextFormat.PlainText));
-			++i;
+		if(Version.getProperties() != null){
+			for(Entry<Object, Object> e : Version.getProperties().entrySet()){
+				t.insertRow(i);
+				t.getElementAt(i, 0).addWidget(new WText(tr("form.version."+ (String)e.getKey())));
+				t.getElementAt(i, 1).addWidget(new WText(e.getValue().toString(),TextFormat.PlainText));
+				++i;
+			}
+		} else {
+			t.getElementAt(0,0).addWidget(new WText(tr("form.version.notAvailable")));
 		}
 	}
 
