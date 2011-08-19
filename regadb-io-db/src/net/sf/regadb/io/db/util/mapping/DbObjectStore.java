@@ -130,4 +130,9 @@ public class DbObjectStore extends ObjectStore{
 	public TestObject getTestObject(String description) {
 		return getTransaction().getTestObject(description);
 	}
+
+	@Override
+	public void close() {
+		login.closeSession();
+	}
 }

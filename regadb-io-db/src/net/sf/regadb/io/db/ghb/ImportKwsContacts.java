@@ -49,6 +49,7 @@ public class ImportKwsContacts {
 		try {
 			ImportKwsContacts pkc = new ImportKwsContacts(user.getValue(), pass.getValue(), dataset.getValue());
 			pkc.run(new File(file.getValue()),dateFormat.getValue());
+			pkc.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -128,4 +129,8 @@ public class ImportKwsContacts {
         }
         return false;
     }
+	
+	public void close(){
+		os.close();
+	}
 }

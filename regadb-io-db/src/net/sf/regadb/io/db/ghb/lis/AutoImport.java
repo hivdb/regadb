@@ -571,4 +571,8 @@ public class AutoImport {
         }
         return sb.toString();
     }
+    
+    public void close(){
+    	objectStore.close();
+    }
 }
