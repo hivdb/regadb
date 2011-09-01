@@ -68,8 +68,14 @@ public class ImportKwsPatients {
 					StandardObjects.getClinicalAttributeGroup().getGroupName());
 			Attribute aPatcode = t.getAttribute("PatCode",
 					StandardObjects.getClinicalAttributeGroup().getGroupName());
-			Attribute aDiagnoseDate = t.getAttribute("HIV Diagnose date",
+			Attribute aDiagnoseDate = t.getAttribute("HIV Diagnosis date",
 					StandardObjects.getClinicalAttributeGroup().getGroupName());
+			Attribute aBirthDate = t.getAttribute(
+					StandardObjects.getBirthDateAttribute().getName(),
+					StandardObjects.getBirthDateAttribute().getAttributeGroup().getGroupName());
+			Attribute aDeathDate = t.getAttribute(
+					StandardObjects.getDeathDateAttribute().getName(),
+					StandardObjects.getDeathDateAttribute().getAttributeGroup().getGroupName());
 			
 			
 			for(int i=1; i<table.numRows(); ++i){
@@ -102,14 +108,11 @@ public class ImportKwsPatients {
 					Date diagnoseDate = getDate(table.valueAt(cDiagnoseDate, i));
 					String patcode = table.valueAt(cPatcode, i);
 					
+					handleAttribute(p, aBirthDate, birthDate);
+					handleAttribute(p, aDeathDate, deathDate);
 					handleAttribute(p, aEmd, emd);
 					handleAttribute(p, aDiagnoseDate, diagnoseDate);
 					handleAttribute(p, aPatcode, patcode);
-					
-					if(birthDate != null)
-						Utils.setBirthDate(p, birthDate);
-					if(deathDate != null)
-						Utils.setDeathDate(p, deathDate);
 					
 					t.save(p);
 				}
