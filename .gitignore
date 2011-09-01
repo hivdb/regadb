@@ -4,3 +4,4 @@ dist
 classes
 .metadata
 RemoteSystemsTempFiles
+regadb-util/src/net/sf/regadb/util/version/version.properties

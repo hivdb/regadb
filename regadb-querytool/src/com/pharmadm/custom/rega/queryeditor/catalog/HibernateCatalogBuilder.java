@@ -114,7 +114,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		foreignTableToIdTable = idTableToNominalValuesTable;	
     		idTable = possibleIdTable;							// use the id table as the id 
     		inputTableToIdTable = idTableToInputTable;
-    		suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t" + nominalValues.getTableName() + " nv,\n\t" + customPropertiesTable.getTableName() + " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableIndexProperty + "='" + index + "'";
+    		suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t"
+    			+ nominalValues.getTableName() + " nv,\n\t" + customPropertiesTable.getTableName()
+    			+ " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableIndexProperty + "='" + index + "'"
+    			+ " order by nv.value";
     	}
     	else if (valueType.equals("string") || valueType.equals("number") || valueType.equals("limited number (<,=,>)") || valueType.equals("date")) {
     		foreingTable = possibleIdTable;					// select from the single attribute table
