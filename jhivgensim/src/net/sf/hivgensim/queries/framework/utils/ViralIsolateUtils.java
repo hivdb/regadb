@@ -1,5 +1,6 @@
 package net.sf.hivgensim.queries.framework.utils;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,14 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.ViralIsolate;
 
 public class ViralIsolateUtils {
+	
+	public static final Comparator<ViralIsolate> viralIsolateSortComparator
+		= new Comparator<ViralIsolate>(){
+			@Override
+			public int compare(ViralIsolate o1, ViralIsolate o2) {
+				return o1.getSampleDate().compareTo(o2.getSampleDate());
+			}
+	};
 	
 	public static String resistance(ViralIsolate vi, String algo, String drug){
 		String dat = new String(fullResistanceRecord(vi, algo, drug));

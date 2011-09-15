@@ -72,6 +72,8 @@ public abstract class ObjectStore {
     
     public abstract Collection<Patient> getPatients();
     
+    public abstract void close();
+    
     public void commit(){
     	
     }
