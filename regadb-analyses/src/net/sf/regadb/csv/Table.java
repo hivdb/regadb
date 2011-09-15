@@ -148,8 +148,18 @@ public class Table {
 	public Table(InputStreamReader input, boolean oneline, char delimiter){
 		this();
 
-		reader = new LineNumberReader(input);
-		readLines(oneline, null, null,delimiter);
+		try{
+			reader = new LineNumberReader(input);
+			readLines(oneline, null, null,delimiter);
+		} finally {
+			if(reader == null){
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private void readLines(boolean oneline, ArrayList<Integer> selected, OutputStream output, char delimiter) {
