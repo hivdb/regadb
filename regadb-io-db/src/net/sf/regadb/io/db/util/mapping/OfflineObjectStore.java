@@ -233,4 +233,8 @@ public class OfflineObjectStore extends ObjectStore{
 	public TestObject getTestObject(String description) {
 		return testObjects.get(description);
 	}
+
+	@Override
+	public void close() {
+	}
 }

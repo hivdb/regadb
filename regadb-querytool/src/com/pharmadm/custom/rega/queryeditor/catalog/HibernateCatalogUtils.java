@@ -183,7 +183,7 @@ public class HibernateCatalogUtils {
 		}
 		if (constant != null && type != ValueType.Boolean) {
 			if (object.hasDropdown() && suggestedValuesQuery == null) {
-				suggestedValuesQuery = "SELECT DISTINCT obj." + object.getPropertyName() + " FROM " + object.getTableName() + " obj";
+				suggestedValuesQuery = "SELECT DISTINCT obj." + object.getPropertyName() + " FROM " + object.getTableName() + " obj order by "+ object.getPropertyName();
 				constant.setSuggestedValuesQuery(suggestedValuesQuery);
 	    		constant.setSuggestedValuesMandatory(true);
 			}

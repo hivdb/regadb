@@ -17,6 +17,7 @@ import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.util.date.DateUtils;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.PenStyle;
 import eu.webtoolkit.jwt.Side;
@@ -25,7 +26,6 @@ import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WFont;
-import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WFont.GenericFamily;
 import eu.webtoolkit.jwt.WFont.Size;
 import eu.webtoolkit.jwt.WLength;
@@ -36,6 +36,7 @@ import eu.webtoolkit.jwt.WPainter.RenderHint;
 import eu.webtoolkit.jwt.WPen;
 import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRectF;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.AxisScale;
 import eu.webtoolkit.jwt.chart.AxisValue;
@@ -51,6 +52,9 @@ public class Chart extends WCartesianChart{
 	private Date minDate = null;
 	private Date maxDate = null;
 	private boolean fixedInterval = false;
+	
+	private Date deathDate = null;
+	private Date ltfuDate = null;
 	
 	public Chart(WContainerWidget widget, Date min, Date max) {
 		super(ChartType.ScatterPlot, widget);
@@ -275,6 +279,20 @@ public class Chart extends WCartesianChart{
 					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter), vi.getSampleId());
 		}
 
+		
+		if(getDeathDate() != null){
+			pen = new WPen(WColor.red);
+			pen.setStyle(PenStyle.DashLine);
+			painter.setPen(pen);
+			
+			double x1 = this.mapToDevice(new WDate(getDeathDate()), 0).getX();
+			
+			painter.drawLine(x1, 0, x1, sy+therapyHeight);
+			painter.drawText(x1-50, sy+therapyHeight+therapySpacing, 100, therapyHeight,
+					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter),
+						"ꝉ "+ DateUtils.format(getDeathDate()));
+		}
+		
 		painter.setRenderHint(RenderHint.Antialiasing,true);
 	}
 	
@@ -282,7 +300,7 @@ public class Chart extends WCartesianChart{
 		double i = drugsUsed.get(drug.getGenericId());
 
 		double x = x1 + therapyLineWidth;
-		double y = i + therapyLineWidth + therapySpacing;
+		double y = i + therapyLineWidth;
 		double w = x2 - x1 - therapyLineWidth;
 		double h = therapyHeight;
 			
@@ -392,5 +410,21 @@ public class Chart extends WCartesianChart{
 	
 	public int calculateAddedHeight(){
 		return therapyOffset + ((drugsUsed.size()+2) * (therapySpacing*2 + therapyHeight + therapyLineWidth));
+	}
+	
+	public void setDeathDate(Date deathDate){
+		this.deathDate = deathDate;
+	}
+	
+	public Date getDeathDate(){
+		return deathDate;
+	}
+	
+	public void setLTFUDate(Date ltfuDate){
+		this.ltfuDate = ltfuDate;
+	}
+	
+	public Date getLTFUDate(){
+		return ltfuDate;
 	}
 }

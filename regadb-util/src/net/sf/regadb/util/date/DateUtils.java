@@ -9,6 +9,8 @@ import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class DateUtils 
 {
+	public static final long MILLSECS_PER_DAY = 1000 * 60 * 60 * 24; 
+	
     public static String getHQLdateFormatString() {
     	return "DD-MM-YYYY";
     }
@@ -121,5 +123,9 @@ public class DateUtils
 	       		return false;
     	}
     	return true;
+    }
+    
+    public static double getDayDifference(Date d1, Date d2){
+    	return (d2.getTime() - d1.getTime()) / MILLSECS_PER_DAY;
     }
 }
