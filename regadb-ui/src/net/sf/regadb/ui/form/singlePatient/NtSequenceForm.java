@@ -192,11 +192,13 @@ public class NtSequenceForm extends WContainerWidget{
 	                    	   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.autoFixedSequence"));
 	                           ntF.setText(read.xna_);
 	                           fastaLabel.setText("["+read.fastaHeader_+"]");
+	                           labelF.setText(read.fastaHeader_);
 	                       }
 	                       else
 	                       {
 	                           ntF.setText(read.xna_);
 	                           fastaLabel.setText("["+read.fastaHeader_+"]");
+	                           labelF.setText(read.fastaHeader_);
 	                       }
                        }
                    }

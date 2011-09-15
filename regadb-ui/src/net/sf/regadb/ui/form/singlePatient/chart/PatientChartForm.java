@@ -94,6 +94,8 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		chart = new Chart(this, min, max);
 		
+		chart.setDeathDate(p.getDeathDate());
+		
 		model = new TestResultsModel();
 		
 		List<ViralLoadSeries> vlSeries = new LinkedList<ViralLoadSeries>();
