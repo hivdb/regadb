@@ -189,7 +189,7 @@ public class Chart extends WCartesianChart{
 	protected void paintEvent(WPaintDevice paintDevice) {
 		WPen pen;
 		WFont font;
-		double sy;
+		double sy, y;
 		double width;
 		
 		WPainter painter = new WPainter(paintDevice);
@@ -204,32 +204,64 @@ public class Chart extends WCartesianChart{
 		sy = getHeight().getValue() - getPlotAreaPadding(Side.Bottom) + therapyOffset;
 		width = getWidth().getValue() - getPlotAreaPadding(Side.Right) + 60;
 		
+		y = sy;
+		
 		if(drugsUsed.size() > 0){
+			WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
+			WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
+
+			//therapy legend
+			double x = width + 10;
+			y = sy;
+			double w = 20;
+			double h = therapyHeight;
+			
+			EnumSet<AlignmentFlag> flags = EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft);
+			
+			painter.setBrush(openTherapyBrush);
+			painter.drawText(x, y, w, h, flags, WString.tr("form.patient.chart.legend.openTherapy"));
+			y += h;
+			drawDrugBlock(painter, x, y, w, h, false, false);
+			y += h;
+			
+			painter.setBrush(closedTherapyBrush);
+			painter.drawText(x, y, w, h, flags, WString.tr("form.patient.chart.legend.closedTherapy"));
+			y += h;
+			drawDrugBlock(painter, x, y, w, h, false, false);
+			y += h;
+
+			painter.drawText(x, y, w, h, flags, WString.tr("form.patient.chart.legend.blind"));
+			y += h;
+			drawDrugBlock(painter, x, y, w, h, true, false);
+			y += h;
+
+			painter.drawText(x, y, w, h, flags, WString.tr("form.patient.chart.legend.placebo"));
+			y += h;
+			drawDrugBlock(painter, x, y, w, h, false, true);
+			
+			y = sy;
 			painter.setRenderHint(RenderHint.Antialiasing,false);
-			painter.drawLine(0, sy, width, sy);
+			painter.drawLine(0, y, width, y);
 			painter.setRenderHint(RenderHint.Antialiasing,true);
 	
 			for(String drug : drugsUsed.keySet()){
-				drugsUsed.put(drug, sy);
+				drugsUsed.put(drug, y);
 	
-				painter.drawText(new WRectF(0, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+				painter.drawText(new WRectF(0, y+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
 						EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
-				painter.drawText(new WRectF(width-30, sy+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
+				painter.drawText(new WRectF(width-30, y+therapySpacing+therapyLineWidth-1, 100, therapyHeight),
 						EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignLeft), drug);
 				
-				sy += therapyHeight+therapyLineWidth+(therapySpacing*2);
+				y += therapyHeight+therapyLineWidth+(therapySpacing*2);
 	
 				painter.setRenderHint(RenderHint.Antialiasing,false);
-				painter.drawLine(0, sy, width, sy);
+				painter.drawLine(0, y, width, y);
 				painter.setRenderHint(RenderHint.Antialiasing,true);
 			}
 	
 			pen = new WPen(WColor.transparent);
 			pen.setWidth(new WLength(therapyLineWidth,Unit.Pixel));
 			painter.setPen(pen);
-			
-			WBrush closedTherapyBrush = new WBrush(new WColor(0,200,50));
-			WBrush openTherapyBrush = new WBrush(new WColor(50, 255, 50));
 			
 			double minX = this.mapToDevice(new WDate(minDate),0).getX();
 			double maxX = this.mapToDevice(new WDate(maxDate),0).getX();
@@ -274,8 +306,8 @@ public class Chart extends WCartesianChart{
 		for(ViralIsolate vi : viralisolates){
 			double x1 = this.mapToDevice(new WDate(vi.getSampleDate()), 0).getX();
 			
-			painter.drawLine(x1, 0, x1, sy+therapyHeight);
-			painter.drawText(x1-50, sy+therapyHeight+therapySpacing, 100, therapyHeight,
+			painter.drawLine(x1, 0, x1, y+therapyHeight);
+			painter.drawText(x1-50, y+therapyHeight+therapySpacing, 100, therapyHeight,
 					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter), vi.getSampleId());
 		}
 
@@ -287,8 +319,8 @@ public class Chart extends WCartesianChart{
 			
 			double x1 = this.mapToDevice(new WDate(getDeathDate()), 0).getX();
 			
-			painter.drawLine(x1, 0, x1, sy+therapyHeight);
-			painter.drawText(x1-50, sy+therapyHeight+therapySpacing, 100, therapyHeight,
+			painter.drawLine(x1, 0, x1, y+therapyHeight);
+			painter.drawText(x1-50, y+therapyHeight+therapySpacing, 100, therapyHeight,
 					EnumSet.of(AlignmentFlag.AlignCenter,AlignmentFlag.AlignCenter),
 						"ꝉ "+ DateUtils.format(getDeathDate()));
 		}
@@ -303,14 +335,18 @@ public class Chart extends WCartesianChart{
 		double y = i + therapyLineWidth;
 		double w = x2 - x1 - therapyLineWidth;
 		double h = therapyHeight;
-			
+		
+		drawDrugBlock(painter, x, y, w, h, blind, placebo);
+	}
+	
+	private void drawDrugBlock(WPainter painter, double x, double y, double w, double h, boolean blind, boolean placebo){
 		painter.drawRect(x, y, w, h);
 		
 		if(blind || placebo){
 			WPen oldPen = painter.getPen();
 			
 			WPen pen = new WPen(WColor.white);
-			pen.setWidth(new WLength(therapyLineWidth, Unit.Pixel));
+			pen.setWidth(new WLength(therapyLineWidth * 2, Unit.Pixel));
 			painter.setPen(pen);
 			
 			if(blind)

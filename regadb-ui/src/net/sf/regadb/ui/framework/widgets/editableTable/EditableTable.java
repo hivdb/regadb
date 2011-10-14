@@ -1,8 +1,8 @@
 package net.sf.regadb.ui.framework.widgets.editableTable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.sf.regadb.ui.framework.forms.IForm;
@@ -31,14 +31,14 @@ public class EditableTable<DataType> extends WContainerWidget
     
     private IEditableTable<DataType> editableList_;
     
-    private List<DataType> items_;
+    private Collection<DataType> items_;
     
     private ArrayList<DataType> itemList_ = new ArrayList<DataType>();
     private ArrayList<DataType> removedItemList_ = new ArrayList<DataType>();
     
     private Signal.Listener addListener;
         
-    public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, List<DataType> items)
+    public EditableTable(WContainerWidget parent, IEditableTable<DataType> editableList, Collection<DataType> items)
     {
         super(parent);
         this.setStyleClass("editable-table");
