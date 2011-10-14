@@ -48,7 +48,7 @@ public class PatientEventForm extends ObjectForm<PatientEventValue>
 	
 	private void init()
 	{
-		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("form.patientEvent.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
 		lblStartDate = new Label(tr("form.patientEvent.startDate"));
