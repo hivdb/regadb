@@ -58,7 +58,8 @@ public class SubTypeBatch {
 		else if(type.getValue().equals("fasta")){
 			FastaFile ff = new FastaFile(new File(input.getValue()));
 			
-			for(NtSequence nt : ff.values()){
+			for(int i=0; i<ff.size(); ++i){
+				NtSequence nt = ff.get(i);
 				subtype(subtype, genome, nt.getLabel(), nt.getNucleotides());
 			}
 		}
