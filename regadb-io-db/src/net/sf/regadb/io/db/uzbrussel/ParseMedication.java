@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -126,17 +127,29 @@ public class ParseMedication {
        		therapies.add(t);
         }
 
+        Date afterEnd = timeline.last();
+        Calendar c = Calendar.getInstance();
+        c.setTime(afterEnd);
+        c.add(Calendar.DATE, 2);  
+        afterEnd = c.getTime();  
+        
         Iterator<Therapy> it = therapies.iterator();
         while(it.hasNext()){
         	t = it.next();
-        	Date a = t.getStartDate();
-        	Date b = t.getStopDate();
+        	Date start = t.getStartDate();
+        	Date end = t.getStopDate();
+        	if (end == null)
+        		end = afterEnd;
         	
         	for(Medication m : meds){
-        		if( m.start.equals(a)
-        		        || (m.start.before(a) && (b == null || m.stop == null || (m.stop.after(b) || m.stop.equals(b) )))){
-        			addDrugsToTherapy(t,m.dc,m.dg);
+        		Date start_m = m.start;
+        		Date end_m = m.stop;
+        		if (end_m == null) {
+        			end_m = afterEnd;
         		}
+        		
+        		if (overlap(start, end, start_m, end_m))
+        			addDrugsToTherapy(t,m.dc,m.dg);
         	}
         	
         	if(t.getTherapyCommercials().size() == 0 && t.getTherapyGenerics().size() == 0){
@@ -146,6 +159,15 @@ public class ParseMedication {
         }
         
         return therapies;
+    }
+    
+    private static boolean overlap(Date startA, Date endA, Date startB, Date endB) {
+    	try {
+    	return startA.before(endB) && endA.after(startB);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return false;
+    	}
     }
     
 	private static void addDrugsToTherapy(Therapy t, DrugCommercial dc, DrugGeneric dg){
