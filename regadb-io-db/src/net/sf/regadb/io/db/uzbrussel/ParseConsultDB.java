@@ -6,22 +6,32 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.NominalAttribute;
 import net.sf.regadb.io.db.util.NominalTestMapper;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.io.util.WivObjects;
+import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -221,9 +231,53 @@ public class ParseConsultDB {
             Element therapyEl = patientEl.getChild("Therapy");
             if(therapyEl!=null)
                 ParseMedication.parseTherapy(therapyEl, p);
+            
+            Map<Date, Therapy> therapies = new HashMap<Date, Therapy>(); 
+            for (Therapy t : p.getTherapies()) {
+            	therapies.put(t.getStartDate(), t);
+            }
+            
+            for (Date d : new TreeSet<Date>(therapies.keySet())) {
+            	Therapy t = therapies.get(d);
+            	
+            	String start = DateUtils.format(t.getStartDate());
+        		String end = DateUtils.format(t.getStopDate());
+        		if (end.equals(""))
+        			end="          ";
+            	
+            	System.err.println(start + "-" + end + ":" + getSummary(t));
+            }
         } else {
             ConsoleLogger.getInstance().logWarning("No patient id found for:" + consultId);
         }
+    }
+    
+    public String getSummary(Therapy type) {
+		SortedSet<String> drugList = new TreeSet<String>();
+		for(TherapyGeneric tg : type.getTherapyGenerics())
+		{
+			drugList.add(tg.getId().getDrugGeneric().getGenericId());
+		}
+		for(TherapyCommercial tc : type.getTherapyCommercials())
+		{
+			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics())
+			{
+				drugList.add(dg.getGenericId());
+			}
+		}
+		
+		StringBuffer genericDrugList = new StringBuffer(drugList.size()*4);
+		for(Iterator<String> i = drugList.iterator(); i.hasNext();)
+		{
+			genericDrugList.append(i.next());
+			genericDrugList.append("+");
+		}
+		//remove last character, which is an extra plus
+		if(genericDrugList.length()>0)
+		{
+			genericDrugList.deleteCharAt(genericDrugList.length()-1);
+		}
+		return genericDrugList.toString();
     }
     
     private void parseAnalysis(Element analysisEl, Patient p) {
