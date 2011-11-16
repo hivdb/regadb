@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.io.db.util.ConsoleLogger;
 import net.sf.regadb.io.db.util.Utils;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.frequency.Frequency;
 
 import org.jdom.Element;
@@ -100,6 +102,25 @@ public class ParseMedication {
                         notParsableMeds.add(name);
                 }
             }
+        }
+
+        Collections.sort(medications, new Comparator<Medication>(){
+			public int compare(Medication arg0, Medication arg1) {
+				return arg0.start.compareTo(arg1.start);
+			}
+        });
+        
+        for (Medication m : medications) {
+        	String l = DateUtils.format(m.start) + "-" + (m.stop==null?"":DateUtils.format(m.stop)) + " ";
+        	System.err.print("med: " + l);
+        	if (m.dc != null) {
+        		for (DrugGeneric dg : m.dc.getDrugGenerics()) {
+        			System.err.print(dg.getGenericId() + " ");
+        		}
+        	} else {
+        		System.err.print(m.dg.getGenericId());
+        	}
+        	System.err.print("\n");
         }
         
         List<Therapy> therapies = createTherapies(p, medications);
