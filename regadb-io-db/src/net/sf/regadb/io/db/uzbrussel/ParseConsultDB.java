@@ -228,6 +228,7 @@ public class ParseConsultDB {
             	}
             }
             
+            System.err.println("---");
             Element therapyEl = patientEl.getChild("Therapy");
             if(therapyEl!=null)
                 ParseMedication.parseTherapy(therapyEl, p);
@@ -247,6 +248,7 @@ public class ParseConsultDB {
             	
             	System.err.println(start + "-" + end + ":" + getSummary(t));
             }
+            System.err.println("---");
         } else {
             ConsoleLogger.getInstance().logWarning("No patient id found for:" + consultId);
         }
