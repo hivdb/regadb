@@ -12,7 +12,7 @@ public class CustomQueryNavigation extends DefaultNavigationNode {
 	public CustomQueryNavigation(TreeMenuNode parent) {
 		super(WString.tr("menu.query.custom"), parent);
 		
-		new FormNavigationNode(WString.tr("form.query.custom.nadir.name"), this) {
+		new FormNavigationNode(WString.tr("form.query.custom.nadir.name"), this, true) {
 			@Override
 			public IForm createForm() {
 				return new NadirQuery();

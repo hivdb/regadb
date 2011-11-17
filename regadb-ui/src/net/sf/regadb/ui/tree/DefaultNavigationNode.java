@@ -7,7 +7,7 @@ import eu.webtoolkit.jwt.WTreeNode;
 public class DefaultNavigationNode extends TreeMenuNode {
 
 	public DefaultNavigationNode(WString name, TreeMenuNode parent) {
-		super(name, parent);
+		super(name, parent, true);
 	}
 
 	@Override

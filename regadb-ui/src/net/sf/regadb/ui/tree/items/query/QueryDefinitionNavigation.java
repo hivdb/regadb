@@ -18,7 +18,7 @@ public class QueryDefinitionNavigation extends ObjectTreeNode<QueryDefinition>{
 	public QueryDefinitionNavigation(TreeMenuNode parent, final QueryDefinitionRunNavigation runNode) {
 		super("query.definition", parent);
 		
-		new FormNavigationNode(WString.tr("menu.query.definition.selected.run"), getSelectedItemNavigationNode()){
+		new FormNavigationNode(WString.tr("menu.query.definition.selected.run"), getSelectedItemNavigationNode(), true){
 			public IForm createForm(){
                 return new QueryDefinitionRunForm(WString.tr("form.query.definition.run.add"),
                 		runNode,

@@ -33,21 +33,21 @@ public class ViralIsolateTreeNode extends ObjectTreeNode<ViralIsolate>{
 		super.init();
 		
 		evolution = new DefaultNavigationNode(getMenuResource("evolution"), this);
-        mutationEvolution = new FormNavigationNode(getMenuResource("evolution.mutation"), evolution)
+        mutationEvolution = new FormNavigationNode(getMenuResource("evolution.mutation"), evolution, true)
         {
             public IForm createForm()
             {
                 return new ViralIsolateMutationEvolution(getFormResource("evolution.mutation"),RegaDBMain.getApp().getSelectedPatient());
             }
         };
-        resistanceEvolution = new FormNavigationNode(getMenuResource("evolution.resistance"), evolution)
+        resistanceEvolution = new FormNavigationNode(getMenuResource("evolution.resistance"), evolution, true)
         {
             public IForm createForm()
             {
                 return new ViralIsolateResistanceEvolutionForm(getFormResource("evolution.resistance"),RegaDBMain.getApp().getSelectedPatient());
             }
         };
-        cumulatedResistance = new FormNavigationNode(getMenuResource("cumulatedresistance"), this)
+        cumulatedResistance = new FormNavigationNode(getMenuResource("cumulatedresistance"), this, true)
         {
             public IForm createForm()
             {

@@ -36,7 +36,7 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	protected void init(){
 		super.init();
 		
-		chart = new FormNavigationNode(getMenuResource("chart"), getSelectedItemNavigationNode()){
+		chart = new FormNavigationNode(getMenuResource("chart"), getSelectedItemNavigationNode(), true){
 			@Override
 			public IForm createForm() {
 				return new PatientChartForm(getSelectedItem());
@@ -51,7 +51,7 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		custom = new DefaultNavigationNode(getMenuResource("custom"), getSelectedItemNavigationNode());
 		contact = new ContactItem(custom);
 		
-		nadir = new FormNavigationNode(getMenuResource("custom.nadir"), custom){
+		nadir = new FormNavigationNode(getMenuResource("custom.nadir"), custom, true){
 			public IForm createForm() 
 			{
 				return new Nadir();

@@ -28,7 +28,7 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 	protected void init(){
 		super.init();
 		
-      copyLast = new FormNavigationNode(getMenuResource("copylast"), this)
+      copyLast = new FormNavigationNode(getMenuResource("copylast"), this, true)
       {
           public ObjectForm<Therapy> createForm()
           {

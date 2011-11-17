@@ -45,7 +45,7 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 	protected void init(){
 		selectedItem = null;
 		
-		select = new FormNavigationNode(getMenuResource("select"), this)
+		select = new FormNavigationNode(getMenuResource("select"), this, true)
         {
 			@Override
 			public IForm createForm() {
@@ -64,7 +64,7 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
         };
 		
         if(canAdd()){
-			add = new FormNavigationNode(getMenuResource("add"), this)
+			add = new FormNavigationNode(getMenuResource("add"), this, false)
 	        {
 				@Override
 				public void doAction(){
@@ -135,7 +135,7 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 		selected.getLabel().getText().arg("");
 
 		if(canView()){
-	        view = new FormNavigationNode(getMenuResource("view"), selected){
+	        view = new FormNavigationNode(getMenuResource("view"), selected, true){
 				@Override
 				public ObjectForm<Type> createForm() {
 					ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Viewing),
@@ -157,7 +157,7 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 		}
 
 		if(canEdit()){
-	        edit = new FormNavigationNode(getMenuResource("edit"), selected){
+	        edit = new FormNavigationNode(getMenuResource("edit"), selected, false){
 	        	@Override
 	        	public ObjectForm<Type> createForm(){
 	        		ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Editing),
@@ -169,7 +169,7 @@ public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode impleme
 		}
 
 		if(canDelete()){
-	        delete = new FormNavigationNode(getMenuResource("delete"), selected){
+	        delete = new FormNavigationNode(getMenuResource("delete"), selected, true){
 	        	@Override
 	        	public ObjectForm<Type> createForm(){
 	        		ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Deleting),

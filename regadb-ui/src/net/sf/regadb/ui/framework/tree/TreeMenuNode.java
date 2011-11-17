@@ -12,9 +12,12 @@ import eu.webtoolkit.jwt.WTreeNode;
 
 public abstract class TreeMenuNode extends WTreeNode
 {
-	public TreeMenuNode(WString intlText, WTreeNode root)
+	private boolean canLeaveNode;
+	
+	public TreeMenuNode(WString intlText, WTreeNode root, boolean canLeaveNode)
 	{
 		super(intlText, null, root);
+		this.canLeaveNode = canLeaveNode;
 		
 		setInteractive(false);
 		setLabelIcon(null);
@@ -96,7 +99,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	public TreeMenuNode(WString intlText)
 	{
-		this(intlText, null);
+		this(intlText, null, true);
 	}
 	
 	public ArrayList<TreeMenuNode> getChildren()
@@ -253,5 +256,9 @@ public abstract class TreeMenuNode extends WTreeNode
 		for(WTreeNode n : getChildNodes())
 			if(n instanceof TreeMenuNode)
 				((TreeMenuNode)n).reset();
+	}
+	
+	public boolean canLeaveNode(){
+		return this.canLeaveNode;
 	}
 }

@@ -21,21 +21,21 @@ public class ContactItem extends DefaultNavigationNode {
     public ContactItem(TreeMenuNode root) {
         super(WString.tr("menu.patient.custom.contact"), root);
         
-        lastContact = new FormNavigationNode(WString.tr("menu.patient.custom.contact.last"), this) {
+        lastContact = new FormNavigationNode(WString.tr("menu.patient.custom.contact.last"), this, true) {
             public IForm createForm() {
             	return ContactItem.this.createMultipleTestResultForm(
             			WString.tr("form.multipleTestResults.contact.view"), InteractionState.Viewing);
             }   
         };
         
-        addContact = new FormNavigationNode(WString.tr("menu.patient.custom.contact.add"), this) {
+        addContact = new FormNavigationNode(WString.tr("menu.patient.custom.contact.add"), this, true) {
             public IForm createForm() {
                 return ContactItem.this.createMultipleTestResultForm(
                 		WString.tr("form.multipleTestResults.contact.add"), InteractionState.Adding);
             }
         };
         
-        grid = new FormNavigationNode(WString.tr("menu.patient.custom.contact.grid"), this) {
+        grid = new FormNavigationNode(WString.tr("menu.patient.custom.contact.grid"), this, true) {
             public IForm createForm() {
                 return new GridForm(InteractionState.Adding, lastContact){
 

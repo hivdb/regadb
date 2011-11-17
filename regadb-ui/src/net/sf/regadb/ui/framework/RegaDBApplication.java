@@ -57,8 +57,8 @@ public class RegaDBApplication extends WApplication
 		
 		internalPathChanged().addListener(this.getRoot(), new Signal1.Listener<String>(){
 			public void trigger(String ip) {
-//                if (!getNavigation().getSelectedNode().canLeaveNode())
-//                	return;
+                if (!window_.getTree_().getSelectedTreeNode().canLeaveNode())
+                	return;
 				
 				String[] paths = ip.split("/");
 				

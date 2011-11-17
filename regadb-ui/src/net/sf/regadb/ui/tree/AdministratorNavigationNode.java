@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Dataset;
-import net.sf.regadb.db.DatasetAccess;
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.SettingsUser;
@@ -55,8 +54,6 @@ import eu.webtoolkit.jwt.WString;
 
 public class AdministratorNavigationNode extends DefaultNavigationNode{
 	
-	private SelectedItemNavigationNode<DatasetAccess> datasetAccessSelected;
-	private FormNavigationNode datasetAccessSelect;
 	private ObjectTreeNode<SettingsUser> settingsUser;
 	
 	private FormNavigationNode updateForm;
@@ -320,7 +317,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
         	
         };
-        new FormNavigationNode(WString.tr("form.settings.user.password"), settingsUser.getSelectedItemNavigationNode()){
+        new FormNavigationNode(WString.tr("form.settings.user.password"), settingsUser.getSelectedItemNavigationNode(), true){
 
 			@Override
 			public IForm createForm() {
@@ -334,7 +331,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         
         
         DefaultNavigationNode update = new DefaultNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos"), this);
-        updateForm = new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update.view"), update)
+        updateForm = new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update.view"), update, true)
         {
             public IForm createForm()
             {
@@ -351,7 +348,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
                 };
             }
         };
-        new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update"), update)
+        new FormNavigationNode(WString.tr("menu.administrator.updateFromCentralRepos.update"), update, true)
         {
             public IForm createForm()
             {
@@ -401,14 +398,14 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         };
         
         DefaultNavigationNode importXML = new DefaultNavigationNode(WString.tr("menu.impex.import"), this);
-        new FormNavigationNode(WString.tr("menu.impex.import.run"), importXML)
+        new FormNavigationNode(WString.tr("menu.impex.import.run"), importXML, true)
         {
             public IForm createForm() 
             {
                 return new ImportFormRunning(WString.tr("form.impex.import.title"), InteractionState.Viewing);
             }
         };
-        new FormNavigationNode(WString.tr("menu.impex.import.add"), importXML)
+        new FormNavigationNode(WString.tr("menu.impex.import.add"), importXML, true)
         {
             public IForm createForm() 
             {
@@ -428,7 +425,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
             }
         };
         
-        new FormNavigationNode(WString.tr("menu.impex.export"), this)
+        new FormNavigationNode(WString.tr("menu.impex.export"), this, true)
         {
             public IForm createForm() 
             {
@@ -438,14 +435,14 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         
         DefaultNavigationNode batchTest = new DefaultNavigationNode(WString.tr("menu.batchtest"), this);
         
-        new FormNavigationNode(WString.tr("menu.batchtest.running"), batchTest) {
+        new FormNavigationNode(WString.tr("menu.batchtest.running"), batchTest, true) {
             public IForm createForm() 
             {
                 return new BatchTestRunningForm(WString.tr("form.batchtest.title"), InteractionState.Viewing);
             }
         };
 
-        new FormNavigationNode(WString.tr("menu.batchtest.add"), batchTest) {
+        new FormNavigationNode(WString.tr("menu.batchtest.add"), batchTest, true) {
             public IForm createForm() 
             {
                 return new BatchTestAddForm(WString.tr("form.batchtest.title"), InteractionState.Adding){
@@ -497,7 +494,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         	
         };
         
-        new FormNavigationNode(WString.tr("menu.version"),this)
+        new FormNavigationNode(WString.tr("menu.version"),this, true)
         {
             public IForm createForm() 
             {

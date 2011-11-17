@@ -26,7 +26,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
 	public AccountNavigationNode(TreeMenuNode parent) {
 		super(WString.tr("menu.myAccount.myAccount"), parent);
 
-        accountLogin = new FormNavigationNode(WString.tr("menu.myAccount.login"), this){
+        accountLogin = new FormNavigationNode(WString.tr("menu.myAccount.login"), this, true){
         	@Override
         	public IForm createForm(){
         		return new LoginForm();
@@ -37,7 +37,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
         		return RegaDBMain.getApp().getLogin() != null;
         	}
         };
-        accountAdd = new FormNavigationNode(WString.tr("menu.myAccount.add"),this) {
+        accountAdd = new FormNavigationNode(WString.tr("menu.myAccount.add"),this, false) {
 			@Override
 			public IForm createForm() {
 				return new AccountForm(WWidget.tr("form.account.create"), InteractionState.Adding, null, new SettingsUser(), false){
@@ -58,7 +58,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
                 return RegaDBMain.getApp().getLogin()!=null;
             }
 		};
-		accountView = new FormNavigationNode(WString.tr("menu.myAccount.view"),this){
+		accountView = new FormNavigationNode(WString.tr("menu.myAccount.view"),this, true){
 			@Override
 			public IForm createForm(){
 				return new AccountForm(WWidget.tr("form.account.view"), InteractionState.Viewing, null, null, false);
@@ -70,7 +70,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
                 return RegaDBMain.getApp().getLogin()==null;
             }
 		};
-		FormNavigationNode accountEdit = new FormNavigationNode(WString.tr("menu.myAccount.edit"),this){
+		FormNavigationNode accountEdit = new FormNavigationNode(WString.tr("menu.myAccount.edit"),this, false){
 			@Override
 			public IForm createForm(){
 				return new AccountForm(WWidget.tr("form.account.edit"), InteractionState.Editing, null, null, false){
@@ -91,7 +91,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
                 return RegaDBMain.getApp().getLogin()==null;
             }
 		};
-		FormNavigationNode accountPass = new FormNavigationNode(WString.tr("menu.myAccount.passwordForm"),this){
+		FormNavigationNode accountPass = new FormNavigationNode(WString.tr("menu.myAccount.passwordForm"),this, true){
 			@Override
 			public IForm createForm(){
 				return new PasswordForm(WWidget.tr("form.account.edit.password"), InteractionState.Editing, accountView, false, null);
@@ -103,7 +103,7 @@ public class AccountNavigationNode extends DefaultNavigationNode{
                 return RegaDBMain.getApp().getLogin()==null;
             }
 		};
-		TreeMenuNode accountLogout = new TreeMenuNode(WString.tr("menu.myAccount.logout"),this){
+		TreeMenuNode accountLogout = new TreeMenuNode(WString.tr("menu.myAccount.logout"),this, true){
 			public void doAction(){
 				final WMessageBox cmb = UIUtils.createYesNoMessageBox(this, tr("menu.myAccount.logout.warning"));
                 cmb.buttonClicked().addListener(this, new Signal1.Listener<StandardButton>(){

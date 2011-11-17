@@ -9,7 +9,7 @@ public abstract class GenericSelectedItem<DataType> extends TreeMenuNode
     
     public GenericSelectedItem(WTreeNode parent, String text)
     {
-        super(tr(text), parent);
+        super(tr(text), parent, true);
         getLabel().getText().arg("");
     }
 

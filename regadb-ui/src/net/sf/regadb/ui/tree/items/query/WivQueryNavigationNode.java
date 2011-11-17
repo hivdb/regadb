@@ -20,63 +20,63 @@ public class WivQueryNavigationNode extends DefaultNavigationNode {
 	public WivQueryNavigationNode(TreeMenuNode parent) {
 		super(WString.tr("menu.query.wiv"), parent);
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv.arl.confirmedHiv"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.confirmedHiv"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArlConfirmedHivForm();
 			}
 		};
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv.arl.epidemiology"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.epidemiology"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArlEpidemiologyForm();
 			}
 		};
 
-		new FormNavigationNode(WString.tr("menu.query.wiv.arl.cd4"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.cd4"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArlCd4Form();
 			}
 		};
 
-		new FormNavigationNode(WString.tr("menu.query.wiv.arl.viralLoad"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arl.viralLoad"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArlViralLoadForm();
 			}
 		};
 
-		new FormNavigationNode(WString.tr("menu.query.wiv.arc.cd4"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arc.cd4"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArcCd4Form();
 			}
 		};
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv.arc.viralLoad"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arc.viralLoad"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArcViralLoadForm();
 			}
 		};
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv.arc.therapyAtc"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arc.therapyAtc"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArcTherapyAtcForm();
 			}
 		};
 		
-		new FormNavigationNode(WString.tr("menu.query.wiv.arc.lastContact"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arc.lastContact"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArcLastContactForm();
 			}
 		};
 
-		new FormNavigationNode(WString.tr("menu.query.wiv.arc.deaths"),this){
+		new FormNavigationNode(WString.tr("menu.query.wiv.arc.deaths"),this, true){
 			@Override
 			public IForm createForm() {
 				return new WivArcDeathsForm();

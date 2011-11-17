@@ -10,10 +10,11 @@ public abstract class FormNavigationNode extends TreeMenuNode {
 
 	private IForm form;
 	
-	public FormNavigationNode(WString name, TreeMenuNode parent) {
-		super(name, parent);
+	public FormNavigationNode(WString name, TreeMenuNode parent, boolean canLeaveNode) {
+		super(name, parent, canLeaveNode);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void doAction() {
 		if(form == null)

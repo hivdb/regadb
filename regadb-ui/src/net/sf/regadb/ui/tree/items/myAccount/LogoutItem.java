@@ -13,7 +13,7 @@ public class LogoutItem extends TreeMenuNode
 {
     public LogoutItem(WTreeNode root)
     {
-        super(tr("menu.myAccount.logout"), root);
+        super(tr("menu.myAccount.logout"), root, true);
     }
     
     @Override
