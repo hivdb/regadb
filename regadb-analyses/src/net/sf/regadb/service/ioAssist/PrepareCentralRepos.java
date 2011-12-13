@@ -122,6 +122,8 @@ public class PrepareCentralRepos
         Test resTest;
         resTest = createResistanceTest("ANRS-HIV1-2010.07.xml", "ANRS 2010.07", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("ANRS-HIV1-2011.10.xml", "ANRS 2011.10", StandardObjects.getHiv1Genome());
+        export.writeTopTest(resTest, tests);
         resTest = createResistanceTest("HIVDB-HIV1-6.0.5.xml", "HIVDB 6.0.5", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
         resTest = createResistanceTest("Rega-HIV1-6.4.1.xml", "REGA v6.4.1", StandardObjects.getHiv1Genome());
