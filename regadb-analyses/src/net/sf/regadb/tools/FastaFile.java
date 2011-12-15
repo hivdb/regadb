@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.sf.regadb.db.NtSequence;
+import net.sf.regadb.db.ViralIsolate;
 
 public class FastaFile{
 	private static String possibleNucleotides  = "ACGTUMRWSYKVHDBN";
@@ -22,13 +23,20 @@ public class FastaFile{
 	private Map<String, NtSequence> map = new TreeMap<String, NtSequence>();
 	private List<NtSequence> list = new ArrayList<NtSequence>();
 	
+	public FastaFile(){
+		
+	}
+	
 	public FastaFile(File input) throws IOException{
 		this(input, false);
 	}
 	
 	public FastaFile(File input, boolean clearNucleotides) throws IOException{
 		this.file = input;
-		
+		readFile(input, clearNucleotides);
+	}
+	
+	public void readFile(File input, boolean clearNucleotides) throws IOException{
 		BufferedReader br = null;
 		
 		try{
@@ -58,7 +66,7 @@ public class FastaFile{
 		}finally{
 			if(br != null)
 				br.close();
-		}
+		}		
 	}
 	
 	public File getFile(){

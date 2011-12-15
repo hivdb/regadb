@@ -35,6 +35,7 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WValidator;
 
 public class NtSequenceForm extends WContainerWidget{
 	private ViralIsolateMainForm viralIsolateMainForm;
@@ -119,7 +120,18 @@ public class NtSequenceForm extends WContainerWidget{
 		
 		labelL = new Label(tr("form.viralIsolate.editView.seqLabel"));
 		labelF = new TextField(getInteractionState(), getViralIsolateForm());
-		labelF.setMandatory(true);
+		if(isEditable()){
+//TODO remove hard-coded 50 char limit
+			labelF.setValidator(new WValidator(true){
+				@Override
+				public State validate(String input) {
+					if(input != null && input.length() > 50)
+						return State.Invalid;
+					else
+						return super.validate(input);
+				}
+			});
+		}
 		table.addLineToTable(labelL, labelF);
 		
 		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
