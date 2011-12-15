@@ -2,7 +2,6 @@ package net.sf.regadb.io.db.ghb;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.io.db.util.DelimitedReader;
@@ -72,14 +71,15 @@ public class CheckSequences {
 				if(name.endsWith(".fsta") || name.endsWith(".fasta")){
 					try{
 						FastaFile ff = new FastaFile(f);
-						for(Map.Entry<String,NtSequence> seq : ff.entrySet()){
-							String nucs = seq.getValue().getNucleotides().toLowerCase().trim();
+						for(int i=0; i<ff.size(); ++i){
+							NtSequence seq = ff.get(i);
+							String nucs = seq.getNucleotides().toLowerCase().trim();
 							if(nucleotides.equals(nucs)){
 								log(sampleid,
 									label,
 									dir.getAbsolutePath().substring(offset),
 									f.getAbsolutePath().substring(offset),
-									seq.getKey());
+									seq.getLabel());
 								found = true;
 								break;
 							}

@@ -28,22 +28,21 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.ghb.GhbUtils;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.db.util.mapping.DbObjectStore;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper;
-import net.sf.regadb.io.db.util.mapping.ObjectStore;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.InvalidValueException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingDoesNotExistException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.MappingException;
 import net.sf.regadb.io.db.util.mapping.ObjectMapper.ObjectDoesNotExistException;
+import net.sf.regadb.io.db.util.mapping.ObjectStore;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.Arguments.ArgumentException;
 import net.sf.regadb.util.args.PositionalArgument;
 import net.sf.regadb.util.args.ValueArgument;
-import net.sf.regadb.util.args.Arguments.ArgumentException;
-import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.mapper.XmlMapper;
 import net.sf.regadb.util.mapper.XmlMapper.MapperParseException;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -511,14 +510,7 @@ public class AutoImport {
     }
     
     private TestResult duplicateTestResult(Patient p, TestResult result) {
-        for(TestResult tr : p.getTestResults()) {
-            if(Equals.isSameTest(tr.getTest(),result.getTest()) &&
-                    DateUtils.equals(tr.getTestDate(),result.getTestDate()) && 
-                    equals(tr.getSampleId(),result.getSampleId())) {
-            	return tr;
-            }
-        }
-        return null;
+    	return Utils.getDuplicateTestResult(p, result);
     }
     
 //    private TestResult dublicateTestTypeResult(Patient p, TestResult result) {

@@ -29,6 +29,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
@@ -36,6 +37,7 @@ import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.tools.FastaFile;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
@@ -943,5 +945,18 @@ public class Utils {
 				pav.setValue(value);
 		}
 		return pav;
+	}
+	
+	public static TestResult getDuplicateTestResult(Patient p, TestResult result){
+        for(TestResult tr : p.getTestResults()) {
+            if(Equals.isSameTest(tr.getTest(),result.getTest())
+            		&& DateUtils.equals(tr.getTestDate(),result.getTestDate()) 
+                    && (tr.getSampleId() == result.getSampleId()
+                    		|| (tr.getSampleId() != null && tr.getSampleId().equals(result.getSampleId())))
+                    	){
+            	return tr;
+            }
+        }
+        return null;
 	}
 }
