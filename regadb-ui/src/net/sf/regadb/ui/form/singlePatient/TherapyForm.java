@@ -1,10 +1,11 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -142,23 +143,31 @@ public class TherapyForm extends FormWidget
         
 		//generic drugs group
         t = RegaDBMain.getApp().createTransaction();
-        List<TherapyGeneric> tgs = new ArrayList<TherapyGeneric>();
-        for(TherapyGeneric tg : therapy_.getTherapyGenerics())
-        {
-            tgs.add(tg);
-        }
+        TreeSet<TherapyGeneric> tgs = new TreeSet<TherapyGeneric>(new Comparator<TherapyGeneric>(){
+			@Override
+			public int compare(TherapyGeneric o1, TherapyGeneric o2) {
+				return o1.getId().getDrugGeneric().getGenericName().compareTo(
+						o2.getId().getDrugGeneric().getGenericName());
+			}
+        });
+        tgs.addAll(therapy_.getTherapyGenerics());
         t.commit();
         iGenericDrugSelectionEditableTable_ = new IGenericDrugSelectionEditableTable(this, therapy_);
         drugGenericList_ = new EditableTable<TherapyGeneric>(genericGroup_, iGenericDrugSelectionEditableTable_, tgs);
 			
         //commercial drugs group
         t = RegaDBMain.getApp().createTransaction();
-        List<TherapyCommercial> tcs = new ArrayList<TherapyCommercial>();
-        for(TherapyCommercial tc : therapy_.getTherapyCommercials())
-        {
-            tcs.add(tc);
-        }
+
+        TreeSet<TherapyCommercial> tcs = new TreeSet<TherapyCommercial>(new Comparator<TherapyCommercial>() {
+			@Override
+			public int compare(TherapyCommercial arg0, TherapyCommercial arg1) {
+				return arg0.getId().getDrugCommercial().getName().compareTo(
+						arg1.getId().getDrugCommercial().getName());
+			}
+		});
+        tcs.addAll(therapy_.getTherapyCommercials());
         t.commit();
+        
         iCommercialDrugSelectionEditableTable_ = new ICommercialDrugSelectionEditableTable(this, therapy_);
         drugCommercialList_ = new EditableTable<TherapyCommercial>(commercialGroup_, iCommercialDrugSelectionEditableTable_, tcs);
 	}

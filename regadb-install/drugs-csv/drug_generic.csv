@@ -42,3 +42,4 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 42,EVG,6,elvitegravir,none,HIV-1+HIV-2A+HIV-2B
 42,EVG/r,6,elvitegravir/r,none+J05AE03,HIV-1+HIV-2A+HIV-2B
 43,RPV,3,rilpivirine,,HIV-1+HIV-2A+HIV-2B
+44,DTG,6,dolutegravir,,HIV-1+HIV-2A+HIV-2B
