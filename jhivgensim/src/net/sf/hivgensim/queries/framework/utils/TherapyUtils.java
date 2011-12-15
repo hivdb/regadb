@@ -23,6 +23,12 @@ import net.sf.regadb.db.ViralIsolate;
 
 public class TherapyUtils {
 	
+	public static final Comparator<Therapy> therapySortComparator = new Comparator<Therapy>() {
+		public int compare(Therapy t1, Therapy t2) {
+			return t1.getStartDate().compareTo(t2.getStartDate());
+		}
+	};
+	
 	public static int daysExperienceWithDrugClass(List<Therapy> therapies, String drugClass) {
 		int days = 0;
 
@@ -123,11 +129,7 @@ public class TherapyUtils {
 	public static List<Therapy> sortTherapiesByStartDate(Set<Therapy> therapies){
 		List<Therapy> sortedTherapies = new ArrayList<Therapy>(therapies);
 
-		Collections.sort(sortedTherapies, new Comparator<Therapy>() {
-			public int compare(Therapy t1, Therapy t2) {
-				return t1.getStartDate().compareTo(t2.getStartDate());
-			}
-		});
+		Collections.sort(sortedTherapies, therapySortComparator);
 
 		return sortedTherapies;
 	}
