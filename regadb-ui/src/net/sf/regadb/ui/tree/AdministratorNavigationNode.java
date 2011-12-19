@@ -57,6 +57,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 	private ObjectTreeNode<SettingsUser> settingsUser;
 	
 	private FormNavigationNode updateForm;
+	private FormNavigationNode batchTestRunningForm;
 
 	public AdministratorNavigationNode(TreeMenuNode parent) {
 		super(WString.tr("menu.administrator.administrator"), parent);
@@ -435,7 +436,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         
         DefaultNavigationNode batchTest = new DefaultNavigationNode(WString.tr("menu.batchtest"), this);
         
-        new FormNavigationNode(WString.tr("menu.batchtest.running"), batchTest, true) {
+        batchTestRunningForm = new FormNavigationNode(WString.tr("menu.batchtest.running"), batchTest, true) {
             public IForm createForm() 
             {
                 return new BatchTestRunningForm(WString.tr("form.batchtest.title"), InteractionState.Viewing);
@@ -449,14 +450,12 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 
 					@Override
 					public void redirectAfterSave() {
-						// TODO Auto-generated method stub
-						
+						batchTestRunningForm.selectNode();
 					}
 
 					@Override
 					public void redirectAfterCancel() {
-						// TODO Auto-generated method stub
-						
+						batchTestRunningForm.selectNode();
 					}
                 	
                 };
