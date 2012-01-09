@@ -15,10 +15,10 @@ public class TreeContent
 	public PatientTreeNode patientTreeNode;
 	public AccountNavigationNode accountNode;
     
-    
 	public TreeMenuNode setContent(RootMenuNode rootItem)
 	{
 		return createNavigation(rootItem);
+
 	}
     
     public TreeMenuNode createNavigation(RootMenuNode root){

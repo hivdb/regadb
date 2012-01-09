@@ -22,8 +22,8 @@ import net.sf.regadb.ui.datatable.settingsUser.SelectSettingsUserForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
+import net.sf.regadb.ui.form.administrator.AboutForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
-import net.sf.regadb.ui.form.administrator.VersionForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
@@ -493,11 +493,11 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         	
         };
         
-        new FormNavigationNode(WString.tr("menu.version"),this, true)
+        new FormNavigationNode(WString.tr("menu.about"),this, true)
         {
             public IForm createForm() 
             {
-                return new VersionForm();
+                return new AboutForm();
             }
         };
 	}
