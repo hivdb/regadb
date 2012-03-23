@@ -173,38 +173,42 @@ public class PatientEventForm extends ObjectForm<PatientEventValue>
 		Patient p = RegaDBMain.getApp().getSelectedPatient();
 		t.attach(p);
 		
-		if( endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
-        {
-			UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
-        }
-        else
-        {
-        	if( getInteractionState() == InteractionState.Adding )
-			{
-        		setObject(p.addPatientEvent(cmbEvents.currentValue()));
-			}
-			
-        	getObject().setStartDate(startDate.getDate());
-        	getObject().setEndDate(endDate.getDate());
-			
-        	getObject().setEvent(cmbEvents.currentValue());
-			
-			if ( isNominalValue() )
-			{
-				getObject().setEventNominalValue( (EventNominalValue)((ComboBox)ffValue).currentValue() );
-			}
-			else
-			{
-				getObject().setValue( ((TextField)ffValue).getFormText() );
-			}
-			
-			update(getObject(), t);
-			t.commit();
+    	if( getInteractionState() == InteractionState.Adding )
+		{
+    		setObject(p.addPatientEvent(cmbEvents.currentValue()));
 		}
+		
+    	getObject().setStartDate(startDate.getDate());
+    	getObject().setEndDate(endDate.getDate());
+		
+    	getObject().setEvent(cmbEvents.currentValue());
+		
+		if ( isNominalValue() )
+		{
+			getObject().setEventNominalValue( (EventNominalValue)((ComboBox)ffValue).currentValue() );
+		}
+		else
+		{
+			getObject().setValue( ((TextField)ffValue).getFormText() );
+		}
+			
+		update(getObject(), t);
+		t.commit();
 	}
 	
 	public boolean isNominalValue()
 	{
 		return (ValueTypes.getValueType(cmbEvents.currentValue().getValueType()) == ValueTypes.NOMINAL_VALUE);
+	}
+	
+	@Override
+	public boolean validateForm(){
+		if(super.validateForm()){
+			if(endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
+				UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
+			else
+				return true;
+		}
+		return false;
 	}
 }
