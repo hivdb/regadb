@@ -145,34 +145,36 @@ public class PatientChart
 			}
 		} else {
 			Collection<String> classes = ViralIsolateFormUtils.getRelevantDrugClasses(a.getProtein().getAbbreviation());
-			final Set<String> mutations = new TreeSet<String>();
-			
-			for (TestResult tr : a.getNtSequence().getViralIsolate()
-					.getTestResults()) {
-				if (tr.getTest().getDescription().equals(positionAlgorithm_)
-						&& tr.getDrugGeneric() != null
-						&& classes.contains(tr.getDrugGeneric().getDrugClass()
-								.getClassId())) {
-					ResistanceInterpretationParser parser = new ResistanceInterpretationParser() {
-						public void completeScore(String drug, int level,
-								double gss, String description, char sir,
-								ArrayList<String> mutationsP, String remarks) {
-							mutations.addAll(mutationsP);
+			if(classes != null){
+				final Set<String> mutations = new TreeSet<String>();
+				
+				for (TestResult tr : a.getNtSequence().getViralIsolate()
+						.getTestResults()) {
+					if (tr.getTest().getDescription().equals(positionAlgorithm_)
+							&& tr.getDrugGeneric() != null
+							&& classes.contains(tr.getDrugGeneric().getDrugClass()
+									.getClassId())) {
+						ResistanceInterpretationParser parser = new ResistanceInterpretationParser() {
+							public void completeScore(String drug, int level,
+									double gss, String description, char sir,
+									ArrayList<String> mutationsP, String remarks) {
+								mutations.addAll(mutationsP);
+							}
+						};
+						try {
+							parser.parse(new InputSource(new ByteArrayInputStream(
+									tr.getData())));
+						} catch (SAXException e) {
+							System.err.println("Parsing of resistance test failed");
+						} catch (IOException e) {
+							System.err.println("Parsing of resistance test failed");
 						}
-					};
-					try {
-						parser.parse(new InputSource(new ByteArrayInputStream(
-								tr.getData())));
-					} catch (SAXException e) {
-						System.err.println("Parsing of resistance test failed");
-					} catch (IOException e) {
-						System.err.println("Parsing of resistance test failed");
 					}
 				}
-			}
-			
-			for (String mut : mutations) {
-				mb.mutations.add(mut);
+				
+				for (String mut : mutations) {
+					mb.mutations.add(mut);
+				}
 			}
 		}
 		
