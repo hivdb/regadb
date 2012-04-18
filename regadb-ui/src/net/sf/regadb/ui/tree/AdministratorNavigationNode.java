@@ -399,7 +399,7 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
         };
         
         DefaultNavigationNode importXML = new DefaultNavigationNode(WString.tr("menu.impex.import"), this);
-        new FormNavigationNode(WString.tr("menu.impex.import.run"), importXML, true)
+        final FormNavigationNode importRunning = new FormNavigationNode(WString.tr("menu.impex.import.run"), importXML, true)
         {
             public IForm createForm() 
             {
@@ -413,13 +413,11 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
                 return new ImportFormAdd(WString.tr("form.impex.import.title"), InteractionState.Adding){
 					@Override
 					public void redirectAfterSave() {
-						// TODO Auto-generated method stub
-						
+						importRunning.selectNode();
 					}
 					@Override
 					public void redirectAfterCancel() {
-						// TODO Auto-generated method stub
-						
+						importRunning.selectNode();
 					}
                 	
                 };
