@@ -17,6 +17,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.sequencedb.SequenceDb;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
@@ -66,111 +67,113 @@ public class AlignService extends AbstractService implements IAnalysis{
 		Genome g = this.genome;
 		Transaction t = null;
 		
-		if(login != null){
-			t = login.createTransaction();
-			vi = t.getViralIsolate(viralIsolateIi);
-			g = t.getGenome(organismName);
-		}
-		
-		NtSequence nt = null;
-		
-		for(int i=0; i<lines.length; ++i){
-			if(lines[i].startsWith("sequence=")){
-				String label = lines[i].substring("sequence=".length());
-				
-				for(NtSequence nti : vi.getNtSequences()){
-					if(nti.getLabel().replace(' ','_').replace(',','-').equals(label)){
-						nt = nti;
-						break;
-					}
-				}
+		synchronized(AnalysisThread.mutex_){
+			if(login != null){
+				t = login.createTransaction();
+				vi = t.getViralIsolate(viralIsolateIi);
+				g = t.getGenome(organismName);
 			}
-			else if(lines[i].startsWith("protein=") && nt != null){
-				String f[] = lines[i].split(",");
-				String protein = f[0].substring("protein=".length());
-				String start = f[1].substring("start=".length());
-				String stop = f[2].substring("end=".length());
-				String muts[] = f[3].substring("mutations=".length()).trim().split(" ");
-				
-				Protein pr = null;
-				for(OpenReadingFrame orf : g.getOpenReadingFrames()){
-					for(Protein pri : orf.getProteins()){
-						if(pri.getAbbreviation().equals(protein)){
-							pr = pri;
+			
+			NtSequence nt = null;
+			
+			for(int i=0; i<lines.length; ++i){
+				if(lines[i].startsWith("sequence=")){
+					String label = lines[i].substring("sequence=".length());
+					
+					for(NtSequence nti : vi.getNtSequences()){
+						if(nti.getLabel().replace(' ','_').replace(',','-').equals(label)){
+							nt = nti;
 							break;
 						}
 					}
-					if(pr != null)
-						break;
 				}
-				if(pr != null){
-					int prevPos = 0;
-					short insertionOrder = 0;
+				else if(lines[i].startsWith("protein=") && nt != null){
+					String f[] = lines[i].split(",");
+					String protein = f[0].substring("protein=".length());
+					String start = f[1].substring("start=".length());
+					String stop = f[2].substring("end=".length());
+					String muts[] = f[3].substring("mutations=".length()).trim().split(" ");
 					
-					AaSequence aaseq = new AaSequence(nt, pr,
-							Short.parseShort(start), Short.parseShort(stop));
-					
-					for(String mut : muts){
-						int pos = mut.indexOf(';');
-						if(pos == -1)
-							continue;
-						String aaMut = mut.substring(0,pos);
-						String ntMut = mut.substring(pos+1);
-						
-						
-						Matcher m = mutationPattern.matcher(aaMut);
-						if(!m.matches())
-							System.err.println(aaMut);
-	
-						String aaref = m.group(1);
-						pos = Integer.parseInt(m.group(2));
-						String aatar = m.group(3);
-							
-						m = mutationPattern.matcher(ntMut);
-						if(!m.matches())
-							System.err.println(ntMut);
-	
-						String ntref = m.group(1).toLowerCase();
-						String nttar = m.group(3).toLowerCase();
-						
-						
-						if(aaref.equals("-")){
-							AaInsertion aains = new AaInsertion();
-							aains.setAaInsertion(aatar);
-							aains.setNtInsertionCodon(nttar);
-							
-							if(pos == prevPos)
-								++insertionOrder;
-							else
-								insertionOrder=0;
-							
-							prevPos = pos;
-							
-							aains.setId(new AaInsertionId((short)pos, aaseq, insertionOrder));
-							aaseq.getAaInsertions().add(aains);
+					Protein pr = null;
+					for(OpenReadingFrame orf : g.getOpenReadingFrames()){
+						for(Protein pri : orf.getProteins()){
+							if(pri.getAbbreviation().equals(protein)){
+								pr = pri;
+								break;
+							}
 						}
-						else{
-							AaMutation aamut = new AaMutation();
-							aamut.setAaReference(aaref);
-							aamut.setAaMutation(aatar);
-							aamut.setNtReferenceCodon(ntref);
-							aamut.setNtMutationCodon(nttar);
-							aamut.setId(new AaMutationId((short)pos, aaseq));
-							aaseq.getAaMutations().add(aamut);
-						}
+						if(pr != null)
+							break;
 					}
-					nt.setAligned(true);
-					nt.getAaSequences().add(aaseq);
+					if(pr != null){
+						int prevPos = 0;
+						short insertionOrder = 0;
+						
+						AaSequence aaseq = new AaSequence(nt, pr,
+								Short.parseShort(start), Short.parseShort(stop));
+						
+						for(String mut : muts){
+							int pos = mut.indexOf(';');
+							if(pos == -1)
+								continue;
+							String aaMut = mut.substring(0,pos);
+							String ntMut = mut.substring(pos+1);
+							
+							
+							Matcher m = mutationPattern.matcher(aaMut);
+							if(!m.matches())
+								System.err.println(aaMut);
+		
+							String aaref = m.group(1);
+							pos = Integer.parseInt(m.group(2));
+							String aatar = m.group(3);
+								
+							m = mutationPattern.matcher(ntMut);
+							if(!m.matches())
+								System.err.println(ntMut);
+		
+							String ntref = m.group(1).toLowerCase();
+							String nttar = m.group(3).toLowerCase();
+							
+							
+							if(aaref.equals("-")){
+								AaInsertion aains = new AaInsertion();
+								aains.setAaInsertion(aatar);
+								aains.setNtInsertionCodon(nttar);
+								
+								if(pos == prevPos)
+									++insertionOrder;
+								else
+									insertionOrder=0;
+								
+								prevPos = pos;
+								
+								aains.setId(new AaInsertionId((short)pos, aaseq, insertionOrder));
+								aaseq.getAaInsertions().add(aains);
+							}
+							else{
+								AaMutation aamut = new AaMutation();
+								aamut.setAaReference(aaref);
+								aamut.setAaMutation(aatar);
+								aamut.setNtReferenceCodon(ntref);
+								aamut.setNtMutationCodon(nttar);
+								aamut.setId(new AaMutationId((short)pos, aaseq));
+								aaseq.getAaMutations().add(aamut);
+							}
+						}
+						nt.setAligned(true);
+						nt.getAaSequences().add(aaseq);
+					}
 				}
 			}
-		}
-		
-		if(t != null)
-			t.commit();
-		
-		if(sequenceDb != null){
-			for(NtSequence ntseq : vi.getNtSequences())
-				sequenceDb.sequenceAligned(ntseq);
+			
+			if(t != null)
+				t.commit();
+			
+			if(sequenceDb != null){
+				for(NtSequence ntseq : vi.getNtSequences())
+					sequenceDb.sequenceAligned(ntseq);
+			}
 		}
 	}
 
