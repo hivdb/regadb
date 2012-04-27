@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
@@ -121,17 +122,21 @@ public class FullCsvExport implements ExportPatient {
 		formatField(row, t.getStopDate());
 		formatField(row, t.getTherapyMotivation()==null?"":t.getTherapyMotivation().getValue());
 		
-		String haart = "";
+		Set<String> haart = new TreeSet<String>();
 		for(TherapyCommercial tc : t.getTherapyCommercials()) {
 			for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()) {
-				haart += dg.getGenericId() + " ";
+				haart.add(dg.getGenericId());
 			}
 		}
 		for(TherapyGeneric tg : t.getTherapyGenerics()) {
-			haart += tg.getId().getDrugGeneric().getGenericId() + " ";
+			haart.add(tg.getId().getDrugGeneric().getGenericId());
 		}
 		
-		formatField(row, haart, false);
+		StringBuilder sb = new StringBuilder();
+		for(String genericId : haart)
+			sb.append(genericId).append(' ');
+		
+		formatField(row, sb.toString(), false);
 		
 		fw.append(row.toString());
 	}
