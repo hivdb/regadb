@@ -10,7 +10,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/asm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-tools.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/regadb-util"/>
-	<classpathentry exported="true" kind="lib" path="lib/postgresql-8.2-505.jdbc3.jar"/>
+	<classpathentry kind="lib" path="lib/postgresql-9.1-901.jdbc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0-0.9.1.jar"/>
