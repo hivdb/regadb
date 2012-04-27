@@ -22,7 +22,7 @@ import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.form.administrator.ContaminationOverview;
 import net.sf.regadb.ui.form.administrator.SampleDistancesForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
-import net.sf.regadb.ui.form.administrator.VersionForm;
+import net.sf.regadb.ui.form.administrator.AboutForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeGroupForm;
 import net.sf.regadb.ui.form.batchtest.BatchTestAddForm;
@@ -229,7 +229,7 @@ public class TreeContent
     public ActionItem logDelete;
     public LogSelectedItem logSelectedItem;
     
-    public ActionItem version;
+    public ActionItem about;
     
 	public QueryDefinitionSelectedItem queryToolSelected;
 	public ActionItem queryToolSelectedView;
@@ -1097,11 +1097,11 @@ public class TreeContent
 	            });
             }
             
-            version = new ActionItem(WResource.tr("menu.version"),administratorMain, new ITreeAction()
+            about = new ActionItem(WResource.tr("menu.about"),administratorMain, new ITreeAction()
             {
                 public void performAction(TreeMenuNode node) 
                 {
-                    RegaDBMain.getApp().getFormContainer().setForm(new VersionForm());
+                    RegaDBMain.getApp().getFormContainer().setForm(new AboutForm());
                 }
             });
             

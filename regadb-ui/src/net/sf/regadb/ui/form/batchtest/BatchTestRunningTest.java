@@ -56,6 +56,8 @@ public class BatchTestRunningTest extends Thread {
 			
 			if ( status == BatchTestStatus.RUNNING ) {
 				status = BatchTestStatus.DONE;
+			} else if( status == BatchTestStatus.CANCELING){
+				status = BatchTestStatus.CANCELED;
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();

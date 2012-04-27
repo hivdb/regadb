@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -352,6 +353,18 @@ public class GenerateReport
         }
     }
     
+    private class MutationList{
+    	public int start, stop;
+    	public String mutations;
+    	
+    	public MutationList(int start, int stop, String mutations){
+    		this.start = start;
+    		this.stop = stop;
+    		this.mutations = mutations == null || mutations.trim().length() == 0 ?
+    				"-" : mutations;
+    	}
+    }
+    
     private void setMutations(ViralIsolate vi)
     {
         List<AaSequence> aaSeqs = new ArrayList<AaSequence>();
@@ -370,6 +383,24 @@ public class GenerateReport
         
         Genome g = vi.getGenome();
         
+        Map<String, Map<String, MutationList>> proteinMutationLists = new HashMap<String, Map<String, MutationList>>();
+        for(AaSequence aaSeq : aaSeqs){
+        	String proteinAbbreviation = aaSeq.getProtein().getAbbreviation();
+        	
+        	Map<String, MutationList> mutationList = proteinMutationLists.get(proteinAbbreviation);
+        	if(mutationList == null){
+        		mutationList = new TreeMap<String, MutationList>();
+        		proteinMutationLists.put(proteinAbbreviation, mutationList);
+        	}
+        	
+        	mutationList.put(
+        			aaSeq.getNtSequence().getLabel(),
+        			new MutationList(
+        					aaSeq.getFirstAaPos(),
+        					aaSeq.getLastAaPos(),
+        					MutationHelper.getNonSynonymousMutations(aaSeq)));
+        }
+        
         for(Protein protein : transaction.getProteins(g))
         {   
             foundMatchinqSeq = false;
@@ -377,26 +408,41 @@ public class GenerateReport
             tplStart = "$"+protein.getAbbreviation().toUpperCase()+"_START";
             tplStop = "$"+protein.getAbbreviation().toUpperCase()+"_STOP";
 
-            for(AaSequence aaSeq : aaSeqs)
-            {
-                if(aaSeq.getProtein().getAbbreviation().equals(protein.getAbbreviation()))
-                {
-                    result = MutationHelper.getNonSynonymousMutations(aaSeq);
-                    if("".equals(result.trim()))
-                        result = "-";
-                    
-                    replace(tplMut, result);
-                    replace(tplStart, aaSeq.getFirstAaPos()+"");
-                    replace(tplStop, aaSeq.getLastAaPos()+"");
-                    
-                    foundMatchinqSeq = true;
-                    break;
-                }
-            }
-            if(!foundMatchinqSeq){
+            Map<String, MutationList> mutationLists = proteinMutationLists.get(protein.getAbbreviation());
+            if(mutationLists == null || mutationLists.size() == 0){
                 replace(tplMut, WString.tr("report.alignment.undetermined").getValue());
                 replace(tplStart, "-");
                 replace(tplStop, "-");
+            }else{
+            	if(mutationLists.size() == 1){
+            		MutationList ml = mutationLists.values().iterator().next();
+            		replace(tplMut, ml.mutations);
+            		replace(tplStart, ml.start +"");
+            		replace(tplStop, ml.stop +"");
+            	}else{
+            		int start = Integer.MAX_VALUE;
+            		int stop = 0;
+            		StringBuilder muts = new StringBuilder();
+
+            		boolean first = true;
+            		for(Map.Entry<String, MutationList> me : mutationLists.entrySet()){
+            			if(first)
+            				first = false;
+            			else
+            				muts.append(", \n");
+            			
+            			muts.append(me.getKey())
+            				.append(": ")
+            				.append(me.getValue().mutations);
+            				
+            			start = Math.min(start, me.getValue().start);
+            			stop = Math.max(stop, me.getValue().stop);
+            		}
+            		
+            		replace(tplMut, muts.toString());
+            		replace(tplStart, start +"");
+            		replace(tplStop, stop +"");
+            	}
             }
         }
     }

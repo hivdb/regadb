@@ -21,6 +21,8 @@ public class RegaDBSettings {
 
     private static RegaDBSettings instance_ = null;
     
+    private File configFile = null;
+    
     private HibernateConfig hibernateCfg = new HibernateConfig();
     private ProxyConfig proxyCfg = new ProxyConfig();
     private AccessPolicyConfig apCfg = new AccessPolicyConfig();
@@ -81,6 +83,8 @@ public class RegaDBSettings {
     }
     
     private void parseConfFile(File confFile) {
+    	this.configFile = confFile;
+    	
     	for(ConfigParser cp : configs.values())
     		cp.setDefaults();
     	
@@ -169,5 +173,9 @@ public class RegaDBSettings {
     
     public String getDateFormat(){
     	return getInstituteConfig().getDateFormat();
+    }
+    
+    public File getConfigFile(){
+    	return configFile;
     }
 }
