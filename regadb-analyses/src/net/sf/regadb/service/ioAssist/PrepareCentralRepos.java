@@ -139,6 +139,12 @@ public class PrepareCentralRepos
         
         resTest = createResistanceTest("Rega-HIV2-8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
+
+        resTest = createResistanceTest("Rega-HIV2-8.0.2.xml", "REGA v8.0.2", StandardObjects.getHiv2AGenome());
+        export.writeTopTest(resTest, tests);
+
+        resTest = createResistanceTest("ANRS-HIV2-2011.10.xml", "ANRS 2011.10", StandardObjects.getHiv2AGenome());
+        export.writeTopTest(resTest, tests);
         
         export.writeTopTest(RegaDBWtsServer.getSubtypeTest(), tests);
         
