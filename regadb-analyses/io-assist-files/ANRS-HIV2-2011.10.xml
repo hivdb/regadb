@@ -1,0 +1,294 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE ALGORITHM SYSTEM 
+  "http://hivdb6.stanford.edu/asi/xml/ASI.dtd">
+
+<!-- Rega algorithm in XML format -->
+<ALGORITHM>
+    <ALGNAME>ANRS 2011.10</ALGNAME>
+    <ALGVERSION>2011.10</ALGVERSION>
+    <GENOME>HIV-2A</GENOME>
+
+    <DEFINITIONS>
+        <LEVEL_DEFINITION>
+            <ORDER>1</ORDER>
+            <ORIGINAL>Probably Susceptible GSS 1</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+	
+	<LEVEL_DEFINITION>
+            <ORDER>2</ORDER>
+            <ORIGINAL>Probably Susceptible GSS 0.75</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+
+        <LEVEL_DEFINITION>
+            <ORDER>3</ORDER>
+            <ORIGINAL>Probably Susceptible GSS 1.5</ORIGINAL>
+            <SIR>S</SIR>
+        </LEVEL_DEFINITION>
+
+        <LEVEL_DEFINITION>
+            <ORDER>4</ORDER>
+            <ORIGINAL>Possibly Resistant GSS 0.75</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>5</ORDER>
+            <ORIGINAL>Possibly Resistant GSS 0.5</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>6</ORDER>
+            <ORIGINAL>Possibly Resistant GSS 0.25</ORIGINAL>
+            <SIR>I</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>7</ORDER>
+            <ORIGINAL>Probably Resistant GSS 0</ORIGINAL>
+            <SIR>R</SIR>
+        </LEVEL_DEFINITION>
+
+	<LEVEL_DEFINITION>
+            <ORDER>8</ORDER>
+            <ORIGINAL>Not Active GSS 0</ORIGINAL>
+            <SIR>R</SIR>
+        </LEVEL_DEFINITION>
+
+	
+        <DRUGCLASS>
+            <NAME>PI</NAME>
+            <DRUGLIST>APV,APV/r,fAPV,fAPV/r</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NRTI</NAME>
+            <DRUGLIST>AZT,DDI,D4T,3TC,ABC,FTC,TDF</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>NNRTI</NAME>
+            <DRUGLIST>NVP,DLV,EFV</DRUGLIST>
+        </DRUGCLASS>
+
+	<DRUGCLASS>
+            <NAME>II</NAME>
+            <DRUGLIST>RTG</DRUGLIST>
+        </DRUGCLASS>
+
+        <DRUGCLASS>
+            <NAME>EI</NAME>
+            <DRUGLIST>T20</DRUGLIST>
+        </DRUGCLASS>
+    </DEFINITIONS>
+
+<!-- ********** Begin NRTI drugs ********** -->
+
+    <DRUG>
+        <NAME>AZT</NAME>
+        <RULE>
+	    <CONDITION>            
+	        SELECT ATLEAST 1 FROM (151M,215ACFLPY)
+            </CONDITION>
+            <ACTIONS><LEVEL>7</LEVEL></ACTIONS>
+        </RULE>
+    </DRUG>   <!-- END AZT -->
+
+    <DRUG>
+        <NAME>DDI</NAME>
+        <RULE>
+            <CONDITION>
+                SELECT ATLEAST 1 FROM (151M,65R)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END DDI -->
+
+    <DRUG>
+        <NAME>D4T</NAME>
+        <RULE>
+            <CONDITION>
+	        SELECT ATLEAST 1 FROM (151M,215ACFLPY)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>   <!-- END D4T -->
+
+  
+    <DRUG>
+        <NAME>3TC</NAME>
+        <RULE>
+            <CONDITION>
+                 184V
+            </CONDITION>
+            <ACTIONS>
+                 <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END 3TC -->
+
+  
+    <DRUG>
+        <NAME>ABC</NAME>
+        <RULE>
+            <CONDITION>
+                SELECT ATLEAST 1 FROM (151M,65R)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END ABC -->
+
+
+    <DRUG>
+	<NAME>FTC</NAME>
+      	<RULE>
+            <CONDITION>
+                 184V
+            </CONDITION>
+            <ACTIONS>
+                 <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END FTC -->
+
+    <DRUG>
+        <NAME>TDF</NAME>
+        <RULE>
+            <CONDITION>
+                SELECT ATLEAST 1 FROM (151M,65R)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG><!-- END TDF -->
+
+	<!-- ********** Begin NNRTI drugs ********** -->
+
+    <DRUG>
+        <NAME>NVP</NAME>
+        <RULE>
+            <CONDITION>
+	        SELECT ATLEAST 0 FROM (1P,1P)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END NVP -->  
+
+
+    <DRUG>
+        <NAME>DLV</NAME>
+        <RULE>
+            <CONDITION>
+	        SELECT ATLEAST 0 FROM (1P,1P)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END DLV -->  
+
+
+    <DRUG>
+        <NAME>EFV</NAME>
+        <RULE>
+            <CONDITION>
+	        SELECT ATLEAST 0 FROM (1P,1P)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END EFV -->  
+
+
+<!-- ********** Begin PI drugs ********** -->
+
+    <DRUG>
+        <NAME>APV</NAME>
+        <RULE>
+	    <CONDITION>
+                SELECT ATLEAST 0 FROM (1P,1P)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>        
+    </DRUG>    <!-- END APV -->
+
+    <DRUG>
+        <NAME>APV/r</NAME>
+        <RULE>
+	    <CONDITION>
+                SELECT ATLEAST 0 FROM (1P,1P)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>        
+    </DRUG>    <!-- END APV/r -->
+
+    <DRUG>
+        <NAME>fAPV</NAME>
+        <RULE>
+	    <CONDITION>
+                SELECT ATLEAST 0 FROM (1P,1P)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>        
+    </DRUG>    <!-- END fAPV -->
+
+    <DRUG>
+        <NAME>fAPV/r</NAME>
+        <RULE>
+	    <CONDITION>
+                SELECT ATLEAST 0 FROM (1P,1P)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>        
+    </DRUG>    <!-- END fAPV/r -->
+
+        <!-- ********** Begin EI drugs ********** -->
+
+    <DRUG>
+        <NAME>T20</NAME>
+        <RULE>
+            <CONDITION>
+		SELECT ATLEAST 0 FROM (1T,1T)
+	    </CONDITION>
+            <ACTIONS>
+                <LEVEL>8</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END T20 -->
+
+<!-- ********** Begin II drugs ********** -->
+
+    <DRUG>
+        <NAME>RTG</NAME>
+        <RULE>
+            <CONDITION>
+                SELECT ATLEAST 1 FROM (143CHR,148KR,155H)
+            </CONDITION>
+            <ACTIONS>
+                <LEVEL>7</LEVEL>
+            </ACTIONS>
+        </RULE>
+    </DRUG>    <!-- END RTG -->
+
+</ALGORITHM>	
