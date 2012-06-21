@@ -1,10 +1,13 @@
 package net.sf.regadb.service.wts;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.db.AaInsertion;
@@ -13,9 +16,15 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.AnalysisData;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.WtsClient;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class ViralIsolateAnalysisHelper
 {
@@ -219,5 +228,53 @@ public class ViralIsolateAnalysisHelper
     	List<ViralIsolate> vis = new ArrayList<ViralIsolate>(1);
     	vis.add(vi_);
     	return runMutlist(vis, test_, waitDelay_);
+    }
+    
+    public static List<TestResult> runViralIsolateResistanceTest(final Transaction t, final ViralIsolate isolate, final Test test) throws SAXException, IOException{
+    	final List<TestResult> testResults = new ArrayList<TestResult>();
+    	
+        byte[] result = ViralIsolateAnalysisHelper.runMutlist(isolate, test, 200);
+    	
+    	ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
+        {
+            @Override
+            public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
+            {
+                TestResult resistanceInterpretation = new TestResult();
+                resistanceInterpretation.setDrugGeneric(t.getDrugGeneric(drug));
+                resistanceInterpretation.setValue(gss+"");
+                resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
+                resistanceInterpretation.setTest(test);
+                
+                StringBuffer data = new StringBuffer();
+                data.append("<interpretation><score><drug>");
+                data.append(drug);
+                data.append("</drug><level>");
+                data.append(level);
+                data.append("</level><description>");
+                data.append(description);
+                data.append("</description><sir>");
+                data.append(sir);
+                data.append("</sir><gss>");
+                data.append(gss);
+                data.append("</gss><mutations>");
+                int size = mutations.size();
+                for(int i = 0; i<size; i++)
+                {
+                    data.append(mutations.get(i));
+                    if(i!=size-1)
+                        data.append(' ');
+                }
+                data.append("</mutations><remarks>");
+                data.append(remarks);
+                data.append("</remarks></score></interpretation>");
+                resistanceInterpretation.setData(data.toString().getBytes());
+                
+                testResults.add(resistanceInterpretation);
+            }
+        };
+        
+        inp.parse(new InputSource(new ByteArrayInputStream(result)));
+        return testResults;
     }
 }
