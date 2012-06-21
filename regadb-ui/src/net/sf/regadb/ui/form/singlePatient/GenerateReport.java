@@ -428,10 +428,13 @@ public class GenerateReport
             		for(Map.Entry<String, MutationList> me : mutationLists.entrySet()){
             			if(first)
             				first = false;
-            			else
-            				muts.append(", \n");
             			
-            			muts.append(me.getKey())
+            			muts.append("\\line \n \\tab - ")
+            				.append(me.getKey())
+            				.append(' ')
+            				.append(me.getValue().start)
+            				.append('-')
+            				.append(me.getValue().stop)
             				.append(": ")
             				.append(me.getValue().mutations);
             				
