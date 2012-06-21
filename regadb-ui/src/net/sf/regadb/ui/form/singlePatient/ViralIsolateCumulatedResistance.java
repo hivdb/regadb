@@ -1,8 +1,6 @@
 package net.sf.regadb.ui.form.singlePatient;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,22 +15,25 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
-import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceUtils;
 import net.sf.regadb.service.wts.ViralIsolateAnalysisHelper;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.widgets.SimpleTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WCheckBox;
+import eu.webtoolkit.jwt.WContainerWidget;
+import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 
@@ -41,6 +42,9 @@ public class ViralIsolateCumulatedResistance extends FormWidget
     private ViralIsolateResistanceTable resistanceTable_;
     private WCheckBox showMutations_;
     private WCheckBox showAllAlgorithms_;
+    
+    private DateField maxDateField;
+    private Date maxDate = null;
     
     private Collection<String> drugClasses = null;
     private TestType gssTestType = null;
@@ -59,6 +63,25 @@ public class ViralIsolateCumulatedResistance extends FormWidget
 
     public void init()
     {
+    	WContainerWidget filterContainer = new WContainerWidget(this);
+    	new WLabel(tr("form.viralIsolate.cumulatedResistance.maxDate"), filterContainer).setInline(true);
+    	maxDateField = new DateField(InteractionState.Editing, this);
+    	maxDateField.setInline(true);
+    	filterContainer.addWidget(maxDateField);
+    	WPushButton applyMaxDate = new WPushButton(tr("form.viralIsolate.cumulatedResistance.apply"), filterContainer);
+    	applyMaxDate.setInline(true);
+    	
+    	Signal.Listener maxDateListener = new Signal.Listener() {
+			@Override
+			public void trigger() {
+				applyMaxDate();
+			}
+		};
+		
+    	applyMaxDate.clicked().addListener(this, maxDateListener);
+    	maxDateField.enterPressed().addListener(this, maxDateListener);
+    	
+    	
         WTable wrapper = new SimpleTable(this);
         wrapper.getElementAt(0, 0).setStyleClass("navigation");
         wrapper.getElementAt(1, 0).setStyleClass("tablewrapper");
@@ -86,8 +109,24 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         refreshTable();
     }
     
+    private void applyMaxDate(){
+    	Date newMaxDate = maxDateField.getDate();
+    	
+    	if(newMaxDate == maxDate 
+    			|| (newMaxDate != null && newMaxDate.equals(maxDate)))
+    		return;
+    	
+    	maxDate = newMaxDate;
+    	
+    	combinedIsolate = null;
+    	loadedTestIis.clear();
+    	cumulatedTestResults.clear();
+    	
+    	refreshTable();
+    }
+    
     @SuppressWarnings("unchecked")
-	private void loadTestResults() {
+	private void loadTestResults(Date maxDate) {
         Transaction t =  RegaDBMain.getApp().createTransaction();
         
         if(drugClasses == null){
@@ -98,81 +137,53 @@ public class ViralIsolateCumulatedResistance extends FormWidget
         }
         
         if(combinedIsolate == null){
-	        Set<ViralIsolate> vis = patient_.getViralIsolates();
+	        Set<ViralIsolate> vis;
+	        
+	        if(maxDate == null)
+	        	vis = patient_.getViralIsolates();
+	        else{
+	        	vis = new HashSet<ViralIsolate>();
+	        	for(ViralIsolate vi : patient_.getViralIsolates())
+	        		if(!vi.getSampleDate().after(maxDate))
+	        			vis.add(vi);
+	        }
+	        
 	        combinedIsolate = SequenceUtils.combineViralIsolates(vis);
         }
+        if(combinedIsolate == null)
+        	return;
         
         if(gssTestType == null){
             Genome genome = ((ViralIsolate)(patient_.getViralIsolates().toArray()[0])).getGenome();
     		gssTestType = (genome == null ? null : StandardObjects.getTestType(StandardObjects.getGssDescription(),genome));
         }
         
-        for(Test test : resistanceTable_.getAlgorithms(t, gssTestType, showAllAlgorithms_.isChecked())) {
-        	if(loadedTestIis.add(test.getTestIi())){
-	            try {
-					cumulatedTestResults.addAll(runViralIsolateResistanceTest(t, combinedIsolate, test));
-				} catch (SAXException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-        	}
+        if(gssTestType != null){
+	        for(Test test : resistanceTable_.getAlgorithms(t, gssTestType, showAllAlgorithms_.isChecked())) {
+	        	if(loadedTestIis.add(test.getTestIi())){
+		            try {
+						cumulatedTestResults.addAll(
+								ViralIsolateAnalysisHelper.runViralIsolateResistanceTest(t, combinedIsolate, test));
+					} catch (SAXException e1) {
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+	        	}
+	        }
         }
 
         t.commit();
     }
         
     private void refreshTable(){
-    	loadTestResults();
-        resistanceTable_.loadTable(drugClasses, showMutations_.isChecked(), showAllAlgorithms_.isChecked(), cumulatedTestResults, gssTestType);
-    }
-    
-    private List<TestResult> runViralIsolateResistanceTest(final Transaction t, final ViralIsolate isolate, final Test test) throws SAXException, IOException{
-    	final List<TestResult> testResults = new ArrayList<TestResult>();
-    	
-        byte[] result = ViralIsolateAnalysisHelper.runMutlist(isolate, test, 200);
-    	
-    	ResistanceInterpretationParser inp = new ResistanceInterpretationParser()
-        {
-            @Override
-            public void completeScore(String drug, int level, double gss, String description, char sir, ArrayList<String> mutations, String remarks) 
-            {
-                TestResult resistanceInterpretation = new TestResult();
-                resistanceInterpretation.setDrugGeneric(t.getDrugGeneric(drug));
-                resistanceInterpretation.setValue(gss+"");
-                resistanceInterpretation.setTestDate(new Date(System.currentTimeMillis()));
-                resistanceInterpretation.setTest(test);
-                
-                StringBuffer data = new StringBuffer();
-                data.append("<interpretation><score><drug>");
-                data.append(drug);
-                data.append("</drug><level>");
-                data.append(level);
-                data.append("</level><description>");
-                data.append(description);
-                data.append("</description><sir>");
-                data.append(sir);
-                data.append("</sir><gss>");
-                data.append(gss);
-                data.append("</gss><mutations>");
-                int size = mutations.size();
-                for(int i = 0; i<size; i++)
-                {
-                    data.append(mutations.get(i));
-                    if(i!=size-1)
-                        data.append(' ');
-                }
-                data.append("</mutations><remarks>");
-                data.append(remarks);
-                data.append("</remarks></score></interpretation>");
-                resistanceInterpretation.setData(data.toString().getBytes());
-                
-                testResults.add(resistanceInterpretation);
-            }
-        };
-        
-        inp.parse(new InputSource(new ByteArrayInputStream(result)));
-        return testResults;
+    	loadTestResults(maxDate);
+        resistanceTable_.loadTable(
+        		drugClasses,
+        		showMutations_.isChecked(),
+        		showAllAlgorithms_.isChecked(),
+        		cumulatedTestResults,
+        		gssTestType);
     }
 
     @Override
