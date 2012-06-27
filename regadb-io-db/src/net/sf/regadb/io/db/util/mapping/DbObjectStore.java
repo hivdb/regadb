@@ -6,6 +6,10 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
@@ -134,5 +138,34 @@ public class DbObjectStore extends ObjectStore{
 	@Override
 	public void close() {
 		login.closeSession();
+	}
+
+	@Override
+	public DrugGeneric getDrugGeneric(String genericId) {
+		return getTransaction().getDrugGeneric(genericId);
+	}
+
+	@Override
+	public DrugCommercial getDrugCommercial(String name) {
+		return getTransaction().getDrugCommercial(name);
+	}
+
+	@Override
+	public Event getEvent(String name) {
+		return getTransaction().getEvent(name);
+	}
+
+	@Override
+	public Event createEvent(ValueType valueType, String name) {
+		Event e = new Event();
+		e.setName(name);
+		e.setValueType(valueType);
+		getTransaction().save(e);
+		return e;
+	}
+
+	@Override
+	public EventNominalValue getEventNominalValue(Event event, String value) {
+		return getTransaction().getEventNominalValue(event, value);
 	}
 }
