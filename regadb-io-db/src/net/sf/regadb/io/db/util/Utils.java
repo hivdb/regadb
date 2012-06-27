@@ -31,6 +31,11 @@ import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.importXML.ImportFromXML;
@@ -958,5 +963,55 @@ public class Utils {
             }
         }
         return null;
+	}
+	
+	public static boolean therapyContainsDrug(Therapy t, DrugGeneric d){
+		for(TherapyGeneric tg : t.getTherapyGenerics())
+			if(Equals.isSameDrugGeneric(d, tg.getId().getDrugGeneric()))
+				return true;
+		return false;
+	}
+
+	public static boolean therapyContainsDrug(Therapy t, DrugCommercial d){
+		for(TherapyCommercial tc : t.getTherapyCommercials())
+			if(Equals.isSameDrugCommercial(d, tc.getId().getDrugCommercial()))
+				return true;
+		return false;
+	}
+
+	/**
+	 * Adds all TherapyCommercials/Generics of Therapy b to Therapy a
+	 * if Therapy a doesn't contain the corresponding drugs.
+	 * Therapy attributes are ignored.
+	 * @param a target Therapy
+	 * @param b source Therapy
+	 */
+	public static void mergeTherapies(Therapy a, Therapy b){
+		if(a == b)
+			return;
+		
+		for(TherapyCommercial tc : b.getTherapyCommercials()){
+			if(!therapyContainsDrug(a, tc.getId().getDrugCommercial())){
+				TherapyCommercial ntc = new TherapyCommercial(
+						new TherapyCommercialId(a, tc.getId().getDrugCommercial()),
+						tc.getDayDosageUnits(),
+						tc.isPlacebo(),
+						tc.isBlind(),
+						tc.getFrequency());
+				a.getTherapyCommercials().add(ntc);
+			}
+		}
+		
+		for(TherapyGeneric tg : b.getTherapyGenerics()){
+			if(!therapyContainsDrug(a, tg.getId().getDrugGeneric())){
+				TherapyGeneric ntg = new TherapyGeneric(
+						new TherapyGenericId(a, tg.getId().getDrugGeneric()),
+						tg.getDayDosageMg(),
+						tg.isPlacebo(),
+						tg.isBlind(),
+						tg.getFrequency());
+				a.getTherapyGenerics().add(ntg);
+			}
+		}
 	}
 }
