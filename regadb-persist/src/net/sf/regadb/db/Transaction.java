@@ -1362,19 +1362,6 @@ public class Transaction {
         }
     }
 
-    public DrugGeneric getGenericDrug(String genericId) {
-        getDrugGenericQuery.setParameter("genericId", genericId);
-        
-        return (DrugGeneric)getDrugGenericQuery.uniqueResult();
-    }
-
-    public DrugCommercial getCommercialDrug(String name) {
-        getCommercialDrugQuery.setParameter("name", name);
-        
-        return (DrugCommercial)getCommercialDrugQuery.uniqueResult();
-       
-    }
-    
     @SuppressWarnings("unchecked")
     public List<QueryDefinition> getQueryDefinitions(int firstResult, int maxResults, String sortField, HibernateFilterConstraint filterConstraints, boolean ascending, int queryType)
     {
@@ -1507,15 +1494,12 @@ public class Transaction {
         return (DrugClass)q.uniqueResult();
     }
     
-    public DrugGeneric getDrugGeneric(String drugGenericId)
+    public DrugGeneric getDrugGeneric(String genericId)
     {
-        Query q = session.createQuery("from DrugGeneric as druggeneric where genericId = :genericId");
+        getDrugGenericQuery.setParameter("genericId", genericId);
         
-        q.setParameter("genericId", drugGenericId);
-        
-        return (DrugGeneric)q.uniqueResult();
+        return (DrugGeneric)getDrugGenericQuery.uniqueResult();
     }
-    
 
 	public DrugGeneric getGenericDrugByName(String name) 
 	{
@@ -1526,13 +1510,11 @@ public class Transaction {
         return (DrugGeneric)q.uniqueResult();
 	}
     
-    public DrugCommercial getDrugCommercial(String commercialName)
+    public DrugCommercial getDrugCommercial(String name)
     {
-        Query q = session.createQuery("from DrugCommercial as drugcommercial where name = :commercialName");
+        getCommercialDrugQuery.setParameter("name", name);
         
-        q.setParameter("commercialName", commercialName);
-        
-        return (DrugCommercial)q.uniqueResult();
+        return (DrugCommercial)getCommercialDrugQuery.uniqueResult();
     }
 
     public TestObject getTestObject(String description) {
