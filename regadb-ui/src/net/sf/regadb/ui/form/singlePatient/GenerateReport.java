@@ -111,6 +111,7 @@ public class GenerateReport
         replace("$REFERENCE_SEQUENCE", vi.getGenome() == null ? "" : vi.getGenome().getGenbankNumber());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
         replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate()));
+        replace("$FULL_ART_EXPERIENCE", getFullARTExperience(patient, vi.getSampleDate()));
         
         int bpos;
         while((bpos = rtfBuffer_.indexOf("$ATTRIBUTE(")) > -1){
@@ -321,6 +322,76 @@ public class GenerateReport
             	prev = curr;
             }
         }
+        
+        return result.substring(2);
+    }
+    
+    private String getFullARTExperience(Patient p, Date upto){
+        StringBuilder result = new StringBuilder();
+        
+        TreeSet<Therapy> therapies = new TreeSet<Therapy>(new Comparator<Therapy>() {
+			public int compare(Therapy o1, Therapy o2) {
+				return o1.getStartDate().compareTo(o2.getStartDate());
+			}
+		});
+        
+        for(Therapy t : p.getTherapies())
+        	if(t.getStartDate().before(upto))
+        		therapies.add(t);
+
+        if(therapies.size() == 0)
+        	return "";
+        
+        String prev = null;
+        Date startDate = null;
+        Date stopDate = null;
+        
+        for(Therapy t : therapies){
+        	if(startDate == null)
+        		startDate = t.getStartDate();
+        	if(stopDate == null)
+        		stopDate = t.getStopDate();
+        	
+        	TreeSet<String> combination = new TreeSet<String>();
+            for(TherapyGeneric tg : t.getTherapyGenerics()){
+                combination.add(getDrugName(tg.getId().getDrugGeneric().getGenericId()));
+            }
+            for(TherapyCommercial tc : t.getTherapyCommercials()){
+                for(DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics()){
+                    combination.add(getDrugName(dg.getGenericId()));
+                }
+            }
+            
+            String curr = combination.toString().replace(", ", "+");
+            if(prev != null && !curr.equals(prev)){
+            	result.append(", ")
+            		.append(DateUtils.format(startDate))
+            		.append(" - ")
+            		.append(stopDate == null ? "..." : DateUtils.format(stopDate))
+            		.append(": ")
+            		.append(curr);
+            	
+            	if(stopDate != null
+            			&& DateUtils.getDayDifference(stopDate, t.getStartDate()) >= 2){
+            		result.append(", ")
+            			.append(DateUtils.format(stopDate))
+            			.append(" - ")
+            			.append(DateUtils.format(t.getStartDate()))
+            			.append(": /");
+            	}
+            	
+            	startDate = t.getStartDate();
+            }
+            stopDate = t.getStopDate();
+            prev = curr;
+        }
+        
+    	result.append(", ")
+			.append(DateUtils.format(startDate))
+			.append(" - ")
+			.append(stopDate == null ? "..." : DateUtils.format(stopDate))
+			.append(": ")
+			.append(prev);
         
         return result.substring(2);
     }
