@@ -52,7 +52,7 @@ public class NadirQuery extends CustomQuery {
 		getParameters().add(pDate);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public File run() throws Exception {
 		File result = File.createTempFile("nadir_", ".csv", getResultDir());

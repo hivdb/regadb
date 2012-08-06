@@ -210,20 +210,6 @@ public class Transaction {
         return (Patient)q.uniqueResult();
     }
     
-    public Patient getPatientByIi(int ii)
-    {
-        Query q = session.createQuery(
-                "select new net.sf.regadb.db.Patient(patient, max(access.permissions)) " +
-                getPatientsQuery() + 
-                "and patient.patientIi = :ii "+
-                "group by patient");
-        
-        q.setParameter("uid", login.getUid());
-        q.setParameter("ii", ii);
-
-        return (Patient)q.uniqueResult();
-    }
-    
     public Patient getPatientBySampleId(String sampleId)
     {
         Query q = session.createQuery(
@@ -696,12 +682,12 @@ public class Transaction {
             l = new ArrayList<Object[]>();
             
             for(Object o : q.list())
-                l.add(new Object[]{getPatientByIi((Integer)o)});
+                l.add(new Object[]{getPatient((Integer)o)});
         }
         else{
             l = q.list();
             for(Object[] o : l)
-                o[0] = getPatientByIi((Integer)o[0]);
+                o[0] = getPatient((Integer)o[0]);
         }
         return l;
     }
@@ -1759,5 +1745,91 @@ public class Transaction {
     
     public boolean isActive() {
       return this.session.getTransaction().isActive();
+    }
+    
+    public Attribute getAttribute(int ii){
+    	Query q = session.createQuery("from Attribute a where a.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (Attribute)q.uniqueResult();
+    }
+    
+    public AttributeGroup getAttributeGroup(int ii){
+    	Query q = session.createQuery("from AttributeGroup ag where ag.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (AttributeGroup)q.uniqueResult();
+    }
+
+    public TestType getTestType(int ii){
+    	Query q = session.createQuery("from TestType a where a.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (TestType)q.uniqueResult();
+    }
+    
+    public Event getEvent(int ii){
+    	Query q = session.createQuery("from Event a where a.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (Event)q.uniqueResult();
+    }
+    
+    public ResistanceInterpretationTemplate getResistanceInterpretationTemplate(int ii){
+    	Query q = session.createQuery("from ResistanceInterpretationTemplate a where a.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (ResistanceInterpretationTemplate)q.uniqueResult();
+    }
+    
+    public QueryDefinition getQueryDefinition(int ii){
+    	Query q = session.createQuery("from QueryDefinition a where a.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (QueryDefinition)q.uniqueResult();
+    }
+    
+    public QueryDefinitionRun getQueryDefinitionRun(int ii){
+    	Query q = session.createQuery("from QueryDefinitionRun a where a.id = :ii");
+    	q.setParameter("ii", ii);
+    	return (QueryDefinitionRun)q.uniqueResult();
+    }
+    
+    /**
+     * Get TestResult by database id, does not check user permissions!
+     * @param ii database id
+     * @return
+     */
+    public TestResult getTestResult(int testIi){
+    	Query q = session.createQuery("from TestResult a where a.id = :testii");
+    	q.setParameter("testii", testIi);
+    	return (TestResult)q.uniqueResult();
+    }
+    
+    /**
+     * Get Therapy by database id, does not check user permissions!
+     * @param ii database id
+     * @return
+     */
+    public Therapy getTherapy(int therapyIi){
+    	Query q = session.createQuery("from Therapy a where a.id = :therapyii");
+    	q.setParameter("therapyii", therapyIi);
+    	return (Therapy)q.uniqueResult();
+    }
+    
+    /**
+     * Get PatientAttributeValue by database id, does not check user permissions!
+     * @param ii database id
+     * @return
+     */
+    public PatientAttributeValue getPatientAttributeValue(int pavIi){
+    	Query q = session.createQuery("from PatientAttributeValue a where a.id = :pavii");
+    	q.setParameter("pavii", pavIi);
+    	return (PatientAttributeValue)q.uniqueResult();
+    }
+    
+    /**
+     * Get PatientEvenValue by database id, does not check user permissions!
+     * @param ii database id
+     * @return
+     */
+    public PatientEventValue getPatientEventValue(int pevIi){
+    	Query q = session.createQuery("from PatientEventValue a where a.id = :pevii");
+    	q.setParameter("pevii", pevIi);
+    	return (PatientEventValue)q.uniqueResult();
     }
 }

@@ -289,7 +289,7 @@ public class DataTable<DataType> extends WTable
         return (int)(((dataTableInterface_.getDataSetSize(trans)-1)/amountOfPageRows_)+1);
     }
 	
-	private void refreshData(Transaction trans, boolean recalulateAmountOfPages)
+	public void refreshData(Transaction trans, boolean recalulateAmountOfPages)
 	{
         if(recalulateAmountOfPages)
         {

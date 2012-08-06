@@ -8,16 +8,20 @@ import java.util.Date;
 import java.util.List;
 
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.file.FileUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
-public class ILogDataTable implements IDataTable<File> {
-    private static WString[] colNames_ = {
+public class ILogDataTable extends DefaultDataTable<File> {
+    public ILogDataTable(SelectForm<File> form) {
+		super(form);
+	}
+
+	private static WString[] colNames_ = {
         WString.tr("dataTable.log.colName.date"),
         WString.tr("dataTable.log.colName.name"),
         WString.tr("dataTable.log.colName.size")};
@@ -118,13 +122,6 @@ public class ILogDataTable implements IDataTable<File> {
     }
 
     public void init(Transaction t) {
-    }
-
-    public void selectAction(File selectedItem) {
-        RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().logSelectedItem.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().logView.selectNode();
     }
 
     public boolean[] sortableFields() {

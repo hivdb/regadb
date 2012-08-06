@@ -44,7 +44,7 @@ import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 
-public class UpdateForm extends FormWidget
+public abstract class UpdateForm extends FormWidget
 {
     private WString progressText_ = tr("form.update_central_server.running");
     private WImage warningImage_ = new WImage("pics/formWarning.gif");
@@ -503,14 +503,11 @@ public class UpdateForm extends FormWidget
         handleEvents(false);
         handleTests(false);
         handleDrugs(false);
-        
-        RegaDBMain.getApp().getTree().getTreeContent().updateFromCentralServerUpdateView.selectNode();
     }
     
     @Override
     public void cancel()
     {
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().administratorMain, RegaDBMain.getApp().getTree().getTreeContent().updateFromCentralServerUpdateView);
     }
     
     @Override

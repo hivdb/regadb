@@ -4,15 +4,19 @@ import java.util.List;
 
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class ITestDataTable implements IDataTable<Test>
+public class ITestDataTable extends DefaultDataTable<Test>
 {
+	public ITestDataTable(SelectForm<Test> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
 	    WString.tr("dataTable.test.colName.description"),
 	    WString.tr("dataTable.test.colName.testType"),
@@ -65,14 +69,6 @@ public class ITestDataTable implements IDataTable<Test>
 		filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
-	}
-
-	public void selectAction(Test selectedItem) 
-	{
-		RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().testView.selectNode();
 	}
 
 	public boolean[] sortableFields()

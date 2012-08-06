@@ -1,45 +1,22 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.TestResult;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.measurement.SelectMeasurementForm;
 import net.sf.regadb.ui.form.singlePatient.MeasurementForm;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
-import eu.webtoolkit.jwt.WTreeNode;
-import eu.webtoolkit.jwt.WWidget;
+import eu.webtoolkit.jwt.WString;
 
 public class TestResultTreeNode extends ObjectTreeNode<TestResult>{
 
-	public TestResultTreeNode(WTreeNode root) {
-		super("patient.testresult", root);
-	}
-
-	@Override
-	protected void doAdd() {
-		setSelectedItem(null);
-		RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Adding, WWidget.tr("form.measurement.add"), null));
-	}
-
-	@Override
-	protected void doDelete() {
-		RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Deleting, WWidget.tr("form.measurement.delete"), getSelectedItem()));
-	}
-
-	@Override
-	protected void doEdit() {
-		RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Editing, WWidget.tr("form.measurement.edit"), getSelectedItem()));
-	}
-
-	@Override
-	protected void doSelect() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SelectMeasurementForm());
-	}
-
-	@Override
-	protected void doView() {
-		RegaDBMain.getApp().getFormContainer().setForm(new MeasurementForm(InteractionState.Viewing, WWidget.tr("form.measurement.view"), getSelectedItem()));
+	public TestResultTreeNode(TreeMenuNode parent) {
+		super("testResult", parent);
 	}
 
 	@Override
@@ -50,5 +27,29 @@ public class TestResultTreeNode extends ObjectTreeNode<TestResult>{
 		else{
 			return "";
 		}
+	}
+
+	@Override
+	protected ObjectForm<TestResult> createForm(WString name, InteractionState interactionState, TestResult selectedObject) {
+		return new MeasurementForm(name, interactionState, TestResultTreeNode.this, selectedObject);
+	}
+
+	@Override
+	protected IForm createSelectionForm() {
+		return new SelectMeasurementForm(this);
+	}
+
+	@Override
+	protected String getObjectId(TestResult object) {
+		return object.getTestResultIi() +"";
+	}
+
+	@Override
+	protected TestResult getObjectById(Transaction t, String id) {
+		TestResult tr = t.getTestResult(Integer.parseInt(id));
+		if(RegaDBMain.getApp().getSelectedPatient().getTestResults().contains(tr))
+			return tr;
+		else
+			return null;
 	}
 }

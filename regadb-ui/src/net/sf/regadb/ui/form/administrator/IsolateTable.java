@@ -69,7 +69,7 @@ public class IsolateTable extends WTable {
 		
 		PatientTreeNode patientTreeNode = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode;
 		patientTreeNode.setSelectedItem(p);
-		patientTreeNode.getSelectedActionItem().expandFromRoot();
+		patientTreeNode.getSelectedItemNavigationNode().expandFromRoot();
 	}
 	
 	public void gotoViralIsolate(int patientIi, int viralIsolateIi){
@@ -81,6 +81,6 @@ public class IsolateTable extends WTable {
 		PatientTreeNode patientTreeNode = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode;
 		patientTreeNode.setSelectedItem(p);
 		patientTreeNode.getViralIsolateTreeNode().setSelectedItem(v);
-		patientTreeNode.getViralIsolateTreeNode().getSelectedActionItem().expandFromRoot();
+		patientTreeNode.getViralIsolateTreeNode().getSelectedItemNavigationNode().expandFromRoot();
 	}
 }

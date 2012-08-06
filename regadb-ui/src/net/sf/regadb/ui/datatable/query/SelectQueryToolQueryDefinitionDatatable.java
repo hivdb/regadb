@@ -2,21 +2,18 @@ package net.sf.regadb.ui.datatable.query;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 
 public class SelectQueryToolQueryDefinitionDatatable extends
 		ISelectQueryDefinitionDataTable {
 
-	@Override
-	public int getQueryType() {
-		return StandardObjects.getQueryToolQueryType();
+	public SelectQueryToolQueryDefinitionDatatable(
+			SelectForm<QueryDefinition> form) {
+		super(form);
 	}
 
 	@Override
-	public void selectAction(QueryDefinition selectedItem) {
-    	RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().queryToolSelectedView.selectNode();
+	public int getQueryType() {
+		return StandardObjects.getQueryToolQueryType();
 	}
 }

@@ -1,8 +1,6 @@
 package net.sf.regadb.ui.datatable.importTool;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,17 +8,18 @@ import java.util.List;
 
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.util.settings.RegaDBSettings;
-
-import com.thoughtworks.xstream.XStream;
-
 import eu.webtoolkit.jwt.WString;
 
-public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
-    private static WString [] colNames = {
+public class ImportDefinitionDataTable extends DefaultDataTable<ImportDefinition> {
+    public ImportDefinitionDataTable(SelectForm<ImportDefinition> form) {
+		super(form);
+	}
+
+	private static WString [] colNames = {
         WString.tr("dataTable.importDefinition.colName.description")};
     private static int[] colWidths = {100};
     private static boolean [] sortable = {false};
@@ -43,20 +42,10 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
 		if (files.size() < untill)
 			untill = files.size();
 		
-		XStream xstream = new XStream();
-		
 		List<File> subSection = files.subList(startIndex, untill);
 		List<ImportDefinition> definitions = new ArrayList<ImportDefinition>();
 		for (File file : subSection) {
-			ImportDefinition id = null;
-			try {
-				id = (ImportDefinition)xstream.fromXML(new FileReader(file));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			id.setXmlFile(file);
-			id.setDescription(id.getXmlFile().getName().substring(0, id.getXmlFile().getName().indexOf(".")));
-			definitions.add(id);
+			definitions.add(ImportDefinition.getImportDefinition(file));
 		}
 		
 		return definitions;
@@ -88,13 +77,6 @@ public class ImportDefinitionDataTable implements IDataTable<ImportDefinition> {
 
 	public void init(Transaction t) {
 
-	}
-
-	public void selectAction(ImportDefinition selectedItem) {
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().importToolSelectedView.selectNode();
 	}
 
 	public boolean[] sortableFields() {

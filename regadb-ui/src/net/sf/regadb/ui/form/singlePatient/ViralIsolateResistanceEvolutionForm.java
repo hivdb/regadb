@@ -220,4 +220,12 @@ public class ViralIsolateResistanceEvolutionForm extends FormWidget
 	public void saveData() {
 
 	}
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+	}
 }

@@ -4,16 +4,20 @@ import java.util.List;
 
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class ISettingsUserDataTable implements IDataTable<SettingsUser>
+public class ISettingsUserDataTable extends DefaultDataTable<SettingsUser>
 {
-    private static WString [] _colNames = {
+    public ISettingsUserDataTable(SelectForm<SettingsUser> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {
         WString.tr("dataTable.settingsUser.colName.uid"),
         WString.tr("dataTable.settingsUser.colName.firstname"),
         WString.tr("dataTable.settingsUser.colName.lastname"), 
@@ -25,10 +29,6 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
     private static boolean [] sortable_ = {true, true, true, true, true};
     private static int[] colWidths = {15,15,15,35,20};
     private IFilter[] filters_ = new IFilter[5];
-    
-    public ISettingsUserDataTable()
-    {
-    }
     
     public CharSequence[] getColNames()
     {
@@ -75,14 +75,6 @@ public class ISettingsUserDataTable implements IDataTable<SettingsUser>
         filters_[2] = new StringFilter();
         filters_[3] = new StringFilter();
         filters_[4] = new StringFilter();
-    }
-
-    public void selectAction(SettingsUser selectedItem)
-    {
-    	RegaDBMain.getApp().getTree().getTreeContent().userSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().userSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().userSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().usersView.selectNode();
     }
 
     public boolean[] sortableFields()

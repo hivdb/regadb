@@ -15,8 +15,8 @@ import net.sf.regadb.ui.datatable.testSettings.IAnalysisDataEditableTable;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.form.singlePatient.StringComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -25,6 +25,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.wts.client.meta.WtsMetaClient;
 import eu.webtoolkit.jwt.Signal1;
@@ -35,10 +36,8 @@ import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
-public class TestForm extends FormWidget
+public class TestForm extends ObjectForm<Test>
 {
-    private Test test_;
-	
 	//Frame 
 	private WGroupBox mainFrameGroup_;
     private FormTable mainFrameTable_;
@@ -79,11 +78,9 @@ public class TestForm extends FormWidget
     private String prevUrl = null;
     private String prevService = null;
   
-	public TestForm(InteractionState interactionState, WString formName, Test test ) 
+	public TestForm(WString formName, InteractionState interactionState, ObjectTreeNode<Test> node, Test test ) 
 	{
-		super(formName, interactionState);
-		
-		test_ = test;
+		super(formName, interactionState, node, test);
 		
 		init();
 		filldata();
@@ -206,30 +203,30 @@ public class TestForm extends FormWidget
         if(getInteractionState() != InteractionState.Adding)
         {
             Transaction t = RegaDBMain.getApp().createTransaction();
-            t.attach(test_);
+            t.attach(getObject());
             t.commit();
         }
         else
         {
-            test_ = new Test();
+        	setObject(new Test());
         }
             
-        testTF.setText(test_.getDescription());
+        testTF.setText(getObject().getDescription());
         
-        if(test_.getTestType() != null)
+        if(getObject().getTestType() != null)
         {
-            testTypeCB.selectItem(test_.getTestType());
+            testTypeCB.selectItem(getObject().getTestType());
         }
         
-        if(test_.getAnalysis() != null)
+        if(getObject().getAnalysis() != null)
         {
             analysisCK.setChecked(true);
             
-            analysisTypeCB.selectItem(test_.getAnalysis().getAnalysisType().getType());
-            urlTF.setText(test_.getAnalysis().getUrl());
-            serviceTF.setText(test_.getAnalysis().getServiceName());
-            accountTF.setText(test_.getAnalysis().getAccount());
-            passwordTF.setText(test_.getAnalysis().getPassword());
+            analysisTypeCB.selectItem(getObject().getAnalysis().getAnalysisType().getType());
+            urlTF.setText(getObject().getAnalysis().getUrl());
+            serviceTF.setText(getObject().getAnalysis().getServiceName());
+            accountTF.setText(getObject().getAnalysis().getAccount());
+            passwordTF.setText(getObject().getAnalysis().getPassword());
         }
         else
         {
@@ -265,10 +262,10 @@ public class TestForm extends FormWidget
 	}
 	
 	private void fillComboBox() {
-		if(test_.getAnalysis() != null) {
-		baseInputFileCB.selectItem(test_.getAnalysis().getBaseinputfile());
-        baseOutputFileCB.selectItem(test_.getAnalysis().getBaseoutputfile());
-        dataOutputFileCB.selectItem(test_.getAnalysis().getDataoutputfile());
+		if(getObject().getAnalysis() != null) {
+		baseInputFileCB.selectItem(getObject().getAnalysis().getBaseinputfile());
+        baseOutputFileCB.selectItem(getObject().getAnalysis().getBaseoutputfile());
+        dataOutputFileCB.selectItem(getObject().getAnalysis().getDataoutputfile());
         }
 	}
 	
@@ -425,9 +422,9 @@ public class TestForm extends FormWidget
         {
             ArrayList<AnalysisData> data = new ArrayList<AnalysisData>();
             
-            if(test_.getAnalysis() != null)
+            if(getObject().getAnalysis() != null)
             {
-                for(AnalysisData ad : test_.getAnalysis().getAnalysisDatas())
+                for(AnalysisData ad : getObject().getAnalysis().getAnalysisDatas())
                 {
                     data.add(ad);
                 }
@@ -462,60 +459,60 @@ public class TestForm extends FormWidget
 			Transaction t = RegaDBMain.getApp().createTransaction();
 	        if(getInteractionState() != InteractionState.Adding)
 	        {
-	            t.attach(test_);
+	            t.attach(getObject());
 	        }
 	        
 	        TestType tt = testTypeCB.currentValue();
 	        t.attach(tt);
 
-	        test_.setDescription(testTF.text());
-	        test_.setTestType(tt);
+	        getObject().setDescription(testTF.text());
+	        getObject().setTestType(tt);
 	        
 	        Analysis analysis = null;
 	        
 	        if(analysisCK.isChecked())
 	        {
-	            if(test_.getAnalysis()==null)
+	            if(getObject().getAnalysis()==null)
 	            {
-	                test_.setAnalysis(new Analysis());
+	            	getObject().setAnalysis(new Analysis());
 	            }
 	            
-	            test_.getAnalysis().setAnalysisType(analysisTypeCB.currentValue());
-	            test_.getAnalysis().setUrl(urlTF.text());
-	            test_.getAnalysis().setServiceName(serviceTF.text());
-	            test_.getAnalysis().setAccount(accountTF.text());
-	            test_.getAnalysis().setPassword(passwordTF.text());
-	            test_.getAnalysis().setBaseinputfile(baseInputFileCB.currentValue());
-	            test_.getAnalysis().setBaseoutputfile(baseOutputFileCB.currentValue());
+	            getObject().getAnalysis().setAnalysisType(analysisTypeCB.currentValue());
+	            getObject().getAnalysis().setUrl(urlTF.text());
+	            getObject().getAnalysis().setServiceName(serviceTF.text());
+	            getObject().getAnalysis().setAccount(accountTF.text());
+	            getObject().getAnalysis().setPassword(passwordTF.text());
+	            getObject().getAnalysis().setBaseinputfile(baseInputFileCB.currentValue());
+	            getObject().getAnalysis().setBaseoutputfile(baseOutputFileCB.currentValue());
 	            
 	            if (!dataOutputFileCB.isHidden()) {
-	            	test_.getAnalysis().setDataoutputfile(dataOutputFileCB.currentValue());
+	            	getObject().getAnalysis().setDataoutputfile(dataOutputFileCB.currentValue());
 	            }
 	            else {
-	            	test_.getAnalysis().setDataoutputfile(null);
+	            	getObject().getAnalysis().setDataoutputfile(null);
 	            }
 	            
 	            ianalysisDataET.setTransaction(t);
-	            ianalysisDataET.setAnalysis(test_.getAnalysis());
+	            ianalysisDataET.setAnalysis(getObject().getAnalysis());
 	            analysisDataET.saveData();
 	            
-	            if(test_.getAnalysis().getAnalysisIi() == null)
+	            if(getObject().getAnalysis().getAnalysisIi() == null)
 	            {
-	                t.save(test_.getAnalysis());
+	                t.save(getObject().getAnalysis());
 	            }
 	            else
 	            {
-	                update(test_.getAnalysis(), t);
+	                update(getObject().getAnalysis(), t);
 	            }
 	        }
 	        else
 	        {
-	        	analysis = test_.getAnalysis();
+	        	analysis = getObject().getAnalysis();
 	        	
-	            test_.setAnalysis(null);
+	        	getObject().setAnalysis(null);
 	        }
 
-	        update(test_, t);
+	        update(getObject(), t);
 			t.commit();
 	        
 	        if (analysis != null)
@@ -526,9 +523,6 @@ public class TestForm extends FormWidget
 	        	
 	        	t.commit();
 	        }
-	        
-	        RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(test_);
-	        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testSelected, RegaDBMain.getApp().getTree().getTreeContent().testView);
 		}
 		else
 		{
@@ -539,14 +533,6 @@ public class TestForm extends FormWidget
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().test, RegaDBMain.getApp().getTree().getTreeContent().testSelect);
-        }
-        else
-        {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testSelected, RegaDBMain.getApp().getTree().getTreeContent().testView);
-        } 
     }
     
     @Override
@@ -556,12 +542,12 @@ public class TestForm extends FormWidget
     	
     	try
     	{
-    		if(test_.getAnalysis()!=null)
+    		if(getObject().getAnalysis()!=null)
     		{
-    	        t.delete(test_.getAnalysis());        
+    	        t.delete(getObject().getAnalysis());        
     		}
     		
-    		t.delete(test_);
+    		t.delete(getObject());
 	        
 	        t.commit();
 	        
@@ -574,12 +560,5 @@ public class TestForm extends FormWidget
     		
     		return tr("form.delete.restriction");
     	}
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().testSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().testSelected.setSelectedItem(null);
     }
 }

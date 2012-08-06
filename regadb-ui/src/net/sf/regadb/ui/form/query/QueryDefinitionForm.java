@@ -6,23 +6,23 @@ import java.util.List;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionParameter;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
-public class QueryDefinitionForm extends FormWidget
+public class QueryDefinitionForm extends ObjectForm<QueryDefinition>
 {
-	private QueryDefinition queryDefinition;
-	
     private WGroupBox queryDefinitionGroup_;
     private FormTable queryDefinitionGroupTable;
     
@@ -39,14 +39,12 @@ public class QueryDefinitionForm extends FormWidget
     private Label creatorL;
     private TextField creatorTF;
     
-    public QueryDefinitionForm(WString formName, InteractionState interactionState, QueryDefinition queryDefinition)
+    public QueryDefinitionForm(WString formName, InteractionState interactionState,
+    		ObjectTreeNode<QueryDefinition> node, QueryDefinition queryDefinition)
     {
-    	super(formName, interactionState);
-        
-        this.queryDefinition = queryDefinition;
-        
+    	super(formName, interactionState, node,
+    			queryDefinition == null ? new QueryDefinition(StandardObjects.getHqlQueryQueryType()) : queryDefinition);
         init();
-        
         fillData();
     }
     
@@ -89,26 +87,26 @@ public class QueryDefinitionForm extends FormWidget
     	
         if(getInteractionState() != InteractionState.Adding)
         {
-            nameTF.setText(queryDefinition.getName());
-            descriptionTA.setText(queryDefinition.getDescription());
-            queryTA.setText(queryDefinition.getQuery());
+            nameTF.setText(getObject().getName());
+            descriptionTA.setText(getObject().getDescription());
+            queryTA.setText(getObject().getQuery());
         }
         
         if(getInteractionState() == InteractionState.Viewing)
         {
-            creatorTF.setText(queryDefinition.getSettingsUser().getUid());
+            creatorTF.setText(getObject().getSettingsUser().getUid());
         }
         
         t.commit();
             
         List<QueryDefinitionParameter> qdpl = new ArrayList<QueryDefinitionParameter>();
         
-        for(QueryDefinitionParameter qdp : queryDefinition.getQueryDefinitionParameters())
+        for(QueryDefinitionParameter qdp : getObject().getQueryDefinitionParameters())
         {
         	qdpl.add(qdp);
         }
         
-        queryDefinitionParameterEditableTable = new IQueryDefinitionParameterEditableTable(this, queryDefinition);
+        queryDefinitionParameterEditableTable = new IQueryDefinitionParameterEditableTable(this, getObject());
         queryDefinitionParameterList = new EditableTable<QueryDefinitionParameter>(queryDefinitionParameterGroup_, queryDefinitionParameterEditableTable, qdpl);
     }
 
@@ -119,20 +117,17 @@ public class QueryDefinitionForm extends FormWidget
     	{
     		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         	
-        	queryDefinition.setName(nameTF.getFormText());
-        	queryDefinition.setDescription(descriptionTA.getFormText());
-        	queryDefinition.setQuery(queryTA.getFormText());
-        	queryDefinition.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
+    		getObject().setName(nameTF.getFormText());
+    		getObject().setDescription(descriptionTA.getFormText());
+    		getObject().setQuery(queryTA.getFormText());
+    		getObject().setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
         	
         	queryDefinitionParameterEditableTable.setTransaction(t);
         	queryDefinitionParameterList.saveData();
     		
-        	update(queryDefinition, t);
+        	update(getObject(), t);
         	
         	t.commit();
-        	
-        	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(queryDefinition);
-    		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView);
     	}
     }
     
@@ -227,34 +222,15 @@ public class QueryDefinitionForm extends FormWidget
 	@Override
 	public void cancel() 
 	{
-		if(getInteractionState() == InteractionState.Adding)
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionMain, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelect);
-		}
-		else
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView);
-		}
 	}
 
 	@Override
 	public WString deleteObject() 
 	{
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
-        
-		queryDefinition = RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.getSelectedItem();
-        
-        t.delete(queryDefinition);
-        
+        t.delete(getObject());
         t.commit();
         
         return null;
-	}
-
-	@Override
-	public void redirectAfterDelete() 
-	{
-		RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.setSelectedItem(null);
 	}
 }

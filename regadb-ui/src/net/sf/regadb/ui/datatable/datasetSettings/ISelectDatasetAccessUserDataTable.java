@@ -5,15 +5,20 @@ import java.util.List;
 import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUser>
+public class ISelectDatasetAccessUserDataTable extends DefaultDataTable<SettingsUser>
 {
-    private static WString [] _colNames = {
+    public ISelectDatasetAccessUserDataTable(SelectForm<SettingsUser> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {
         WString.tr("dataTable.settingsUser.colName.uid"),
         WString.tr("dataTable.settingsUser.colName.firstname"),
         WString.tr("dataTable.settingsUser.colName.lastname")};
@@ -25,11 +30,6 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
     private static int[] colWidths = {33,34,33};
     
     private IFilter[] filters_ = new IFilter[3];
-    
-    public ISelectDatasetAccessUserDataTable()
-    {
-        
-    }
     
     public CharSequence[] getColNames()
     {
@@ -72,14 +72,6 @@ public class ISelectDatasetAccessUserDataTable implements IDataTable<SettingsUse
         filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
-    }
-
-    public void selectAction(SettingsUser selectedItem)
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetAccessSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetAccessView.selectNode();
     }
 
     public boolean[] sortableFields()

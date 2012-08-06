@@ -9,8 +9,8 @@ import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
@@ -18,6 +18,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
@@ -25,10 +26,8 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class PatientEventForm extends FormWidget
+public class PatientEventForm extends ObjectForm<PatientEventValue>
 {
-	private PatientEventValue patientEvent_;
-	
 	// FORM COMPONENTS \\
 	private WGroupBox mainFrameGroup_;
 	private FormTable mainFrameTable_;
@@ -38,30 +37,30 @@ public class PatientEventForm extends FormWidget
 	private ComboBox<Event> cmbEvents;
 	private DateField startDate, endDate;
 	
-	public PatientEventForm(InteractionState state, WString formName, PatientEventValue patientEvent) {
-		super(formName, state);
+	public PatientEventForm(WString formName, InteractionState state, ObjectTreeNode<PatientEventValue> node, PatientEventValue patientEvent) {
+		super(formName, state, node, patientEvent);
 		
-		patientEvent_ = patientEvent;
-		
-		init();
-		fillData();
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(state)){
+			init();
+			fillData();
+		}
 	}
 	
 	private void init()
 	{
-		mainFrameGroup_= new WGroupBox(tr("event.form.frame.general"), this);
+		mainFrameGroup_= new WGroupBox(tr("form.patientEvent.general"), this);
 		mainFrameTable_ = new FormTable(mainFrameGroup_);
 		
-		lblStartDate = new Label(tr("form.singlePatient.patientEvent.label.startDate"));
+		lblStartDate = new Label(tr("form.patientEvent.startDate"));
 		startDate = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
 		startDate.setMandatory(true);
 		mainFrameTable_.addLineToTable(lblStartDate, startDate);
 		
-		lblEndDate = new Label(tr("form.singlePatient.patientEvent.label.endDate"));
+		lblEndDate = new Label(tr("form.patientEvent.endDate"));
 		endDate = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
 		mainFrameTable_.addLineToTable(lblEndDate, endDate);
 		
-		lblEvent = new Label(tr("form.singlePatient.patientEvent.label.event"));
+		lblEvent = new Label(tr("form.patientEvent.event"));
 		cmbEvents = new ComboBox<Event>(getInteractionState(), this);
         cmbEvents.setMandatory(true);
         mainFrameTable_.addLineToTable(lblEvent, cmbEvents);
@@ -88,7 +87,7 @@ public class PatientEventForm extends FormWidget
         t.commit();
 		
         int row = mainFrameTable_.getRowCount();
-		lblValue = new Label(tr("form.singlePatient.patientEvent.label.value"));
+		lblValue = new Label(tr("form.patientEvent.value"));
 		lblValue.setLabelUIMandatory(this);
 		valueContainer = new WContainerWidget();
 		
@@ -101,11 +100,11 @@ public class PatientEventForm extends FormWidget
 	private void fillData() {
 		if( getInteractionState() == InteractionState.Adding )
 		{
-			patientEvent_ = new PatientEventValue();
+			setObject(new PatientEventValue());
 		}
 		else
 		{
-			cmbEvents.selectItem(patientEvent_.getEvent().getName());
+			cmbEvents.selectItem(getObject().getEvent().getName());
 		}
 		
 		updateValue();
@@ -114,16 +113,16 @@ public class PatientEventForm extends FormWidget
         {
             if( isNominalValue() )
             {
-                ((ComboBox<PatientEventValue>)ffValue).selectItem(patientEvent_.getEventNominalValue().getValue());
+                ((ComboBox<PatientEventValue>)ffValue).selectItem(getObject().getEventNominalValue().getValue());
             }
             else
             {
-            	ffValue.setText(patientEvent_.getValue());
+            	ffValue.setText(getObject().getValue());
             }
         }
 		
-		startDate.setDate(patientEvent_.getStartDate());
-		endDate.setDate(patientEvent_.getEndDate());
+		startDate.setDate(getObject().getStartDate());
+		endDate.setDate(getObject().getEndDate());
 	}
 	
 	private void updateValue()
@@ -152,18 +151,6 @@ public class PatientEventForm extends FormWidget
 	
 	@Override
 	public void cancel() {
-		if( getInteractionState() == InteractionState.Adding )
-        {
-            redirectToSelect(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectActionItem());
-        }
-        else
-        {
-            redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewActionItem());
-        }
 	}
 	
 	@Override
@@ -171,20 +158,12 @@ public class PatientEventForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().createTransaction();
         
-		RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().remove(patientEvent_);
-        t.delete(patientEvent_);
+		RegaDBMain.getApp().getSelectedPatient().getPatientEventValues().remove(getObject());
+        t.delete(getObject());
         
         t.commit();
         
         return null;
-	}
-	
-	@Override
-	public void redirectAfterDelete() {
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectActionItem().selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-        	.setSelectedItem(null);
 	}
 	
 	@Override
@@ -194,43 +173,42 @@ public class PatientEventForm extends FormWidget
 		Patient p = RegaDBMain.getApp().getSelectedPatient();
 		t.attach(p);
 		
-		if( endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
-        {
-			UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
-        }
-        else
-        {
-        	if( getInteractionState() == InteractionState.Adding )
-			{
-				patientEvent_ = p.addPatientEvent(cmbEvents.currentValue());
-			}
-			
-			patientEvent_.setStartDate(startDate.getDate());
-			patientEvent_.setEndDate(endDate.getDate());
-			
-			patientEvent_.setEvent(cmbEvents.currentValue());
-			
-			if ( isNominalValue() )
-			{
-				patientEvent_.setEventNominalValue( (EventNominalValue)((ComboBox)ffValue).currentValue() );
-			}
-			else
-			{
-				patientEvent_.setValue( ((TextField)ffValue).getFormText() );
-			}
-			
-			update(patientEvent_, t);
-			t.commit();
-			
-	        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().setSelectedItem(patientEvent_);
-	        redirectToView(
-	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getSelectedActionItem(),
-	        		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode().getViewActionItem());
+    	if( getInteractionState() == InteractionState.Adding )
+		{
+    		setObject(p.addPatientEvent(cmbEvents.currentValue()));
 		}
+		
+    	getObject().setStartDate(startDate.getDate());
+    	getObject().setEndDate(endDate.getDate());
+		
+    	getObject().setEvent(cmbEvents.currentValue());
+		
+		if ( isNominalValue() )
+		{
+			getObject().setEventNominalValue( (EventNominalValue)((ComboBox)ffValue).currentValue() );
+		}
+		else
+		{
+			getObject().setValue( ((TextField)ffValue).getFormText() );
+		}
+			
+		update(getObject(), t);
+		t.commit();
 	}
 	
 	public boolean isNominalValue()
 	{
 		return (ValueTypes.getValueType(cmbEvents.currentValue().getValueType()) == ValueTypes.NOMINAL_VALUE);
+	}
+	
+	@Override
+	public boolean validateForm(){
+		if(super.validateForm()){
+			if(endDate.getDate() != null && DateUtils.compareDates(startDate.getDate(), endDate.getDate()) > 0)
+				UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
+			else
+				return true;
+		}
+		return false;
 	}
 }

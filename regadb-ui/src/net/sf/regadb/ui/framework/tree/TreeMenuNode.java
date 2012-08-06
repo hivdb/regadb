@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -13,9 +12,12 @@ import eu.webtoolkit.jwt.WTreeNode;
 
 public abstract class TreeMenuNode extends WTreeNode
 {
-	public TreeMenuNode(WString intlText, WTreeNode root)
+	private boolean canLeaveNode;
+	
+	public TreeMenuNode(WString intlText, WTreeNode root, boolean canLeaveNode)
 	{
 		super(intlText, null, root);
+		this.canLeaveNode = canLeaveNode;
 		
 		setInteractive(false);
 		setLabelIcon(null);
@@ -74,13 +76,14 @@ public abstract class TreeMenuNode extends WTreeNode
 			
 			this.refresh();
 			
-			ITreeAction treeAction = getFormAction();
-			if(treeAction!=null)
-				treeAction.performAction(TreeMenuNode.this);
+			doAction();
+			
+			if(!RegaDBMain.getApp().getInternalPath().equals(getInternalPath())){
+				RegaDBMain.getApp().setInternalPath(getInternalPath());
+			}
 		}
 	}
-	
-	
+
 	
 	private void setStyle()
 	{
@@ -96,7 +99,7 @@ public abstract class TreeMenuNode extends WTreeNode
 	
 	public TreeMenuNode(WString intlText)
 	{
-		this(intlText, null);
+		this(intlText, null, true);
 	}
 	
 	public ArrayList<TreeMenuNode> getChildren()
@@ -216,5 +219,46 @@ public abstract class TreeMenuNode extends WTreeNode
 			expand();
 	}
 
-	public abstract ITreeAction getFormAction();
+	public String getMyInternalPath(){
+		return getLabel().getText().getValue()
+			.replace(' ', '_')
+			.replace('/', '-')
+			.toLowerCase();
+	}
+	public String getInternalPath() {
+		TreeMenuNode node = (TreeMenuNode)this.getParentNode();
+		return node==null?"":node.getInternalPath() + "/" + getMyInternalPath();
+	}
+	
+	public boolean matchesInternalPath(String[] path, int depth){
+		if(depth < path.length)
+			return path[depth].equals(getMyInternalPath());
+		else
+			return false;
+	}
+
+	public boolean gotoInternalPath(String[] path, int depth){
+		if(matchesInternalPath(path, depth)){
+			doAction();
+			
+			for(TreeMenuNode child : getChildren()){
+				if(child.gotoInternalPath(path, depth+1)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public abstract void doAction();
+	
+	public void reset(){
+		for(WTreeNode n : getChildNodes())
+			if(n instanceof TreeMenuNode)
+				((TreeMenuNode)n).reset();
+	}
+	
+	public boolean canLeaveNode(){
+		return this.canLeaveNode;
+	}
 }

@@ -3,31 +3,27 @@ package net.sf.regadb.ui.form.attributeSettings;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class AttributeGroupForm extends FormWidget 
+public class AttributeGroupForm extends ObjectForm<AttributeGroup>
 {
-    private AttributeGroup attributeGroup_;
-    
     //general group
     private WGroupBox generalGroup_;
     private FormTable generalGroupTable_;
     private Label nameL;
     private TextField nameTF;
     
-    public AttributeGroupForm(InteractionState interactionState, WString formName, AttributeGroup attributeGroup)
+    public AttributeGroupForm(WString formName, InteractionState interactionState, ObjectTreeNode<AttributeGroup> node, AttributeGroup attributeGroup)
     {
-        super(formName, interactionState);
-        attributeGroup_ = attributeGroup;
-        
+        super(formName, interactionState, node, attributeGroup);
         init();
-        
         fillData();
     }
     
@@ -47,16 +43,16 @@ public class AttributeGroupForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
-            attributeGroup_ = new AttributeGroup();
+            setObject(new AttributeGroup());
         }
         
         if(getInteractionState()!=InteractionState.Adding)
         {
             Transaction t = RegaDBMain.getApp().createTransaction();
             
-            t.attach(attributeGroup_);
+            t.attach(getObject());
             
-            nameTF.setText(attributeGroup_.getGroupName());
+            nameTF.setText(getObject().getGroupName());
             
             t.commit();
         }
@@ -69,29 +65,18 @@ public class AttributeGroupForm extends FormWidget
         
         if(getInteractionState()!=InteractionState.Adding)
         {
-            t.attach(attributeGroup_);
+            t.attach(getObject());
         }
         
-        attributeGroup_.setGroupName(nameTF.text());
+        getObject().setGroupName(nameTF.text());
         
-        update(attributeGroup_, t);
+        update(getObject(), t);
         t.commit();
-        
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(attributeGroup_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
     }
     
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().attributeGroups, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelect);
-        }
-        else
-        {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected, RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsView);
-        }
     }
     
     @Override
@@ -101,7 +86,7 @@ public class AttributeGroupForm extends FormWidget
         
         try
         {
-        	t.delete(attributeGroup_);
+        	t.delete(getObject());
             
             t.commit();
             
@@ -115,12 +100,5 @@ public class AttributeGroupForm extends FormWidget
         	return tr("form.delete.restriction");
         }
         
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().attributeGroupsSelected.setSelectedItem(null);
     }
 }

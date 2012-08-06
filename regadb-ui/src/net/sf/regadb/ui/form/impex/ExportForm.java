@@ -215,4 +215,12 @@ public class ExportForm extends FormWidget {
 		deleteExportFile();
 		return null;
 	}
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+	}
 }

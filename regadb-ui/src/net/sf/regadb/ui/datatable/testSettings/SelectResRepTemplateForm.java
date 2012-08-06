@@ -3,22 +3,17 @@ package net.sf.regadb.ui.datatable.testSettings;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
-public class SelectResRepTemplateForm extends SelectForm
+public class SelectResRepTemplateForm extends SelectForm<ResistanceInterpretationTemplate>
 {
-    private DataTable<ResistanceInterpretationTemplate> dataTable_;
-    private IResRepTemplateDataTable dataTableI_;
-    
-    public SelectResRepTemplateForm()
+    public SelectResRepTemplateForm(ObjectTreeNode<ResistanceInterpretationTemplate> node)
     {
-        super(tr("form.resistance.report.template.selectResRepTemplateForm"));
-        init();
+        super(tr("form.resistance.report.template.selectResRepTemplateForm"), node);
     }
 
-    public void init() 
+    public DataTable<ResistanceInterpretationTemplate> createDataTable() 
     {
-        dataTableI_ = new IResRepTemplateDataTable();
-        dataTable_ = new DataTable<ResistanceInterpretationTemplate>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<ResistanceInterpretationTemplate>(new IResRepTemplateDataTable(this), 10);
     }
 }

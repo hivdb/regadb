@@ -10,7 +10,6 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
@@ -21,6 +20,7 @@ import net.sf.regadb.util.hibernate.HibernateFilterConstraint;
 import net.sf.regadb.util.settings.AttributeConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WTreeNode;
 
 public class IPatientDataTable implements IDataTable<Object[]>
 {
@@ -194,13 +194,13 @@ public class IPatientDataTable implements IDataTable<Object[]>
     }
     
     public static void clearItems() {
-        ArrayList<TreeMenuNode> patientAttributes = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getChildren();
+        List<WTreeNode> patientAttributes = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getChildNodes();
         
-        for(TreeMenuNode tn : patientAttributes)
+        for(WTreeNode tn : patientAttributes)
         {
-        	ArrayList<TreeMenuNode> children = tn.getChildren();
+        	List<WTreeNode> children = tn.getChildNodes();
         	
-        	for(TreeMenuNode tmn : children)
+        	for(WTreeNode tmn : children)
         	{
 	        	if(tmn instanceof GenericSelectedItem)
 	        	{

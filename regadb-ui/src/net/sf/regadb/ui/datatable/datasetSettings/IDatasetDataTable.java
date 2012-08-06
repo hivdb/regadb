@@ -4,9 +4,9 @@ import java.util.List;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
@@ -14,8 +14,12 @@ import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
-public class IDatasetDataTable implements IDataTable<Dataset> 
+public class IDatasetDataTable extends DefaultDataTable<Dataset> 
 {
+	public IDatasetDataTable(SelectForm<Dataset> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
 	    WString.tr("dataTable.dataset.colName.description"), 										 
 	    WString.tr("dataTable.dataset.colName.creationDate"),
@@ -74,14 +78,6 @@ public class IDatasetDataTable implements IDataTable<Dataset>
         filters_[1] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
         filters_[2] = new DateFilter(RegaDBSettings.getInstance().getDateFormat());
         filters_[3] = new StringFilter();
-	}
-
-	public void selectAction(Dataset selectedItem) 
-	{
-		RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().datasetView.selectNode();
 	}
 
 	public boolean[] sortableFields() 

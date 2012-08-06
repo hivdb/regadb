@@ -12,7 +12,7 @@ import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.WString;
 
-public class BatchTestAddForm extends FormWidget {
+public abstract class BatchTestAddForm extends FormWidget {
 	private ComboBox<Test> cmbTest;
 	
 	public BatchTestAddForm(WString formName, InteractionState interactionState) {
@@ -53,7 +53,6 @@ public class BatchTestAddForm extends FormWidget {
 	
 	@Override
 	public void cancel() {
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().batchTestRunning, RegaDBMain.getApp().getTree().getTreeContent().batchTestRunning);
 	}
 	
 	@Override
@@ -69,6 +68,5 @@ public class BatchTestAddForm extends FormWidget {
 		Test t = cmbTest.currentValue();
 		BatchTestRunningForm.runTest(RegaDBMain.getApp().getLogin().copyLogin(), t);
 		try { Thread.sleep(100); } catch ( InterruptedException e ) { e.printStackTrace(); }
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().batchTestRunning, RegaDBMain.getApp().getTree().getTreeContent().batchTestRunning);
 	}
 }

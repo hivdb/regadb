@@ -30,18 +30,18 @@ public class IntegratedRegaDBApplication extends RegaDBApplication{
 		t.commit();
 		
 		
-        getTree().getTreeContent().patientTreeNode.prograSelectNode();
+        getTree().getTreeContent().patientTreeNode.selectNode();
 
 		if(p == null){
 			if(getRole().isSinglePatientView())
-				getTree().getTreeContent().patientTreeNode.getAddActionItem().selectNode();
+				getTree().getTreeContent().patientTreeNode.getAddNavigationNode().selectNode();
 			else
-				getTree().getTreeContent().patientTreeNode.getSelectActionItem().selectNode();
+				getTree().getTreeContent().patientTreeNode.getSelectNavigationNode().selectNode();
 		}
 		else{
 			getTree().getTreeContent().patientTreeNode.setSelectedItem(p);
 	        getTree().getTreeContent().patientTreeNode.expand();
-	        getTree().getTreeContent().patientTreeNode.getViewActionItem().selectNode();
+	        getTree().getTreeContent().patientTreeNode.getViewNavigationNode().selectNode();
 		}
         getTree().getRootTreeNode().refresh();
 	}

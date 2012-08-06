@@ -3,20 +3,14 @@ package net.sf.regadb.ui.datatable.query;
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
-public class SelectQueryToolQueryForm extends SelectForm {
-    private DataTable<QueryDefinition> dataTable_;
-    private ISelectQueryDefinitionDataTable dataTableI_;
-
-	public SelectQueryToolQueryForm() {
-		super(tr("form.query.querytool.select"));
-		init();
+public class SelectQueryToolQueryForm extends SelectForm<QueryDefinition> {
+	public SelectQueryToolQueryForm(ObjectTreeNode<QueryDefinition> node) {
+		super(tr("form.query.querytool.select"), node);
 	}
 	
-	private void init() {
-        dataTableI_ = new SelectQueryToolQueryDefinitionDatatable();
-        dataTable_ = new DataTable<QueryDefinition>(dataTableI_, 10);
-
-        addWidget(dataTable_);
+	public DataTable<QueryDefinition> createDataTable() {
+        return new DataTable<QueryDefinition>(new SelectQueryToolQueryDefinitionDatatable(this), 10);
 	}
 }

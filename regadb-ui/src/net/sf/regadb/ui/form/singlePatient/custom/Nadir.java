@@ -128,4 +128,12 @@ public class Nadir extends FormWidget{
 	@Override
 	public void saveData() {
 	}
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+	}
 }

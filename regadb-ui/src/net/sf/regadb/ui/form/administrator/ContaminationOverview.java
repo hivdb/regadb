@@ -126,4 +126,16 @@ public class ContaminationOverview extends FormWidget {
 	@Override
 	public void redirectAfterDelete() {
 	}
+
+	@Override
+	public void redirectAfterSave() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+		// TODO Auto-generated method stub
+		
+	}
 }
