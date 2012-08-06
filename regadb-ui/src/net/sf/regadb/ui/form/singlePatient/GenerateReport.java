@@ -41,6 +41,8 @@ import eu.webtoolkit.jwt.WString;
 
 public class GenerateReport 
 {
+	private static final double THERAPY_GAP_DAY_LIMIT = 1.8; 
+	
 	private static class RIResult{
 		public String gss,mutations,remarks,sir,level,description;
 		
@@ -110,7 +112,8 @@ public class GenerateReport
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$REFERENCE_SEQUENCE", vi.getGenome() == null ? "" : vi.getGenome().getGenbankNumber());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
-        replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate()));
+        replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate(), false));
+        replace("$DATED_ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate(), true));
         
         int bpos;
         while((bpos = rtfBuffer_.indexOf("$ATTRIBUTE(")) > -1){
@@ -288,7 +291,8 @@ public class GenerateReport
         return resultSample==null?resultDate:resultSample;
     }
     
-    private String getARTExperience(Patient p, Date upto){
+    private String getARTExperience(Patient p, Date upto, boolean includeDates){
+    	
         StringBuilder result = new StringBuilder();
         
         TreeSet<Therapy> therapies = new TreeSet<Therapy>(new Comparator<Therapy>() {
@@ -304,8 +308,16 @@ public class GenerateReport
         if(therapies.size() == 0)
         	return "";
         
-        String prev = "";
+        String prev = null;
+        Date startDate = null;
+        Date stopDate = null;
+        
         for(Therapy t : therapies){
+        	if(startDate == null)
+        		startDate = t.getStartDate();
+        	if(stopDate == null)
+        		stopDate = t.getStopDate();
+        	
         	TreeSet<String> combination = new TreeSet<String>();
             for(TherapyGeneric tg : t.getTherapyGenerics()){
                 combination.add(getDrugName(tg.getId().getDrugGeneric().getGenericId()));
@@ -315,12 +327,56 @@ public class GenerateReport
                     combination.add(getDrugName(dg.getGenericId()));
                 }
             }
+            
             String curr = combination.toString().replace(", ", "+");
-            if(!curr.equals(prev)){
-            	result.append(", "+ curr);
-            	prev = curr;
+            
+            boolean gap = stopDate != null && DateUtils.getDayDifference(stopDate, t.getStartDate()) >= THERAPY_GAP_DAY_LIMIT;
+            if(gap || prev != null && !curr.equals(prev)){
+            	result.append(", ");
+            	if(includeDates)
+            		result.append(DateUtils.format(startDate))
+            			.append(" - ")
+            			.append(stopDate == null ? "..." : DateUtils.format(stopDate))
+            			.append(": ");
+            			
+            	result.append(prev);
+            	
+            	if(gap){
+            		result.append(", ");
+            		
+            		if(includeDates)
+	            		result.append(DateUtils.format(stopDate))
+	        				.append(" - ")
+	        				.append(DateUtils.format(t.getStartDate()))
+	        				.append(": ");
+            		
+            		result.append(WString.tr("report.therapy.noTherapy"));
+            	}
+            	
+            	startDate = t.getStartDate();
             }
+            stopDate = t.getStopDate();
+            prev = curr;
         }
+        
+    	result.append(", ");
+    	if(includeDates)
+			result.append(DateUtils.format(startDate))
+				.append(" - ")
+				.append(stopDate == null ? "..." : DateUtils.format(stopDate))
+				.append(": ");
+
+		result.append(prev);
+    	
+    	if(stopDate != null && upto != null
+    			&& DateUtils.getDayDifference(stopDate, upto) >= THERAPY_GAP_DAY_LIMIT){
+    		result.append(", ");
+    		if(includeDates)
+        		result.append(DateUtils.format(stopDate))
+	    			.append(" - ...: ");
+
+    		result.append(WString.tr("report.therapy.noTherapy"));
+    	}
         
         return result.substring(2);
     }

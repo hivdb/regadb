@@ -19,7 +19,7 @@ public class DrugTransaction implements IDrugTransaction {
     }
 
     public DrugCommercial getDrugCommercial(String id) {
-        return t_.getCommercialDrug(id);
+        return t_.getDrugCommercial(id);
     }
 
     public DrugGeneric getDrugGeneric(String id) {

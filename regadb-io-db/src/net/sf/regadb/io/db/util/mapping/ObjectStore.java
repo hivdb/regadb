@@ -6,6 +6,10 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
@@ -46,6 +50,7 @@ public abstract class ObjectStore {
     }
     
     public abstract Attribute getAttribute(String name, String group);
+    public abstract Attribute createAttribute(AttributeGroup attributeGroup, ValueType valueType, String name);
     
     public abstract AttributeNominalValue getAttributeNominalValue(Attribute attribute, String value);
     public AttributeNominalValue createAttributeNominalValue(Attribute attribute, String value){
@@ -53,16 +58,24 @@ public abstract class ObjectStore {
         attribute.getAttributeNominalValues().add(anv);
         return anv;
     }
+
+    public abstract AttributeGroup getAttributeGroup(String name);
+    public abstract AttributeGroup createAttributeGroup(String name);
+    
+    public abstract Event getEvent(String name);
+    public abstract Event createEvent(ValueType valueType, String name);
+
+    public abstract EventNominalValue getEventNominalValue(Event event, String value);
+    public EventNominalValue createEventNominalValue(Event event, String value){
+    	EventNominalValue env = new EventNominalValue(event, value);
+        event.getEventNominalValues().add(env);
+        return env;
+    }
     
     public abstract Dataset getDataset(String description);
     
     public abstract Patient getPatient(Dataset dataset, String id);
     public abstract Patient createPatient(Dataset dataset, String id);
-    
-    public abstract AttributeGroup getAttributeGroup(String name);
-    public abstract AttributeGroup createAttributeGroup(String name);
-    
-    public abstract Attribute createAttribute(AttributeGroup attributeGroup, ValueType valueType, String name);
     
     public abstract ValueType getValueType(String description);
     
@@ -71,6 +84,9 @@ public abstract class ObjectStore {
     public abstract Genome getGenome(String organismName);
     
     public abstract Collection<Patient> getPatients();
+    
+    public abstract DrugGeneric getDrugGeneric(String genericId);
+    public abstract DrugCommercial getDrugCommercial(String name);
     
     public abstract void close();
     

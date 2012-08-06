@@ -8,6 +8,10 @@ import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.db.AttributeNominalValue;
 import net.sf.regadb.db.Dataset;
+import net.sf.regadb.db.DrugCommercial;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Event;
+import net.sf.regadb.db.EventNominalValue;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
@@ -15,6 +19,7 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueType;
+import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.io.util.StandardObjects;
 
 public class OfflineObjectStore extends ObjectStore{
@@ -29,6 +34,11 @@ public class OfflineObjectStore extends ObjectStore{
 	Map<String, Test> tests = new HashMap<String, Test>();
 	Map<String, TestNominalValue> testNominalValues = new HashMap<String, TestNominalValue>();
 	Map<String, TestObject> testObjects = new HashMap<String, TestObject>();
+	Map<String, Event> events = new HashMap<String, Event>();
+	Map<String, EventNominalValue> eventNominalValues = new HashMap<String, EventNominalValue>();
+
+	Map<String, DrugGeneric> drugGenerics = null;
+	Map<String, DrugCommercial> drugCommercials = null;
 	
 	public OfflineObjectStore(){
 		loadStandardObjects();
@@ -62,6 +72,12 @@ public class OfflineObjectStore extends ObjectStore{
 		
 		for(TestObject to : StandardObjects.getTestObjects())
 			testObjects.put(key(to), to);
+		
+		for(Event e : StandardObjects.getEvents()){
+			events.put(key(e), e);
+			for(EventNominalValue env : e.getEventNominalValues())
+				eventNominalValues.put(key(env), env);
+		}
 
 	}
 
@@ -184,6 +200,12 @@ public class OfflineObjectStore extends ObjectStore{
 	private String key(TestObject to){
 		return to.getDescription();
 	}
+	private String key(Event e){
+		return e.getName();
+	}
+	private String key(EventNominalValue env){
+		return implode(key(env.getEvent()),env.getValue());
+	}
 	
 	public void setPatients(Map<String, Patient> patients){
 		this.patients = patients;
@@ -236,5 +258,45 @@ public class OfflineObjectStore extends ObjectStore{
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public DrugGeneric getDrugGeneric(String genericId) {
+		if(drugGenerics == null){
+			drugGenerics = new HashMap<String, DrugGeneric>();
+			for(DrugGeneric dg : Utils.prepareRegaDrugGenerics())
+				drugGenerics.put(dg.getGenericId(), dg);
+		}
+		
+		return drugGenerics.get(genericId);
+	}
+
+	@Override
+	public DrugCommercial getDrugCommercial(String name) {
+		if(drugCommercials == null){
+			drugCommercials = new HashMap<String, DrugCommercial>();
+			for(DrugCommercial dc : Utils.prepareRegaDrugCommercials())
+				drugCommercials.put(dc.getName(), dc);
+		}
+		
+		return drugCommercials.get(name);
+	}
+
+	@Override
+	public Event getEvent(String name) {
+		return events.get(name);
+	}
+
+	@Override
+	public Event createEvent(ValueType valueType, String name) {
+		Event e = new Event(name);
+		e.setValueType(valueType);
+		events.put(key(e),e);
+		return e;
+	}
+
+	@Override
+	public EventNominalValue getEventNominalValue(Event event, String value) {
+		return eventNominalValues.get(implode(key(event),value));
 	}
 }
