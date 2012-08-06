@@ -19,6 +19,7 @@ import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWebWidget;
 
 public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 {
@@ -224,5 +225,13 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     protected List<WPushButton> getExtraButtons() {
 		return extraButtons;
+	}
+    
+    public static void flagValid(WWebWidget widget){
+		widget.setStyleClass("");
+	}
+	
+	public static void flagInvalid(WWebWidget widget){
+		widget.setStyleClass("Wt-invalid");
 	}
 }

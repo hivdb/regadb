@@ -233,7 +233,7 @@ public class Patient implements Serializable {
     {
         for(PatientAttributeValue pav : getPatientAttributeValues())
         {
-            if(pav.getAttribute().getAttributeIi().equals(attribute.getAttributeIi()))
+            if(Equals.isSameAttribute(pav.getAttribute(), attribute))
             {
                 return pav;
             }
