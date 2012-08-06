@@ -160,6 +160,27 @@ public class Transaction {
         return q.list();
     }
     
+    @SuppressWarnings("unchecked")
+	public List<ViralIsolate> getViralIsolatesByGenome(Genome genome){
+    	Query q;
+    	
+    	if(genome != null){
+        	Integer id = genome.getGenomeIi();
+
+	    	if(id != null){
+	    		q = session.createQuery("from ViralIsolate v where v.genome.id = :id");
+	    		q.setParameter("id", id);
+	    	}else{
+	    		q = session.createQuery("from ViralIsolate v where v.genome.organismName = :organismName");
+	    		q.setParameter("organismName", genome.getOrganismName());
+	    	}
+    	}else{
+    		q = session.createQuery("from ViralIsolate v where v.genome is null");
+    	}
+    	
+    	return q.list();
+    }
+    
     public Long getViralIsolateCount()
     {
     	Query q = session.createQuery("select count(viral_isolate_ii) from ViralIsolate as viralIsolate");
