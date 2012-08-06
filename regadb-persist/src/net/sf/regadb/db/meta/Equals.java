@@ -6,7 +6,12 @@
  */
 package net.sf.regadb.db.meta;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
@@ -35,8 +40,10 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ViralIsolate;
+import net.sf.regadb.util.date.DateUtils;
 
 public class Equals {
 
@@ -216,6 +223,131 @@ public class Equals {
     		|| (o1 != null && o2 != null && isSameString(o1.getValue(), o2.getValue()));
     }
     
+    private static <T extends Comparable<T>> int compare(T t1, T t2){
+		if(t1 != null && t2 != null)
+			return t1.compareTo(t2);
+		else if(t1 != null)
+			return 1;
+		else if(t2 != null)
+			return -1;
+		else
+			return 0;
+    }
+    
+    private static final Comparator<TherapyCommercial> therapyCommercialComparator = new Comparator<TherapyCommercial>(){
+		@Override
+		public int compare(TherapyCommercial o1, TherapyCommercial o2) {
+			int c = o1.getId().getDrugCommercial().getName().compareTo(
+					o2.getId().getDrugCommercial().getName());
+			if(c != 0)
+				return c;
+			
+			c = Equals.compare(o1.getDayDosageUnits(), o2.getDayDosageUnits());
+			if(c != 0)
+				return c;
+			
+			c = Equals.compare(o1.getFrequency(), o2.getFrequency());
+			if(c != 0)
+				return c;
+			
+			if(o1.isBlind() != o2.isBlind())
+				return o1.isBlind() ? 1 : -1;
+			
+			if(o1.isPlacebo() != o2.isPlacebo())
+				return o1.isPlacebo() ? 1 : -1;
+			
+			return 0;
+		}
+	};
+	
+	private static final Comparator<TherapyGeneric> therapyGenericComparator = new Comparator<TherapyGeneric>(){
+		@Override
+		public int compare(TherapyGeneric o1, TherapyGeneric o2) {
+			int c = o1.getId().getDrugGeneric().getGenericId().compareTo(
+					o2.getId().getDrugGeneric().getGenericId());
+			if(c != 0)
+				return c;
+			
+			c = Equals.compare(o1.getDayDosageMg(), o2.getDayDosageMg());
+			if(c != 0)
+				return c;
+			
+			c = Equals.compare(o1.getFrequency(), o2.getFrequency());
+			if(c != 0)
+				return c;
+			
+			if(o1.isBlind() != o2.isBlind())
+				return o1.isBlind() ? 1 : -1;
+			
+			if(o1.isPlacebo() != o2.isPlacebo())
+				return o1.isPlacebo() ? 1 : -1;
+			
+			return 0;
+		}
+	};
+    
+    /**
+     * Compares Therapies on comment, startDate, stopDate, therapyCommercials, therapyGenerics and therapyMotivation
+     * not on Patient
+     * @param o1
+     * @param o2
+     * @return
+     */
+    public static boolean isSameTherapyEx(Therapy o1, Therapy o2){
+    	if(o1 == o2)
+    		return true;
+    	
+    	if(!isSameTherapy(o1, o2))
+    		return false;
+    	if(!DateUtils.equals(o1.getStopDate(), o2.getStopDate()))
+    			return false;
+    	if(!isSameString(o1.getComment(), o2.getComment()))
+    		return false;
+    	if(!isSameTherapyMotivation(o1.getTherapyMotivation(), o2.getTherapyMotivation()))
+    		return false;
+    	if(o1.getTherapyCommercials().size() != o2.getTherapyCommercials().size())
+    		return false;
+    	if(o1.getTherapyGenerics().size() != o2.getTherapyGenerics().size())
+    		return false;
+    	
+    	if(!Equals.isSameCollection(
+    			o1.getTherapyCommercials(),
+    			o2.getTherapyCommercials(),
+    			therapyCommercialComparator))
+    		return false;
+    	
+    	if(!Equals.isSameCollection(
+    			o1.getTherapyGenerics(),
+    			o2.getTherapyGenerics(),
+    			therapyGenericComparator))
+    		return false;
+    	
+    	return true;
+    }
+    
+    public static <T> boolean isSameCollection(Collection<T> c1, Collection<T> c2, Comparator<T> comparator){
+    	if(c1 == c2)
+    		return true;
+    	if(c1 == null 
+    			|| c2 == null
+    			|| c1.size() != c2.size())
+    		return false;
+    	
+    	Set<T> s1 = new TreeSet<T>(comparator);
+    	s1.addAll(c1);
+    	
+    	Set<T> s2 = new TreeSet<T>(comparator);
+    	s2.addAll(c2);
+    	
+    	Iterator<T> i1 = s1.iterator();
+    	Iterator<T> i2 = s2.iterator();
+    	
+    	while(i1.hasNext()){
+    		if(comparator.compare(i1.next(), i2.next()) != 0)
+    			return false;
+    	}
+    	
+    	return true;
     }
 
     /**
