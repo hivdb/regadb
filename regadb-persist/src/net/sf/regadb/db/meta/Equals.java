@@ -212,6 +212,8 @@ public class Equals {
     public static boolean isSameTherapy(Therapy o1, Therapy o2) {
         return o1 == o2
         || (o1 != null && o2 != null && o1.getStartDate().equals(o2.getStartDate()));
+    }
+    
     /**
      * Compares TherapyMotivations on value
      * @param o1
