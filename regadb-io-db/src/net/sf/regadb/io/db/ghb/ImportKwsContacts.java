@@ -31,12 +31,12 @@ public class ImportKwsContacts {
 		Arguments as = new Arguments();
     	ValueArgument conf			= as.addValueArgument("conf-dir", "configuration directory", false);
     	ValueArgument dateFormat	= as.addValueArgument("date-format", "java date format", false);
-    	dateFormat.setValue("M-d-yyyy H:m:s");
+    	dateFormat.setValue("yyyy-MM-dd");
     	
     	PositionalArgument user		= as.addPositionalArgument("regadb user", true);
     	PositionalArgument pass		= as.addPositionalArgument("regadb password", true);
     	PositionalArgument dataset	= as.addPositionalArgument("regadb dataset", true);
-		PositionalArgument file = as.addPositionalArgument("contacten.csv (;)", true);
+		PositionalArgument file = as.addPositionalArgument("contacten.csv (,)", true);
 		
 		if(!as.handle(args))
 			return;
@@ -71,7 +71,7 @@ public class ImportKwsContacts {
 	}
 	
 	public void run(File contactFile) throws BiffException, IOException{
-		run(contactFile, "M-d-yyyy H:m:s");
+		run(contactFile, "yyyy-MM-dd");
 	}
 	
 	public void run(File contactFile, String dateFormat) throws BiffException, IOException{
@@ -89,21 +89,25 @@ public class ImportKwsContacts {
 			if(consultation == null || hospitalisation == null)
 				throw new Exception("'Test' objects don't exist, create them first.");
 			
-			Table table = Table.readTable(contactFile.getAbsolutePath(),';');
+			Table table = Table.readTable(contactFile.getAbsolutePath(),',');
 			int cEadnr = table.findColumn("eadnr");
 			int cDatum = table.findColumn("datum");
 			int cCtype = table.findColumn("ctype");
 			
+			int i = 1;
+			if(cEadnr == -1){	//assume header-less csv, in default order
+				cEadnr = 0;
+				cDatum = 1;
+				cCtype = 2;
+				i = 0;
+			}
+			
 			long maxYearDifference = 50l * (365l * 24l * 60l * 60l * 1000l);
 			
-			for(int i = 1; i < table.numRows(); ++i){
+			for(; i < table.numRows(); ++i){
 				String eadnr = table.valueAt(cEadnr, i);
 				String datum = table.valueAt(cDatum, i);
 				String ctype = table.valueAt(cCtype, i);
-				
-				int pos = eadnr.indexOf(',');
-				if(pos > -1)
-					eadnr = eadnr.substring(0, pos);
 				
 				Patient p = os.getPatient(dataset, eadnr);
 				if(p == null){
