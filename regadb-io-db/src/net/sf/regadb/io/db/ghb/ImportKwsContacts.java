@@ -90,14 +90,15 @@ public class ImportKwsContacts {
 				throw new Exception("'Test' objects don't exist, create them first.");
 			
 			Table table = Table.readTable(contactFile.getAbsolutePath(),',');
-			int cEadnr = table.findColumn("eadnr");
-			int cDatum = table.findColumn("datum");
+			int cEad = table.findColumn("ead");
+			int cDate = table.findColumn("date");
 			int cCtype = table.findColumn("ctype");
 			
 			int i = 1;
-			if(cEadnr == -1){	//assume header-less csv, in default order
-				cEadnr = 0;
-				cDatum = 1;
+			if(cEad == -1 || cDate == -1 || cCtype == -1){
+				//assume header-less csv, in default order
+				cEad = 0;
+				cDate = 1;
 				cCtype = 2;
 				i = 0;
 			}
@@ -105,8 +106,8 @@ public class ImportKwsContacts {
 			long maxYearDifference = 50l * (365l * 24l * 60l * 60l * 1000l);
 			
 			for(; i < table.numRows(); ++i){
-				String eadnr = table.valueAt(cEadnr, i);
-				String datum = table.valueAt(cDatum, i);
+				String eadnr = table.valueAt(cEad, i);
+				String datum = table.valueAt(cDate, i);
 				String ctype = table.valueAt(cCtype, i);
 				
 				Patient p = os.getPatient(dataset, eadnr);
