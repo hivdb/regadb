@@ -291,7 +291,13 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 			}
 		};
         
-        settingsUser = new ObjectTreeNode<SettingsUser>("administrator.user", this){
+        settingsUser = new ObjectTreeNode<SettingsUser>(
+        		"administrator.user",
+        		this,
+        		EnumSet.of(InteractionState.Viewing,
+        				InteractionState.Editing,
+        				InteractionState.Deleting)
+        		){
 
 			@Override
 			protected ObjectForm<SettingsUser> createForm(WString name, InteractionState interactionState, SettingsUser selectedObject) {
