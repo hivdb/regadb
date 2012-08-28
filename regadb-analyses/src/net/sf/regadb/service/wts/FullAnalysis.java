@@ -89,13 +89,10 @@ public class FullAnalysis implements IAnalysis {
             String uid = sessionSafeLogin.getUid();
             for(Test test : tests)
             {
-                if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType()))
+                if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType())
+                		|| Equals.isSameTestType(StandardObjects.getTDRTestType(genome),test.getTestType()))
                 {
-                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType())
-                    		|| Equals.isSameTestType(StandardObjects.getTDRTestType(genome),test.getTestType()))
-                    {
-                        launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
-                    }
+                    launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
                 }
             }
             t.commit();
