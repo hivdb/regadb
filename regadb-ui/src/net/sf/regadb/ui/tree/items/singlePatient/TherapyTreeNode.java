@@ -1,6 +1,5 @@
 package net.sf.regadb.ui.tree.items.singlePatient;
 
-import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.Transaction;
@@ -28,29 +27,13 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 	protected void init(){
 		super.init();
 		
-      copyLast = new FormNavigationNode(getMenuResource("copylast"), this, true)
-      {
-          public ObjectForm<Therapy> createForm()
-          {
-        	  Patient p = RegaDBMain.getApp().getSelectedPatient();
-              Therapy lastTherapy = null;
-              for(Therapy therapy : p.getTherapies()){
-                  if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
-                      lastTherapy = therapy;
-              }
-        	  return new TherapyForm(WWidget.tr("form.therapy.add"), InteractionState.Adding, TherapyTreeNode.this, lastTherapy);
-          }
-      };
-	}
-	
-	protected void copyLast(){
-        Patient p = RegaDBMain.getApp().getSelectedPatient();
-        Therapy lastTherapy = null;
-        for(Therapy therapy : p.getTherapies()){
-            if(lastTherapy == null || lastTherapy.getStartDate().before(therapy.getStartDate()))
-                lastTherapy = therapy;
-        }
-        RegaDBMain.getApp().getFormContainer().setForm(new TherapyForm(WWidget.tr("form.therapy.add"), InteractionState.Adding, TherapyTreeNode.this, lastTherapy));
+		copyLast = new FormNavigationNode(getMenuResource("copylast"), this, true)
+		{
+			public ObjectForm<Therapy> createForm()
+			{
+				return new TherapyForm(WWidget.tr("form.therapy.add"), InteractionState.Adding, TherapyTreeNode.this, null, true);
+			}
+		};
 	}
 	
 	public FormNavigationNode getCopyLastNode(){
@@ -73,7 +56,7 @@ public class TherapyTreeNode extends ObjectTreeNode<Therapy>{
 
 	@Override
 	protected ObjectForm<Therapy> createForm(WString name, InteractionState interactionState, Therapy selectedObject) {
-		return new TherapyForm(name, interactionState, TherapyTreeNode.this, selectedObject);
+		return new TherapyForm(name, interactionState, TherapyTreeNode.this, selectedObject, false);
 	}
 
 	@Override

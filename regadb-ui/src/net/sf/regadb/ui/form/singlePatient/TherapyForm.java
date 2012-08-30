@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,6 +20,7 @@ import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
+import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -35,13 +38,15 @@ import eu.webtoolkit.jwt.WWidget;
 
 public class TherapyForm extends ObjectForm<Therapy>
 {
-	private Therapy previousTherapy_ = null;
-	
 	//general group
     private WGroupBox generalGroup_;
     private FormTable generalGroupTable_;
     private Label startDateL;
     private DateField startDateDF;
+
+    private Label setStopDatePrevTherapyL;
+    private CheckBox setStopDatePrevTherapyCB;
+    
     private Label stopDateL;
     private DateField stopDateDF;
     private Label motivationL;
@@ -60,18 +65,19 @@ public class TherapyForm extends ObjectForm<Therapy>
     private EditableTable<TherapyCommercial> drugCommercialList_;
     private ICommercialDrugSelectionEditableTable iCommercialDrugSelectionEditableTable_;
     
-	public TherapyForm(WString formName, InteractionState interactionState, ObjectTreeNode<Therapy> node, Therapy therapy)
+	public TherapyForm(
+			WString formName,
+			InteractionState interactionState,
+			ObjectTreeNode<Therapy> node,
+			Therapy therapy,
+			boolean copyLastTherapy)
 	{
 		super(formName,interactionState,node,therapy);
 		
 		if(RegaDBMain.getApp().isPatientInteractionAllowed(interactionState)){
-			if(interactionState==InteractionState.Adding && therapy != null){
-			    setPreviousTherapy(therapy);
-			}
-			
 			init();
 			
-			fillData();
+			fillData(copyLastTherapy);
 		}
 	}
 
@@ -103,30 +109,40 @@ public class TherapyForm extends ObjectForm<Therapy>
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
         
+        if(getInteractionState() == InteractionState.Adding
+        		|| getInteractionState() == InteractionState.Editing){
+        	setStopDatePrevTherapyL = new Label(tr("form.therapy.setStopDatePrevTherapy"));
+        	setStopDatePrevTherapyCB = new CheckBox(getInteractionState(), this);
+        	generalGroupTable_.addLineToTable(setStopDatePrevTherapyCB, setStopDatePrevTherapyL);
+        }
+
+        
         genericGroup_ = new WGroupBox(tr("form.therapy.editableTable.genericDrugs"), this);
         commercialGroup_ = new WGroupBox(tr("form.therapy.editableTable.commercialDrugs"), this);
         
         addControlButtons();
 	}
 	
-	private void fillData()
+	private void fillData(boolean copyLastTherapy)
 	{
         Transaction t = RegaDBMain.getApp().createTransaction();
         
 		if(getInteractionState()==InteractionState.Adding)
 		{
-		    Therapy loadTherapy = getPreviousTherapy();
-		    
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
             t.attach(p);
             setObject(new Therapy());
             getObject().setStartDate(new Date(System.currentTimeMillis()));
             
-            if(loadTherapy != null){   //copy this therapy into the new one
-                copyTherapy(loadTherapy, getObject());
-                if(loadTherapy.getStopDate()!=null){
-                	getObject().setStartDate(loadTherapy.getStopDate());
-                }
+            if(copyLastTherapy){   //copy last therapy info to the new one
+    		    Therapy lastTherapy = getPreviousTherapy(t, null);
+
+    		    if(lastTherapy != null){
+	                copyTherapy(lastTherapy, getObject());
+	                if(lastTherapy.getStopDate()!=null){
+	                	getObject().setStartDate(lastTherapy.getStopDate());
+	                }
+    		    }
             }
         }
         else
@@ -171,12 +187,26 @@ public class TherapyForm extends ObjectForm<Therapy>
         drugCommercialList_ = new EditableTable<TherapyCommercial>(commercialGroup_, iCommercialDrugSelectionEditableTable_, tcs);
 	}
 
-   public Therapy getPreviousTherapy(){
-        return previousTherapy_;
-    }
-    
-    public void setPreviousTherapy(Therapy t){
-        previousTherapy_ = t;
+   public Therapy getPreviousTherapy(Transaction t, Date cutoff){
+        List<Therapy> therapies = t.getTherapiesSortedOnDate(RegaDBMain.getApp().getSelectedPatient());
+        
+        if(therapies.size() == 0)
+        	return null;
+        else if(cutoff == null)
+        	return therapies.get(therapies.size()-1);
+        else{
+	        Iterator<Therapy> i = therapies.iterator();
+	        Therapy t1 = null;
+	        while(i.hasNext()){
+	        	Therapy t2 = i.next();
+	        	
+	        	if(!t2.getStartDate().before(cutoff))
+	        		return t1;
+	        	
+	        	t1 = t2;
+	        }
+	        return t1;
+        }
     }
 
 	private void copyTherapy(Therapy from, Therapy to){
@@ -327,12 +357,14 @@ public class TherapyForm extends ObjectForm<Therapy>
         drugGenericList_.saveData();
             
         update(getObject(), t);
-            
-        Therapy prevTherapy = getPreviousTherapy(); 
-        if(prevTherapy != null){
-            prevTherapy.setStopDate(getObject().getStartDate());
-            t.attach(prevTherapy);
-            t.update(prevTherapy);
+        
+        if(setStopDatePrevTherapyCB.isChecked()){
+	        Therapy prevTherapy = getPreviousTherapy(t, startDateDF.getDate()); 
+	        if(prevTherapy != null){
+	            prevTherapy.setStopDate(getObject().getStartDate());
+	            t.attach(prevTherapy);
+	            t.update(prevTherapy);
+	        }
         }
             
         t.commit();
