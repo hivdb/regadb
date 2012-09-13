@@ -161,64 +161,58 @@ public class HicdepExporter {
  			printInsert("tblLTFU", row);
 		}
 		
-		String[] columns, columns2, values, values2;
-		
-		columns = new String[]{
-			"PATIENT",
-			"SAMP_ID",
-			"SAMPLE_D",
-			"SEQ_DT",
-			"LAB",
-			"LIBRARY",
-			"REFSEQ",
-			"KIT",
-			"SOFTWARE",
-			"TESTTYPE",
-			"SUBTYPE"
-		};
-		values = new String[columns.length];
-		values[4] = values[5] = values[6] = values[7] = values[8] = values[9] = null;
-		
-		columns2 = new String[]{
-			"PATIENT",
-			"SAMP_LAB_D",
-			"SAMP_TYPE",
-			"SAMP_ID",
-			"SAMP_LAB",
-			"SAMP_FREEZE_D",
-			"SAMP_FREEZE_T",
-			"SAMP_ALIQ_NO",
-			"SAMP_ALIQ_SIZE",
-			"SAMP_ALIQ_U"
-		};
-		values2 = new String[columns2.length];
-		values2[4] = values2[5] = values2[6] = values2[7] = values2[8] = values2[9] = null;
-		
 		q = t.createQuery("select" +
-				" p.patientId"+
-				", v.sampleId"+
-				", v.sampleDate"+
-				", (select max(n.sequenceDate) from NtSequence n where n.viralIsolate = v)"+
-				", (select max(r.value) from NtSequence n join n.testResults r where n.viralIsolate = v and r.test.description = '"+ StandardObjects.getSubtypeTestDescription() +"')"+
-				" from PatientImpl p join p.viralIsolates v " +
-				" order by p.patientId, v.sampleDate, v.id");
+				" new map (" +
+				"	p.patientId as patient_id," +
+				" 	v.sampleId as isolate_id," +
+				" 	v.sampleDate as isolate_date, " +
+				" 	(select max(n.sequenceDate) from NtSequence n where n.viralIsolate = v) as last_sequence_date, "  +
+				"	(select max(r.value) from NtSequence n join n.testResults r where n.viralIsolate = v and r.test.description = :subtype_description) as subtype_result" +
+				" )" +
+				"from PatientImpl p join p.viralIsolates v " +
+				"order by p.patientId, v.sampleDate, v.id");
+		q.setParameter("subtype_description", StandardObjects.getSubtypeTestDescription());
 		
-		for(Object[] o : (List<Object[]>)q.list()){
-			values[0] = (String)o[0];
-			values[1] = (String)o[1];
-			values[2] = format((Date)o[2]);
-			values[3] = o[3] == null ? null : format((Date)o[3]);
-			values[10] = (String)o[4];
+		for(Map<String, Object> m : (List<Map<String, Object>>)q.list()) {
+			Date isolateDate = (Date)m.get("isolate_date");
+			Date sequenceDate = (Date)m.get("last_sequence_date");
 			
-			printInsert("tblLAB_RES", columns, values);
+			row.clear();
+			row.put("PATIENT", (String)m.get("patient_id"));
+			row.put("SAMP_ID", (String)m.get("isolate_id"));
+			row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
+			row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
+			row.put("LAB", null);
+			row.put("LIBRARY", null);
+			row.put("REFSEQ", null); //TODO we can provide this???
+			row.put("KIT", null); //TODO we can provide this???
+			row.put("SOFTWARE", null); //TODO we can provide this???
+			row.put("TESTTYPE", null); //TODO we can provide this???
 			
-			values2[0] = values[0];
-			values2[1] = values[2];
-			values2[2] = "BS";
-			values2[3] = values[1];
+			row.put("SUBTYPE", (String)m.get("subtype_result"));
 			
-			printInsert("tblSAMPLES", columns2, values2);
+			printInsert("tblLAB_RES", row);
+			
+			row.clear();
+			
+			row.put("PATIENT", (String)m.get("patient_id"));
+			row.put("SAMP_LAB_D", isolateDate == null ? null : format(isolateDate));
+			//TODO this should become BP, 
+			//since this is the default
+			//we have this info in RegaDB, and should use it
+			row.put("SAMP_TYPE", "BS");
+			row.put("SAMP_ID", (String)m.get("isolate_id"));
+			row.put("SAMP_LAB", null);
+			row.put("SAMP_FREEZE_D", null);
+			row.put("SAMP_FREEZE_T", null);
+			row.put("SAMP_ALIQ_NO", null);
+			row.put("SAMP_ALIQ_SIZE", null);
+			row.put("SAMP_ALIQ_U", null);
+			
+			printInsert("tblSAMPLES", row);
 		}
+		
+		String[] columns, columns2, values, values2;
 		
 		columns = new String[]{
 				"PATIENT",
