@@ -121,7 +121,8 @@ public class HicdepExporter {
 			values[0] = (String)o[0];
 			values[2] = o[1] == null ? null : format(new Date(Long.parseLong((String)o[1])));
 			values[5] = genderMap.b2a((String)o[2]);
-			values[6] = ""+ (height.nextInt(50) + 150);	//Random height
+			//TODO ask Stijn //""+ (height.nextInt(50) + 150);	//Random height
+			values[6] = "999";
 			values[7] = transmissionMap.b2a((String)o[3]);
 			
 			printInsert("tblBAS", columns, values);
