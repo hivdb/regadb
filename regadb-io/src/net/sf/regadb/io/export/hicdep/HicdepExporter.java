@@ -76,7 +76,8 @@ public class HicdepExporter {
 				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getGeoGraphicOriginAttribute().getName() +"')"+
 				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getEthnicityAttribute().getName() +"')"+
 				", (select min(pav.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getDeathDateAttribute().getName() +"')"+
-				" from PatientImpl p order by p.patientId");
+				" from PatientImpl p " +
+				" order by p.patientId");
 		
 		columns = new String[]{
 			"PATIENT",
@@ -168,7 +169,8 @@ public class HicdepExporter {
 				", v.sampleDate"+
 				", (select max(n.sequenceDate) from NtSequence n where n.viralIsolate = v)"+
 				", (select max(r.value) from NtSequence n join n.testResults r where n.viralIsolate = v and r.test.description = '"+ StandardObjects.getSubtypeTestDescription() +"')"+
-				" from PatientImpl p join p.viralIsolates v order by p.patientId, v.sampleDate");
+				" from PatientImpl p join p.viralIsolates v " +
+				" order by p.patientId, v.sampleDate, v.id");
 		
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
@@ -207,7 +209,7 @@ public class HicdepExporter {
 		
 		q = t.createQuery("select r.patient.patientId, r.testDate, tt.description, r.value from TestResult r join r.test t join t.testType tt" +
 				" where tt.description = '"+ StandardObjects.getContactTestType().getDescription() +"'"+
-				" ");
+				" order by r.patient.id, r.id");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = values2[0] = (String)o[0];
 			values[1] = values2[1] = format((Date)o[1]);
@@ -227,12 +229,12 @@ public class HicdepExporter {
 		
 		q = t.createQuery("select t.patient.patientId, tg.id.drugGeneric.genericId, t.startDate, t.stopDate, m.value " +
 				" from Therapy t left outer join t.therapyMotivation m join t.therapyGenerics tg" +
-				" order by t.patient.patientId, t.startDate");
+				" order by t.patient.patientId, t.startDate, tg.id, tg.id.drugGeneric.genericId");
 		printART((List<Object[]>)q.list());
 		
 		q = t.createQuery("select t.patient.patientId, dg.genericId, t.startDate, t.stopDate, m.value" +
 				" from Therapy t left outer join t.therapyMotivation m join t.therapyCommercials tc join tc.id.drugCommercial.drugGenerics dg" +
-				" order by t.patient.patientId, t.startDate");
+				" order by t.patient.patientId, t.startDate, tc.id, dg.genericId");
 		printART((List<Object[]>)q.list());
 		
 		
@@ -245,7 +247,8 @@ public class HicdepExporter {
 		};
 		values = new String[columns.length];
 		q = t.createQuery("select n.viralIsolate.sampleId, p.abbreviation, a.firstAaPos, a.lastAaPos, n.nucleotides" +
-				" from NtSequence n join n.aaSequences a join a.protein p");
+				" from NtSequence n join n.aaSequences a join a.protein p" +
+				" order by a.id");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
 			values[1] = (String)o[1];
@@ -265,7 +268,8 @@ public class HicdepExporter {
 		};
 		values = new String[columns.length];
 		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, m.id.mutationPosition, m.aaMutation" +
-				" from AaSequence a join a.aaMutations m join a.protein p");
+				" from AaSequence a join a.aaMutations m join a.protein p " +
+				" order by m.id ");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
 			values[1] = (String)o[1];
@@ -277,7 +281,8 @@ public class HicdepExporter {
 		}
 		
 		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, i.id.insertionPosition, i.id.insertionOrder, i.aaInsertion" +
-		" from AaSequence a join a.aaInsertions i join a.protein p");
+		" from AaSequence a join a.aaInsertions i join a.protein p" +
+		" order by i.id");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
 			values[1] = (String)o[1];
