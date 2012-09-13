@@ -9,10 +9,13 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
+import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
@@ -61,77 +64,104 @@ public class HicdepExporter {
 		return m;
 	}
 	
+	private static final String ID = "id";
+	private static final String BIRTH_DATE = "birth_date";
+	private static final String GENDER = "gender";
+	private static final String TRANSMISSION_GROUP = "transmission_group";
+	private static final String GEOGRAPHIC_ORIGIN = "geographic_origin";
+	private static final String ETHNICITY = "ethnicity";
+	private static final String DEATH_DATE = "death_date";
+	
 	@SuppressWarnings("unchecked")
-	public void export(String dataset){
-		
-		String[] columns, columns2, values, values2;
-		
+	public void export(String dataset){		
 		Transaction t = login.createTransaction();
 		
-		Query q = t.createQuery("select " +
-				" p.patientId"+
-				", (select min(pav.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getBirthDateAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getGenderAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getTransmissionGroupAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getGeoGraphicOriginAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getEthnicityAttribute().getName() +"')"+
-				", (select min(pav.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getDeathDateAttribute().getName() +"')"+
-				" from PatientImpl p " +
-				" order by p.patientId");
+		Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+		attributes.put(BIRTH_DATE, StandardObjects.getBirthDateAttribute());
+		attributes.put(GENDER, StandardObjects.getGenderAttribute());
+		attributes.put(TRANSMISSION_GROUP, StandardObjects.getTransmissionGroupAttribute());
+		attributes.put(GEOGRAPHIC_ORIGIN, StandardObjects.getGeoGraphicOriginAttribute());
+		attributes.put(ETHNICITY, StandardObjects.getEthnicityAttribute());
+		attributes.put(DEATH_DATE, StandardObjects.getDeathDateAttribute());
 		
-		columns = new String[]{
-			"PATIENT",
-			"CENTER",
-			"BIRTH_D",
-			"FRSVIS_D",
-			"ENROL_D",
-			"GENDER",
-			"HEIGH",
-			"MODE",
-			"ORIGIN",
-			"ETHNIC",
-			"SEROCO_D",
-			"RECART_Y",
-			"AIDS_Y",
-			"AIDS_D"
-			};
-		values = new String[columns.length];
-		values[1] = values[3] = values[4] = values[8] = values[9] = values[10] = values[11] = values[12] = values[13] = null;
-		
-		columns2 = new String[]{
-			"PATIENT",
-			"DROP_Y",
-			"DROP_D",
-			"DROP_RS",
-			"DEATH_Y",
-			"DEATH_D",
-			"AUTOP_Y",
-			"DEATH_R1",
-			"DEATH_RC1"
-		};
-		values2 = new String[columns2.length];
-		values2[1] = values2[2] = values2[3] = values2[6] = values2[7] = values2[8] = null;
-		
-		SimpleCsvMapper genderMap = getMapper("gender.csv");
-		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");		
-
-		Random height = new Random();
-		
-		for(Object[] o : (List<Object[]>)q.list()){
-			values[0] = (String)o[0];
-			values[2] = o[1] == null ? null : format(new Date(Long.parseLong((String)o[1])));
-			values[5] = genderMap.b2a((String)o[2]);
-			//TODO ask Stijn //""+ (height.nextInt(50) + 150);	//Random height
-			values[6] = "999";
-			values[7] = transmissionMap.b2a((String)o[3]);
-			
-			printInsert("tblBAS", columns, values);
-
-			values2[0] = values[0];
-			values2[4] = o[6] == null ? "0" : "1";
-			values2[5] = o[6] == null ? null : format(new Date(Long.parseLong((String)o[6])));
- 			printInsert("tblLTFU", columns2, values2);
+		StringBuilder queryString = new StringBuilder("select new map (p.patientId as " + ID);
+		for (Map.Entry<String, Attribute> e : attributes.entrySet()) {
+			String select;
+			if (ValueTypes.getValueType(e.getValue().getValueType()) == ValueTypes.NOMINAL_VALUE) {
+				select = 
+					"select min(pav.attributeNominalValue.value) " +
+					"from PatientAttributeValue pav join pav.attribute a " +
+					"where pav.patient = p and a.name = :" + e.getKey() + "_name";
+			} else {
+				select = 
+					"select min(pav.value) " +
+					"from PatientAttributeValue pav join pav.attribute a " +
+					"where pav.patient = p and a.name = :" + e.getKey() + "_name";
+			}
+			queryString.append(", \n (" + select + ") as " + e.getKey() + " ");	
 		}
+		queryString.append(")" +
+				"from PatientImpl p " +
+				"order by p.patientId");
+		
+		Query q = t.createQuery(queryString.toString());
+		for (Map.Entry<String, Attribute> e : attributes.entrySet())
+			q.setParameter(e.getKey() + "_name", e.getValue().getName());
+
+		SimpleCsvMapper genderMap = getMapper("gender.csv");
+		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");
+		
+		LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+		for(Map<String, String> m : (List<Map<String,String>>)q.list()){
+			row.clear();
+			
+			row.put("PATIENT", m.get(ID));
+			row.put("CENTER", null);
+			
+			String birthDate = m.get(BIRTH_DATE);
+			row.put("BIRTH_D", birthDate == null ? null : format(new Date(Long.parseLong(birthDate))));
+			
+			row.put("FRSVIS_D", null);
+			row.put("ENROL_D", null);
+		
+			String gender = genderMap.b2a(m.get(GENDER));
+			row.put("GENDER", gender);
+
+			//TODO ask Stijn //""+ (height.nextInt(50) + 150);	//Random height
+			row.put("HEIGH", "999");
+			
+			String transmission = transmissionMap.b2a(m.get(TRANSMISSION_GROUP));
+			row.put("MODE", transmission);
+			
+			row.put("ORIGIN", null);
+			row.put("ETHNIC", null);
+			row.put("SEROCO_D", null);
+			row.put("RECART_Y", null);
+			row.put("AIDS_Y", null);
+			row.put("AIDS_D", null);
+			
+			printInsert("tblBAS", row);
+
+			row.clear();
+			
+			row.put("PATIENT", m.get(ID));
+			
+			row.put("DROP_Y", null); //TODO should be N ???
+			row.put("DROP_D", null);
+			row.put("DROP_RS", null);
+			
+			String deathDate = m.get(DEATH_DATE);
+			row.put("DEATH_Y", deathDate == null ? "0" : "1");
+			row.put("DEATH_D", deathDate == null ? null : format(new Date(Long.parseLong(deathDate))));
+			
+			row.put("AUTOP_Y", null); //TODO should be 9 ???
+			row.put("DEATH_R1", null);
+			row.put("DEATH_RC1", null); //TODO should be N ???
+			
+ 			printInsert("tblLTFU", row);
+		}
+		
+		String[] columns, columns2, values, values2;
 		
 		columns = new String[]{
 			"PATIENT",
@@ -319,6 +349,10 @@ public class HicdepExporter {
 			
 			printInsert("tblART", columns, values);
 		}
+	}
+
+	public void printInsert(String table, LinkedHashMap<String, String> row) {
+		printInsert(table, row.keySet().toArray(new String[row.keySet().size()]), row.values().toArray(new String[row.values().size()]));
 	}
 	
 	protected void printInsert(String table, String[] columns, String[] values){
