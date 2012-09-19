@@ -62,19 +62,21 @@ public class ResistanceInterpretationTemplateForm extends ObjectForm<ResistanceI
         {
         	upload.getFileUpload().uploaded().addListener(this, new Signal.Listener() {
 				public void trigger() {
-                    try 
-                    {
-                        getObject().setDocument(FileUtils.readFileToByteArray(new File(upload.getFileUpload().getSpoolFileName())));
-                        getObject().setFilename(lastPartOfFilename(upload.getFileUpload().getClientFileName()));
-                    } 
-                    catch (IOException e) 
-                    {
-                        e.printStackTrace();
-                    }
-                    WMemoryResource memResource = new WMemoryResource("application/rtf");
-                    memResource.suggestFileName("template.rtf");
-                    memResource.setData(getObject().getDocument());
-                    upload.setAnchor(getObject().getFilename(), memResource);
+					if(!upload.getFileUpload().isEmpty()){
+	                    try 
+	                    {
+	                        getObject().setDocument(FileUtils.readFileToByteArray(new File(upload.getFileUpload().getSpoolFileName())));
+	                        getObject().setFilename(lastPartOfFilename(upload.getFileUpload().getClientFileName()));
+	                    } 
+	                    catch (IOException e) 
+	                    {
+	                        e.printStackTrace();
+	                    }
+	                    WMemoryResource memResource = new WMemoryResource("application/rtf");
+	                    memResource.suggestFileName("template.rtf");
+	                    memResource.setData(getObject().getDocument());
+	                    upload.setAnchor(getObject().getFilename(), memResource);
+					}
 				}
         	});
         }

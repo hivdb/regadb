@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.testTestTypes;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -110,7 +112,24 @@ public class TestTypeForm extends ObjectForm<TestType>
             {
                 nominalValuesGroup_.removeWidget(nominalValuesList_);
             }
-            ArrayList<TestNominalValue> list = new ArrayList<TestNominalValue>();
+            
+            Set<TestNominalValue> list = new TreeSet<TestNominalValue>(
+            		new Comparator<TestNominalValue>(){
+
+						@Override
+						public int compare(TestNominalValue o1,
+								TestNominalValue o2) {
+							if(o1 == o2 || o1.getValue() == o2.getValue())
+								return 0;
+							
+							if(o1.getValue() == null)
+								return -1;
+							
+							return o1.getValue().compareTo(o2.getValue());
+						}
+            			
+            		});
+            
             if(getInteractionState()!=InteractionState.Adding)
             {
                 Transaction t = RegaDBMain.getApp().createTransaction();

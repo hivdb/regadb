@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -129,7 +131,20 @@ public class AttributeForm extends ObjectForm<Attribute>
             {
                 nominalValuesGroup_.removeWidget(nominalValuesList_);
             }
-            ArrayList<AttributeNominalValue> list = new ArrayList<AttributeNominalValue>();
+            Set<AttributeNominalValue> list = new TreeSet<AttributeNominalValue>(
+            		new Comparator<AttributeNominalValue>(){
+						@Override
+						public int compare(AttributeNominalValue o1,
+								AttributeNominalValue o2) {
+							if(o1 == o2 || o1.getValue() == o2.getValue())
+								return 0;
+							
+							if(o1.getValue() == null)
+								return -1;
+							
+							return o1.getValue().compareTo(o2.getValue());
+						}
+            		});
             if(getInteractionState()!=InteractionState.Adding)
             {
                 Transaction t = RegaDBMain.getApp().createTransaction();
