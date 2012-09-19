@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.event;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.EventNominalValue;
@@ -107,7 +109,22 @@ public class EventForm extends ObjectForm<Event> {
         		nominalValuesGroup_.removeWidget(nominalValuesList_);
             }
         	
-            ArrayList<EventNominalValue> list = new ArrayList<EventNominalValue>();
+            Set<EventNominalValue> list = new TreeSet<EventNominalValue>(
+            		new Comparator<EventNominalValue>(){
+
+						@Override
+						public int compare(EventNominalValue o1,
+								EventNominalValue o2) {
+							if(o1 == o2 || o1.getValue() == o2.getValue())
+								return 0;
+							
+							if(o1.getValue() == null)
+								return -1;
+							
+							return o1.getValue().compareTo(o2.getValue());
+						}
+            			
+            		});
             
             if(getInteractionState()!=InteractionState.Adding)
             {
