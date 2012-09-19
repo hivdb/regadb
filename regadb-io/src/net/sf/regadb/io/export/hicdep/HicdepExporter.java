@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.login.DisabledUserException;
@@ -252,16 +256,25 @@ public class HicdepExporter {
 			}
 		}
 		
-		q = t.createQuery("select t.patient.patientId, tg.id.drugGeneric.genericId, t.startDate, t.stopDate, m.value " +
-				" from Therapy t left outer join t.therapyMotivation m join t.therapyGenerics tg" +
-				" order by t.patient.patientId, t.startDate, tg.id, tg.id.drugGeneric.genericId");
-		printART((List<Object[]>)q.list());
+		q = t.createQuery("select new map(tg.id.therapy.patient.patientId as patient_id, tg.id.therapy as therapy, tg as therapy_generic)" +
+				" from TherapyGeneric tg" +
+				" order by tg.id");
+		for (Map<String, Object> db_row : (List<Map<String, Object>>)q.list()) {
+			printGenericART(
+					(String)db_row.get("patient_id"), 
+					(Therapy)db_row.get("therapy"),
+					((TherapyGeneric)db_row.get("therapy_generic")).getId().getDrugGeneric());
+		}
 		
-		q = t.createQuery("select t.patient.patientId, dg.genericId, t.startDate, t.stopDate, m.value" +
-				" from Therapy t left outer join t.therapyMotivation m join t.therapyCommercials tc join tc.id.drugCommercial.drugGenerics dg" +
-				" order by t.patient.patientId, t.startDate, tc.id, dg.genericId");
-		printART((List<Object[]>)q.list());
-		
+		q = t.createQuery("select new map(tc.id.therapy.patient.patientId as patient_id, tc.id.therapy as therapy, tc as therapy_commercial)" +
+				" from TherapyCommercial tc" +
+				" order by tc.id");
+		for (Map<String, Object> db_row : (List<Map<String, Object>>)q.list()) {
+			printCommercialART(
+						(String)db_row.get("patient_id"), 
+						(Therapy)db_row.get("therapy"),
+						((TherapyCommercial)db_row.get("therapy_commercial")));
+		}
 		
 		columns = new String[]{
 				"SAMP_ID",
@@ -321,27 +334,63 @@ public class HicdepExporter {
 		t.commit();
 	}
 	
-	private void printART(List<Object[]> queryResult){
-		String[] columns = new String[]{
-				"PATIENT",
-				"ART_ID",
-				"ART_SD",
-				"ART_ED",
-				"ART_RS"
-		};
-		String[] values = new String[columns.length];
+	private String therapyMotivation(Therapy t) {
+		String motivation = null;
+		if (t.getTherapyMotivation() != null) {
+			SimpleCsvMapper reason = getMapper("therapy_stopreason.csv");
+			motivation = reason.b2a(t.getTherapyMotivation().getValue());
+			if (motivation == null)
+				throw new RuntimeException("Could not map therapy stop reason '" + t.getTherapyMotivation().getValue() + "'");
+		}
 		
-		SimpleCsvMapper reason = getMapper("therapy_stopreason.csv");
-		SimpleCsvMapper drugs = getMapper("drugs.csv");
+		if (motivation != null)
+			return motivation;
+		else 
+			return "";
+	}
+	
+	private void printGenericART(String patientId, Therapy t, DrugGeneric dg) {
+		SimpleCsvMapper genericDrugs = getMapper("generic-drugs.csv");
+	
+		LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+
+		String genericId = dg.getGenericId();
+		String atc = genericDrugs.b2a(genericId);
+		if (atc == null)
+			atc = dg.getAtcCode();
+		if ("".equals(atc))
+			atc = null;
 		
-		for(Object[] o : queryResult){
-			values[0] = (String)o[0];
-			values[1] = drugs.b2a((String)o[1]);
-			values[2] = format((Date)o[2]);
-			values[3] = format((Date)o[3]);
-			values[4] = reason.b2a((String)o[4]);
+		if (atc == null)
+			throw new RuntimeException("No atc code could be found for generic drug '" + genericId + "'");
+		
+		row.put("PATIENT", patientId);
+		row.put("ART_ID", atc);
+		row.put("ART_SD", format(t.getStartDate()));
+		row.put("ART_ED", format(t.getStopDate()));
+		row.put("ART_RS", therapyMotivation(t));
+		
+		printInsert("tblART", row);
+	}
+	
+	private void printCommercialART(String patientId, Therapy t, TherapyCommercial tc){
+		String code = tc.getId().getDrugCommercial().getAtcCode();
+		if ("".equals(code))
+			code = null;
+
+		if (code != null) {
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+	
+			row.put("PATIENT", patientId);
+			row.put("ART_ID", code);
+			row.put("ART_SD", format(t.getStartDate()));
+			row.put("ART_ED", format(t.getStopDate()));
+			row.put("ART_RS", therapyMotivation(t));
 			
-			printInsert("tblART", columns, values);
+			printInsert("tblART", row);
+		} else {
+			for (DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics())
+				printGenericART(patientId, t, dg);
 		}
 	}
 
