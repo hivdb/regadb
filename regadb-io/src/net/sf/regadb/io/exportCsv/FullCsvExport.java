@@ -1,8 +1,6 @@
 package net.sf.regadb.io.exportCsv;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,8 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Attribute;
@@ -48,6 +44,7 @@ import net.sf.regadb.util.args.Arguments;
 import net.sf.regadb.util.args.PositionalArgument;
 import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.date.DateUtils;
+import net.sf.regadb.util.file.FileUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
@@ -55,8 +52,7 @@ import org.hibernate.Query;
 public class FullCsvExport implements ExportPatient {
 	private Map<String, String> resistanceResults = new HashMap<String, String>();
 	
-	private List<File> files = new ArrayList<File>();
-	private List<String> fileNames = new ArrayList<String>();
+	private Map<String, File> files = new HashMap<String, File>();
 	
 	private FileWriter patientFileWriter;
 	private FileWriter eventFileWriter;
@@ -77,28 +73,27 @@ public class FullCsvExport implements ExportPatient {
 	
 	public FullCsvExport(long maxNumberSeqs, List<Attribute> attributes, List<String> resistanceTestDrugs, File zipFile, boolean exportMutations) throws IOException {
 		File patientFile = File.createTempFile("patients", "csv");
-		files.add(patientFile);
-		fileNames.add("patients.csv");
+		files.put("patients.csv", patientFile);
 		patientFileWriter = new FileWriter(patientFile);
+
 		File eventFile = File.createTempFile("events", "csv");
-		files.add(eventFile);
-		fileNames.add("events.csv");
+		files.put("events.csv", eventFile);
 		eventFileWriter = new FileWriter(eventFile);
+
 		File testFile = File.createTempFile("tests", "csv");
-		files.add(testFile);
-		fileNames.add("tests.csv");
+		files.put("tests.csv", testFile);
 		testFileWriter = new FileWriter(testFile);
+
 		File therapyFile = File.createTempFile("therapies", "csv");
-		fileNames.add("therapies.csv");
-		files.add(therapyFile);
+		files.put("therapies.csv", therapyFile);
 		therapyFileWriter = new FileWriter(therapyFile);
+
 		File viralIsolateFile = File.createTempFile("viral_isolates", "csv");
-		files.add(viralIsolateFile);
-		fileNames.add("viral_isolates.csv");
+		files.put("viral_isolates.csv", viralIsolateFile);
 		viralIsolateFileWriter = new FileWriter(viralIsolateFile);
+
 		File resistanceFile = File.createTempFile("resistance", "csv");
-		files.add(resistanceFile);
-		fileNames.add("resistance.csv");
+		files.put("resistance.csv", resistanceFile);
 		resistanceFileWriter = new FileWriter(resistanceFile);
 		
 		this.maxNumberSeqs = maxNumberSeqs;
@@ -483,36 +478,13 @@ public class FullCsvExport implements ExportPatient {
 			e.printStackTrace();
 		}
 		
-		// Create a buffer for reading the files
-	    byte[] buf = new byte[1024];
-	    
 	    try {
-	        // Create the ZIP file
-	        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
-	    
-	        // Compress the files
-	        for (int i=0; i<files.size(); i++) {
-	            FileInputStream in = new FileInputStream(files.get(i));
-	    
-	            // Add ZIP entry to output stream.
-	            out.putNextEntry(new ZipEntry(fileNames.get(i)));
-	    
-	            // Transfer bytes from the file to the ZIP file
-	            int len;
-	            while ((len = in.read(buf)) > 0) {
-	                out.write(buf, 0, len);
-	            }
-	    
-	            // Complete the entry
-	            out.closeEntry();
-	            in.close();
-	        }
-	        out.close();
+			FileUtils.createZipFile(zipFile, files);
 	    } catch (IOException ioe) {
 	    	ioe.printStackTrace();
 	    }
 	    
-	    for(File f : files) {
+	    for(File f : files.values()) {
 	    	f.delete();
 	    }
 	}
