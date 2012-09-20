@@ -54,9 +54,7 @@ public class HicdepExporter {
 	}
 	
 	private SimpleCsvMapper createMapper(String name){
-		InputStream is = null;
-		is = this.getClass().getResourceAsStream("mappings/"+ name);
-		
+		InputStream is = HicdepExporter.class.getResourceAsStream("mappings/"+ name);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		SimpleCsvMapper m = new SimpleCsvMapper(br);
 		try {
