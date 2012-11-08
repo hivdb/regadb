@@ -23,6 +23,7 @@ import net.sf.regadb.ui.datatable.testSettings.SelectResRepTemplateForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestForm;
 import net.sf.regadb.ui.datatable.testSettings.SelectTestTypeForm;
 import net.sf.regadb.ui.form.administrator.AboutForm;
+import net.sf.regadb.ui.form.administrator.ContaminationOverview;
 import net.sf.regadb.ui.form.administrator.MergePatientsForm;
 import net.sf.regadb.ui.form.administrator.UpdateForm;
 import net.sf.regadb.ui.form.attributeSettings.AttributeForm;
@@ -465,6 +466,14 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
                 	
                 };
             }
+        };
+        
+        new FormNavigationNode(WString.tr("menu.contamination"), this, true)
+        {
+        	public IForm createForm()
+        	{
+        		return new ContaminationOverview();
+        	}
         };
         
         new FormNavigationNode(WString.tr("menu.mergePatients"), this, true)
