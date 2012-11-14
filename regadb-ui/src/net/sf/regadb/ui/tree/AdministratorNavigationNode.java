@@ -394,7 +394,10 @@ public class AdministratorNavigationNode extends DefaultNavigationNode{
 
 			@Override
 			protected String getObjectId(ImportDefinition object) {
-				return object.getXmlFile().getName();
+				if (object.getXmlFile() != null)
+					return object.getXmlFile().getName();
+				else 
+					return null;
 			}
 
 			@Override
