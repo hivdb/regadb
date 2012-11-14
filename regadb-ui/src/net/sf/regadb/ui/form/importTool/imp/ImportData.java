@@ -104,7 +104,7 @@ public class ImportData {
 	 * @param simulate
 	 * @return an empty list in case there were no errors
 	 */
-	public List<WString> doImport(Transaction tr, SequenceDb sequenceDb, boolean simulate) {
+	public List<WString> doImport(Transaction tr, SequenceDb sequenceDb, boolean simulate, Login login) {
 		Map<String, Test> testsMap = new HashMap<String, Test>();
 		for (Test t : tr.getTests()) {
 			testsMap.put(Rule.getTestName(t), t);
@@ -124,7 +124,7 @@ public class ImportData {
 			if (!simulate) {
 				for (Patient p : patients) {
 					for (ViralIsolate vi : p.getViralIsolates()) {
-						Genome genome = blast(vi.getNtSequences().iterator().next());
+						Genome genome = blast(vi.getNtSequences().iterator().next(), login);
 						vi.setGenome(tr.getGenome(genome.getOrganismName()));
 					}
 					tr.save(p);
@@ -133,7 +133,7 @@ public class ImportData {
 				
 				for (Patient p : patients) {
 					for (ViralIsolate vi : p.getViralIsolates()) {
-						Login copiedLogin = RegaDBMain.getApp().getLogin().copyLogin();
+						Login copiedLogin = login.copyLogin();
 						try {
 						NonThreadedFullAnalysis analysis = new NonThreadedFullAnalysis(vi, vi.getGenome(), sequenceDb);
 						analysis.launch(copiedLogin);
@@ -149,12 +149,12 @@ public class ImportData {
 		}
 	}
 	
-	private Genome blast(NtSequence ntseq){
+	private Genome blast(NtSequence ntseq, Login login){
 	    Genome genome = null;
 	    //TODO check ALL sequences?
 	    
         if(ntseq != null){
-            BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, RegaDBMain.getApp().getLogin().getUid());
+            BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, login.getUid());
             try{
                 blastAnalysis.launch();
                 genome = blastAnalysis.getGenome();

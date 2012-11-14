@@ -129,9 +129,9 @@ public class StartImportForm extends WDialog {
 										new File(xlsFile.getFileUpload().getSpoolFileName()),
 										new File(fastaFile.getFileUpload().getSpoolFileName()),
 										dataset.currentValue());
-							List<WString> errors = importData.doImport(tr, sequenceDb, true);
+							List<WString> errors = importData.doImport(tr, sequenceDb, true, workerLogin);
 							if (errors.size() == 0) {
-								importData.doImport(tr, sequenceDb, false);
+								importData.doImport(tr, sequenceDb, false, workerLogin);
 							}
 							
 							StartImportForm.this.errors = errors;
