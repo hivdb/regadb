@@ -4,14 +4,18 @@ import java.util.List;
 
 import net.sf.regadb.db.Event;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class IEventDataTable implements IDataTable<Event> {
+public class IEventDataTable extends DefaultDataTable<Event> {
+	public IEventDataTable(SelectForm<Event> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
 	    WString.tr("dataTable.event.column.name"),
 	    WString.tr("dataTable.event.column.valuetype")};
@@ -21,13 +25,6 @@ public class IEventDataTable implements IDataTable<Event> {
 	private static int[] colWidths = {50,50};
 	
 	private IFilter[] filters_ = new IFilter[2];
-	
-	public IEventDataTable() { }
-	
-	public void selectAction(Event selectedItem) {
-		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.setSelectedItem(selectedItem);
-		RegaDBMain.getApp().getTree().getTreeContent().eventSelected.refresh();
-	}
 	
 	public List<Event> getDataBlock(Transaction t, int startIndex, int amountOfRows, int sortIndex, boolean isAscending) {
 		return t.getEvents(startIndex, amountOfRows, filterVarNames_[sortIndex], isAscending, HibernateStringUtils.filterConstraintsQuery(this));

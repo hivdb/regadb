@@ -29,13 +29,20 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestNominalValue;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyCommercialId;
+import net.sf.regadb.db.TherapyGeneric;
+import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.db.drugs.ImportDrugsFromCentralRepos;
 import net.sf.regadb.io.importXML.ImportFromXML;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.RegaDBWtsServer;
 import net.sf.regadb.tools.FastaFile;
+import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.xml.sax.InputSource;
@@ -854,7 +861,7 @@ public class Utils {
          }
      }
      
-     private static AttributeNominalValue getANV(NominalAttribute na, String value) {
+     public static AttributeNominalValue getANV(NominalAttribute na, String value) {
     	 for (AttributeNominalValue anvt : na.attribute.getAttributeNominalValues()) {
     		 if (anvt.getValue().equalsIgnoreCase(value)) 
     			 return anvt;
@@ -943,5 +950,68 @@ public class Utils {
 				pav.setValue(value);
 		}
 		return pav;
+	}
+	
+	public static TestResult getDuplicateTestResult(Patient p, TestResult result){
+        for(TestResult tr : p.getTestResults()) {
+            if(Equals.isSameTest(tr.getTest(),result.getTest())
+            		&& DateUtils.equals(tr.getTestDate(),result.getTestDate()) 
+                    && (tr.getSampleId() == result.getSampleId()
+                    		|| (tr.getSampleId() != null && tr.getSampleId().equals(result.getSampleId())))
+                    	){
+            	return tr;
+            }
+        }
+        return null;
+	}
+	
+	public static boolean therapyContainsDrug(Therapy t, DrugGeneric d){
+		for(TherapyGeneric tg : t.getTherapyGenerics())
+			if(Equals.isSameDrugGeneric(d, tg.getId().getDrugGeneric()))
+				return true;
+		return false;
+	}
+
+	public static boolean therapyContainsDrug(Therapy t, DrugCommercial d){
+		for(TherapyCommercial tc : t.getTherapyCommercials())
+			if(Equals.isSameDrugCommercial(d, tc.getId().getDrugCommercial()))
+				return true;
+		return false;
+	}
+
+	/**
+	 * Adds all TherapyCommercials/Generics of Therapy b to Therapy a
+	 * if Therapy a doesn't contain the corresponding drugs.
+	 * Therapy attributes are ignored.
+	 * @param a target Therapy
+	 * @param b source Therapy
+	 */
+	public static void mergeTherapies(Therapy a, Therapy b){
+		if(a == b)
+			return;
+		
+		for(TherapyCommercial tc : b.getTherapyCommercials()){
+			if(!therapyContainsDrug(a, tc.getId().getDrugCommercial())){
+				TherapyCommercial ntc = new TherapyCommercial(
+						new TherapyCommercialId(a, tc.getId().getDrugCommercial()),
+						tc.getDayDosageUnits(),
+						tc.isPlacebo(),
+						tc.isBlind(),
+						tc.getFrequency());
+				a.getTherapyCommercials().add(ntc);
+			}
+		}
+		
+		for(TherapyGeneric tg : b.getTherapyGenerics()){
+			if(!therapyContainsDrug(a, tg.getId().getDrugGeneric())){
+				TherapyGeneric ntg = new TherapyGeneric(
+						new TherapyGenericId(a, tg.getId().getDrugGeneric()),
+						tg.getDayDosageMg(),
+						tg.isPlacebo(),
+						tg.isBlind(),
+						tg.getFrequency());
+				a.getTherapyGenerics().add(ntg);
+			}
+		}
 	}
 }

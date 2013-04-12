@@ -9,10 +9,17 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
+import net.sf.regadb.db.Attribute;
+import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Therapy;
+import net.sf.regadb.db.TherapyCommercial;
+import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.login.DisabledUserException;
 import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
@@ -47,9 +54,7 @@ public class HicdepExporter {
 	}
 	
 	private SimpleCsvMapper createMapper(String name){
-		InputStream is = null;
-		is = this.getClass().getResourceAsStream("mappings/"+ name);
-		
+		InputStream is = HicdepExporter.class.getResourceAsStream("mappings/"+ name);
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		SimpleCsvMapper m = new SimpleCsvMapper(br);
 		try {
@@ -61,131 +66,155 @@ public class HicdepExporter {
 		return m;
 	}
 	
+	private static final String ID = "id";
+	private static final String BIRTH_DATE = "birth_date";
+	private static final String GENDER = "gender";
+	private static final String TRANSMISSION_GROUP = "transmission_group";
+	private static final String GEOGRAPHIC_ORIGIN = "geographic_origin";
+	private static final String ETHNICITY = "ethnicity";
+	private static final String DEATH_DATE = "death_date";
+	
 	@SuppressWarnings("unchecked")
-	public void export(String dataset){
-		
-		String[] columns, columns2, values, values2;
-		
+	public void export(String dataset){		
 		Transaction t = login.createTransaction();
 		
-		Query q = t.createQuery("select " +
-				" p.patientId"+
-				", (select min(pav.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getBirthDateAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getGenderAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getTransmissionGroupAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getGeoGraphicOriginAttribute().getName() +"')"+
-				", (select min(pav.attributeNominalValue.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getEthnicityAttribute().getName() +"')"+
-				", (select min(pav.value) from PatientAttributeValue pav join pav.attribute a where pav.patient = p and a.name = '"+ StandardObjects.getDeathDateAttribute().getName() +"')"+
-				" from PatientImpl p order by p.patientId");
+		Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+		attributes.put(BIRTH_DATE, StandardObjects.getBirthDateAttribute());
+		attributes.put(GENDER, StandardObjects.getGenderAttribute());
+		attributes.put(TRANSMISSION_GROUP, StandardObjects.getTransmissionGroupAttribute());
+		attributes.put(GEOGRAPHIC_ORIGIN, StandardObjects.getGeoGraphicOriginAttribute());
+		attributes.put(ETHNICITY, StandardObjects.getEthnicityAttribute());
+		attributes.put(DEATH_DATE, StandardObjects.getDeathDateAttribute());
 		
-		columns = new String[]{
-			"PATIENT",
-			"CENTER",
-			"BIRTH_D",
-			"FRSVIS_D",
-			"ENROL_D",
-			"GENDER",
-			"HEIGH",
-			"MODE",
-			"ORIGIN",
-			"ETHNIC",
-			"SEROCO_D",
-			"RECART_Y",
-			"AIDS_Y",
-			"AIDS_D"
-			};
-		values = new String[columns.length];
-		values[1] = values[3] = values[4] = values[8] = values[9] = values[10] = values[11] = values[12] = values[13] = null;
-		
-		columns2 = new String[]{
-			"PATIENT",
-			"DROP_Y",
-			"DROP_D",
-			"DROP_RS",
-			"DEATH_Y",
-			"DEATH_D",
-			"AUTOP_Y",
-			"DEATH_R1",
-			"DEATH_RC1"
-		};
-		values2 = new String[columns2.length];
-		values2[1] = values2[2] = values2[3] = values2[6] = values2[7] = values2[8] = null;
-		
-		SimpleCsvMapper genderMap = getMapper("gender.csv");
-		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");		
-
-		Random height = new Random();
-		
-		for(Object[] o : (List<Object[]>)q.list()){
-			values[0] = (String)o[0];
-			values[2] = o[1] == null ? null : format(new Date(Long.parseLong((String)o[1])));
-			values[5] = genderMap.b2a((String)o[2]);
-			values[6] = ""+ (height.nextInt(50) + 150);	//Random height
-			values[7] = transmissionMap.b2a((String)o[3]);
-			
-			printInsert("tblBAS", columns, values);
-
-			values2[0] = values[0];
-			values2[4] = o[6] == null ? "0" : "1";
-			values2[5] = o[6] == null ? null : format(new Date(Long.parseLong((String)o[6])));
- 			printInsert("tblLTFU", columns2, values2);
+		StringBuilder queryString = new StringBuilder("select new map (p.patientId as " + ID);
+		for (Map.Entry<String, Attribute> e : attributes.entrySet()) {
+			String select;
+			if (ValueTypes.getValueType(e.getValue().getValueType()) == ValueTypes.NOMINAL_VALUE) {
+				select = 
+					"select min(pav.attributeNominalValue.value) " +
+					"from PatientAttributeValue pav join pav.attribute a " +
+					"where pav.patient = p and a.name = :" + e.getKey() + "_name";
+			} else {
+				select = 
+					"select min(pav.value) " +
+					"from PatientAttributeValue pav join pav.attribute a " +
+					"where pav.patient = p and a.name = :" + e.getKey() + "_name";
+			}
+			queryString.append(", \n (" + select + ") as " + e.getKey() + " ");	
 		}
+		queryString.append(")" +
+				"from PatientImpl p " +
+				"order by p.patientId");
 		
-		columns = new String[]{
-			"PATIENT",
-			"SAMP_ID",
-			"SAMPLE_D",
-			"SEQ_DT",
-			"LAB",
-			"LIBRARY",
-			"REFSEQ",
-			"KIT",
-			"SOFTWARE",
-			"TESTTYPE",
-			"SUBTYPE"
-		};
-		values = new String[columns.length];
-		values[4] = values[5] = values[6] = values[7] = values[8] = values[9] = null;
+		Query q = t.createQuery(queryString.toString());
+		for (Map.Entry<String, Attribute> e : attributes.entrySet())
+			q.setParameter(e.getKey() + "_name", e.getValue().getName());
+
+		SimpleCsvMapper genderMap = getMapper("gender.csv");
+		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");
 		
-		columns2 = new String[]{
-			"PATIENT",
-			"SAMP_LAB_D",
-			"SAMP_TYPE",
-			"SAMP_ID",
-			"SAMP_LAB",
-			"SAMP_FREEZE_D",
-			"SAMP_FREEZE_T",
-			"SAMP_ALIQ_NO",
-			"SAMP_ALIQ_SIZE",
-			"SAMP_ALIQ_U"
-		};
-		values2 = new String[columns2.length];
-		values2[4] = values2[5] = values2[6] = values2[7] = values2[8] = values2[9] = null;
+		LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+		for(Map<String, String> m : (List<Map<String,String>>)q.list()){
+			row.clear();
+			
+			row.put("PATIENT", m.get(ID));
+			row.put("CENTER", null);
+			
+			String birthDate = m.get(BIRTH_DATE);
+			row.put("BIRTH_D", birthDate == null ? null : format(new Date(Long.parseLong(birthDate))));
+			
+			row.put("FRSVIS_D", null);
+			row.put("ENROL_D", null);
+		
+			String gender = genderMap.b2a(m.get(GENDER));
+			row.put("GENDER", gender);
+
+			//TODO ask Stijn //""+ (height.nextInt(50) + 150);	//Random height
+			row.put("HEIGH", "999");
+			
+			String transmission = transmissionMap.b2a(m.get(TRANSMISSION_GROUP));
+			row.put("MODE", transmission);
+			
+			row.put("ORIGIN", null);
+			row.put("ETHNIC", null);
+			row.put("SEROCO_D", null);
+			row.put("RECART_Y", null);
+			row.put("AIDS_Y", null);
+			row.put("AIDS_D", null);
+			
+			printInsert("tblBAS", row);
+
+			row.clear();
+			
+			row.put("PATIENT", m.get(ID));
+			
+			row.put("DROP_Y", null); //TODO should be N ???
+			row.put("DROP_D", null);
+			row.put("DROP_RS", null);
+			
+			String deathDate = m.get(DEATH_DATE);
+			row.put("DEATH_Y", deathDate == null ? "0" : "1");
+			row.put("DEATH_D", deathDate == null ? null : format(new Date(Long.parseLong(deathDate))));
+			
+			row.put("AUTOP_Y", null); //TODO should be 9 ???
+			row.put("DEATH_R1", null);
+			row.put("DEATH_RC1", null); //TODO should be N ???
+			
+ 			printInsert("tblLTFU", row);
+		}
 		
 		q = t.createQuery("select" +
-				" p.patientId"+
-				", v.sampleId"+
-				", v.sampleDate"+
-				", (select max(n.sequenceDate) from NtSequence n where n.viralIsolate = v)"+
-				", (select max(r.value) from NtSequence n join n.testResults r where n.viralIsolate = v and r.test.description = '"+ StandardObjects.getSubtypeTestDescription() +"')"+
-				" from PatientImpl p join p.viralIsolates v order by p.patientId, v.sampleDate");
+				" new map (" +
+				"	p.patientId as patient_id," +
+				" 	v.sampleId as isolate_id," +
+				" 	v.sampleDate as isolate_date, " +
+				" 	(select max(n.sequenceDate) from NtSequence n where n.viralIsolate = v) as last_sequence_date, "  +
+				"	(select max(r.value) from NtSequence n join n.testResults r where n.viralIsolate = v and r.test.description = :subtype_description) as subtype_result" +
+				" )" +
+				"from PatientImpl p join p.viralIsolates v " +
+				"order by p.patientId, v.sampleDate, v.id");
+		q.setParameter("subtype_description", StandardObjects.getSubtypeTestDescription());
 		
-		for(Object[] o : (List<Object[]>)q.list()){
-			values[0] = (String)o[0];
-			values[1] = (String)o[1];
-			values[2] = format((Date)o[2]);
-			values[3] = o[3] == null ? null : format((Date)o[3]);
-			values[10] = (String)o[4];
+		for(Map<String, Object> m : (List<Map<String, Object>>)q.list()) {
+			Date isolateDate = (Date)m.get("isolate_date");
+			Date sequenceDate = (Date)m.get("last_sequence_date");
 			
-			printInsert("tblLAB_RES", columns, values);
+			row.clear();
+			row.put("PATIENT", (String)m.get("patient_id"));
+			row.put("SAMP_ID", (String)m.get("isolate_id"));
+			row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
+			row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
+			row.put("LAB", null);
+			row.put("LIBRARY", null);
+			row.put("REFSEQ", null); //TODO we can provide this???
+			row.put("KIT", null); //TODO we can provide this???
+			row.put("SOFTWARE", null); //TODO we can provide this???
+			row.put("TESTTYPE", null); //TODO we can provide this???
 			
-			values2[0] = values[0];
-			values2[1] = values[2];
-			values2[2] = "BS";
-			values2[3] = values[1];
+			row.put("SUBTYPE", (String)m.get("subtype_result"));
 			
-			printInsert("tblSAMPLES", columns2, values2);
+			printInsert("tblLAB_RES", row);
+			
+			row.clear();
+			
+			row.put("PATIENT", (String)m.get("patient_id"));
+			row.put("SAMP_LAB_D", isolateDate == null ? null : format(isolateDate));
+			//TODO this should become BP, 
+			//since this is the default
+			//we have this info in RegaDB, and should use it
+			row.put("SAMP_TYPE", "BS");
+			row.put("SAMP_ID", (String)m.get("isolate_id"));
+			row.put("SAMP_LAB", null);
+			row.put("SAMP_FREEZE_D", null);
+			row.put("SAMP_FREEZE_T", null);
+			row.put("SAMP_ALIQ_NO", null);
+			row.put("SAMP_ALIQ_SIZE", null);
+			row.put("SAMP_ALIQ_U", null);
+			
+			printInsert("tblSAMPLES", row);
 		}
+		
+		String[] columns, columns2, values, values2;
 		
 		columns = new String[]{
 				"PATIENT",
@@ -207,7 +236,7 @@ public class HicdepExporter {
 		
 		q = t.createQuery("select r.patient.patientId, r.testDate, tt.description, r.value from TestResult r join r.test t join t.testType tt" +
 				" where tt.description = '"+ StandardObjects.getContactTestType().getDescription() +"'"+
-				" ");
+				" order by r.patient.id, r.id");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = values2[0] = (String)o[0];
 			values[1] = values2[1] = format((Date)o[1]);
@@ -225,16 +254,25 @@ public class HicdepExporter {
 			}
 		}
 		
-		q = t.createQuery("select t.patient.patientId, tg.id.drugGeneric.genericId, t.startDate, t.stopDate, m.value " +
-				" from Therapy t left outer join t.therapyMotivation m join t.therapyGenerics tg" +
-				" order by t.patient.patientId, t.startDate");
-		printART((List<Object[]>)q.list());
+		q = t.createQuery("select new map(tg.id.therapy.patient.patientId as patient_id, tg.id.therapy as therapy, tg as therapy_generic)" +
+				" from TherapyGeneric tg" +
+				" order by tg.id");
+		for (Map<String, Object> db_row : (List<Map<String, Object>>)q.list()) {
+			printGenericART(
+					(String)db_row.get("patient_id"), 
+					(Therapy)db_row.get("therapy"),
+					((TherapyGeneric)db_row.get("therapy_generic")).getId().getDrugGeneric());
+		}
 		
-		q = t.createQuery("select t.patient.patientId, dg.genericId, t.startDate, t.stopDate, m.value" +
-				" from Therapy t left outer join t.therapyMotivation m join t.therapyCommercials tc join tc.id.drugCommercial.drugGenerics dg" +
-				" order by t.patient.patientId, t.startDate");
-		printART((List<Object[]>)q.list());
-		
+		q = t.createQuery("select new map(tc.id.therapy.patient.patientId as patient_id, tc.id.therapy as therapy, tc as therapy_commercial)" +
+				" from TherapyCommercial tc" +
+				" order by tc.id");
+		for (Map<String, Object> db_row : (List<Map<String, Object>>)q.list()) {
+			printCommercialART(
+						(String)db_row.get("patient_id"), 
+						(Therapy)db_row.get("therapy"),
+						((TherapyCommercial)db_row.get("therapy_commercial")));
+		}
 		
 		columns = new String[]{
 				"SAMP_ID",
@@ -245,7 +283,8 @@ public class HicdepExporter {
 		};
 		values = new String[columns.length];
 		q = t.createQuery("select n.viralIsolate.sampleId, p.abbreviation, a.firstAaPos, a.lastAaPos, n.nucleotides" +
-				" from NtSequence n join n.aaSequences a join a.protein p");
+				" from NtSequence n join n.aaSequences a join a.protein p" +
+				" order by a.id");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
 			values[1] = (String)o[1];
@@ -265,7 +304,8 @@ public class HicdepExporter {
 		};
 		values = new String[columns.length];
 		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, m.id.mutationPosition, m.aaMutation" +
-				" from AaSequence a join a.aaMutations m join a.protein p");
+				" from AaSequence a join a.aaMutations m join a.protein p " +
+				" order by m.id ");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
 			values[1] = (String)o[1];
@@ -277,7 +317,8 @@ public class HicdepExporter {
 		}
 		
 		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, i.id.insertionPosition, i.id.insertionOrder, i.aaInsertion" +
-		" from AaSequence a join a.aaInsertions i join a.protein p");
+		" from AaSequence a join a.aaInsertions i join a.protein p" +
+		" order by i.id");
 		for(Object[] o : (List<Object[]>)q.list()){
 			values[0] = (String)o[0];
 			values[1] = (String)o[1];
@@ -291,28 +332,68 @@ public class HicdepExporter {
 		t.commit();
 	}
 	
-	private void printART(List<Object[]> queryResult){
-		String[] columns = new String[]{
-				"PATIENT",
-				"ART_ID",
-				"ART_SD",
-				"ART_ED",
-				"ART_RS"
-		};
-		String[] values = new String[columns.length];
-		
-		SimpleCsvMapper reason = getMapper("therapy_stopreason.csv");
-		SimpleCsvMapper drugs = getMapper("drugs.csv");
-		
-		for(Object[] o : queryResult){
-			values[0] = (String)o[0];
-			values[1] = drugs.b2a((String)o[1]);
-			values[2] = format((Date)o[2]);
-			values[3] = format((Date)o[3]);
-			values[4] = reason.b2a((String)o[4]);
-			
-			printInsert("tblART", columns, values);
+	private String therapyMotivation(Therapy t) {
+		String motivation = null;
+		if (t.getTherapyMotivation() != null) {
+			SimpleCsvMapper reason = getMapper("therapy_stopreason.csv");
+			motivation = reason.b2a(t.getTherapyMotivation().getValue());
+			if (motivation == null)
+				throw new RuntimeException("Could not map therapy stop reason '" + t.getTherapyMotivation().getValue() + "'");
 		}
+		
+		if (motivation != null)
+			return motivation;
+		else 
+			return "";
+	}
+	
+	private void printGenericART(String patientId, Therapy t, DrugGeneric dg) {
+		SimpleCsvMapper genericDrugs = getMapper("generic-drugs.csv");
+	
+		LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+
+		String genericId = dg.getGenericId();
+		String atc = genericDrugs.b2a(genericId);
+		if (atc == null)
+			atc = dg.getAtcCode();
+		if ("".equals(atc))
+			atc = null;
+		
+		if (atc == null)
+			throw new RuntimeException("No atc code could be found for generic drug '" + genericId + "'");
+		
+		row.put("PATIENT", patientId);
+		row.put("ART_ID", atc);
+		row.put("ART_SD", format(t.getStartDate()));
+		row.put("ART_ED", format(t.getStopDate()));
+		row.put("ART_RS", therapyMotivation(t));
+		
+		printInsert("tblART", row);
+	}
+	
+	private void printCommercialART(String patientId, Therapy t, TherapyCommercial tc){
+		String code = tc.getId().getDrugCommercial().getAtcCode();
+		if ("".equals(code))
+			code = null;
+
+		if (code != null) {
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+	
+			row.put("PATIENT", patientId);
+			row.put("ART_ID", code);
+			row.put("ART_SD", format(t.getStartDate()));
+			row.put("ART_ED", format(t.getStopDate()));
+			row.put("ART_RS", therapyMotivation(t));
+			
+			printInsert("tblART", row);
+		} else {
+			for (DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics())
+				printGenericART(patientId, t, dg);
+		}
+	}
+
+	public void printInsert(String table, LinkedHashMap<String, String> row) {
+		printInsert(table, row.keySet().toArray(new String[row.keySet().size()]), row.values().toArray(new String[row.values().size()]));
 	}
 	
 	protected void printInsert(String table, String[] columns, String[] values){

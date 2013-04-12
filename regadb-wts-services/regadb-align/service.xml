@@ -4,18 +4,31 @@
 	<version>2.0</version>
 <inputs>
 	<input>
-		<name>organism_name</name>
-		<description>organism name</description>
+		<name>
+		sequences
+		</name>
+		<description>
+		unaligned fasta file
+		</description>
 	</input>
-        <input>
-            <name>nt_sequence</name>
-            <description>fasta</description>
-        </input>
+	<input>
+		<name>
+		genome
+		</name>
+		<description>
+		organism name of sequences
+		</description>
+	</input>
 </inputs>
 <outputs>
 	<output>
-		<name>codon_mutations</name>
-		<description>A file containing the codon mutations per region.</description>
+		<name>
+		mutations
+		</name>
+		<description>
+		mutations file
+		</description>
+
 	</output>
 </outputs>
 </service>

@@ -68,7 +68,7 @@ public class ResistanceInterpretationAnalysis implements IAnalysis
         
         t.commit();
         
-        byte [] result = ViralIsolateAnalysisHelper.run(vi, test, 500);
+        byte [] result = ViralIsolateAnalysisHelper.runMutlist(vi, test, 500);
         
         t = sessionSafeLogin.createTransaction();
         t.clear();

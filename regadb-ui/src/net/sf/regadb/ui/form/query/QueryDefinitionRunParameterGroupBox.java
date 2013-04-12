@@ -48,7 +48,7 @@ public class QueryDefinitionRunParameterGroupBox extends WGroupBox
         
     	this.interactionState = interactionState;
         this.queryDefinitionRunForm = queryDefinitionRunForm;
-        this.queryDefinitionRun = queryDefinitionRunForm.getQueryDefinitionRun();
+        this.queryDefinitionRun = queryDefinitionRunForm.getObject();
         
         init();
     }

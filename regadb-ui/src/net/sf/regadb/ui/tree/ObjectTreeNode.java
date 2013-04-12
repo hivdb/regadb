@@ -1,160 +1,305 @@
 package net.sf.regadb.ui.tree;
 
-import net.sf.regadb.db.Privileges;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.regadb.ui.tree.items.singlePatient.ActionItem;
-import eu.webtoolkit.jwt.WResource;
-import eu.webtoolkit.jwt.WString;
-import eu.webtoolkit.jwt.WTreeNode;
+import java.util.EnumSet;
+import java.util.Set;
 
-public abstract class ObjectTreeNode<Type> extends TreeMenuNode{
+import net.sf.regadb.db.Privileges;
+import net.sf.regadb.db.Transaction;
+import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.FormListener;
+import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
+import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import eu.webtoolkit.jwt.WString;
+
+public abstract class ObjectTreeNode<Type> extends DefaultNavigationNode implements FormListener {
 	private String resourceName;
 	private Type selectedItem;
 
-	private ActionItem select;
-	private ActionItem add;
-	private ActionItem selected;
+	private FormNavigationNode select;
+	private FormNavigationNode add;
+	private SelectedItemNavigationNode<Type> selected;
 
-    private ActionItem view;
-	private ActionItem edit;
-    private ActionItem delete;
+    private FormNavigationNode view;
+	private FormNavigationNode edit;
+    private FormNavigationNode delete;
+    
+    private Set<InteractionState> states;
 
-	public ObjectTreeNode(String resourceName, WTreeNode root) {
-		super(getResource(resourceName,"main"), root);
+	public ObjectTreeNode(String resourceName, TreeMenuNode parent) {
+		this(resourceName, parent,
+				EnumSet.of(	InteractionState.Viewing,
+							InteractionState.Adding,
+							InteractionState.Editing,
+							InteractionState.Deleting));
+	}
+	
+	public ObjectTreeNode(String resourceName, TreeMenuNode parent, Set<InteractionState> states){
+		super(getMenuResource(resourceName,"main"), parent);
 		this.resourceName = resourceName;
+		this.states = states;
 		init();
 	}
 	
 	protected void init(){
 		selectedItem = null;
 		
-		select = new ActionItem(getResource("select"), this, new ITreeAction()
+		select = new FormNavigationNode(getMenuResource("select"), this, true)
         {
-            public void performAction(TreeMenuNode node) 
-            {
-                doSelect();
-            }
-        });
+			@Override
+			public IForm createForm() {
+				return ObjectTreeNode.this.createSelectionForm();
+			}
+			
+			@Override
+			public String getInternalPath(){
+				return getParentNode().getInternalPath();
+			}
+			
+			@Override
+			public boolean matchesInternalPath(String[] path, int depth){
+				return path.length == depth;
+			}
+        };
 		
-		add = new ActionItem(getResource("add"), this, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                doAdd();
-            }
-        });
+        if(canAdd()){
+			add = new FormNavigationNode(getMenuResource("add"), this, false)
+	        {
+				@Override
+				public void doAction(){
+					ObjectTreeNode.this.setSelectedItem(null);
+					super.doAction();
+				}
+				
+				@Override
+				public ObjectForm<Type> createForm() {
+					ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Adding),
+							InteractionState.Adding, null);
+					f.setNode(ObjectTreeNode.this);
+					return f;
+				}
+	        };
+        }
 		
-		selected = new ActionItem(getResource("selected"), this, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                doSelected();
-            }
-        });
+        selected = new SelectedItemNavigationNode<Type>(getMenuResource("selected"), this){
+
+			@Override
+			public Type getSelectedItem() {
+				return selectedItem;
+			}
+        	
+			@Override
+			public String getMyInternalPath(){
+				WString w = WString.tr(getLabel().getText().getKey());
+				
+				String path = w.getValue()
+					.replace(' ','_')
+					.replace('/','-')
+					.toLowerCase();
+				
+				return path.replace("{1}",
+						selectedItem == null ? "" : getObjectId(selectedItem));
+			}
+			
+			@Override
+			public boolean matchesInternalPath(String[] path, int depth){
+				if(depth >= path.length)
+					return false;
+				if(super.matchesInternalPath(path, depth))
+					return true;
+				
+				String s = WString.tr(getLabel().getText().getKey()).getValue()
+					.replace(' ', '_')
+					.replace('/', '-')
+					.toLowerCase();
+				int i = s.indexOf('[');
+				if(path[depth].startsWith(s.substring(0, i))){
+					i = path[depth].indexOf('[');
+					int j = path[depth].indexOf(']');
+					
+					String id = path[depth].substring(i+1,j);
+					
+					Transaction t = RegaDBMain.getApp().createTransaction();
+					Type object = getObjectById(t, id);
+					t.commit();
+
+					if(object != null){
+						setSelectedItem(object);
+						return true;
+					}
+				}
+				return false;
+			}
+        };
 		selected.getLabel().getText().arg("");
-		selected.disable();
-		
-		view = new ActionItem(getResource("view"), selected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                doView();
-            }
-        });
-		
-		edit = new ActionItem(getResource("edit"), selected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                doEdit();
-            }
-        });
-		
-		delete = new ActionItem(getResource("delete"), selected, new ITreeAction()
-        {
-            public void performAction(TreeMenuNode node) 
-            {
-                doDelete();
-            }
-        });
+
+		if(canView()){
+	        view = new FormNavigationNode(getMenuResource("view"), selected, true){
+				@Override
+				public ObjectForm<Type> createForm() {
+					ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Viewing),
+							InteractionState.Viewing, getSelectedItem());
+					f.setNode(ObjectTreeNode.this);
+					return f;
+				}
+				
+				@Override
+				public String getInternalPath(){
+					return getParentNode().getInternalPath();
+				}
+				
+				@Override
+				public boolean matchesInternalPath(String[] path, int depth){
+					return path.length == depth;
+				}
+	        };
+		}
+
+		if(canEdit()){
+	        edit = new FormNavigationNode(getMenuResource("edit"), selected, false){
+	        	@Override
+	        	public ObjectForm<Type> createForm(){
+	        		ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Editing),
+	        				InteractionState.Editing, getSelectedItem());
+	        		f.setNode(ObjectTreeNode.this);
+	        		return f;
+	        	}
+	        };
+		}
+
+		if(canDelete()){
+	        delete = new FormNavigationNode(getMenuResource("delete"), selected, true){
+	        	@Override
+	        	public ObjectForm<Type> createForm(){
+	        		ObjectForm<Type> f = ObjectTreeNode.this.createForm(getFormResource(InteractionState.Deleting),
+	        				InteractionState.Deleting, getSelectedItem());
+	        		f.setNode(ObjectTreeNode.this);
+	        		return f;
+	        	}
+	        };
+		}
 	}
 	
-	protected WString getResource(String action){
-		return getResource(resourceName, action);
+	protected abstract ObjectForm<Type> createForm(WString name, InteractionState interactionState, Type selectedObject);
+	protected abstract IForm createSelectionForm();
+	
+	protected abstract String getObjectId(Type object);
+	protected abstract Type getObjectById(Transaction t, String id);
+	
+    public String getArgument(Type object){
+    	return getObjectId(object);
+    }
+
+	protected String getStateName(InteractionState interactionState){
+		switch(interactionState){
+		case Adding: return "add";
+		case Editing: return "edit";
+		case Deleting: return "delete";
+		default: return "view";
+		}
 	}
-	private static WString getResource(String resourceName, String action){
-		return WResource.tr("menu."+ resourceName +"."+ action);
+	
+	protected WString getMenuResource(String action){
+		return getMenuResource(resourceName, action);
 	}
+	protected WString getFormResource(String action){
+		return getFormResource(resourceName, action);
+	}
+	protected WString getFormResource(InteractionState state){
+		return getFormResource(getStateName(state));
+	}
+	
+	private static WString getMenuResource(String resourceName, String action){
+		return tr("menu."+ resourceName +"."+ action);
+	}
+	private static WString getFormResource(String resourceName, String action){
+		return tr("form."+ resourceName +"."+ action);
+	}
+
 
 	public Type getSelectedItem(){
 		return selectedItem;
 	}
 
 	public void setSelectedItem(Type item){
+		if(item != selectedItem)
+			getSelectedItemNavigationNode().reset();
+		
 		selectedItem = item;
 		String value = item==null?"":getArgument(item);
         selected.getLabel().getText().changeArg(0, value);
         
         if(item != null){
-        	getSelectedActionItem().enable();
-        	getSelectedActionItem().expand();
-        	getViewActionItem().selectNode();
+			getSelectedItemNavigationNode().enable();
+			getSelectedItemNavigationNode().expand();
+			getSelectedItemNavigationNode().selectNode();
         }
         else{
-        	getSelectedActionItem().collapse();
-        	getSelectedActionItem().disable();
+        	getSelectedItemNavigationNode().collapse();
+        	getSelectedItemNavigationNode().disable();
         }
         	
         refresh();
     }
 	
-	public ActionItem getSelectActionItem(){
+	public FormNavigationNode getSelectNavigationNode(){
 		return select;
 	}
-	public ActionItem getAddActionItem(){
+	public FormNavigationNode getAddNavigationNode(){
 		return add;
 	}
-	public ActionItem getSelectedActionItem(){
+	public SelectedItemNavigationNode<Type> getSelectedItemNavigationNode(){
 		return selected;
 	}
-	public ActionItem getViewActionItem(){
+	public FormNavigationNode getViewNavigationNode(){
 		return view;
 	}
-	public ActionItem getEditActionItem(){
+	public FormNavigationNode getEditNavigationNode(){
 		return edit;
 	}
-	public ActionItem getDeleteActionItem(){
+	public FormNavigationNode getDeleteNavigationNode(){
 		return delete;
-	}
-	
-	public ITreeAction getFormAction()
-	{
-		return new ITreeAction()
-		{
-			public void performAction(TreeMenuNode node)
-			{
-			    getChildren().get(0).prograSelectNode();
-			}
-		};
-	}
-    
-    public abstract String getArgument(Type type);	
-
-	protected abstract void doSelect();
-	protected abstract void doAdd();
-	protected abstract void doView();
-	protected abstract void doEdit();
-	protected abstract void doDelete();
-	
-	protected void doSelected(){
-		getViewActionItem().selectNode();
 	}
 	
 	public void applyPrivileges(Privileges priv){
 		boolean disabled = priv != Privileges.READWRITE; 
-		getAddActionItem().setDisabled(disabled);
-		getEditActionItem().setDisabled(disabled);
-		getDeleteActionItem().setDisabled(disabled);
+		getAddNavigationNode().setDisabled(disabled);
+		getEditNavigationNode().setDisabled(disabled);
+		getDeleteNavigationNode().setDisabled(disabled);
+	}
+	
+	public void canceled(IForm form, InteractionState interactionState){
+		switch(interactionState){
+		case Editing: getViewNavigationNode().selectNode(); break;
+		case Deleting: getViewNavigationNode().selectNode(); break;
+		default: getSelectNavigationNode().selectNode();
+		}
+	}
+	public void confirmed(IForm form, InteractionState interactionState){
+		switch(interactionState){
+		case Deleting:
+			setSelectedItem(null);
+			getSelectNavigationNode().selectNode();
+			break;
+		default: getViewNavigationNode().selectNode();
+		}
+	}
+	
+	public Set<InteractionState> getStates(){
+		return states;
+	}
+	
+	public boolean canAdd(){
+		return states.contains(InteractionState.Adding);
+	}
+	public boolean canEdit(){
+		return states.contains(InteractionState.Editing);
+	}
+	public boolean canView(){
+		return states.contains(InteractionState.Viewing);
+	}
+	public boolean canDelete(){
+		return states.contains(InteractionState.Deleting);
 	}
 }

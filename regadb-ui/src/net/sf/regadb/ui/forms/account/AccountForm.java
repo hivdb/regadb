@@ -19,15 +19,15 @@ import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.wts.DescribeMutations;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.FieldType;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.encrypt.Encrypt;
 import net.sf.regadb.util.mail.MailUtils;
 import net.sf.regadb.util.settings.EmailConfig;
@@ -37,11 +37,9 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WString;
 
-public class AccountForm extends FormWidget
+public class AccountForm extends ObjectForm<SettingsUser>
 {
     private SettingsUser su_;
-    
-    private TreeMenuNode selectNode_, expandNode_;
     
     private Login login = null;
 
@@ -77,11 +75,9 @@ public class AccountForm extends FormWidget
     
     private boolean admin;
     
-    public AccountForm(WString formName, InteractionState interactionState, TreeMenuNode selectNode, TreeMenuNode expandNode, boolean admin, SettingsUser settingsUser)
+    public AccountForm(WString formName, InteractionState interactionState, ObjectTreeNode<SettingsUser> node, SettingsUser settingsUser, boolean admin)
     {
-        super(formName, interactionState);
-        selectNode_ = selectNode;
-        expandNode_ = expandNode;
+        super(formName,interactionState,node,settingsUser);
         su_ = settingsUser;
         this.admin = admin;
         init();
@@ -408,14 +404,12 @@ public class AccountForm extends FormWidget
                 t.commit();
             }
             
-            redirectToView(expandNode_, selectNode_);
         }
     }
     
     @Override
     public void cancel()
     {
-        redirectToView(expandNode_, selectNode_);
     }
 
     @Override
@@ -428,12 +422,5 @@ public class AccountForm extends FormWidget
         t.commit();
         
         return null;
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().usersSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().userSelected.setSelectedItem(null);
     }
 }

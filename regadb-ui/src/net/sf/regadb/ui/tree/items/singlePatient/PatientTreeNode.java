@@ -2,63 +2,64 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
-import net.sf.regadb.ui.datatable.patient.IPatientDataTable;
+import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.form.singlePatient.custom.Nadir;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.action.ITreeAction;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
+import net.sf.regadb.ui.tree.DefaultNavigationNode;
+import net.sf.regadb.ui.tree.FormNavigationNode;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.ui.tree.items.custom.ContactItem;
-import eu.webtoolkit.jwt.WTreeNode;
-import eu.webtoolkit.jwt.WWidget;
+import eu.webtoolkit.jwt.WString;
 
 public class PatientTreeNode extends ObjectTreeNode<Patient>{
-	private ActionItem chart;
+	private FormNavigationNode chart;
 	private TestResultTreeNode testResult;
 	private TherapyTreeNode therapy;
 	private ViralIsolateTreeNode viralIsolate;
-	private EventTreeNode event;
+	private PatientEventTreeNode event;
 	
-	private ActionItem custom;
+	private DefaultNavigationNode custom;
 	private ContactItem contact;
-	private ActionItem nadir;
+	private FormNavigationNode nadir;
 	
-	public PatientTreeNode(WTreeNode root) {
-		super("patient", root);
+	public PatientTreeNode(TreeMenuNode parent) {
+		super("patient", parent);
 	}
 	
 	protected void init(){
 		super.init();
 		
-		chart = new ActionItem(getResource("chart"), getSelectedActionItem(), new ITreeAction()
-			{
-				public void performAction(TreeMenuNode node) 
-				{
-					RegaDBMain.getApp().getFormContainer().setForm(new PatientChartForm(getSelectedItem()));
-				}
-			});
-		
-		testResult = new TestResultTreeNode(getSelectedActionItem());
-		therapy = new TherapyTreeNode(getSelectedActionItem());
-		viralIsolate = new ViralIsolateTreeNode(getSelectedActionItem());
-		event = new EventTreeNode(getSelectedActionItem());
-		
-		custom = new ActionItem(getResource("custom"), getSelectedActionItem());
-		contact = new ContactItem(custom);
-		nadir = new ActionItem(getResource("custom.nadir"), custom, new ITreeAction()
-		{
-			public void performAction(TreeMenuNode node) 
-			{
-				RegaDBMain.getApp().getFormContainer().setForm(new Nadir());
+		chart = new FormNavigationNode(getMenuResource("chart"), getSelectedItemNavigationNode(), true){
+			@Override
+			public IForm createForm() {
+				return new PatientChartForm(getSelectedItem());
 			}
-		});
+		};
+		
+		testResult = new TestResultTreeNode(getSelectedItemNavigationNode());
+		therapy = new TherapyTreeNode(getSelectedItemNavigationNode());
+		viralIsolate = new ViralIsolateTreeNode(getSelectedItemNavigationNode());
+		event = new PatientEventTreeNode(getSelectedItemNavigationNode());
+		
+		custom = new DefaultNavigationNode(getMenuResource("custom"), getSelectedItemNavigationNode());
+		contact = new ContactItem(custom);
+		
+		nadir = new FormNavigationNode(getMenuResource("custom.nadir"), custom, true){
+			public IForm createForm() 
+			{
+				return new Nadir();
+			}
+		};
 	}
 	
-	public ActionItem getChartActionItem(){
+	public FormNavigationNode getChartNode(){
 		return chart;
 	}
 	public TestResultTreeNode getTestResultTreeNode(){
@@ -70,44 +71,24 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 	public ViralIsolateTreeNode getViralIsolateTreeNode(){
 		return viralIsolate;
 	}
-	public EventTreeNode getEventTreeNode(){
+	public PatientEventTreeNode getEventTreeNode(){
 		return event;
 	}
-	public ActionItem getCustomActionItem(){
+	public DefaultNavigationNode getCustomNode(){
 		return custom;
 	}
 	public ContactItem getContactItem(){
 		return contact;
 	}
 
-	@Override
-	protected void doAdd() {
-		setSelectedItem(null);
-        RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Adding, WWidget.tr("form.singlePatient.add"), new Patient()));
+	protected Patient getObjectById(Transaction t, String id){
+		return t.getPatient(Integer.parseInt(id));
+	}
 	
-        IPatientDataTable.clearItems();
+	protected String getObjectId(Patient object){
+		return object.getPatientIi() +"";
 	}
-
-	@Override
-	protected void doDelete() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Deleting, WWidget.tr("form.singlePatient.delete"), getSelectedItem()));
-	}
-
-	@Override
-	protected void doEdit() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Editing, WWidget.tr("form.singlePatient.edit"), getSelectedItem()));
-	}
-
-	@Override
-	protected void doSelect() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SelectPatientForm());
-	}
-
-	@Override
-	protected void doView() {
-		RegaDBMain.getApp().getFormContainer().setForm(new SinglePatientForm(InteractionState.Viewing, WWidget.tr("form.singlePatient.view"), getSelectedItem()));
-	}
-
+	
     @Override
     public String getArgument(Patient type) 
     {
@@ -140,8 +121,8 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		    	event.setSelectedItem(null);
 		    	
 		    	boolean disabled = item.getViralIsolates().size()<2;
-				viralIsolate.getEvolutionActionItem().setDisabled(disabled);
-				viralIsolate.getCumulatedResistanceActionItem().setDisabled(disabled);
+				viralIsolate.getEvolutionNode().setDisabled(disabled);
+				viralIsolate.getCumulatedResistanceNode().setDisabled(disabled);
 	    	}
     	}
     }
@@ -149,9 +130,22 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
     @Override
     public void applyPrivileges(Privileges priv){
     	super.applyPrivileges(priv);
-    	getAddActionItem().enable();
+    	getAddNavigationNode().enable();
     	
     	boolean disabled = priv != Privileges.READWRITE;
     	getContactItem().addContact.setDisabled(disabled);
     }
+
+	@Override
+	protected ObjectForm<Patient> createForm(WString name, InteractionState interactionState, Patient selectedObject) {
+		if(interactionState == InteractionState.Adding)
+			selectedObject = new Patient();
+			
+		return new SinglePatientForm(name, interactionState, PatientTreeNode.this, selectedObject);
+	}
+
+	@Override
+	protected IForm createSelectionForm() {
+		return new SelectPatientForm(this);
+	}
 }

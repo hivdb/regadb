@@ -1,17 +1,16 @@
-#!/bin/sh
+#!/bin/bash
 
 monitor_file="$1/.monitor"
 running_file="$1/.running"
 
-echo "Setting files" >> monitor_file
- 
-organism_name=`cat "$1/inputs/organism_name"`
-nt_sequence_file="$1/inputs/nt_sequence"
+cp /dev/null $monitor_file
 
-mutations_file="$1/outputs/codon_mutations"
+genome=`cat "$1/inputs/genome"`
+sequences="$1/inputs/sequences"
 
-echo "Starting calc" >> $monitor_file
-/soft/bin/regadb_align /soft/wts/file-providers/regadb-genomes/genomes.xml "$organism_name" "$nt_sequence_file" > "$mutations_file" 2> $monitor_file
+mutations="$1/outputs/mutations"
+
+/soft/bin/regadb_align /soft/wts/file-providers/regadb-genomes/genomes.xml "$genome" "$sequences" > "$mutations" 2>> $monitor_file
 
 echo "Calculation ended" >> $monitor_file
 

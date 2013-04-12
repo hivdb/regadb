@@ -6,15 +6,21 @@ import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefinitionRun>
+public class ISelectQueryDefinitionRunDataTable extends DefaultDataTable<QueryDefinitionRun>
 {
-    private static WString [] _colNames = {
+    public ISelectQueryDefinitionRunDataTable(
+			SelectForm<QueryDefinitionRun> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {
         WString.tr("dataTable.queryDefinitionRun.colName.name"),
         WString.tr("dataTable.queryDefinitionRun.colName.query"),
         WString.tr("dataTable.queryDefinitionRun.colName.description"),
@@ -69,14 +75,6 @@ public class ISelectQueryDefinitionRunDataTable implements IDataTable<QueryDefin
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
         filters_[3] = new StringFilter();
-    }
-
-    public void selectAction(QueryDefinitionRun selectedItem)
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView.selectNode();
     }
 
     public boolean[] sortableFields()

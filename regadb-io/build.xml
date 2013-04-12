@@ -21,6 +21,10 @@
     <javac target="1.5" debug="on" srcdir="${src}" destdir="${build}">
       <classpath refid="project.classpath"/>
     </javac>
+  	
+    <copy todir="${build}">
+      <fileset dir="${src}" includes="**/*.csv" />
+    </copy>
   </target>
 
   <target name="dist" description="Make jar file" depends="compile" >

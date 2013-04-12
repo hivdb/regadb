@@ -14,15 +14,20 @@ import net.sf.regadb.db.tools.MutationHelper;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
+import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import eu.webtoolkit.jwt.Side;
+import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WGroupBox;
+import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPointF;
+import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
@@ -30,30 +35,82 @@ import eu.webtoolkit.jwt.chart.Axis;
 
 public class PatientChartForm extends WGroupBox implements IForm 
 {
-	private Chart chart;
-	private TestResultsModel model;
-	private WTable viTable;
+	private Chart chart = null;
+	private TestResultsModel model = null;
+	private WTable viTable = null;
+	
+	private DateField minDate;
+	private DateField maxDate;
+	private WPushButton show;
 	
 	public PatientChartForm(Patient p)
 	{
-		super(tr("form.singlePatient.viewChart"));
+		super(tr("form.patient.chart"));
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		t.attach(p);
+
+		WTable table = new WTable(this);
+		table.getElementAt(0, 0).addWidget(new WLabel(tr("form.patient.chart.minDate")));
+		minDate = new DateField(InteractionState.Editing, this);
+		table.getElementAt(0, 1).addWidget(minDate);
+		table.getElementAt(0, 2).addWidget(new WLabel(tr("form.patient.chart.maxDate")));
+		maxDate = new DateField(InteractionState.Editing, this);
+		table.getElementAt(0, 3).addWidget(maxDate);
+		show = new WPushButton(tr("form.patient.chart.show"));
+		table.getElementAt(0, 4).addWidget(show);
+		table.setStyleClass("chart-date-limit");
 		
-		chart = new Chart(this);
+		Signal.Listener showAction = new Signal.Listener() {
+			
+			@Override
+			public void trigger() {
+				if(minDate.getDate() == null
+						|| maxDate.getDate() == null
+						|| !maxDate.getDate().after(minDate.getDate()))
+					showChart(RegaDBMain.getApp().getSelectedPatient(), null, null);
+				else
+					showChart(RegaDBMain.getApp().getSelectedPatient(),
+							minDate.getDate(),
+							maxDate.getDate());
+			}
+		};
+		
+		show.clicked().addListener(this, showAction);
+		minDate.enterPressed().addListener(this, showAction);
+		maxDate.enterPressed().addListener(this, showAction);
+		
+		showChart(p, null,null);
+		
+		t.commit();
+	}
+	
+	protected void showChart(Patient p, Date min, Date max){
+		
+		if(chart != null){
+			chart.remove();
+			viTable.remove();
+		}
+		
+		chart = new Chart(this, min, max);
+		
+		chart.setDeathDate(p.getDeathDate());
 		
 		model = new TestResultsModel();
 		
 		List<ViralLoadSeries> vlSeries = new LinkedList<ViralLoadSeries>();
 		for(Genome genome : StandardObjects.getGenomes())
 			vlSeries.add(new ViralLoadSeries(genome, Axis.Y2Axis));
-		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.YAxis);
+		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.YAxis){
+			public String getName(){
+				return "CD4";
+			}
+		};
 		
 		for(ViralLoadSeries vl : vlSeries)
 			model.getSeries().add(vl);
 		model.getSeries().add(cd4Series);
-		model.loadResults(p);
+		model.loadResults(p, min, max);
 
 		chart.setModel(model);
 		for(ViralLoadSeries vl : vlSeries)
@@ -82,8 +139,6 @@ public class PatientChartForm extends WGroupBox implements IForm
 		chart.setPlotAreaPadding(chartPaddingLeft,Side.Left);
 		chart.setPlotAreaPadding(chartPaddingRight,Side.Right);
 		chart.setPlotAreaPadding(chartPaddingBottom,Side.Bottom);
-		
-		t.commit();
 		
 		viTable = new WTable(this);
 	}
@@ -136,7 +191,6 @@ public class PatientChartForm extends WGroupBox implements IForm
 		
 		viTable.clear();
 		viTable.getElementAt(0, 0).addWidget(new WText(v.getSampleId(), TextFormat.PlainText));
-//		viTable.getElementAt(0, 1).addWidget(new WText(DateUtils.format(v.getSampleDate()), TextFormat.PlainText));
 
 		int i = 1;
 		for(NtSequence nt : v.getNtSequences()){

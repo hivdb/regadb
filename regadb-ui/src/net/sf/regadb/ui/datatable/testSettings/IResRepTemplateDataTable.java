@@ -4,16 +4,21 @@ import java.util.List;
 
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpretationTemplate>
+public class IResRepTemplateDataTable extends DefaultDataTable<ResistanceInterpretationTemplate>
 {
-    private static WString [] _colNames = {WString.tr("datatable.resistance.report.interpretation.colName.name")};
+    public IResRepTemplateDataTable(
+			SelectForm<ResistanceInterpretationTemplate> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {WString.tr("datatable.resistance.report.interpretation.colName.name")};
     private static String[] filterVarNames_ = {"resistanceInterpretationTemplate.name"};
     
     private IFilter[] filters_ = new IFilter[1];
@@ -58,14 +63,6 @@ public class IResRepTemplateDataTable implements IDataTable<ResistanceInterpreta
     public void init(Transaction t)
     {
         filters_[0] = new StringFilter();
-    }
-
-    public void selectAction(ResistanceInterpretationTemplate selectedItem)
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateView.selectNode();
     }
 
     public boolean[] sortableFields()

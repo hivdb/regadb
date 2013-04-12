@@ -345,6 +345,11 @@ public abstract class QueryTreeNode extends WTreeNode {
 	 * open a select simple clause dialog in this node
 	 */
 	public void selectNewNode() {
+		//only allow one NewWhereClauseTreeNode at a time
+		for(WTreeNode childNode : getChildNodes())
+			if(childNode instanceof NewWhereClauseTreeNode)
+				return;
+		
 		NewWhereClauseTreeNode node = new NewWhereClauseTreeNode(mainForm, this);
 		node.loadContent(getLastAddition());
 	}

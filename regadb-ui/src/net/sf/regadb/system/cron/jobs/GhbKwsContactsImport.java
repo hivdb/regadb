@@ -16,10 +16,22 @@ public class GhbKwsContactsImport extends ParameterizedJob{
 	@Override
 	public void execute() throws JobExecutionException {
 		try {
-			ImportKwsContacts ikc = new ImportKwsContacts(getParam("username"),
-					getParam("password"),
-					getParam("dataset"));
-			ikc.run(new File(getParam("contact-file")));
+			File newKwsContactDir = new File(getParam("newKwsContactDir"));
+			File oldKwsContactDir = new File(getParam("oldKwsContactDir"));
+			
+			for(File f : newKwsContactDir.listFiles()){
+				if(f.isFile() && !f.getName().toLowerCase().endsWith(".log")){
+
+					ImportKwsContacts ikc = new ImportKwsContacts(getParam("username"),
+							getParam("password"),
+							getParam("dataset"));
+					ikc.run(f);
+					ikc.close();
+					
+					File f2 = new File(oldKwsContactDir.getAbsolutePath() + File.separatorChar + f.getName());
+					f.renameTo(f2);
+				}
+			}
 		} catch (BiffException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

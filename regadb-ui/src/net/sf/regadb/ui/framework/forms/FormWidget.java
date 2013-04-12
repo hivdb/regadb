@@ -10,7 +10,6 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.validation.WFormValidation;
-import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
@@ -20,6 +19,7 @@ import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.WWebWidget;
 
 public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
 {
@@ -121,6 +121,7 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
                 public void trigger(WMouseEvent a) 
                 {
                     cancel();
+                    redirectAfterCancel();
                 }
             });
 
@@ -163,6 +164,8 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     public abstract WString deleteObject();
     
     public abstract void redirectAfterDelete();
+    public abstract void redirectAfterSave();
+    public abstract void redirectAfterCancel();
     
     protected void update(Serializable o, Transaction t)
     {
@@ -200,28 +203,11 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     public void confirmAction()
     {
-        if(formValidation_.validate(formFields_))
+        if(validateForm())
         {
-            formValidation_.setHidden(true);
             saveData();
+            redirectAfterSave();
         }
-        else
-        {
-            formValidation_.setHidden(false);
-        }
-    }
-    
-    protected void redirectToView(TreeMenuNode expandNode, TreeMenuNode selectNode)
-    {
-        expandNode.expand();
-        expandNode.refresh();
-        selectNode.selectNode();
-    }
-    
-    protected void redirectToSelect(TreeMenuNode expandNode, TreeMenuNode selectNode)
-    {
-        expandNode.refresh();
-        selectNode.selectNode();
     }
     
     public void enableOkButton(boolean enable)
@@ -239,5 +225,13 @@ public abstract class FormWidget extends WGroupBox implements IForm,IConfirmForm
     
     protected List<WPushButton> getExtraButtons() {
 		return extraButtons;
+	}
+    
+    public static void flagValid(WWebWidget widget){
+		widget.setStyleClass("");
+	}
+	
+	public static void flagInvalid(WWebWidget widget){
+		widget.setStyleClass("Wt-invalid");
 	}
 }

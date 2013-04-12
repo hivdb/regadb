@@ -125,13 +125,13 @@ public class StartImportForm extends WDialog {
 							SequenceDb sequenceDb = app.getSequenceDb(); 
 							
 							ImportData importData = 
-								new ImportData(StartImportForm.this.importToolForm.getDefinition(), 
+								new ImportData(StartImportForm.this.importToolForm.getObject(), 
 										new File(xlsFile.getFileUpload().getSpoolFileName()),
 										new File(fastaFile.getFileUpload().getSpoolFileName()),
 										dataset.currentValue());
-							List<WString> errors = importData.doImport(tr, sequenceDb, true);
+							List<WString> errors = importData.doImport(tr, sequenceDb, true, workerLogin);
 							if (errors.size() == 0) {
-								importData.doImport(tr, sequenceDb, false);
+								importData.doImport(tr, sequenceDb, false, workerLogin);
 							}
 							
 							StartImportForm.this.errors = errors;

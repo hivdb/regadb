@@ -35,7 +35,8 @@ public class BatchTestRunningTest extends Thread {
 		try {
 			if ( testObject.equals("resistance test") ) {
 				Transaction t = login.createTransaction();
-				List<ViralIsolate> list = t.getViralIsolates();
+				List<ViralIsolate> list = t.getViralIsolatesByGenome(
+						test.getTestType().getGenome());
 				t.commit();
 				new ResistanceBatchRun(list, login).run();
 			} 
@@ -56,6 +57,8 @@ public class BatchTestRunningTest extends Thread {
 			
 			if ( status == BatchTestStatus.RUNNING ) {
 				status = BatchTestStatus.DONE;
+			} else if( status == BatchTestStatus.CANCELING){
+				status = BatchTestStatus.CANCELED;
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();

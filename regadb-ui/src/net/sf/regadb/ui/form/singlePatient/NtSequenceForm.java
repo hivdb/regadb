@@ -1,12 +1,11 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.regadb.analysis.functions.FastaHelper;
-import net.sf.regadb.analysis.functions.FastaRead;
-import net.sf.regadb.analysis.functions.FastaReadStatus;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestNominalValue;
@@ -15,6 +14,7 @@ import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.tools.FastaFile;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
@@ -35,6 +35,7 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
+import eu.webtoolkit.jwt.WValidator;
 
 public class NtSequenceForm extends WContainerWidget{
 	private ViralIsolateMainForm viralIsolateMainForm;
@@ -100,6 +101,7 @@ public class NtSequenceForm extends WContainerWidget{
 				getViralIsolateForm());
 		
 		if(vt == ValueTypes.NOMINAL_VALUE){
+			@SuppressWarnings("rawtypes")
 			ComboBox b = (ComboBox)f;
 			
 			for(TestNominalValue tnv : tt.getTestNominalValues())
@@ -118,7 +120,18 @@ public class NtSequenceForm extends WContainerWidget{
 		
 		labelL = new Label(tr("form.viralIsolate.editView.seqLabel"));
 		labelF = new TextField(getInteractionState(), getViralIsolateForm());
-		labelF.setMandatory(true);
+		if(isEditable()){
+//TODO remove hard-coded 50 char limit
+			labelF.setValidator(new WValidator(true){
+				@Override
+				public State validate(String input) {
+					if(input != null && input.length() > 50)
+						return State.Invalid;
+					else
+						return super.validate(input);
+				}
+			});
+		}
 		table.addLineToTable(labelL, labelF);
 		
 		seqDateL = new Label(tr("form.viralIsolate.editView.seqDate"));
@@ -169,35 +182,31 @@ public class NtSequenceForm extends WContainerWidget{
                 	   uploadF.setAnchor("", "");
                        if(uploadF.getFileUpload().getSpoolFileName()!=null)
                        {
-	                	   File fastaFile = new File(uploadF.getFileUpload().getSpoolFileName());
-	                            
-	                       FastaRead read = FastaHelper.readFastaFile(fastaFile, autofix.isChecked());
-	                            
-	                       fastaFile.delete();
-	                            
-	                       if(read.status_==FastaReadStatus.Invalid)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.invalidFastaFile"));
-	                       }
-	                       else if(read.status_==FastaReadStatus.FileNotFound)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.fastaFileNotFound"));
-	                       }
-	                       else if(read.status_==FastaReadStatus.MultipleSequences)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.multipleSequences"));
-	                       }
-	                       else if (read.status_==FastaReadStatus.ValidButFixed)
-	                       {
-	                    	   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.autoFixedSequence"));
-	                           ntF.setText(read.xna_);
-	                           fastaLabel.setText("["+read.fastaHeader_+"]");
-	                       }
-	                       else
-	                       {
-	                           ntF.setText(read.xna_);
-	                           fastaLabel.setText("["+read.fastaHeader_+"]");
-	                       }
+                    	   try{
+		                	   FastaFile fastaFile = new FastaFile(
+		                			   new File(uploadF.getFileUpload().getSpoolFileName()),
+		                			   autofix.isChecked());
+		                       fastaFile.getFile().delete();
+		                            
+		                       if(fastaFile.size() == 0)
+		                       {
+		                    	   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.invalidFastaFile"));
+		                       }
+		                       else{
+		                    	   if(fastaFile.size() > 1)
+		                    		   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.multipleSequences"));
+
+		                    	   NtSequence nt = fastaFile.get(0);
+		                           ntF.setText(nt.getNucleotides());
+		                           fastaLabel.setText("["+nt.getLabel()+"]");
+		                           labelF.setText(nt.getLabel());
+		                       }
+                    	   } catch(FileNotFoundException e){
+                    		   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.fastaFileNotFound"));                    		   
+                    	   } catch(IOException e){
+                    		   UIUtils.showWarningMessageBox(NtSequenceForm.this, tr("form.viralIsolate.warning.invalidFastaFile"));
+                    		   e.printStackTrace();
+                    	   }
                        }
                    }
             });
@@ -291,7 +300,6 @@ public class NtSequenceForm extends WContainerWidget{
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	void save(){
 		ntSequence.setLabel(labelF.getFormText());
 		ntSequence.setSequenceDate(seqDateF.getDate());
@@ -308,6 +316,7 @@ public class NtSequenceForm extends WContainerWidget{
 				ValueTypes vt = ValueTypes.getValueType(t.getTestType().getValueType());
 				
 				if(vt == ValueTypes.NOMINAL_VALUE){
+					@SuppressWarnings("rawtypes")
 					TestNominalValue value = (TestNominalValue)((ComboBox)f).currentValue();
 					if(value == null){
 						if(testResults.get(i) != null)

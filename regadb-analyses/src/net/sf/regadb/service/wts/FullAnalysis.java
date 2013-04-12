@@ -14,8 +14,8 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.service.AnalysisPool;
+import net.sf.regadb.service.AnalysisThread;
 import net.sf.regadb.service.IAnalysis;
-import net.sf.regadb.service.align.AlignmentAnalysis;
 
 public class FullAnalysis implements IAnalysis {
     private Date endTime, startTime;
@@ -60,48 +60,49 @@ public class FullAnalysis implements IAnalysis {
             Transaction t = sessionSafeLogin.createTransaction();
             Test subTypeTest = t.getTest(StandardObjects.getSubtypeTestDescription(), StandardObjects.getSubtypeTestTypeDescription());
             t.commit();
-                        
-            if(genome != null){
-                
-                for(NtSequence ntseq : getViralIsolate().getNtSequences())
+            
+            AnalysisThread alignmentThread = launchAnalysis(new AlignService(getViralIsolate(), genome.getOrganismName(), sequenceDb), sessionSafeLogin);
+
+            for(NtSequence ntseq : getViralIsolate().getNtSequences())
+            {
+                if(ntseq.getAaSequences().size()==0)
                 {
-                    if(ntseq.getAaSequences().size()==0)
-                    {
-                        launchAnalysis(new AlignmentAnalysis(ntseq.getNtSequenceIi(), 
-                        		sessionSafeLogin.getUid(), 
-                        		genome.getOrganismName(), 
-                        		sequenceDb), sessionSafeLogin);
-                        launchAnalysis(new SubtypeAnalysis(ntseq,
-                        		subTypeTest,
-                                genome,
-                                sessionSafeLogin.getUid()), 
-                                sessionSafeLogin); 
-                    }
+                    launchAnalysis(new SubtypeAnalysis(ntseq,
+                    		subTypeTest,
+                            genome,
+                            sessionSafeLogin.getUid()), 
+                            sessionSafeLogin); 
                 }
-                
-                t = sessionSafeLogin.createTransaction();
-                List<Test> tests = t.getTests();
-                String uid = sessionSafeLogin.getUid();
-                for(Test test : tests)
-                {
-                    if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType())
-                    		|| Equals.isSameTestType(StandardObjects.getTDRTestType(genome),test.getTestType()))
-                    {
-                        if(test.getAnalysis()!=null)
-                        {
-                            launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
-                        }
-                    }
-                }
-                t.commit();
             }
+            
+            //wait for alignment thread to finish
+            if(alignmentThread != null){
+	            try {
+					alignmentThread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+            }
+            
+            t = sessionSafeLogin.createTransaction();
+            List<Test> tests = t.getTests();
+            String uid = sessionSafeLogin.getUid();
+            for(Test test : tests)
+            {
+                if(Equals.isSameTestType(StandardObjects.getGssTestType(genome),test.getTestType())
+                		|| Equals.isSameTestType(StandardObjects.getTDRTestType(genome),test.getTestType()))
+                {
+                    launchAnalysis(new ResistanceInterpretationAnalysis(getViralIsolate(), test, uid), sessionSafeLogin);
+                }
+            }
+            t.commit();
         }
         
         setEndTime(new Date());
     }
     
-    protected void launchAnalysis(IAnalysis analysis, Login login) {
-    	AnalysisPool.getInstance().launchAnalysis(analysis, login);
+    protected AnalysisThread launchAnalysis(IAnalysis analysis, Login login) {
+    	return AnalysisPool.getInstance().launchAnalysis(analysis, login);
     }
 
     public void pause() {

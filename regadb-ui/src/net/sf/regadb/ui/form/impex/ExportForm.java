@@ -14,6 +14,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.io.export.PatientExporter;
+import net.sf.regadb.io.export.hicdep.HicdepCsvExporter;
 import net.sf.regadb.io.exportCsv.FullCsvExport;
 import net.sf.regadb.io.exportXML.ExportToXMLOutputStream.PatientXMLOutputStream;
 import net.sf.regadb.io.util.StandardObjects;
@@ -46,6 +47,10 @@ public class ExportForm extends FormWidget {
 	
 	private WContainerWidget errorsContainer;
 	
+	private static String CSV = "CSV";
+	private static String XML = "XML";
+	private static String HICDEP = "HICDEP";
+	
 	public ExportForm(WString formName, InteractionState interactionState) {
 		super(formName, interactionState);
 		init();
@@ -62,8 +67,9 @@ public class ExportForm extends FormWidget {
 		
 		Label formatL = new Label(tr("form.impex.export.format"));
 		format = new WComboBox();
-		format.addItem("XML");
-		format.addItem("CSV");
+		format.addItem(XML);
+		format.addItem(HICDEP);
+		format.addItem(CSV);
 		table_.addLineToTable(formatL, format);
 		
 		exportMutations = new WCheckBox();
@@ -74,7 +80,7 @@ public class ExportForm extends FormWidget {
         {
 			public void trigger()
 			{
-				if(format.getCurrentText().getValue().equals("CSV")){
+				if(format.getCurrentText().getValue().equals(CSV)){
 					table_.getRowAt(i).show();
 				}
 				else{
@@ -97,10 +103,12 @@ public class ExportForm extends FormWidget {
 			    	anchor.setHidden(true);
     			    Dataset ds = datasets.currentValue();
     			    deleteExportFile();
-    			    if(format.getCurrentText().getValue().equals("XML")) {
+    			    if(format.getCurrentText().getValue().equals(XML)) {
     			    	exportXml(ds);
-    			    } else if (format.getCurrentText().getValue().equals("CSV")){
+    			    } else if(format.getCurrentText().getValue().equals(CSV)){
     			    	exportCsv(ds);
+    			    } else if(format.getCurrentText().getValue().equals(HICDEP)){
+    			    	exportHicdep(ds);
     			    }
     			    anchor.setHidden(false);
                 }catch(FileNotFoundException e){
@@ -174,6 +182,31 @@ public class ExportForm extends FormWidget {
         showErrors(errors);
 	}
 	
+	private void exportHicdep(Dataset ds){
+		errorsContainer.clear();
+		
+		exportFile = RegaDBMain.getApp().createTempFile(ds.getDescription() + "_export", "zip");
+		
+        List<String> errors = new ArrayList<String>();
+        
+        HicdepCsvExporter export = new HicdepCsvExporter(RegaDBMain.getApp().getLogin(), exportFile);
+        export.export(ds.getDescription());
+        try {
+			export.close();
+		} catch (IOException e) {
+			errors.add(e.getMessage());
+		}
+        
+        table_.getElementAt(0, 2).clear();
+        
+        String fileName = ds.getDescription() + "_hicdep_export.zip";
+        anchor.setText(fileName);
+        anchor.setResource(new WFileResource("application/zip", exportFile.getAbsolutePath(), null));
+        anchor.getResource().suggestFileName(fileName);
+        
+        showErrors(errors);
+	}
+	
 	private void showErrors(List<String> errors) {
         if (errors != null && errors.size() != 0) {
         	for (String error : errors)
@@ -214,5 +247,13 @@ public class ExportForm extends FormWidget {
 	public WString leaveForm() {
 		deleteExportFile();
 		return null;
+	}
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
 	}
 }

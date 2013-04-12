@@ -22,7 +22,7 @@
       <column name="event_ii" not-null="true" />
     </many-to-one>
     <property name="value" type="string">
-      <column name="value" length="100" />
+      <column name="value" />
     </property>
     <property name="startDate" type="date">
       <column name="start_date" length="13" />

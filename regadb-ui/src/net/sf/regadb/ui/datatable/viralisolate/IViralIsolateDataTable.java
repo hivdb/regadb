@@ -12,8 +12,9 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
@@ -21,8 +22,12 @@ import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
-public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
+public class IViralIsolateDataTable extends DefaultDataTable<ViralIsolate>
 {
+	public IViralIsolateDataTable(SelectForm<ViralIsolate> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
 	    WString.tr("dataTable.viralIsolate.colName.sampleDate"),
 	    WString.tr("dataTable.viralIsolate.colName.sampleId"), 
@@ -99,14 +104,6 @@ public class IViralIsolateDataTable implements IDataTable<ViralIsolate>
 		filters_[1] = new StringFilter();
 		filters_[2] = null;
 		filters_[3] = null;
-	}
-
-	public void selectAction(ViralIsolate selectedItem)
-	{
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
-        	.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getViralIsolateTreeNode()
-        	.getSelectedActionItem().refresh();
 	}
 
 	public boolean[] sortableFields()

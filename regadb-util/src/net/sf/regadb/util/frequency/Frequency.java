@@ -2,20 +2,20 @@ package net.sf.regadb.util.frequency;
 
 
 public class Frequency{
-    private static double secMinute = 60;
-    private static double secHour = secMinute * 60;
-    private static double secDay = secHour * 24;
-    private static double secWeek = secDay * 7;
-    private static double secMonth = secDay * 30.5;
-    private static double secYear = secDay * 365;
+    static double secMinute = 60;
+    static double secHour = secMinute * 60;
+    static double secDay = secHour * 24;
+    static double secWeek = secDay * 7;
+    static double secMonth = secDay * 30.5;
+    static double secYear = secDay * 365;
     
-    private static String strSecond = "second";
-    private static String strMinute = "minute";
-    private static String strHour = "hour";
-    private static String strDay = "day";
-    private static String strWeek = "week";
-    private static String strMonth = "month";
-    private static String strYear = "year";
+    static String strSecond = "second";
+    static String strMinute = "minute";
+    static String strHour = "hour";
+    static String strDay = "day";
+    static String strWeek = "week";
+    static String strMonth = "month";
+    static String strYear = "year";
         
     public static Frequency SECONDS    = new Frequency(strSecond, 1);
     public static Frequency MINUTES    = new Frequency(strMinute, secMinute);

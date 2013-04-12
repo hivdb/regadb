@@ -3,22 +3,17 @@ package net.sf.regadb.ui.datatable.attributeSettings;
 import net.sf.regadb.db.AttributeGroup;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
-public class SelectAttributeGroupForm extends SelectForm
+public class SelectAttributeGroupForm extends SelectForm<AttributeGroup>
 {
-    private DataTable<AttributeGroup> dataTable_;
-    private IAttributeGroupDataTable dataTableI_;
-    
-    public SelectAttributeGroupForm()
+    public SelectAttributeGroupForm(ObjectTreeNode<AttributeGroup> node)
     {
-        super(tr("form.attributes.attributeGroups.selectAttributeGroupForm"));
-        init();
+        super(tr("form.attributeSettings.attributeGroup.selectForm"),node);
     }
 
-    public void init() 
+    public DataTable<AttributeGroup> createDataTable() 
     {
-        dataTableI_ = new IAttributeGroupDataTable();
-        dataTable_ = new DataTable<AttributeGroup>(dataTableI_, 10);
-        addWidget(dataTable_);
+        return new DataTable<AttributeGroup>(new IAttributeGroupDataTable(this), 10);
     }
 }

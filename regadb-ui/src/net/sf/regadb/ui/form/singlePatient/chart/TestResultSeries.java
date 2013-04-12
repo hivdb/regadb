@@ -58,11 +58,13 @@ public class TestResultSeries extends WDataSeries {
 		this.valueType = valueType;
 	}
 
-	public TreeMap<Date, TestResult> loadResults(Patient p){
+	public TreeMap<Date, TestResult> loadResults(Patient p, Date minDate, Date maxDate){
 		results.clear();
 		
 		for(TestResult tr : p.getTestResults()){
-			if(isOk(tr))
+			if(isOk(tr)
+					&& (minDate == null || !tr.getTestDate().before(minDate))
+					&& (maxDate == null || !tr.getTestDate().after(maxDate)))
 				addResult(tr);
 		}
 		

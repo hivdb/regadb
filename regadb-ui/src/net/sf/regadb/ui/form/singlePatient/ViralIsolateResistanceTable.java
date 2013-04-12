@@ -119,7 +119,7 @@ public class ViralIsolateResistanceTable extends WTable {
         }
     }
     
-    private List<Test> getAlgorithms(Transaction t, TestType gssTT, boolean showAllAlgorithms) {
+    List<Test> getAlgorithms(Transaction t, TestType gssTT, boolean showAllAlgorithms) {
     	ViralIsolateFormConfig config = 
     		RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
     	

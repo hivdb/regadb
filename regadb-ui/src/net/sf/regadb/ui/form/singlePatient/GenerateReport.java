@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +41,8 @@ import eu.webtoolkit.jwt.WString;
 
 public class GenerateReport 
 {
+	private static final double THERAPY_GAP_DAY_LIMIT = 1.8; 
+	
 	private static class RIResult{
 		public String gss,mutations,remarks,sir,level,description;
 		
@@ -109,7 +112,8 @@ public class GenerateReport
         replace("$SAMPLE_ID", vi.getSampleId());
         replace("$REFERENCE_SEQUENCE", vi.getGenome() == null ? "" : vi.getGenome().getGenbankNumber());
         replace("$SAMPLE_DATE", DateUtils.format(vi.getSampleDate()));
-        replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate()));
+        replace("$ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate(), false));
+        replace("$DATED_ART_EXPERIENCE", getARTExperience(patient, vi.getSampleDate(), true));
         
         int bpos;
         while((bpos = rtfBuffer_.indexOf("$ATTRIBUTE(")) > -1){
@@ -121,13 +125,33 @@ public class GenerateReport
         		rtfBuffer_.delete(bpos, bpos + "$ATTRIBUTE(".length());
         	}
         }
+        
+        while((bpos = rtfBuffer_.indexOf("$NT_TEST(")) > -1){
+        	int epos = rtfBuffer_.indexOf(")",bpos);
+        	if(epos > -1){
+        		String testName = rtfBuffer_.substring(bpos + "$NT_TEST(".length(),epos);
+        		replace("$NT_TEST("+ testName +")", getNtSequenceTestResults(vi, testName));
+        	} else {
+        		rtfBuffer_.delete(bpos, bpos + "$NT_TEST(".length());
+        	}
+        }
 
+        while((bpos = rtfBuffer_.indexOf("$VI_TEST(")) > -1){
+        	int epos = rtfBuffer_.indexOf(")",bpos);
+        	if(epos > -1){
+        		String testName = rtfBuffer_.substring(bpos + "$VI_TEST(".length(),epos);
+        		replace("$VI_TEST("+ testName +")", getViralIsolateTestResults(vi, testName));
+        	} else {
+        		rtfBuffer_.delete(bpos, bpos + "$VI_TEST(".length());
+        	}
+        }
+        
         replaceTestResult(patient, vi, StandardObjects.getHiv1ViralLoadTestType(), dateTolerance, "VIRAL_LOAD_RNA");
         replaceTestResult(patient, vi, StandardObjects.getCd4TestType(), dateTolerance, "CD4_COUNT");
         
         replace("$ORGANISM", getOrganismName(vi));
-        replace("$SUBTYPE", getType(vi, StandardObjects.getSubtypeTestDescription()));
-        replace("$MANUAL_SUBTYPE", getType(vi, StandardObjects.getManualSubtypeTest().getDescription()));
+        replace("$SUBTYPE", getNtSequenceTestResults(vi, StandardObjects.getSubtypeTestDescription()));
+        replace("$MANUAL_SUBTYPE", getNtSequenceTestResults(vi, StandardObjects.getManualSubtypeTest().getDescription()));
         
         replace("$ASI_ALGORITHMS", algorithmsToString(algorithms));
         
@@ -202,19 +226,33 @@ public class GenerateReport
         return null;
     }
     
-    private String getType(ViralIsolate vi, String typeTest)
+    private String getNtSequenceTestResults(ViralIsolate vi, String test)
     {
-    	TreeSet<String> subtypes = new TreeSet<String>();
+    	TreeSet<String> values = new TreeSet<String>();
         for(NtSequence ntSeq : vi.getNtSequences())
         {
             for(TestResult testResult : ntSeq.getTestResults())
             {
-                if(testResult.getTest().getDescription().equals(typeTest))
-                    subtypes.add(testResult.getValue());
+                if(testResult.getTest().getDescription().equals(test))
+                    values.add(testResult.getValue() == null && testResult.getTestNominalValue() != null ?
+                    		testResult.getTestNominalValue().getValue() : testResult.getValue());
             }
         }
         
-        return subtypes.size() == 0 ? "":subtypes.toString().replace("[", "").replace("]", "");
+        return values.size() == 0 ? "":values.toString().replace("[", "").replace("]", "");
+    }
+    
+    private String getViralIsolateTestResults(ViralIsolate vi, String test)
+    {
+    	TreeSet<String> values = new TreeSet<String>();
+        for(TestResult testResult : vi.getTestResults())
+        {
+            if(testResult.getTest().getDescription().equals(test))
+                values.add(testResult.getValue() == null && testResult.getTestNominalValue() != null ?
+                		testResult.getTestNominalValue().getValue() : testResult.getValue());
+        }
+        
+        return values.size() == 0 ? "":values.toString().replace("[", "").replace("]", "");
     }
     
     private String getOrganismName(ViralIsolate vi){
@@ -253,7 +291,8 @@ public class GenerateReport
         return resultSample==null?resultDate:resultSample;
     }
     
-    private String getARTExperience(Patient p, Date upto){
+    private String getARTExperience(Patient p, Date upto, boolean includeDates){
+    	
         StringBuilder result = new StringBuilder();
         
         TreeSet<Therapy> therapies = new TreeSet<Therapy>(new Comparator<Therapy>() {
@@ -269,8 +308,16 @@ public class GenerateReport
         if(therapies.size() == 0)
         	return "";
         
-        String prev = "";
+        String prev = null;
+        Date startDate = null;
+        Date stopDate = null;
+        
         for(Therapy t : therapies){
+        	if(startDate == null)
+        		startDate = t.getStartDate();
+        	if(stopDate == null)
+        		stopDate = t.getStopDate();
+        	
         	TreeSet<String> combination = new TreeSet<String>();
             for(TherapyGeneric tg : t.getTherapyGenerics()){
                 combination.add(getDrugName(tg.getId().getDrugGeneric().getGenericId()));
@@ -280,12 +327,56 @@ public class GenerateReport
                     combination.add(getDrugName(dg.getGenericId()));
                 }
             }
+            
             String curr = combination.toString().replace(", ", "+");
-            if(!curr.equals(prev)){
-            	result.append(", "+ curr);
-            	prev = curr;
+            
+            boolean gap = stopDate != null && DateUtils.getDayDifference(stopDate, t.getStartDate()) >= THERAPY_GAP_DAY_LIMIT;
+            if(gap || prev != null && !curr.equals(prev)){
+            	result.append(", ");
+            	if(includeDates)
+            		result.append(DateUtils.format(startDate))
+            			.append(" - ")
+            			.append(stopDate == null ? "..." : DateUtils.format(stopDate))
+            			.append(": ");
+            			
+            	result.append(prev);
+            	
+            	if(gap){
+            		result.append(", ");
+            		
+            		if(includeDates)
+	            		result.append(DateUtils.format(stopDate))
+	        				.append(" - ")
+	        				.append(DateUtils.format(t.getStartDate()))
+	        				.append(": ");
+            		
+            		result.append(WString.tr("report.therapy.noTherapy"));
+            	}
+            	
+            	startDate = t.getStartDate();
             }
+            stopDate = t.getStopDate();
+            prev = curr;
         }
+        
+    	result.append(", ");
+    	if(includeDates)
+			result.append(DateUtils.format(startDate))
+				.append(" - ")
+				.append(stopDate == null ? "..." : DateUtils.format(stopDate))
+				.append(": ");
+
+		result.append(prev);
+    	
+    	if(stopDate != null && upto != null
+    			&& DateUtils.getDayDifference(stopDate, upto) >= THERAPY_GAP_DAY_LIMIT){
+    		result.append(", ");
+    		if(includeDates)
+        		result.append(DateUtils.format(stopDate))
+	    			.append(" - ...: ");
+
+    		result.append(WString.tr("report.therapy.noTherapy"));
+    	}
         
         return result.substring(2);
     }
@@ -318,6 +409,18 @@ public class GenerateReport
         }
     }
     
+    private class MutationList{
+    	public int start, stop;
+    	public String mutations;
+    	
+    	public MutationList(int start, int stop, String mutations){
+    		this.start = start;
+    		this.stop = stop;
+    		this.mutations = mutations == null || mutations.trim().length() == 0 ?
+    				"-" : mutations;
+    	}
+    }
+    
     private void setMutations(ViralIsolate vi)
     {
         List<AaSequence> aaSeqs = new ArrayList<AaSequence>();
@@ -336,6 +439,24 @@ public class GenerateReport
         
         Genome g = vi.getGenome();
         
+        Map<String, Map<String, MutationList>> proteinMutationLists = new HashMap<String, Map<String, MutationList>>();
+        for(AaSequence aaSeq : aaSeqs){
+        	String proteinAbbreviation = aaSeq.getProtein().getAbbreviation();
+        	
+        	Map<String, MutationList> mutationList = proteinMutationLists.get(proteinAbbreviation);
+        	if(mutationList == null){
+        		mutationList = new TreeMap<String, MutationList>();
+        		proteinMutationLists.put(proteinAbbreviation, mutationList);
+        	}
+        	
+        	mutationList.put(
+        			aaSeq.getNtSequence().getLabel(),
+        			new MutationList(
+        					aaSeq.getFirstAaPos(),
+        					aaSeq.getLastAaPos(),
+        					MutationHelper.getNonSynonymousMutations(aaSeq)));
+        }
+        
         for(Protein protein : transaction.getProteins(g))
         {   
             foundMatchinqSeq = false;
@@ -343,26 +464,44 @@ public class GenerateReport
             tplStart = "$"+protein.getAbbreviation().toUpperCase()+"_START";
             tplStop = "$"+protein.getAbbreviation().toUpperCase()+"_STOP";
 
-            for(AaSequence aaSeq : aaSeqs)
-            {
-                if(aaSeq.getProtein().getAbbreviation().equals(protein.getAbbreviation()))
-                {
-                    result = MutationHelper.getNonSynonymousMutations(aaSeq);
-                    if("".equals(result.trim()))
-                        result = "-";
-                    
-                    replace(tplMut, result);
-                    replace(tplStart, aaSeq.getFirstAaPos()+"");
-                    replace(tplStop, aaSeq.getLastAaPos()+"");
-                    
-                    foundMatchinqSeq = true;
-                    break;
-                }
-            }
-            if(!foundMatchinqSeq){
+            Map<String, MutationList> mutationLists = proteinMutationLists.get(protein.getAbbreviation());
+            if(mutationLists == null || mutationLists.size() == 0){
                 replace(tplMut, WString.tr("report.alignment.undetermined").getValue());
                 replace(tplStart, "-");
                 replace(tplStop, "-");
+            }else{
+            	if(mutationLists.size() == 1){
+            		MutationList ml = mutationLists.values().iterator().next();
+            		replace(tplMut, ml.mutations);
+            		replace(tplStart, ml.start +"");
+            		replace(tplStop, ml.stop +"");
+            	}else{
+            		int start = Integer.MAX_VALUE;
+            		int stop = 0;
+            		StringBuilder muts = new StringBuilder();
+
+            		boolean first = true;
+            		for(Map.Entry<String, MutationList> me : mutationLists.entrySet()){
+            			if(first)
+            				first = false;
+            			
+            			muts.append("\\line \n \\tab - ")
+            				.append(me.getKey())
+            				.append(' ')
+            				.append(me.getValue().start)
+            				.append('-')
+            				.append(me.getValue().stop)
+            				.append(": ")
+            				.append(me.getValue().mutations);
+            				
+            			start = Math.min(start, me.getValue().start);
+            			stop = Math.max(stop, me.getValue().stop);
+            		}
+            		
+            		replace(tplMut, muts.toString());
+            		replace(tplStart, start +"");
+            		replace(tplStop, stop +"");
+            	}
             }
         }
     }

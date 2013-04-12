@@ -114,7 +114,10 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     		foreignTableToIdTable = idTableToNominalValuesTable;	
     		idTable = possibleIdTable;							// use the id table as the id 
     		inputTableToIdTable = idTableToInputTable;
-    		suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t" + nominalValues.getTableName() + " nv,\n\t" + customPropertiesTable.getTableName() + " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableIndexProperty + "='" + index + "'";
+    		suggestedValuesQuery = "\nSELECT DISTINCT\n\tnv.value\nFROM\n\t"
+    			+ nominalValues.getTableName() + " nv,\n\t" + customPropertiesTable.getTableName()
+    			+ " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableIndexProperty + "='" + index + "'"
+    			+ " order by nv.value";
     	}
     	else if (valueType.equals("string") || valueType.equals("number") || valueType.equals("limited number (<,=,>)") || valueType.equals("date")) {
     		foreingTable = possibleIdTable;					// select from the single attribute table
@@ -1405,6 +1408,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         addRelations("SplicingPosition", "protein", "Protein", null, false, "is in a", "has a");
         addRelations("Protein", "openReadingFrame", "OpenReadingFrame", null, false, "is transcribed from an", "transcribes a");
         addRelations("OpenReadingFrame", "genome", "Genome", null, false, "is from a", "has an");
+        addRelations("ViralIsolate", "genome", "Genome", null, false, "is from a", "has an");
         
         addRelations("NtSequence", "viralIsolate", "ViralIsolate", null, false, "comes from a",  "has a" );       
         addRelations("NtSequence", "viralIsolate.patient", "PatientImpl", null, false, "comes from a",  "has a");
@@ -1593,6 +1597,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
         
         
         catalog.addAll(getRelationClauses("NtSequence", "ViralIsolate"));
+        catalog.addAll(getRelationClauses("ViralIsolate", "Genome"));
  
         
         ///////////////////////////////////////

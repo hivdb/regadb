@@ -5,15 +5,20 @@ import java.util.List;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public class IAttributeDataTable implements IDataTable<Attribute>
+public class IAttributeDataTable extends DefaultDataTable<Attribute>
 {
-    private static WString [] _colNames = {
+    public IAttributeDataTable(SelectForm<Attribute> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {
         WString.tr("dataTable.attribute.colName.name"),
         WString.tr("dataTable.attribute.colName.group"),
         WString.tr("dataTable.attribute.colName.valueType")};
@@ -65,14 +70,6 @@ public class IAttributeDataTable implements IDataTable<Attribute>
         filters_[0] = new StringFilter();
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
-    }
-
-    public void selectAction(Attribute selectedItem)
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(selectedItem);
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.expand();
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.refresh();
-        RegaDBMain.getApp().getTree().getTreeContent().attributesView.selectNode();
     }
 
     public boolean[] sortableFields()

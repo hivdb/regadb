@@ -6,8 +6,9 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
+import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
@@ -15,12 +16,16 @@ import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.WString;
 
-public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
+public class IPatientEventDataTable extends DefaultDataTable<PatientEventValue> {
+	public IPatientEventDataTable(SelectForm<PatientEventValue> form) {
+		super(form);
+	}
+
 	private static WString [] _colNames = {
-		WString.tr("dataTable.singlePatient.patientEvent.column.startDate"),
-		WString.tr("dataTable.singlePatient.patientEvent.column.endDate"),
-		WString.tr("dataTable.singlePatient.patientEvent.column.eventName"),
-		WString.tr("dataTable.singlePatient.patientEvent.column.value")};
+		WString.tr("dataTable.patientEvent.column.startDate"),
+		WString.tr("dataTable.patientEvent.column.endDate"),
+		WString.tr("dataTable.patientEvent.column.eventName"),
+		WString.tr("dataTable.patientEvent.column.value")};
 	
 	private static String[] filterVarNames_ = {"patient_event_value.startDate", "patient_event_value.endDate", "event.name", null};
 	private static boolean [] sortable_ = {true, true, true, false};
@@ -37,17 +42,6 @@ public class IPatientEventDataTable  implements IDataTable<PatientEventValue> {
 	public long getDataSetSize(Transaction t) {
 		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
 		return t.patientEventCount(p, HibernateStringUtils.filterConstraintsQuery(this));
-	}
-	
-	public void selectAction(PatientEventValue selectedItem) {
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.setSelectedItem(selectedItem);
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectActionItem().expand();
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getSelectedActionItem().refresh();
-		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getEventTreeNode()
-			.getViewActionItem().selectNode();
 	}
 	
 	public String[] getRowData(PatientEventValue pev) {

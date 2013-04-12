@@ -163,11 +163,7 @@ public class NeedlemanWunsch {
         try {
             return subMatrix.getValueAt(s1, s2);
         } catch (BioException e) {
-            if (s1.getMatches().contains(s2) ||
-                s2.getMatches().contains(s1))
-                return 0;
-            else
-                return -3;
+        	return 0;
         }
     }
 

@@ -2,13 +2,13 @@ package net.sf.regadb.io.db.ghb;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import jxl.Sheet;
-import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import net.sf.regadb.csv.Table;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Test;
@@ -31,12 +31,12 @@ public class ImportKwsContacts {
 		Arguments as = new Arguments();
     	ValueArgument conf			= as.addValueArgument("conf-dir", "configuration directory", false);
     	ValueArgument dateFormat	= as.addValueArgument("date-format", "java date format", false);
-    	dateFormat.setValue("M/d/yy H:m");
+    	dateFormat.setValue("yyyy-MM-dd");
     	
     	PositionalArgument user		= as.addPositionalArgument("regadb user", true);
     	PositionalArgument pass		= as.addPositionalArgument("regadb password", true);
     	PositionalArgument dataset	= as.addPositionalArgument("regadb dataset", true);
-		PositionalArgument file = as.addPositionalArgument("contacten.xls", true);
+		PositionalArgument file = as.addPositionalArgument("contacten.csv (,)", true);
 		
 		if(!as.handle(args))
 			return;
@@ -49,6 +49,7 @@ public class ImportKwsContacts {
 		try {
 			ImportKwsContacts pkc = new ImportKwsContacts(user.getValue(), pass.getValue(), dataset.getValue());
 			pkc.run(new File(file.getValue()),dateFormat.getValue());
+			pkc.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,10 +71,15 @@ public class ImportKwsContacts {
 	}
 	
 	public void run(File contactFile) throws BiffException, IOException{
-		run(contactFile, "M/d/yy H:m");
+		run(contactFile, "yyyy-MM-dd");
 	}
 	
 	public void run(File contactFile, String dateFormat) throws BiffException, IOException{
+		File logFile = new File(
+				RegaDBSettings.getInstance().getInstituteConfig().getLogDir().getAbsolutePath()
+				+ File.separatorChar + contactFile.getName() +".log");
+		PrintStream log = new PrintStream(logFile);
+		
         DateFormat df = new SimpleDateFormat(dateFormat);
 		try {
 			Dataset dataset = os.getDataset(datasetDescription);
@@ -83,40 +89,52 @@ public class ImportKwsContacts {
 			if(consultation == null || hospitalisation == null)
 				throw new Exception("'Test' objects don't exist, create them first.");
 			
-	    	Workbook wb;
-			wb = Workbook.getWorkbook(contactFile);
-			Sheet sh = wb.getSheet(0);
+			Table table = Table.readTable(contactFile.getAbsolutePath(),',');
+			int cEad = table.findColumn("ead");
+			int cDate = table.findColumn("date");
+			int cCtype = table.findColumn("ctype");
+			
+			int i = 1;
+			if(cEad == -1 || cDate == -1 || cCtype == -1){
+				//assume header-less csv, in default order
+				cEad = 0;
+				cDate = 1;
+				cCtype = 2;
+				i = 0;
+			}
 			
 			long maxYearDifference = 50l * (365l * 24l * 60l * 60l * 1000l);
 			
-			for(int i = 1; i < sh.getRows(); ++i){
-				String eadnr = sh.getCell(0, i).getContents();
-				String datum = sh.getCell(1, i).getContents();
-				String ctype = sh.getCell(2, i).getContents();
+			for(; i < table.numRows(); ++i){
+				String eadnr = table.valueAt(cEad, i);
+				String datum = table.valueAt(cDate, i);
+				String ctype = table.valueAt(cCtype, i);
 				
 				Patient p = os.getPatient(dataset, eadnr);
 				if(p == null){
-					System.err.println("Creating new patient: '"+ eadnr +"'");
-					p = os.createPatient(dataset, eadnr);
+					log.println("Patient does not exist: '"+ eadnr +"'");
+				}else{
+					Date d = df.parse(datum);
+					Date now = new Date();
+					if(now.getTime() - d.getTime() > maxYearDifference)
+						log.println("Wrong date: "+ datum +" parsed as "+ DateUtils.format(d));
+					else{
+						TestResult tr = new TestResult(ctype.equals("consultatie") ? consultation : hospitalisation);
+						tr.setTestDate(d);
+						tr.setValue(d.getTime()+"");
+						
+						if(!duplicateTestResult(p, tr))
+							p.addTestResult(tr);
+					}
 				}
-				
-				Date d = df.parse(datum);
-				Date now = new Date();
-				if(now.getTime() - d.getTime() > maxYearDifference)
-					throw new Exception("Wrong date: "+ datum +" parsed as "+ DateUtils.format(d));
-				
-				TestResult tr = new TestResult(ctype.equals("consultatie") ? consultation : hospitalisation);
-				tr.setTestDate(d);
-				tr.setValue(d.getTime()+"");
-				
-				if(!duplicateTestResult(p, tr))
-					p.addTestResult(tr);
 			}
 			os.commit();
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(log);
 		}
+		
+		log.close();
 	}
 	
 	private boolean duplicateTestResult(Patient p, TestResult result) {
@@ -128,4 +146,8 @@ public class ImportKwsContacts {
         }
         return false;
     }
+	
+	public void close(){
+		os.close();
+	}
 }

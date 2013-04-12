@@ -82,11 +82,11 @@ public class Retrieve {
     }
 
     public static DrugGeneric retrieve(Transaction t, DrugGeneric o) {
-        return t.getGenericDrug(o.getGenericId());
+        return t.getDrugGeneric(o.getGenericId());
     }
 
     public static DrugCommercial retrieve(Transaction t, DrugCommercial o) {
-        return t.getCommercialDrug(o.getName());
+        return t.getDrugCommercial(o.getName());
     }
 
     public static OpenReadingFrame retrieve(Transaction t,

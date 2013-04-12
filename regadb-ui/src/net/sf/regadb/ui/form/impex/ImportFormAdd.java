@@ -13,7 +13,7 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class ImportFormAdd extends FormWidget {
+public abstract class ImportFormAdd extends FormWidget {
 	private FormTable addFileTable;
 	private ComboBox<Dataset> datasetCB;
 	private FileUpload fileU;
@@ -59,9 +59,6 @@ public class ImportFormAdd extends FormWidget {
 	
 	@Override
 	public void cancel() {
-		redirectToView(
-				RegaDBMain.getApp().getTree().getTreeContent().importXMLrun,
-				RegaDBMain.getApp().getTree().getTreeContent().importXMLrun);
 	}
 	
 	@Override
@@ -76,6 +73,5 @@ public class ImportFormAdd extends FormWidget {
 	@Override
 	public void saveData() {
 		ImportFormRunning.add( new ProcessXMLImport(RegaDBMain.getApp().getLogin(), fileU.getFileUpload(), datasetCB.currentValue()));
-		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().importXMLrun, RegaDBMain.getApp().getTree().getTreeContent().importXMLrun);
 	}
 }

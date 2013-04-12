@@ -175,4 +175,12 @@ public abstract class CustomQuery extends FormWidget{
 	}
 	
 	public abstract File run() throws Exception;
+
+	@Override
+	public void redirectAfterSave() {
+	}
+
+	@Override
+	public void redirectAfterCancel() {
+	}
 }

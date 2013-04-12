@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.testTestTypes;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestObject;
@@ -11,8 +13,8 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.GenomeComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -20,14 +22,13 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class TestTypeForm extends FormWidget
+public class TestTypeForm extends ObjectForm<TestType>
 {
-	private TestType testType_;
-	
 	//Frame 
 	private WGroupBox mainFrameGroup_;
     private FormTable mainFrameTable_;
@@ -46,12 +47,9 @@ public class TestTypeForm extends FormWidget
     private EditableTable<TestNominalValue> nominalValuesList_;
     private ITestNominalValueDataList iNominalValuesList_;
 	
-	public TestTypeForm(InteractionState interactionState, WString formName, TestType testType ) 
+	public TestTypeForm(WString formName, InteractionState interactionState, ObjectTreeNode<TestType> node, TestType testType ) 
 	{
-		super(formName, interactionState);
-		
-		testType_ = testType;
-		
+		super(formName, interactionState, node, testType);
 		init();
 		filldata();
 	}
@@ -114,19 +112,36 @@ public class TestTypeForm extends FormWidget
             {
                 nominalValuesGroup_.removeWidget(nominalValuesList_);
             }
-            ArrayList<TestNominalValue> list = new ArrayList<TestNominalValue>();
+            
+            Set<TestNominalValue> list = new TreeSet<TestNominalValue>(
+            		new Comparator<TestNominalValue>(){
+
+						@Override
+						public int compare(TestNominalValue o1,
+								TestNominalValue o2) {
+							if(o1 == o2 || o1.getValue() == o2.getValue())
+								return 0;
+							
+							if(o1.getValue() == null)
+								return -1;
+							
+							return o1.getValue().compareTo(o2.getValue());
+						}
+            			
+            		});
+            
             if(getInteractionState()!=InteractionState.Adding)
             {
                 Transaction t = RegaDBMain.getApp().createTransaction();
-                t.attach(testType_);
+                t.attach(getObject());
                 
-                for(TestNominalValue anv : testType_.getTestNominalValues())
+                for(TestNominalValue anv : getObject().getTestNominalValues())
                 {
                     list.add(anv);
                 }
                 t.commit();
             }
-            iNominalValuesList_ = new ITestNominalValueDataList(this, testType_);
+            iNominalValuesList_ = new ITestNominalValueDataList(this, getObject());
             nominalValuesList_ = new EditableTable<TestNominalValue>(nominalValuesGroup_, iNominalValuesList_, list){
             	public boolean canRemove(TestNominalValue toRemove){
             		Transaction t = RegaDBMain.getApp().createTransaction();
@@ -142,19 +157,19 @@ public class TestTypeForm extends FormWidget
 	{
 		if(getInteractionState()==InteractionState.Adding)
         {
-			testType_ = new TestType();
+			setObject(new TestType());
         }
 		
 		if(getInteractionState()!=InteractionState.Adding)
         {
             Transaction t = RegaDBMain.getApp().createTransaction();
             
-            t.attach(testType_);
+            t.attach(getObject());
             
-            testTypeTF.setText(testType_.getDescription());
-            valueTypeCB.selectItem(testType_.getValueType().getDescription());
+            testTypeTF.setText(getObject().getDescription());
+            valueTypeCB.selectItem(getObject().getValueType().getDescription());
             
-            testObjectCB.selectItem(testType_.getTestObject().getDescription());
+            testObjectCB.selectItem(getObject().getTestObject().getDescription());
             t.commit();
          }
          
@@ -169,8 +184,8 @@ public class TestTypeForm extends FormWidget
 		 
         Transaction t = RegaDBMain.getApp().createTransaction();
         genomeCB.fill(t);
-        if(testType_.getGenome() != null)
-            genomeCB.selectItem(testType_.getGenome().getOrganismName());
+        if(getObject().getGenome() != null)
+            genomeCB.selectItem(getObject().getGenome().getOrganismName());
         else
             genomeCB.selectIndex(0);
         t.commit();
@@ -192,7 +207,7 @@ public class TestTypeForm extends FormWidget
 		Transaction t = RegaDBMain.getApp().createTransaction();
         if(!(getInteractionState()==InteractionState.Adding))
         {
-            t.attach(testType_);
+            t.attach(getObject());
         }
         
         TestObject to = testObjectCB.currentValue();
@@ -201,36 +216,25 @@ public class TestTypeForm extends FormWidget
         ValueType vt = valueTypeCB.currentValue();
         t.attach(vt);
         
-        testType_.setDescription(testTypeTF.text());
-        testType_.setValueType(vt);
-        testType_.setTestObject(to);
-        testType_.setGenome(genomeCB.currentValue());
+        getObject().setDescription(testTypeTF.text());
+        getObject().setValueType(vt);
+        getObject().setTestObject(to);
+        getObject().setGenome(genomeCB.currentValue());
           
         if(!nominalValuesGroup_.isHidden())
         {
-            iNominalValuesList_.setTest(testType_);
+            iNominalValuesList_.setTest(getObject());
             iNominalValuesList_.setTransaction(t);
             nominalValuesList_.saveData();
         }
         
-        update(testType_, t);
+        update(getObject(), t);
         t.commit();
-        
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(testType_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
 	}
     
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().testTypes, RegaDBMain.getApp().getTree().getTreeContent().testTypesSelect);
-        }
-        else
-        {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected, RegaDBMain.getApp().getTree().getTreeContent().testTypesView);
-        } 
     }
     
     @Override
@@ -240,7 +244,7 @@ public class TestTypeForm extends FormWidget
         
         try
         {
-        	t.delete(testType_);
+        	t.delete(getObject());
             
             t.commit();
             
@@ -253,12 +257,5 @@ public class TestTypeForm extends FormWidget
         	
         	return tr("form.delete.restriction");
         }
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().testTypesSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().testTypeSelected.setSelectedItem(null);
     }
 }

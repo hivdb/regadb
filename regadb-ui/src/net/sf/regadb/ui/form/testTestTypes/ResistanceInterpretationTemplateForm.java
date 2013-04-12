@@ -6,13 +6,14 @@ import java.io.IOException;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
 import org.apache.commons.io.FileUtils;
 
@@ -21,10 +22,8 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WMemoryResource;
 import eu.webtoolkit.jwt.WString;
 
-public class ResistanceInterpretationTemplateForm extends FormWidget
+public class ResistanceInterpretationTemplateForm extends ObjectForm<ResistanceInterpretationTemplate>
 {
-    private ResistanceInterpretationTemplate resRepTemplate_;
-    
     private WGroupBox templateGroup_;
     private FormTable templateTable_;
     private Label templateL;
@@ -32,10 +31,10 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
     private Label reportL;
     private FileUpload upload;
     
-    public ResistanceInterpretationTemplateForm(InteractionState interactionState, WString formName, ResistanceInterpretationTemplate resRepTemplate) 
+    public ResistanceInterpretationTemplateForm(WString formName, InteractionState interactionState,
+    		ObjectTreeNode<ResistanceInterpretationTemplate> node, ResistanceInterpretationTemplate resRepTemplate) 
     {
-        super(formName, interactionState);
-        resRepTemplate_ = resRepTemplate;
+        super(formName, interactionState, node, resRepTemplate);
         
         init();
         filldata();
@@ -63,19 +62,21 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         {
         	upload.getFileUpload().uploaded().addListener(this, new Signal.Listener() {
 				public void trigger() {
-                    try 
-                    {
-                        resRepTemplate_.setDocument(FileUtils.readFileToByteArray(new File(upload.getFileUpload().getSpoolFileName())));
-                        resRepTemplate_.setFilename(lastPartOfFilename(upload.getFileUpload().getClientFileName()));
-                    } 
-                    catch (IOException e) 
-                    {
-                        e.printStackTrace();
-                    }
-                    WMemoryResource memResource = new WMemoryResource("application/rtf");
-                    memResource.suggestFileName("template.rtf");
-                    memResource.setData(resRepTemplate_.getDocument());
-                    upload.setAnchor(resRepTemplate_.getFilename(), memResource);
+					if(!upload.getFileUpload().isEmpty()){
+	                    try 
+	                    {
+	                        getObject().setDocument(FileUtils.readFileToByteArray(new File(upload.getFileUpload().getSpoolFileName())));
+	                        getObject().setFilename(lastPartOfFilename(upload.getFileUpload().getClientFileName()));
+	                    } 
+	                    catch (IOException e) 
+	                    {
+	                        e.printStackTrace();
+	                    }
+	                    WMemoryResource memResource = new WMemoryResource("application/rtf");
+	                    memResource.suggestFileName("template.rtf");
+	                    memResource.setData(getObject().getDocument());
+	                    upload.setAnchor(getObject().getFilename(), memResource);
+					}
 				}
         	});
         }
@@ -98,14 +99,15 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
-            resRepTemplate_ = new ResistanceInterpretationTemplate();
+        	setObject(new ResistanceInterpretationTemplate());
         }
         else
         {
-            templateTF.setText(resRepTemplate_.getName());
+            templateTF.setText(getObject().getName());
             WMemoryResource memResource = new WMemoryResource("application/rtf");
-            memResource.setData(resRepTemplate_.getDocument());
-            upload.setAnchor(resRepTemplate_.getFilename(), memResource.generateUrl());
+            memResource.setData(getObject().getDocument());
+            memResource.suggestFileName(getObject().getFilename());
+            upload.setAnchor(getObject().getFilename(), memResource.generateUrl());
         }
     }
     
@@ -118,12 +120,9 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
         
         if(notExists && !upload.getFileUpload().getSpoolFileName().equals(""))
         {
-            resRepTemplate_.setName(templateTF.text());
-            update(resRepTemplate_, t);
+        	getObject().setName(templateTF.text());
+            update(getObject(), t);
             t.commit();
-            
-            RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.setSelectedItem(resRepTemplate_);
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected, RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateView);
         }
         else if(upload.getFileUpload().getSpoolFileName().equals(""))
         {
@@ -138,14 +137,6 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().resRepTemplate, RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelect);
-        }
-        else
-        {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected, RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateView);
-        }
     }
     
     @Override
@@ -153,17 +144,10 @@ public class ResistanceInterpretationTemplateForm extends FormWidget
     {
         Transaction t = RegaDBMain.getApp().createTransaction();
         
-        t.delete(resRepTemplate_);
+        t.delete(getObject());
         
         t.commit();
         
         return null;
-    }
-    
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().resRepTemplateSelected.setSelectedItem(null);
     }
 }

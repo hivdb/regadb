@@ -21,10 +21,13 @@ public class InstituteConfig extends ConfigParser {
 	private String wtsUrl;
 	private boolean wtsUrlSubtyping = false;
 	private boolean wtsUrlUpdates = false;
+	private boolean wtsUrlAlignment = false;
 	
 	private boolean sampleDateMandatory = true;
 	private String logo;
 	private boolean trugeneFix = false;
+	
+	private String defaultDataset = null;
 
 	private WivConfig wivConfig;
 	
@@ -98,6 +101,10 @@ public class InstituteConfig extends ConfigParser {
 		ee = e.getChild("sample-date-mandatory");
 		if(ee != null)
 			sampleDateMandatory = Boolean.parseBoolean(ee.getText());
+		
+		ee = e.getChild("default-dataset");
+		if(ee != null)
+			setDefaultDataset(ee.getTextTrim());
 			
 		ee = e.getChild("forms");
 		if(ee != null){
@@ -113,6 +120,8 @@ public class InstituteConfig extends ConfigParser {
 			setUseWtsUrlForSubtyping(v != null && v.toLowerCase().equals("true"));
 			v = ee.getAttributeValue("useForUpdates");
 			setUseWtsUrlForUpdates(v != null && v.toLowerCase().equals("true"));
+			v = ee.getAttributeValue("useForAlignment");
+			setUseWtsUrlForAlignment(v != null && v.toLowerCase().equals("true"));
 		}
 	}
 	
@@ -200,6 +209,12 @@ public class InstituteConfig extends ConfigParser {
 			r.addContent(e);
 		}
 		
+		if(defaultDataset != null){
+			e = new Element("default-dataset");
+			e.setText(getDefaultDataset());
+			r.addContent(e);
+		}
+		
 		if(forms.size() > 0){
 			e = new Element("forms");
 			r.addContent(e);
@@ -212,6 +227,7 @@ public class InstituteConfig extends ConfigParser {
 		e.setText(getWtsUrl().toString());
 		e.setAttribute("useForSubtyping", getUseWtsUrlForSubtyping()+"");
 		e.setAttribute("useForUpdates", getUseWtsUrlForUpdates()+"");
+		e.setAttribute("useForAlignment", getUseWtsUrlForAlignment()+"");
 		r.addContent(e);
 		
 		return r;
@@ -322,6 +338,14 @@ public class InstituteConfig extends ConfigParser {
 		this.wtsUrlSubtyping = b;
 	}
 	
+	public boolean getUseWtsUrlForAlignment(){
+		return wtsUrlAlignment;
+	}
+	
+	public void setUseWtsUrlForAlignment(boolean b){
+		this.wtsUrlAlignment = b;
+	}
+	
 	public void setWtsUrl(String wtsUrl) {
 		if(!wtsUrl.endsWith("/"))
 			wtsUrl += '/';
@@ -347,5 +371,13 @@ public class InstituteConfig extends ConfigParser {
 	
 	public boolean isTrugeneFix() {
 		return trugeneFix;
+	}
+	
+	public String getDefaultDataset(){
+		return defaultDataset;
+	}
+	
+	public void setDefaultDataset(String dataset){
+		this.defaultDataset = dataset;
 	}
 }

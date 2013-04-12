@@ -1,10 +1,13 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Therapy;
@@ -15,8 +18,9 @@ import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
+import net.sf.regadb.ui.framework.forms.fields.CheckBox;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
@@ -24,6 +28,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.Signal;
@@ -31,16 +36,17 @@ import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WWidget;
 
-public class TherapyForm extends FormWidget
+public class TherapyForm extends ObjectForm<Therapy>
 {
-	private Therapy therapy_;
-	private Therapy previousTherapy_ = null;
-	
 	//general group
     private WGroupBox generalGroup_;
     private FormTable generalGroupTable_;
     private Label startDateL;
     private DateField startDateDF;
+
+    private Label setStopDatePrevTherapyL;
+    private CheckBox setStopDatePrevTherapyCB;
+    
     private Label stopDateL;
     private DateField stopDateDF;
     private Label motivationL;
@@ -59,30 +65,32 @@ public class TherapyForm extends FormWidget
     private EditableTable<TherapyCommercial> drugCommercialList_;
     private ICommercialDrugSelectionEditableTable iCommercialDrugSelectionEditableTable_;
     
-	public TherapyForm(InteractionState interactionState, WString formName, Therapy therapy)
+	public TherapyForm(
+			WString formName,
+			InteractionState interactionState,
+			ObjectTreeNode<Therapy> node,
+			Therapy therapy,
+			boolean copyLastTherapy)
 	{
-		super(formName, interactionState);
-		therapy_ = therapy;
+		super(formName,interactionState,node,therapy);
 		
-		if(interactionState==InteractionState.Adding && therapy != null){
-		    setPreviousTherapy(therapy);
+		if(RegaDBMain.getApp().isPatientInteractionAllowed(interactionState)){
+			init();
+			
+			fillData(copyLastTherapy);
 		}
-		
-		init();
-		
-		fillData();
 	}
 
 	public void init()
 	{
 		//general group
-        generalGroup_ = new WGroupBox(tr("form.therapy.editView.general"), this);
+        generalGroup_ = new WGroupBox(tr("form.therapy.general"), this);
         generalGroupTable_ = new FormTable(generalGroup_);
-        startDateL = new Label(tr("form.therapy.editView.startDate"));
+        startDateL = new Label(tr("form.therapy.startDate"));
         startDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         startDateDF.setMandatory(true);
         generalGroupTable_.addLineToTable(startDateL, startDateDF);
-        stopDateL = new Label(tr("form.therapy.editView.stopDate"));
+        stopDateL = new Label(tr("form.therapy.stopDate"));
         stopDateDF = new DateField(getInteractionState(), this, RegaDBSettings.getInstance().getDateFormat());
         generalGroupTable_.addLineToTable(stopDateL, stopDateDF);
         
@@ -94,12 +102,20 @@ public class TherapyForm extends FormWidget
             }
         });
         
-        motivationL = new Label(tr("form.therapy.editView.motivation"));
+        motivationL = new Label(tr("form.therapy.motivation"));
         motivationCB = new ComboBox<TherapyMotivation>(getInteractionState(), this);
         generalGroupTable_.addLineToTable( motivationL, motivationCB);
-        commentL = new Label(tr("form.therapy.editView.comment"));
+        commentL = new Label(tr("form.therapy.comment"));
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
+        
+        if(getInteractionState() == InteractionState.Adding
+        		|| getInteractionState() == InteractionState.Editing){
+        	setStopDatePrevTherapyL = new Label(tr("form.therapy.setStopDatePrevTherapy"));
+        	setStopDatePrevTherapyCB = new CheckBox(getInteractionState(), this);
+        	generalGroupTable_.addLineToTable(setStopDatePrevTherapyCB, setStopDatePrevTherapyL);
+        }
+
         
         genericGroup_ = new WGroupBox(tr("form.therapy.editableTable.genericDrugs"), this);
         commercialGroup_ = new WGroupBox(tr("form.therapy.editableTable.commercialDrugs"), this);
@@ -107,68 +123,90 @@ public class TherapyForm extends FormWidget
         addControlButtons();
 	}
 	
-	private void fillData()
+	private void fillData(boolean copyLastTherapy)
 	{
         Transaction t = RegaDBMain.getApp().createTransaction();
         
 		if(getInteractionState()==InteractionState.Adding)
 		{
-		    Therapy loadTherapy = getPreviousTherapy();
-		    
             Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
             t.attach(p);
-            therapy_ = new Therapy();
-            therapy_.setStartDate(new Date(System.currentTimeMillis()));
+            setObject(new Therapy());
+            getObject().setStartDate(new Date(System.currentTimeMillis()));
             
-            if(loadTherapy != null){   //copy this therapy into the new one
-                copyTherapy(loadTherapy, therapy_);
-                if(loadTherapy.getStopDate()!=null){
-                    therapy_.setStartDate(loadTherapy.getStopDate());
-                }
+            if(copyLastTherapy){   //copy last therapy info to the new one
+    		    Therapy lastTherapy = getPreviousTherapy(t, null);
+
+    		    if(lastTherapy != null){
+	                copyTherapy(lastTherapy, getObject());
+	                if(lastTherapy.getStopDate()!=null){
+	                	getObject().setStartDate(lastTherapy.getStopDate());
+	                }
+    		    }
             }
         }
         else
         {
-	        t.attach(therapy_);
+	        t.attach(getObject());
         }
         
         t.commit();
 	        
-        startDateDF.setDate(therapy_.getStartDate());
-        stopDateDF.setDate(therapy_.getStopDate());
-		commentTF.setText(therapy_.getComment());
+        startDateDF.setDate(getObject().getStartDate());
+        stopDateDF.setDate(getObject().getStopDate());
+		commentTF.setText(getObject().getComment());
         
         fillComboBoxes();
         
 		//generic drugs group
         t = RegaDBMain.getApp().createTransaction();
-        List<TherapyGeneric> tgs = new ArrayList<TherapyGeneric>();
-        for(TherapyGeneric tg : therapy_.getTherapyGenerics())
-        {
-            tgs.add(tg);
-        }
+        TreeSet<TherapyGeneric> tgs = new TreeSet<TherapyGeneric>(new Comparator<TherapyGeneric>(){
+			@Override
+			public int compare(TherapyGeneric o1, TherapyGeneric o2) {
+				return o1.getId().getDrugGeneric().getGenericName().compareTo(
+						o2.getId().getDrugGeneric().getGenericName());
+			}
+        });
+        tgs.addAll(getObject().getTherapyGenerics());
         t.commit();
-        iGenericDrugSelectionEditableTable_ = new IGenericDrugSelectionEditableTable(this, therapy_);
+        iGenericDrugSelectionEditableTable_ = new IGenericDrugSelectionEditableTable(this, getObject());
         drugGenericList_ = new EditableTable<TherapyGeneric>(genericGroup_, iGenericDrugSelectionEditableTable_, tgs);
 			
         //commercial drugs group
         t = RegaDBMain.getApp().createTransaction();
-        List<TherapyCommercial> tcs = new ArrayList<TherapyCommercial>();
-        for(TherapyCommercial tc : therapy_.getTherapyCommercials())
-        {
-            tcs.add(tc);
-        }
+        TreeSet<TherapyCommercial> tcs = new TreeSet<TherapyCommercial>(new Comparator<TherapyCommercial>() {
+			@Override
+			public int compare(TherapyCommercial arg0, TherapyCommercial arg1) {
+				return arg0.getId().getDrugCommercial().getName().compareTo(
+						arg1.getId().getDrugCommercial().getName());
+			}
+		});
+        tcs.addAll(getObject().getTherapyCommercials());
         t.commit();
-        iCommercialDrugSelectionEditableTable_ = new ICommercialDrugSelectionEditableTable(this, therapy_);
+        iCommercialDrugSelectionEditableTable_ = new ICommercialDrugSelectionEditableTable(this, getObject());
         drugCommercialList_ = new EditableTable<TherapyCommercial>(commercialGroup_, iCommercialDrugSelectionEditableTable_, tcs);
 	}
 
-   public Therapy getPreviousTherapy(){
-        return previousTherapy_;
-    }
-    
-    public void setPreviousTherapy(Therapy t){
-        previousTherapy_ = t;
+   public Therapy getPreviousTherapy(Transaction t, Date cutoff){
+        List<Therapy> therapies = t.getTherapiesSortedOnDate(RegaDBMain.getApp().getSelectedPatient());
+        
+        if(therapies.size() == 0)
+        	return null;
+        else if(cutoff == null)
+        	return therapies.get(therapies.size()-1);
+        else{
+	        Iterator<Therapy> i = therapies.iterator();
+	        Therapy t1 = null;
+	        while(i.hasNext()){
+	        	Therapy t2 = i.next();
+	        	
+	        	if(!t2.getStartDate().before(cutoff))
+	        		return t1;
+	        	
+	        	t1 = t2;
+	        }
+	        return t1;
+        }
     }
 
 	private void copyTherapy(Therapy from, Therapy to){
@@ -208,9 +246,9 @@ public class TherapyForm extends FormWidget
             motivationCB.sort();
             motivationCB.addNoSelectionItem();
             
-            if(therapy_.getTherapyMotivation()!=null)
+            if(getObject().getTherapyMotivation()!=null)
             {
-                motivationCB.selectItem(therapy_.getTherapyMotivation().getValue());
+                motivationCB.selectItem(getObject().getTherapyMotivation().getValue());
             }
         }
         motivationCB.setEnabled(stopDateDF.getDate()!=null);
@@ -218,125 +256,123 @@ public class TherapyForm extends FormWidget
         t.commit();
     }
 	
-	@Override
-	public void saveData()
-	{
-        Set<String> genericDrugs = new HashSet<String>();
-        ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
-        for(WWidget widget : genericwidgets)
-        {
-            if(!genericDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
+    @Override
+    public boolean validateForm(){
+    	boolean valid = super.validateForm();
+    	if(valid){
+    		valid = false;
+    		
+            Set<String> genericDrugs = new HashSet<String>();
+            ArrayList<WWidget> genericwidgets= drugGenericList_.getAllWidgets(0);
+            for(WWidget widget : genericwidgets)
             {
-                genericDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
+                if(!genericDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
+                {
+                    genericDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
+                }
             }
-        }
-        
-        Set<String> commercialDrugs = new HashSet<String>();
-        ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
-        for(WWidget widget : commercialwidgets)
-        {
-            if(!commercialDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
+            
+            Set<String> commercialDrugs = new HashSet<String>();
+            ArrayList<WWidget> commercialwidgets= drugCommercialList_.getAllWidgets(0);
+            for(WWidget widget : commercialwidgets)
             {
-                commercialDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
+                if(!commercialDrugs.contains(((ComboBox)widget).currentItem().getDataValue()))
+                {
+                    commercialDrugs.add(((ComboBox)widget).currentItem().getDataValue().toString());
+                }
             }
-        }
-        
-        Transaction t = RegaDBMain.getApp().createTransaction();
-        
-        Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
-        t.attach(p);
-        t.commit();
-        
-        Set<Therapy> therapies = p.getTherapies();
-        boolean startDateExists = false;
-        for(Therapy therapy : therapies)
-        {
-            if(DateUtils.compareDates(therapy.getStartDate(), startDateDF.getDate())==0 && getInteractionState()==InteractionState.Adding)
+            
+            Transaction t = RegaDBMain.getApp().createTransaction();
+            
+            Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
+            t.attach(p);
+            t.commit();
+            
+            Set<Therapy> therapies = p.getTherapies();
+            boolean startDateExists = false;
+            for(Therapy therapy : therapies)
             {
-                startDateExists = true;
-                break;
+                if(DateUtils.compareDates(therapy.getStartDate(), startDateDF.getDate())==0 && getInteractionState()==InteractionState.Adding)
+                {
+                    startDateExists = true;
+                    break;
+                }
             }
-        }
 
-        if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
-        {
-        	UIUtils.showWarningMessageBox(this, tr("form.therapy.edit.warning"));
-        }
-        else if(!drugCommercialList_.validate() || !drugGenericList_.validate())
-        {
-            //invalid input
-        }
-        else if(startDateExists)
-        {
-        	UIUtils.showWarningMessageBox(this, tr("form.therapy.add.warning"));
-        }
-        else if(stopDateDF.getDate() != null && DateUtils.compareDates(startDateDF.getDate(), stopDateDF.getDate())>0)
-        {
-        	UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
-        }
-        else
-        {
-            t = RegaDBMain.getApp().createTransaction();
-            
-            if(getInteractionState()==InteractionState.Adding)
+            if(genericwidgets.size() != genericDrugs.size() || commercialwidgets.size() != commercialDrugs.size())
             {
-                p.addTherapy(therapy_);
+            	UIUtils.showWarningMessageBox(this, tr("form.therapy.edit.warning"));
             }
-            
-            therapy_.setStartDate(startDateDF.getDate());
-            
-            therapy_.setStopDate(stopDateDF.getDate());
-            
-            if(therapy_.getStopDate()!=null)
+            else if(!drugCommercialList_.validate() || !drugGenericList_.validate())
             {
-                therapy_.setTherapyMotivation(motivationCB.currentValue());
+                //invalid input
+            }
+            else if(startDateExists)
+            {
+            	UIUtils.showWarningMessageBox(this, tr("form.therapy.add.warning"));
+            }
+            else if(stopDateDF.getDate() != null && DateUtils.compareDates(startDateDF.getDate(), stopDateDF.getDate())>0)
+            {
+            	UIUtils.showWarningMessageBox(this, tr("form.therapy.date.warning"));
             }
             else
             {
-                therapy_.setTherapyMotivation(null);
+            	valid = true;
             }
+    	}
+    	return valid;
+    }
+    
+	@Override
+	public void saveData()
+	{
+		Transaction t = RegaDBMain.getApp().createTransaction();
+		Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
+        t.attach(p);
             
-            therapy_.setComment(getNulled(commentTF.text()));
-            
-            iCommercialDrugSelectionEditableTable_.setTransaction(t);
-            drugCommercialList_.saveData();
-            
-            iGenericDrugSelectionEditableTable_.setTransaction(t);
-            drugGenericList_.saveData();
-            
-            update(therapy_, t);
-            
-            Therapy prevTherapy = getPreviousTherapy(); 
-            if(prevTherapy != null){
-                prevTherapy.setStopDate(therapy_.getStartDate());
-                t.attach(prevTherapy);
-                t.update(prevTherapy);
-            }
-            
-            t.commit();
-            
-            RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().setSelectedItem(therapy_);
-            redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getViewActionItem());
+        if(getInteractionState()==InteractionState.Adding)
+        {
+            p.addTherapy(getObject());
         }
+            
+        getObject().setStartDate(startDateDF.getDate());
+            
+        getObject().setStopDate(stopDateDF.getDate());
+            
+        if(getObject().getStopDate()!=null)
+        {
+        	getObject().setTherapyMotivation(motivationCB.currentValue());
+        }
+        else
+        {
+        	getObject().setTherapyMotivation(null);
+        }
+            
+        getObject().setComment(getNulled(commentTF.text()));
+            
+        iCommercialDrugSelectionEditableTable_.setTransaction(t);
+        drugCommercialList_.saveData();
+            
+        iGenericDrugSelectionEditableTable_.setTransaction(t);
+        drugGenericList_.saveData();
+            
+        update(getObject(), t);
+        
+        if(setStopDatePrevTherapyCB.isChecked()){
+	        Therapy prevTherapy = getPreviousTherapy(t, startDateDF.getDate()); 
+	        if(prevTherapy != null){
+	            prevTherapy.setStopDate(getObject().getStartDate());
+	            t.attach(prevTherapy);
+	            t.update(prevTherapy);
+	        }
+        }
+            
+        t.commit();
     }
     
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectActionItem());
-        }
-        else
-        {
-            redirectToView(
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getSelectedActionItem(),
-            		RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode().getViewActionItem());
-        } 
     }
     
     @Override
@@ -345,21 +381,12 @@ public class TherapyForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         
         Patient p = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
-        p.getTherapies().remove(therapy_);
+        p.getTherapies().remove(getObject());
         
-        t.delete(therapy_);
+        t.delete(getObject());
         
         t.commit();
         
         return null;
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.getSelectActionItem().selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getTherapyTreeNode()
-        	.setSelectedItem(null);
     }
 }

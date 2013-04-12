@@ -18,6 +18,7 @@ import org.biojava.bio.seq.impl.SimpleSequence;
 import org.biojava.bio.symbol.Alignment;
 import org.biojava.bio.symbol.Alphabet;
 import org.biojava.bio.symbol.Edit;
+import org.biojava.bio.symbol.IllegalAlphabetException;
 import org.biojava.bio.symbol.IllegalSymbolException;
 import org.biojava.bio.symbol.SimpleSymbolList;
 import org.biojava.bio.symbol.Symbol;
@@ -63,6 +64,17 @@ public class LocalAlignmentService implements AlignmentService {
             SymbolList alignedRef = alignment.symbolListForLabel("ref");
             SymbolList alignedTarget = alignment.symbolListForLabel("target");
 
+            //because later positions get messed up when target starts before reference
+            //the leading target part is deleted from both sequences
+            int length = 1;
+            for(;length <= alignedRef.length();++length){
+            	if(alignedRef.symbolAt(length) != alignedRef.getAlphabet().getGapSymbol()){
+            		break;
+            	}
+            }
+            alignedRef.edit(new Edit(1,length-1,SymbolList.EMPTY_LIST));
+            alignedTarget.edit(new Edit(1,length-1,SymbolList.EMPTY_LIST));
+            
             AlignmentResult result = new AlignmentResult();
 
             int ins = -1;
@@ -128,7 +140,13 @@ public class LocalAlignmentService implements AlignmentService {
             return null;
         } catch (IllegalSymbolException e) {
             throw new RuntimeException(e);
-        }        
+        } catch (IndexOutOfBoundsException e) {
+            throw new RuntimeException(e);
+		} catch (IllegalAlphabetException e) {
+		    throw new RuntimeException(e);
+		} catch (ChangeVetoException e) {
+		    throw new RuntimeException(e);
+		}        
     }
 
     private int lastNonGap(SymbolList alignedTarget) {

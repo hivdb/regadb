@@ -4,16 +4,21 @@ import java.util.List;
 
 import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.ui.framework.widgets.datatable.IDataTable;
+import net.sf.regadb.ui.framework.forms.SelectForm;
+import net.sf.regadb.ui.framework.widgets.datatable.DefaultDataTable;
 import net.sf.regadb.ui.framework.widgets.datatable.IFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.StringFilter;
 import net.sf.regadb.ui.framework.widgets.datatable.hibernate.HibernateStringUtils;
 import eu.webtoolkit.jwt.WString;
 
-public abstract class ISelectQueryDefinitionDataTable implements IDataTable<QueryDefinition>
+public abstract class ISelectQueryDefinitionDataTable extends DefaultDataTable<QueryDefinition>
 {
 	
-    private static WString [] _colNames = {
+    public ISelectQueryDefinitionDataTable(SelectForm<QueryDefinition> form) {
+		super(form);
+	}
+
+	private static WString [] _colNames = {
         WString.tr("dataTable.queryDefinition.colName.name"),
         WString.tr("dataTable.queryDefinition.colName.description"),
         WString.tr("dataTable.queryDefinition.colName.uid")};
@@ -66,8 +71,6 @@ public abstract class ISelectQueryDefinitionDataTable implements IDataTable<Quer
         filters_[1] = new StringFilter();
         filters_[2] = new StringFilter();
     }
-
-    public abstract void selectAction(QueryDefinition selectedItem);
     
     public abstract int getQueryType();
 

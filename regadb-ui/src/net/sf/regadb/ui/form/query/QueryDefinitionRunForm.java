@@ -8,17 +8,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.regadb.db.QueryDefinition;
 import net.sf.regadb.db.QueryDefinitionRun;
 import net.sf.regadb.db.QueryDefinitionRunStatus;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextArea;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.apache.commons.io.FileUtils;
@@ -28,10 +30,8 @@ import eu.webtoolkit.jwt.WFileResource;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class QueryDefinitionRunForm extends FormWidget
+public class QueryDefinitionRunForm extends ObjectForm<QueryDefinitionRun>
 {
-	private QueryDefinitionRun queryDefinitionRun;
-	
     private WGroupBox queryDefinitionRunGroup_;
     private FormTable queryDefinitionRunGroupTable;
     
@@ -54,16 +54,25 @@ public class QueryDefinitionRunForm extends FormWidget
     private Label resultL;
     private WAnchor resultLink;
     
+    private QueryDefinition queryDefinition = null;
+    
     private static DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     
-    public QueryDefinitionRunForm(WString formName, InteractionState interactionState, QueryDefinitionRun queryDefinitionRun)
+    public QueryDefinitionRunForm(WString formName, InteractionState interactionState,
+    		ObjectTreeNode<QueryDefinitionRun> node, QueryDefinitionRun queryDefinitionRun)
     {
-        super(formName, interactionState);
-        
-        this.queryDefinitionRun = queryDefinitionRun;
-        
+        super(formName, interactionState, node, queryDefinitionRun);
         init();
+        fillData();
         
+        addControlButtons();
+    }
+    
+    public QueryDefinitionRunForm(WString formName, ObjectTreeNode<QueryDefinitionRun> node, QueryDefinition queryDefinition)
+    {
+        super(formName, InteractionState.Adding, node, new QueryDefinitionRun());
+        this.queryDefinition = queryDefinition;
+        init();
         fillData();
         
         addControlButtons();
@@ -73,7 +82,7 @@ public class QueryDefinitionRunForm extends FormWidget
     {
     	if(getInteractionState() == InteractionState.Adding)
         {
-        	queryDefinitionRun.setQueryDefinition(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected.getSelectedItem());
+        	getObject().setQueryDefinition(queryDefinition);
         }
     	
     	queryDefinitionRunGroup_ = new WGroupBox(tr("form.query.definition.run.general"), this);
@@ -119,32 +128,32 @@ public class QueryDefinitionRunForm extends FormWidget
     {
     	Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
     	
-    	nameTF.setText(queryDefinitionRun.getName());
-    	queryNameTF.setText(queryDefinitionRun.getQueryDefinition().getName());
-        descriptionTA.setText(queryDefinitionRun.getQueryDefinition().getDescription());
-        queryTA.setText(queryDefinitionRun.getQueryDefinition().getQuery());
+    	nameTF.setText(getObject().getName());
+    	queryNameTF.setText(getObject().getQueryDefinition().getName());
+        descriptionTA.setText(getObject().getQueryDefinition().getDescription());
+        queryTA.setText(getObject().getQueryDefinition().getQuery());
         
         if(getInteractionState() == InteractionState.Viewing || getInteractionState() == InteractionState.Deleting)
         {
-        	startDateDF.setText(formatter.format(queryDefinitionRun.getStartdate()));
+        	startDateDF.setText(formatter.format(getObject().getStartdate()));
         	
-        	if(queryDefinitionRun.getEnddate() != null)
+        	if(getObject().getEnddate() != null)
         	{
-        		endDateDF.setText(formatter.format(queryDefinitionRun.getEnddate()));
+        		endDateDF.setText(formatter.format(getObject().getEnddate()));
         	}
         	
-        	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(queryDefinitionRun).toString());
+        	statusTF.setText(QueryDefinitionRunStatus.getQueryDefinitionRunStatus(getObject()).toString());
         	
         	int row = queryDefinitionRunGroupTable.getRowCount();
             
             resultL = new Label(tr("form.query.definition.run.label.result"));
             queryDefinitionRunGroupTable.putElementAt(row, 0, resultL);
             
-            if(queryDefinitionRun.getStatus() != QueryDefinitionRunStatus.Running.getValue())
+            if(getObject().getStatus() != QueryDefinitionRunStatus.Running.getValue())
             {
-                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + queryDefinitionRun.getResult(), null);
+                WFileResource res = new WFileResource("application/excel", RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + getObject().getResult(), null);
                 res.suggestFileName("result.csv");
-            	resultLink = new WAnchor(res, queryDefinitionRun.getResult(), queryDefinitionRunGroupTable.getElementAt(row, 1));
+            	resultLink = new WAnchor(res, getObject().getResult(), queryDefinitionRunGroupTable.getElementAt(row, 1));
                 resultLink.setStyleClass("link");
             }
         }
@@ -161,25 +170,20 @@ public class QueryDefinitionRunForm extends FormWidget
     	{
     		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         	
-        	queryDefinitionRun.setName(nameTF.getFormText());
-        	queryDefinitionRun.setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
-        	queryDefinitionRun.setStatus(0);
-        	queryDefinitionRun.setStartdate(new Date(System.currentTimeMillis()));
+    		getObject().setName(nameTF.getFormText());
+    		getObject().setSettingsUser(t.getSettingsUser(RegaDBMain.getApp().getLogin().getUid()));
+    		getObject().setStatus(0);
+    		getObject().setStartdate(new Date(System.currentTimeMillis()));
         	
-        	queryDefinitionRun.setQueryDefinitionRunParameters(queryDefinitionRunParameterGroup.getQueryDefinitionRunParameters());
+    		getObject().setQueryDefinitionRunParameters(queryDefinitionRunParameterGroup.getQueryDefinitionRunParameters());
     		
-        	update(queryDefinitionRun, t);
+        	update(getObject(), t);
         	
         	t.commit();
         	
-        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), queryDefinitionRun, paramObjects);
+        	QueryThread qt = new QueryThread(RegaDBMain.getApp().getLogin().copyLogin(), getObject(), paramObjects);
         	
         	qt.startQueryThread();
-        	
-        	RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(queryDefinitionRun);
-        	
-        	redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunMain, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunMain);
-    		redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView);
     	}
     	else
     	{
@@ -190,14 +194,6 @@ public class QueryDefinitionRunForm extends FormWidget
 	@Override
 	public void cancel()
 	{
-		if(getInteractionState() == InteractionState.Adding)
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionSelectedView);
-		}
-		else
-		{
-			redirectToView(RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected, RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelectedView);
-		}
 	}
 
 	@Override
@@ -205,20 +201,18 @@ public class QueryDefinitionRunForm extends FormWidget
 	{
 		Transaction t = RegaDBMain.getApp().getLogin().createTransaction();
         
-		queryDefinitionRun = RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.getSelectedItem();
-		
-		if(queryDefinitionRun.getStatus() == QueryDefinitionRunStatus.Running.getValue())
+		if(getObject().getStatus() == QueryDefinitionRunStatus.Running.getValue())
 		{
-			QueryThread.stopQueryThread(queryDefinitionRun.getResult());
+			QueryThread.stopQueryThread(getObject().getResult());
 		}
         
-        t.delete(queryDefinitionRun);
+        t.delete(getObject());
         
         t.commit();
                 
         try
         {
-			FileUtils.forceDelete(new File(RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + queryDefinitionRun.getResult()));
+			FileUtils.forceDelete(new File(RegaDBSettings.getInstance().getInstituteConfig().getQueryResultDir().getAbsolutePath() + File.separatorChar + getObject().getResult()));
 		}
         catch (IOException e)
         {
@@ -226,17 +220,5 @@ public class QueryDefinitionRunForm extends FormWidget
 		}
         
         return null;
-	}
-
-	@Override
-	public void redirectAfterDelete()
-	{
-		RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().queryDefinitionRunSelected.setSelectedItem(null);
-	}
-	
-	public QueryDefinitionRun getQueryDefinitionRun()
-	{
-		return queryDefinitionRun;
 	}
 }

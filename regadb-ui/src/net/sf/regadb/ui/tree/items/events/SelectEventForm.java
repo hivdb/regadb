@@ -4,20 +4,16 @@ import net.sf.regadb.db.Event;
 import net.sf.regadb.ui.form.event.IEventDataTable;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
-public class SelectEventForm extends SelectForm {
-	private DataTable<Event> datatable_;
-	private IEventDataTable datatableI_;
+public class SelectEventForm extends SelectForm<Event> {
 	
-	public SelectEventForm() {
-		super(tr("event.form.selectEvent"));
-        init();
+	public SelectEventForm(ObjectTreeNode<Event> node) {
+		super(tr("form.event.selectForm"),node);
 	}
 	
-	public void init() 
+	public DataTable<Event> createDataTable()
     {
-		datatableI_ = new IEventDataTable();
-        datatable_ = new DataTable<Event>(datatableI_, 10);
-        addWidget(datatable_);
+		return new DataTable<Event>(new IEventDataTable(this), 10);
     }
 }

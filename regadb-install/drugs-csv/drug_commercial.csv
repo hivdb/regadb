@@ -7,7 +7,7 @@ commercial_ii,name,atc_code
 6,Crixivan 200 mg (IDV),
 7,Crixivan 333 mg (IDV),
 8,Crixivan 400 mg (IDV),
-9,Kaletra 133.3+33.3 mg (LPV+RTV),
+9,Kaletra 133.3+33.3 mg (LPV+RTV),J05AE06
 10,Viracept 250 mg (NFV),
 11,Viracept 625 mg (NFV),
 12,Norvir 100 mg (RTV),
@@ -64,7 +64,7 @@ commercial_ii,name,atc_code
 65,Retrovir 500 mg (AZT),
 66,Zerit 10 mg (D4T),
 67,Ziagen 600 mg (ABC),
-68,Kaletra 200 mg (LPV+RTV),
+68,Kaletra 200 mg (LPV+RTV),J05AE06
 69,Kivexa 600+300 mg (ABC+3TC),J05AR02
 29,Truvada 200+300 mg (FTC+TDF),J05AR03
 70,Isentress (RTG),
@@ -73,7 +73,7 @@ commercial_ii,name,atc_code
 73,Agenerase (APV),
 74,Lexiva (f-APV),
 75,Crixivan (IDV),
-76,Kaletra (LPV+RTV),
+76,Kaletra (LPV+RTV),J05AE06
 77,Viracept (NFV),
 78,Norvir (RTV),
 79,Invirase (SQV),
@@ -115,4 +115,10 @@ commercial_ii,name,atc_code
 115,Isentress 400 mg (RTG),
 116,Prezista 400 mg (DRV),
 117,Prezista 600 mg (DRV),
-118,Kaletra Syrup 80+20mg 10ml (LPV+RTV),
+118,Kaletra Syrup 80+20mg 10ml (LPV+RTV),J05AE06
+119,Celsentri 150 mg (MVC),
+120,Celsentri 300 mg (MVC),
+121,Eviplera (FTC+RPV+TDF),J05AR08
+122,Complera (FTC+RPV+TDF),J05AR08
+123,Edurant (RPV),
+124,Viramune 400 mg (NVP),

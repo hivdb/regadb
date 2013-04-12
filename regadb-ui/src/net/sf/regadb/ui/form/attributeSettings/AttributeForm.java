@@ -1,7 +1,9 @@
 package net.sf.regadb.ui.form.attributeSettings;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -11,22 +13,21 @@ import net.sf.regadb.db.ValueType;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.ui.form.singlePatient.DataComboMessage;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.FormWidget;
 import net.sf.regadb.ui.framework.forms.InteractionState;
+import net.sf.regadb.ui.framework.forms.ObjectForm;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.editableTable.EditableTable;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
 
-public class AttributeForm extends FormWidget
+public class AttributeForm extends ObjectForm<Attribute>
 {
-    private Attribute attribute_;
-    
     //general group
     private WGroupBox generalGroup_;
     private FormTable generalGroupTable_;
@@ -46,13 +47,10 @@ public class AttributeForm extends FormWidget
     private EditableTable<AttributeNominalValue> nominalValuesList_;
     private IAttributeNominalValueDataList iNominalValuesList_;
     
-    public AttributeForm(InteractionState interactionState, WString formName, Attribute attribute)
+    public AttributeForm(WString formName, InteractionState interactionState, ObjectTreeNode<Attribute> node, Attribute attribute)
     {
-        super(formName, interactionState);
-        attribute_ = attribute;
-        
+        super(formName, interactionState, node, attribute);
         init();
-        
         fillData();
     }
     
@@ -133,13 +131,26 @@ public class AttributeForm extends FormWidget
             {
                 nominalValuesGroup_.removeWidget(nominalValuesList_);
             }
-            ArrayList<AttributeNominalValue> list = new ArrayList<AttributeNominalValue>();
+            Set<AttributeNominalValue> list = new TreeSet<AttributeNominalValue>(
+            		new Comparator<AttributeNominalValue>(){
+						@Override
+						public int compare(AttributeNominalValue o1,
+								AttributeNominalValue o2) {
+							if(o1 == o2 || o1.getValue() == o2.getValue())
+								return 0;
+							
+							if(o1.getValue() == null)
+								return -1;
+							
+							return o1.getValue().compareTo(o2.getValue());
+						}
+            		});
             if(getInteractionState()!=InteractionState.Adding)
             {
                 Transaction t = RegaDBMain.getApp().createTransaction();
-                t.attach(attribute_);
+                t.attach(getObject());
                 
-                for(AttributeNominalValue anv : attribute_.getAttributeNominalValues())
+                for(AttributeNominalValue anv : getObject().getAttributeNominalValues())
                 {
                     list.add(anv);
                 }
@@ -161,21 +172,21 @@ public class AttributeForm extends FormWidget
     {
         if(getInteractionState()==InteractionState.Adding)
         {
-            attribute_ = new Attribute();
+        	setObject(new Attribute());
         }
         
         if(getInteractionState()!=InteractionState.Adding)
         {
             Transaction t = RegaDBMain.getApp().createTransaction();
             
-            t.attach(attribute_);
+            t.attach(getObject());
             
-            nameTF.setText(attribute_.getName());
-            valueTypeCB.selectItem(attribute_.getValueType().getDescription());
-            groupCB.selectItem(attribute_.getAttributeGroup().getGroupName());
-            validationStringTF.setText(attribute_.getValidationString());
+            nameTF.setText(getObject().getName());
+            valueTypeCB.selectItem(getObject().getValueType().getDescription());
+            groupCB.selectItem(getObject().getAttributeGroup().getGroupName());
+            validationStringTF.setText(getObject().getValidationString());
             
-            usageTF.setText(t.getAttributeUsage(attribute_)+"");
+            usageTF.setText(t.getAttributeUsage(getObject())+"");
             
             t.commit();
         }
@@ -209,42 +220,31 @@ public class AttributeForm extends FormWidget
         Transaction t = RegaDBMain.getApp().createTransaction();
         if(!(getInteractionState()==InteractionState.Adding))
         {
-            t.attach(attribute_);
+            t.attach(getObject());
         }
         AttributeGroup ag = groupCB.currentValue();
         t.attach(ag);
         ValueType vt = valueTypeCB.currentValue();
         t.attach(vt);
-        attribute_.setName(nameTF.text());
-        attribute_.setValueType(vt);
-        attribute_.setAttributeGroup(ag);
-        attribute_.setValidationString(validationStringTF.text());
+        getObject().setName(nameTF.text());
+        getObject().setValueType(vt);
+        getObject().setAttributeGroup(ag);
+        getObject().setValidationString(validationStringTF.text());
         
         if(!nominalValuesGroup_.isHidden())
         {
-            iNominalValuesList_.setAttribute(attribute_);
+            iNominalValuesList_.setAttribute(getObject());
             iNominalValuesList_.setTransaction(t);
             nominalValuesList_.saveData();
         }
         
-        update(attribute_, t);
+        update(getObject(), t);
         t.commit();
-        
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(attribute_);
-        redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
     }
     
     @Override
     public void cancel()
     {
-        if(getInteractionState()==InteractionState.Adding)
-        {
-            redirectToSelect(RegaDBMain.getApp().getTree().getTreeContent().attributes, RegaDBMain.getApp().getTree().getTreeContent().attributesSelect);
-        }
-        else
-        {
-            redirectToView(RegaDBMain.getApp().getTree().getTreeContent().attributesSelected, RegaDBMain.getApp().getTree().getTreeContent().attributesView);
-        } 
     }
     
     @Override
@@ -254,7 +254,7 @@ public class AttributeForm extends FormWidget
         
         try
         {
-        	t.delete(attribute_);
+        	t.delete(getObject());
         	
         	t.commit();
         	
@@ -267,12 +267,5 @@ public class AttributeForm extends FormWidget
         	
         	return tr("form.delete.restriction");
         }
-    }
-
-    @Override
-    public void redirectAfterDelete() 
-    {
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelect.selectNode();
-        RegaDBMain.getApp().getTree().getTreeContent().attributesSelected.setSelectedItem(null);
     }
 }

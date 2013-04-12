@@ -3,22 +3,25 @@ package net.sf.regadb.io.export.hicdep;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.file.FileUtils;
 
 public class HicdepCsvExporter extends HicdepExporter {
 	
-	private File outputDir;
+	private File zipFile;
 	
 	private Map<String,PrintStream> streams = new HashMap<String,PrintStream>();
+	private Map<String,File> files = new HashMap<String,File>();
 
-	public HicdepCsvExporter(Login login, File outputDir) {
+	public HicdepCsvExporter(Login login, File zipFile) {
 		super(login);
 		
-		this.outputDir = outputDir;
+		this.zipFile = zipFile;
 	}
 	
 	@Override
@@ -32,11 +35,15 @@ public class HicdepCsvExporter extends HicdepExporter {
 		
 		if(out == null){
 			try {
-				out = new PrintStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separator + table +".csv"));
+				File f = File.createTempFile(table, "csv");
+				out = new PrintStream(new FileOutputStream(f));
 				streams.put(table, out);
+				files.put(table +".csv", f);
 				
 				printLine(out, columns);
 			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -58,9 +65,14 @@ public class HicdepCsvExporter extends HicdepExporter {
 		out.println();
 	}
 
-	public void close(){
+	public void close() throws IOException{
 		for(PrintStream ps : streams.values()){
 			ps.close();
 		}
+		
+		FileUtils.createZipFile(zipFile, files);
+		
+		for(File f : files.values())
+			f.delete();
 	}
 }

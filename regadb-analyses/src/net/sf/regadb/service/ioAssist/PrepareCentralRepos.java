@@ -120,9 +120,9 @@ public class PrepareCentralRepos
         
         //Resistance tests
         Test resTest;
-        resTest = createResistanceTest("ANRS-HIV1-2010.07.xml", "ANRS 2010.07", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("ANRS-HIV1-2011.10.xml", "ANRS 2011.10", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
-        resTest = createResistanceTest("HIVDB-HIV1-6.0.5.xml", "HIVDB 6.0.5", StandardObjects.getHiv1Genome());
+        resTest = createResistanceTest("HIVDB-HIV1-6.2.xml", "HIVDB 6.2", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
         resTest = createResistanceTest("Rega-HIV1-6.4.1.xml", "REGA v6.4.1", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
@@ -133,11 +133,14 @@ public class PrepareCentralRepos
         
         resTest = createTransmittedResistanceTest("TDR-WHO-2009.xml", "WHO 2009", StandardObjects.getHiv1Genome());
         export.writeTopTest(resTest, tests);
-        
+
         resTest = createResistanceTest("Rega-HIV2-7.1.1.xml", "REGA v7.1.1", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
-        
         resTest = createResistanceTest("Rega-HIV2-8.0.1.xml", "REGA v8.0.1", StandardObjects.getHiv2AGenome());
+        export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("Rega-HIV2-8.0.2.xml", "REGA v8.0.2", StandardObjects.getHiv2AGenome());
+        export.writeTopTest(resTest, tests);
+        resTest = createResistanceTest("ANRS-HIV2-2011.10.xml", "ANRS 2011.10", StandardObjects.getHiv2AGenome());
         export.writeTopTest(resTest, tests);
         
         export.writeTopTest(RegaDBWtsServer.getSubtypeTest(), tests);

@@ -3,20 +3,15 @@ package net.sf.regadb.ui.datatable.importTool;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DataTable;
+import net.sf.regadb.ui.tree.ObjectTreeNode;
 
-public class SelectImportToolForm extends SelectForm {
-	private DataTable<ImportDefinition> datatable_;
-	private ImportDefinitionDataTable datatableI_;
-	
-	public SelectImportToolForm() {
-		super(tr("importTool.form.selectImportDefinition"));
-        init();
+public class SelectImportToolForm extends SelectForm<ImportDefinition> {
+	public SelectImportToolForm(ObjectTreeNode<ImportDefinition> node) {
+		super(tr("importTool.form.selectImportDefinition"),node);
 	}
 	
-	public void init() 
+	public DataTable<ImportDefinition> createDataTable() 
     {
-		datatableI_ = new ImportDefinitionDataTable();
-        datatable_ = new DataTable<ImportDefinition>(datatableI_, 10);
-        addWidget(datatable_);
+        return new DataTable<ImportDefinition>(new ImportDefinitionDataTable(this), 10);
     }
 }
