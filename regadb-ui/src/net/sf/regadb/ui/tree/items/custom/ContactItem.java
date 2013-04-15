@@ -41,7 +41,7 @@ public class ContactItem extends DefaultNavigationNode {
 
 					@Override
 					public void redirectAfterSave() {
-						grid.selectNode();
+						lastContact.selectNode();
 					}
 
 					@Override

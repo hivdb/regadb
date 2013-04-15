@@ -275,8 +275,5 @@ public abstract class GridForm extends FormWidget{
 		}
 		
 		t.commit();
-		
-		lastItem.prograSelectNode();
 	}
-
 }
