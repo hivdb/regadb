@@ -81,28 +81,32 @@ public class ViralIsolateReportForm extends WContainerWidget
                     Transaction t = RegaDBMain.getApp().createTransaction();
                     Patient patient = RegaDBMain.getApp().getTree().getTreeContent().patientTreeNode.getSelectedItem();
                     File chartFile = getChart(t, patient);
-                    GenerateReport report = new GenerateReport(resRepTemplateCB_.currentValue().getDocument(),
-                                                               viralIsolateForm_.getViralIsolate(),
-                                                               patient,
-                                                               getAlgorithms(),
-                                                               ViralIsolateResistanceForm.getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi()),
-                                                               t,
-                                                               chartFile
-                                                               );
-                    
-                    
-                    String fileName = "";
-                    if (viralIsolateForm_.getViralIsolate().getSampleId() != null)
-                    	fileName += viralIsolateForm_.getViralIsolate().getSampleId() + "_";
-                    fileName += resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
-                    
-                    reportA_.setText(fileName);
-                    WMemoryResource memResource = new WMemoryResource("application/rtf");
-                    memResource.setData(report.getReport());
-                    memResource.suggestFileName(fileName);
-                    reportA_.setResource(memResource);
-                    chartFile.delete();
-                    t.commit();
+                    try {
+	                    GenerateReport report = new GenerateReport(resRepTemplateCB_.currentValue().getDocument(),
+	                                                               viralIsolateForm_.getViralIsolate(),
+	                                                               patient,
+	                                                               getAlgorithms(),
+	                                                               ViralIsolateResistanceForm.getRelevantDrugClassIds(t, viralIsolateForm_.getViralIsolate().getViralIsolateIi()),
+	                                                               t,
+	                                                               chartFile
+	                                                               );
+	                    
+	                    
+	                    String fileName = "";
+	                    if (viralIsolateForm_.getViralIsolate().getSampleId() != null)
+	                    	fileName += viralIsolateForm_.getViralIsolate().getSampleId() + "_";
+	                    fileName += resRepTemplateCB_.currentValue().getName().replace(' ', '_')+".rtf";
+	                    
+	                    reportA_.setText(fileName);
+	                    WMemoryResource memResource = new WMemoryResource("application/rtf");
+	                    memResource.setData(report.getReport());
+	                    memResource.suggestFileName(fileName);
+	                    reportA_.setResource(memResource); 
+	                    t.commit();
+                    } finally {
+                    	chartFile.delete();
+                    	t.rollback();
+                    }
                 }
             }
         });
