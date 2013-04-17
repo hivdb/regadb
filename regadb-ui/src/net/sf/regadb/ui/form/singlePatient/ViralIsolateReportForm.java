@@ -105,7 +105,6 @@ public class ViralIsolateReportForm extends WContainerWidget
 	                    t.commit();
                     } finally {
                     	chartFile.delete();
-                    	t.rollback();
                     }
                 }
             }
