@@ -23,6 +23,8 @@ public class InstituteConfig extends ConfigParser {
 	private boolean wtsUrlUpdates = false;
 	private boolean wtsUrlAlignment = false;
 	
+	private String databaseBackupScript;
+
 	private boolean sampleDateMandatory = true;
 	private String logo;
 	private boolean trugeneFix = false;
@@ -123,6 +125,10 @@ public class InstituteConfig extends ConfigParser {
 			v = ee.getAttributeValue("useForAlignment");
 			setUseWtsUrlForAlignment(v != null && v.toLowerCase().equals("true"));
 		}
+		
+		ee = e.getChild("database-backup-script");
+		if (ee != null)
+			setDatabaseBackupScript(ee.getTextTrim());
 	}
 	
 	private void parseForm(RegaDBSettings settings, Element e){
@@ -359,6 +365,7 @@ public class InstituteConfig extends ConfigParser {
 	}
 	
 	public String getWtsUrl(String url){
+		
 		if(url.equals(WTS_URL))
 			return getWtsUrl();
 		else
@@ -367,6 +374,7 @@ public class InstituteConfig extends ConfigParser {
 	
 	public static String getDefaultWtsUrl() {
 		return "http://regadb.med.kuleuven.be/wts/services/";
+		//return "http://127.0.0.1:8080/wts/services/";
 	}
 	
 	public boolean isTrugeneFix() {
@@ -379,5 +387,13 @@ public class InstituteConfig extends ConfigParser {
 	
 	public void setDefaultDataset(String dataset){
 		this.defaultDataset = dataset;
+	}
+	
+	public String getDatabaseBackupScript() {
+		return databaseBackupScript;
+	}
+
+	public void setDatabaseBackupScript(String databaseBackupScript) {
+		this.databaseBackupScript = databaseBackupScript;
 	}
 }
