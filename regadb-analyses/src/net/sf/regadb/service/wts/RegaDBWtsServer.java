@@ -29,7 +29,7 @@ public class RegaDBWtsServer
     	return getFile("drug-classes","regadb-drugs","DrugClasses-genomes.xml");
     }
     public static File getDrugGenerics() throws IOException{
-    	return getFile("drug-enerics","regadb-drugs","DrugGenerics-genomes.xml");
+    	return getFile("drug-generics","regadb-drugs","DrugGenerics-genomes.xml");
     }
     public static File getDrugCommercials() throws IOException{
     	return getFile("drug-commercials","regadb-drugs","DrugCommercials-genomes.xml");
