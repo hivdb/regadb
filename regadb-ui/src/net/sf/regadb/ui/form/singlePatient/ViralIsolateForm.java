@@ -30,7 +30,6 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
 	private ViralIsolateProteinForm proteinForm_;
     private ViralIsolateResistanceForm resistanceForm_;
     private ViralIsolateTransmittedResistanceForm transmittedResistanceForm_;
-    private ViralIsolateReportForm reportForm_;
     private ViralIsolateSimilarityForm similarityForm;
 
     public ViralIsolateForm(WString formName, InteractionState interactionState, ObjectTreeNode<ViralIsolate> node, String sampleId, Date sampleDate){
@@ -76,8 +75,10 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
 				transmittedResistanceForm_ = new ViralIsolateTransmittedResistanceForm(this);
 				tabs.addTab(tr("form.viralIsolate.editView.tab.transmittedResistance"), transmittedResistanceForm_);
 			}
-			reportForm_ = new ViralIsolateReportForm(this);
-			tabs.addTab(tr("form.viralIsolate.editView.tab.report"), reportForm_);
+			
+			Transaction t = RegaDBMain.getApp().createTransaction();
+			if (t.getResRepTemplates().size() > 0)
+				tabs.addTab(tr("form.viralIsolate.editView.tab.report"), new ViralIsolateReportForm(this));
 			
 			if(getObject() != null 
 					&& getObject().getGenome() != null 
