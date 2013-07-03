@@ -104,6 +104,13 @@
        	</manifest>
 	</jar>
 
+  	<jar jarfile="${dist}/export-resistance-results.jar" basedir="${build}">
+  		<manifest>
+  	   		<attribute name="Main-Class" value="net.sf.regadb.io.db.test_results.ExportResistanceResults"/>
+  	   		<attribute name="Class-Path" value="${jar-dependencies}"/>
+  	    </manifest>
+  	</jar>
+  	
   	<antcall target="create-package" />
   </target>
   
