@@ -14,30 +14,34 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.xml.XMLTools;
-
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
+
 public class ExportResistanceResults {
 	public static void main(String[] args) throws WrongUidException, WrongPasswordException, DisabledUserException, IOException {
-		if (args.length < 3) {
-			System.err.println("export-resistance-results user password test-name output-file");
+		if (args.length < 5) {
+			System.err.println("export-resistance-results user password test-org test-name output-file");
 			System.exit(0);
 		}
 		
 		String user = args[0];
 		String password = args[1];
-		String testName = args[2];
-		String outputFile = args[3];
+		String testOrganism = args[2];
+		String testName = args[3];
+		String outputFile = args[4];
 		
 		RegaDBSettings.createInstance();
 
 		Login login = Login.authenticate(user, password);
 	
 		Transaction t = login.createTransaction();
+		
+		String testTypeDescription = "Genotypic Susceptibility Score (GSS)";
         
-        Test test = t.getTest(testName);
+        Test test = t.getTest(testName, testTypeDescription, testOrganism);
         if (test == null) {
         	System.err.println("Test with name '" + testName + "' does not exist in the database");
         	System.exit(0);
@@ -57,20 +61,43 @@ public class ExportResistanceResults {
 			e.printStackTrace();
 		}
 		
-		fw.write("<test-results test-name='" + testName + "'>\n");
 		int counter = 0;
 		while (r.next()) {
 			Patient p = (Patient) r.get()[0];
 			for (ViralIsolate vi : p.getViralIsolates()) {
 				for (TestResult tr : vi.getTestResults()) {
 					if (tr.getTest().getTestIi().equals(test.getTestIi())) {
-						fw.write("<tr " + 
-								"isolate_ii='" + vi.getViralIsolateIi() + "' " + 
-								"drug='" + tr.getDrugGeneric().getGenericId() + "' " + 
-								"value='" + tr.getValue() + "'" +
-								"> \n");
-						fw.write(XMLTools.base64Encoding(tr.getData()) + "\n");
-						fw.write("</tr>\n");
+						String drugQuery = 
+								"select generic_ii " +
+								"from regadbschema.drug_generic " +
+								"where generic_id = ':generic_id'";
+						drugQuery = drugQuery.replaceAll(":generic_id", tr.getDrugGeneric().getGenericId());
+						
+						String testQuery = 
+								"select test_ii from regadbschema.test " +
+								"where " +
+								"	description = ':test_name' and " +
+								"	test_type_ii = " +
+								"		(select test_type_ii from regadbschema.test_type " +
+								"			where " +
+								"			description=':test_type_description' and " +
+								"			genome_ii = (select genome_ii from regadbschema.genome where organism_name = ':organism_name'))";
+						testQuery = testQuery.replaceAll(":test_name", testName);
+						testQuery = testQuery.replaceAll(":test_type_description", testTypeDescription);
+						testQuery = testQuery.replaceAll(":organism_name", testOrganism);
+						
+						String insert = 
+								"INSERT INTO regadbschema.test_result " +
+								"(test_ii, version, viral_isolate_ii, generic_ii, value, test_date, data) " +
+								"VALUES " +
+								"((:test_query), 0, :isolate_ii, (:drug_query), :value, now(), decode(':data_base64','base64'))";
+						insert = insert.replaceAll(":test_query", testQuery);
+						insert = insert.replaceAll(":drug_query", drugQuery);
+						insert = insert.replaceAll(":isolate_ii", tr.getViralIsolate().getViralIsolateIi()+"");
+						insert = insert.replaceAll(":value", tr.getValue());
+						insert = insert.replaceAll(":data_base64", Base64.encode(tr.getData(), 0));
+						
+						fw.write(insert + ";\n");
 					}
 				}
 			}
@@ -82,7 +109,6 @@ public class ExportResistanceResults {
 
 			counter++;
 		}
-		fw.write("</test-results>");
 		
 		fw.close();
 	}
