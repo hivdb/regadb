@@ -1114,7 +1114,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 E92Q
+                 92Q
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1154,7 +1154,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 Q148EHGKR
+                 148EHGKR
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1170,7 +1170,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 N155HST
+                 155HST
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1178,7 +1178,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 E157Q
+                 157Q
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1199,7 +1199,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 E92Q
+                 92Q
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1215,7 +1215,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 E138K
+                 138K
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1223,7 +1223,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 G140CS
+                 140CS
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1239,7 +1239,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 S147G
+                 147G
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1247,7 +1247,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 Q148HKR 
+                 148HKR 
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1263,7 +1263,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 N155HST
+                 155HST
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
@@ -1271,7 +1271,7 @@ History:
          </RULE>
          <RULE>
              <CONDITION>
-                 E157Q
+                 157Q
              </CONDITION>
              <ACTIONS>
                  <LEVEL>3</LEVEL>
