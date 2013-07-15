@@ -85,6 +85,18 @@
     <date-format>dd/MM/yyyy</date-format>
     
     <!-- 
+    	Backup script to export a binary/text version of the database.
+    	The script should accept 3 parameters:
+    	 - Hibernate user name to access the database
+    	 - Hibernate user password to access the database
+    	 - file to which the SQL output can be written,
+    	 	the SQL will be compressed and presented to the user as a zip file
+    	
+    	This field is optional.
+     -->
+    <database-backup-script>/usr/backup-db.sh</database-backup-script>
+    
+    <!-- 
     	The organism filter can be used to exclude certain organisms from RegaDB.
     	
     	This field is optional.

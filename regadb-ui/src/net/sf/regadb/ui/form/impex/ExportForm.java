@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugClass;
@@ -29,6 +31,7 @@ import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
+import net.sf.regadb.util.process.StreamReaderThread;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import eu.webtoolkit.jwt.AnchorTarget;
 import eu.webtoolkit.jwt.Signal;
@@ -155,7 +158,7 @@ public class ExportForm extends FormWidget {
 	
 	private void generateFile(String format, File outputFile, List<String> errors) {
 		if (DATABASE.equals(format)) {
-			
+			exportDatabaseZip(outputFile);
 		} else {
 			Dataset ds = datasets.currentValue();
 			if (XML.equals(format)) {
@@ -225,6 +228,62 @@ public class ExportForm extends FormWidget {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void exportDatabaseZip(File outputFile) {
+		String script = RegaDBSettings.getInstance().getInstituteConfig().getDatabaseBackupScript();
+		String userName = RegaDBSettings.getInstance().getHibernateConfig().getUsername();
+		String password = RegaDBSettings.getInstance().getHibernateConfig().getPassword();
+
+		File tmp = null;
+        try {        	
+        	tmp = File.createTempFile("database-dump", ".sql");
+        	
+    		Process ps = new ProcessBuilder(script, userName, password, tmp.getAbsolutePath()).start();
+    		
+    		StreamReaderThread stdout = new StreamReaderThread(ps.getInputStream(), System.out, "stdout: ");
+    		stdout.start();
+    		
+    		StreamReaderThread stderr = new StreamReaderThread(ps.getErrorStream(), System.err, "stderr: ");
+    		stderr.start();
+    		
+    		ps.waitFor();
+    		
+			DateFormat df = new SimpleDateFormat("MM-dd-yyyy_HH-mm");
+			String name = "database_dump_" + df.format(new Date()) + ".sql";
+			
+    		zip(outputFile, tmp, name);
+        } catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			tmp.delete();
+		}
+	}
+	
+	private void zip(File target, File source, String sourceName) {
+		byte[] buffer = new byte[1024];
+		 
+    	try {
+    		FileOutputStream fos = new FileOutputStream(target);
+    		ZipOutputStream zos = new ZipOutputStream(fos);
+    		ZipEntry ze= new ZipEntry(sourceName);
+    		zos.putNextEntry(ze);
+    		FileInputStream in = new FileInputStream(source);
+ 
+    		int len;
+    		while ((len = in.read(buffer)) > 0) {
+    			zos.write(buffer, 0, len);
+    		}
+ 
+    		in.close();
+    		zos.closeEntry();
+ 
+    		zos.close();
+    	} catch(IOException ex){
+    	   ex.printStackTrace();
+    	}
 	}
 	
 	private void exportXml(Dataset ds, File exportFile, List<String> errors) {
