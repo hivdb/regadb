@@ -14,5 +14,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/poi-3.7-20101029.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-3.7-20101029.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.7-20101029.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
