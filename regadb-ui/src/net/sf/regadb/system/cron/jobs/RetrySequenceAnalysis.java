@@ -268,5 +268,6 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 	private void log(String msg){
 		logString.append(msg);
 		logOutput.print(msg);
+		System.err.print("RetrySequenceAnalysis::log " + msg);
 	}
 }
