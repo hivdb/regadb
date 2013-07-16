@@ -254,6 +254,10 @@ public class AttributeForm extends ObjectForm<Attribute>
         
         try
         {
+        	org.hibernate.Query q = t.createQuery("delete from PatientAttributeValue pav where pav.attribute = :attribute");
+        	q.setEntity("attribute", getObject());
+        	q.executeUpdate();
+        	
         	t.delete(getObject());
         	
         	t.commit();
