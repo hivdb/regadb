@@ -14,10 +14,9 @@ import net.sf.regadb.db.login.WrongPasswordException;
 import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.util.settings.RegaDBSettings;
+
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
-
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 
 public class ExportResistanceResults {
@@ -96,7 +95,8 @@ public class ExportResistanceResults {
 						insert = insert.replaceAll(":patient_ii", p.getPatientIi().toString());
 						insert = insert.replaceAll(":isolate_ii", tr.getViralIsolate().getViralIsolateIi()+"");
 						insert = insert.replaceAll(":value", tr.getValue());
-						insert = insert.replaceAll(":data_base64", Base64.encode(tr.getData(), 0));
+						String base64 = new String(org.apache.commons.codec.binary.Base64.encodeBase64(tr.getData()));
+						insert = insert.replaceAll(":data_base64", base64);
 						
 						fw.write(insert + ";\n");
 					}
