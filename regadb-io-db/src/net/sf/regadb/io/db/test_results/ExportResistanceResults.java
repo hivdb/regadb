@@ -88,11 +88,12 @@ public class ExportResistanceResults {
 						
 						String insert = 
 								"INSERT INTO regadbschema.test_result " +
-								"(test_ii, version, viral_isolate_ii, generic_ii, value, test_date, data) " +
+								"(test_ii, version, patient_ii, viral_isolate_ii, generic_ii, value, test_date, data) " +
 								"VALUES " +
-								"((:test_query), 0, :isolate_ii, (:drug_query), :value, now(), decode(':data_base64','base64'))";
+								"((:test_query), 0, :patient_ii, :isolate_ii, (:drug_query), :value, now(), decode(':data_base64','base64'))";
 						insert = insert.replaceAll(":test_query", testQuery);
 						insert = insert.replaceAll(":drug_query", drugQuery);
+						insert = insert.replaceAll(":patient_ii", p.getPatientIi().toString());
 						insert = insert.replaceAll(":isolate_ii", tr.getViralIsolate().getViralIsolateIi()+"");
 						insert = insert.replaceAll(":value", tr.getValue());
 						insert = insert.replaceAll(":data_base64", Base64.encode(tr.getData(), 0));
