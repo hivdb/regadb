@@ -78,7 +78,9 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		try{
-			log("Batch analysis started at: "+ dateFormat.format(new Date()) +"\n\n");
+			String start = "Batch analysis started at: "+ dateFormat.format(new Date()) +"\n\n";
+			log(start);
+			System.err.print("RetrySequenceAnalysis: " + start);
 			
 			retryBlast(login);
 			retryResistanceAnalysis(login);
@@ -86,7 +88,9 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 			
 			checkAlignments(login);
 			
-			log("Batch analysis finished at: "+ dateFormat.format(new Date()) +"\n\n");
+			String finished = "Batch analysis finished at: "+ dateFormat.format(new Date()) +"\n\n";
+			log(finished);
+			System.err.print("RetrySequenceAnalysis: " + finished);
 
 		} catch(Exception e){
 			log("Batch analysis stopped at: "+ dateFormat.format(new Date()) +"\n"+
@@ -268,6 +272,5 @@ public class RetrySequenceAnalysis extends ParameterizedJob {
 	private void log(String msg){
 		logString.append(msg);
 		logOutput.print(msg);
-		System.err.print("RetrySequenceAnalysis::log " + msg);
 	}
 }
