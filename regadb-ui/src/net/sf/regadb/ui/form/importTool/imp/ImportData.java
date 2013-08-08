@@ -199,7 +199,7 @@ public class ImportData {
 					p = new Patient();
 					p.setPatientId(value);
 					p.addDataset(this.dataset);
-				} else {
+				} else if (!r.getPatientIdDetails().isUpdateExistingPatients()) {
 					return WString.tr("importTool.import.nonUniquePatientId").arg(row);
 				}
 			} else if (type == Rule.Type.AttributeValue) {

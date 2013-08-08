@@ -222,6 +222,9 @@ public class ImportRule {
 		} else if (type.currentValue().isDate()){
 			addDetailsListener(details, 
 					new DateDetailsForm(this, this.getRule().getDateDetails()));
+		} else if (type.currentValue() == Rule.Type.PatientId){
+			addDetailsListener(details, 
+					new PatientIdDetailsForm(this, this.getRule().getPatientIdDetails()));
 		} else {
 			details.setHidden(true);
 		}

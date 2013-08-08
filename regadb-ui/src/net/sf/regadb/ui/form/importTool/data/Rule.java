@@ -54,6 +54,7 @@ public class Rule {
 	private RegimenDetails regimenDetails;
 	private DateDetails dateDetails;
 	private SequenceDetails sequenceDetails;
+	private PatientIdDetails patientIdDetails;
 
 	public String getColumn() {
 		return column;
@@ -117,6 +118,14 @@ public class Rule {
 
 	public void setSequenceDetails(SequenceDetails sequenceDetails) {
 		this.sequenceDetails = sequenceDetails;
+	}
+	
+	public PatientIdDetails getPatientIdDetails() {
+		return patientIdDetails;
+	}
+
+	public void setPatientIdDetails(PatientIdDetails patientIdDetails) {
+		this.patientIdDetails = patientIdDetails;
 	}
 	
 	public static String getTestName(Test t) {
