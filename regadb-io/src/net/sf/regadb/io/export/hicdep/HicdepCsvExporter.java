@@ -6,10 +6,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import net.sf.regadb.db.login.DisabledUserException;
+import net.sf.regadb.db.login.WrongPasswordException;
+import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.util.args.Arguments;
+import net.sf.regadb.util.args.PositionalArgument;
+import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.file.FileUtils;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class HicdepCsvExporter extends HicdepExporter {
 	
@@ -25,9 +33,14 @@ public class HicdepCsvExporter extends HicdepExporter {
 	}
 	
 	@Override
-	public void printInsert(String table, String[] columns, String[] values){
+	public void printRow(String table, String[] columns, String[] values){
 		PrintStream out = getPrintStream(table, columns);
 		printLine(out, values);
+	}
+	
+	@Override
+	public void printRow(String table, LinkedHashMap<String, String> row) {
+		printRow(table, row.keySet().toArray(new String[row.keySet().size()]), row.values().toArray(new String[row.values().size()]));
 	}
 	
 	private PrintStream getPrintStream(String table, String[] columns){
@@ -74,5 +87,28 @@ public class HicdepCsvExporter extends HicdepExporter {
 		
 		for(File f : files.values())
 			f.delete();
+	}
+	
+	public static void main(String[] args) throws WrongUidException, WrongPasswordException, DisabledUserException{
+		Arguments as = new Arguments();
+		PositionalArgument user = as.addPositionalArgument("user", true);
+		PositionalArgument pass = as.addPositionalArgument("pass", true);
+		PositionalArgument data = as.addPositionalArgument("dataset", false);
+		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
+		
+		if(!as.handle(args))
+			return;
+		
+		if(confDir.isSet())
+			RegaDBSettings.createInstance(confDir.getValue());
+		else
+			RegaDBSettings.createInstance();
+		
+		Login login = Login.authenticate(user.getValue(), pass.getValue());
+		
+		HicdepExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
+		he.export(data.getValue());
+		
+		login.closeSession();
 	}
 }

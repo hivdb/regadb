@@ -1,11 +1,9 @@
 package net.sf.regadb.io.export.hicdep;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,19 +18,12 @@ import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.util.args.Arguments;
-import net.sf.regadb.util.args.PositionalArgument;
-import net.sf.regadb.util.args.ValueArgument;
-import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 
-public class HicdepExporter {
+public abstract class HicdepExporter {
 
 	private Login login;
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -142,7 +133,7 @@ public class HicdepExporter {
 			row.put("AIDS_Y", null);
 			row.put("AIDS_D", null);
 			
-			printInsert("tblBAS", row);
+			printRow("tblBAS", row);
 
 			row.clear();
 			
@@ -160,7 +151,7 @@ public class HicdepExporter {
 			row.put("DEATH_R1", null);
 			row.put("DEATH_RC1", null); //TODO should be N ???
 			
- 			printInsert("tblLTFU", row);
+ 			printRow("tblLTFU", row);
 		}
 		
 		q = t.createQuery("select" +
@@ -193,7 +184,7 @@ public class HicdepExporter {
 			
 			row.put("SUBTYPE", (String)m.get("subtype_result"));
 			
-			printInsert("tblLAB_RES", row);
+			printRow("tblLAB_RES", row);
 			
 			row.clear();
 			
@@ -211,7 +202,7 @@ public class HicdepExporter {
 			row.put("SAMP_ALIQ_SIZE", null);
 			row.put("SAMP_ALIQ_U", null);
 			
-			printInsert("tblSAMPLES", row);
+			printRow("tblSAMPLES", row);
 		}
 		
 		String[] columns, columns2, values, values2;
@@ -246,11 +237,11 @@ public class HicdepExporter {
 				values[3] = "9";
 				values[4] = "9";
 			
-				printInsert("tblVIS", columns, values);
+				printRow("tblVIS", columns, values);
 			} else if(o[2].equals(StandardObjects.getViralLoadDescription())){
 				values2[2] = ((String)o[3]).replace('>', '-').replace('>', '-').replaceAll("=", "");
 				
-				printInsert("tblLAB_RNA", columns2, values2);
+				printRow("tblLAB_RNA", columns2, values2);
 			}
 		}
 		
@@ -292,7 +283,7 @@ public class HicdepExporter {
 			values[3] = ""+ o[3];
 			values[4] = (String)o[4];
 			
-			printInsert("tblLAB_RES_LVL_1", columns, values);
+			printRow("tblLAB_RES_LVL_1", columns, values);
 		}
 		
 		columns = new String[]{
@@ -313,7 +304,7 @@ public class HicdepExporter {
 			values[3] = null;
 			values[4] = (String)o[3];
 			
-			printInsert("tblLAB_RES_LVL_2", columns, values);
+			printRow("tblLAB_RES_LVL_2", columns, values);
 		}
 		
 		q = t.createQuery("select a.ntSequence.viralIsolate.sampleId, p.abbreviation, i.id.insertionPosition, i.id.insertionOrder, i.aaInsertion" +
@@ -326,7 +317,7 @@ public class HicdepExporter {
 			values[3] = ""+ (char)(Character.getNumericValue('a') + (Short)o[3]);
 			values[4] = (String)o[4];
 			
-			printInsert("tblLAB_RES_LVL_2", columns, values);
+			printRow("tblLAB_RES_LVL_2", columns, values);
 		}
 		
 		t.commit();
@@ -368,7 +359,7 @@ public class HicdepExporter {
 		row.put("ART_ED", format(t.getStopDate()));
 		row.put("ART_RS", therapyMotivation(t));
 		
-		printInsert("tblART", row);
+		printRow("tblART", row);
 	}
 	
 	private void printCommercialART(String patientId, Therapy t, TherapyCommercial tc){
@@ -385,82 +376,18 @@ public class HicdepExporter {
 			row.put("ART_ED", format(t.getStopDate()));
 			row.put("ART_RS", therapyMotivation(t));
 			
-			printInsert("tblART", row);
+			printRow("tblART", row);
 		} else {
 			for (DrugGeneric dg : tc.getId().getDrugCommercial().getDrugGenerics())
 				printGenericART(patientId, t, dg);
 		}
 	}
 
-	public void printInsert(String table, LinkedHashMap<String, String> row) {
-		printInsert(table, row.keySet().toArray(new String[row.keySet().size()]), row.values().toArray(new String[row.values().size()]));
-	}
+	public abstract void printRow(String table, LinkedHashMap<String, String> row);
 	
-	protected void printInsert(String table, String[] columns, String[] values){
-		if(columns.length != values.length)
-			System.err.println("columns.length != values.length");
-		
-		PrintStream out = System.out;
-		
-		out.print("INSERT INTO ");
-		out.print(table);
-		out.print(" (");
-		
-		boolean first = true;
-		for(String s : columns){
-			if(first)
-				first = false;
-			else
-				out.print(',');
-			out.print(s);
-		}
-		
-		out.print(") values (");
-		
-		first = true;
-		for(String s : values){
-			if(first)
-				first = false;
-			else
-				out.print(',');
-			
-			if(s == null){
-				out.print("NULL");
-			}else{
-				out.print('\'');
-				out.print(s);
-				out.print('\'');
-			}
-		}
-		
-		out.println(");");
-	}
+	protected abstract void printRow(String table, String[] columns, String[] values);
 	
 	private String format(Date date){
 		return date == null ? null : sdf.format(date);
-	}
-
-	
-	public static void main(String[] args) throws WrongUidException, WrongPasswordException, DisabledUserException{
-		Arguments as = new Arguments();
-		PositionalArgument user = as.addPositionalArgument("user", true);
-		PositionalArgument pass = as.addPositionalArgument("pass", true);
-		PositionalArgument data = as.addPositionalArgument("dataset", false);
-		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
-		
-		if(!as.handle(args))
-			return;
-		
-		if(confDir.isSet())
-			RegaDBSettings.createInstance(confDir.getValue());
-		else
-			RegaDBSettings.createInstance();
-		
-		Login login = Login.authenticate(user.getValue(), pass.getValue());
-		
-		HicdepExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
-		he.export(data.getValue());
-		
-		login.closeSession();
 	}
 }
