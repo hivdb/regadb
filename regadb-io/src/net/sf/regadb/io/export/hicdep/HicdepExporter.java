@@ -483,8 +483,21 @@ public abstract class HicdepExporter {
 		}
 	}
 	
-	//TODO combine mutations and insertions code (AaMutInsertion)
-	//TODO handle mixtures correctly
+	private void printMutationRow(String sampleId, String protein, int position, String acids, int insertion) {
+		LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+		
+		row.put("SAMP_ID", sampleId);
+		row.put("GENE", protein);
+		row.put("AA_POS", String.valueOf(position));
+		String insertionString = insertion != -1 ? String.valueOf((char)((Character.getNumericValue('a') + insertion))) : null;
+		row.put("AA_POS_SUB", insertionString);
+		
+		for (int i = 0; i < acids.length(); ++i)
+			row.put("AA_FOUND_" + (i+1), String.valueOf(acids.charAt(i)));
+		
+		printRow("tblLAB_RES_LVL_2", row);
+	}
+	
 	private void exportLAB_RES_LVL_2_mutations() {
 		final String sample_id = "sample_id";
 		final String protein = "protein";
@@ -511,17 +524,14 @@ public abstract class HicdepExporter {
 		
 		byte counter = 0;
 		while(sr.next()){
-			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
-			
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
-			row.put("SAMP_ID", (String)m.get(sample_id));
-			row.put("GENE", (String)m.get(protein));
-			row.put("AA_POS", m.get(aa_position).toString());
-			row.put("AA_POS_SUB", null);
-			row.put("AA_FOUND_1", (String)m.get(aa_mutation));
-			
-			printRow("tblLAB_RES_LVL_2", row);
+			printMutationRow(
+					(String)m.get(sample_id),
+					(String)m.get(protein),
+					((Integer)m.get(aa_position)).intValue(),
+					(String)m.get(aa_mutation),
+					-1);
 			
 			if (counter == 100) {
 				counter = 0;
@@ -555,18 +565,15 @@ public abstract class HicdepExporter {
 		
 		byte counter = 0;
 		while(sr.next()){
-			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
-			
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			AaInsertion insertion = (AaInsertion)m.get(aa_insertion);
 			
-			row.put("SAMP_ID", (String)m.get(sample_id));
-			row.put("GENE", (String)m.get(protein));
-			row.put("AA_POS", insertion.getId().getInsertionPosition() + "");
-			row.put("AA_POS_SUB", String.valueOf((char)((Character.getNumericValue('a') + insertion.getId().getInsertionOrder()))));
-			row.put("AA_FOUND_1", insertion.getAaInsertion());
-			
-			printRow("tblLAB_RES_LVL_2", row);
+			printMutationRow(
+					(String)m.get(sample_id),
+					(String)m.get(protein),
+					((Integer)m.get(insertion.getId().getInsertionPosition())).intValue(),
+					(String)m.get(insertion.getAaInsertion()),
+					insertion.getId().getInsertionOrder());
 			
 			if (counter == 100) {
 				counter = 0;
