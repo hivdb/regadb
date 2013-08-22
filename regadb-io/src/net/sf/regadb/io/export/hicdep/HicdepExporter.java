@@ -581,8 +581,7 @@ public abstract class HicdepExporter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	//TODO dataset is never used?
-	public void export(String dataset){		
+	public void export(){		
 		System.err.println("Exporting BASandLTFU");
 		exportBASandLTFU();
 		System.err.println("Exporting LAB_RESandSAMPLES");

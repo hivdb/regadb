@@ -93,7 +93,6 @@ public class HicdepCsvExporter extends HicdepExporter {
 		Arguments as = new Arguments();
 		PositionalArgument user = as.addPositionalArgument("user", true);
 		PositionalArgument pass = as.addPositionalArgument("pass", true);
-		PositionalArgument data = as.addPositionalArgument("dataset", false);
 		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
 		
 		if(!as.handle(args))
@@ -107,7 +106,7 @@ public class HicdepCsvExporter extends HicdepExporter {
 		Login login = Login.authenticate(user.getValue(), pass.getValue());
 		
 		HicdepExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
-		he.export(data.getValue());
+		he.export();
 		
 		login.closeSession();
 	}
