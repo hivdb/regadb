@@ -243,9 +243,7 @@ public abstract class HicdepExporter {
 				
 				row.put("PATIENT", (String)m.get(patient_id));
 				row.put("SAMP_LAB_D", isolateDate == null ? null : format(isolateDate));
-				//TODO
-				//we have this info in RegaDB, and should use it
-				row.put("SAMP_TYPE", "BS");
+				row.put("SAMP_TYPE", null);
 				row.put("SAMP_ID", (String)m.get(isolate_id));
 				row.put("SAMP_LAB", null);
 				row.put("SAMP_FREEZE_D", null);
@@ -266,7 +264,6 @@ public abstract class HicdepExporter {
 		}
 	}
 	
-	//TODO LAB_RNA ??
 	private void exportVIS() {
 		final String patient_id = "patient_id";
 		final String test_date = "test_date";
@@ -594,7 +591,6 @@ public abstract class HicdepExporter {
 		System.err.println("Exporting LAB_RES_LVL");
 		exportLAB_RES_LVL_1();
 		exportLAB_RES_LVL_2_mutations();
-		//TODO test insertion export
 		exportLAB_RES_LVL_2_insertions();
 	}
 	
