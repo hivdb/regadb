@@ -25,6 +25,11 @@ import net.sf.regadb.io.util.StandardObjects;
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 
+//TODO 
+//tables to implement: 
+//	tblLAB_CD4
+//	tblLAB_RNA
+
 public abstract class HicdepExporter {
 
 	private Login login;
@@ -125,7 +130,6 @@ public abstract class HicdepExporter {
 				String gender = genderMap.b2a(m.get(GENDER));
 				row.put("GENDER", gender);
 	
-				//TODO ask Stijn //""+ (height.nextInt(50) + 150);	//Random height
 				row.put("HEIGH", "999");
 				
 				String transmission = transmissionMap.b2a(m.get(TRANSMISSION_GROUP));
@@ -146,7 +150,7 @@ public abstract class HicdepExporter {
 				
 				row.put("PATIENT", m.get(ID));
 				
-				row.put("DROP_Y", null); //TODO should be N ???
+				row.put("DROP_Y", null);
 				row.put("DROP_D", null);
 				row.put("DROP_RS", null);
 				
@@ -154,9 +158,9 @@ public abstract class HicdepExporter {
 				row.put("DEATH_Y", deathDate == null ? "0" : "1");
 				row.put("DEATH_D", deathDate == null ? null : format(new Date(Long.parseLong(deathDate))));
 				
-				row.put("AUTOP_Y", null); //TODO should be 9 ???
-				row.put("DEATH_R1", null);
-				row.put("DEATH_RC1", null); //TODO should be N ???
+				row.put("AUTOP_Y", "9");
+				row.put("DEATH_R1", "92");
+				row.put("DEATH_RC1", "N");
 				
 	 			printRow("tblLTFU", row);
 			}
@@ -224,10 +228,10 @@ public abstract class HicdepExporter {
 				row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
 				row.put("LAB", null);
 				row.put("LIBRARY", null);
-				row.put("REFSEQ", null); //TODO we can provide this???
-				row.put("KIT", null); //TODO we can provide this???
-				row.put("SOFTWARE", null); //TODO we can provide this???
-				row.put("TESTTYPE", null); //TODO we can provide this???
+				row.put("REFSEQ", null); 
+				row.put("KIT", null);
+				row.put("SOFTWARE", null);
+				row.put("TESTTYPE", null);
 				
 				row.put("SUBTYPE", (String)m.get("subtype_result"));
 				
@@ -239,8 +243,7 @@ public abstract class HicdepExporter {
 				
 				row.put("PATIENT", (String)m.get(patient_id));
 				row.put("SAMP_LAB_D", isolateDate == null ? null : format(isolateDate));
-				//TODO this should become BP, 
-				//since this is the default
+				//TODO
 				//we have this info in RegaDB, and should use it
 				row.put("SAMP_TYPE", "BS");
 				row.put("SAMP_ID", (String)m.get(isolate_id));
@@ -470,6 +473,8 @@ public abstract class HicdepExporter {
 			row.put("SEQ_STOP", m.get(stop).toString());
 			row.put("SEQ_NUQ", (String)m.get(nucleotides));
 			
+			//TODO SEQ_AA
+			
 			printRow("tblLAB_RES_LVL_1", row);
 			
 			if (counter == 100) {
@@ -481,6 +486,8 @@ public abstract class HicdepExporter {
 		}
 	}
 	
+	//TODO combine mutations and insertions code (AaMutInsertion)
+	//TODO handle mixtures correctly
 	private void exportLAB_RES_LVL_2_mutations() {
 		final String sample_id = "sample_id";
 		final String protein = "protein";
