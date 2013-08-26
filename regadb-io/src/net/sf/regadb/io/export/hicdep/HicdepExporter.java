@@ -205,9 +205,9 @@ public abstract class HicdepExporter {
 		Query q = t.createQuery(qs);
 		
 		if (type == CD4_Type.Value)
-			q.setParameter("description", StandardObjects.getCd4TestType());
+			q.setParameter("description", StandardObjects.getCd4TestType().getDescription());
 		else if (type == CD4_Type.Percentage)
-			q.setParameter("description", StandardObjects.getCd4PercentageTestType());
+			q.setParameter("description", StandardObjects.getCd4PercentageTestType().getDescription());
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -255,13 +255,13 @@ public abstract class HicdepExporter {
 				"	TestResult r " + 
 				"where " +
 				"	r.test.testType.description = :description and " +
-				"	r.test.testType.genome.organismName = :organism" +
+				"	r.test.testType.genome.organismName = :organism " +
 				"order " +
 				"	by r.patient.id, r.id";
 		Query q = t.createQuery(qs);
 		
 		q.setParameter("description", StandardObjects.getViralLoadDescription());
-		q.setParameter("organism", StandardObjects.getHiv1Genome());
+		q.setParameter("organism", StandardObjects.getHiv1Genome().getOrganismName());
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
