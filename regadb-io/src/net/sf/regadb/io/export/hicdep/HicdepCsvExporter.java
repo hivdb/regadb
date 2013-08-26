@@ -72,7 +72,7 @@ public class HicdepCsvExporter extends HicdepExporter {
 				first = false;
 			else
 				out.print(';');
-			out.print(c);
+			out.print(c==null?"":c);
 		}
 		
 		out.println();
