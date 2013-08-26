@@ -175,6 +175,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}		
+		t.clearCache();
 	}
 	
 	enum CD4_Type {
@@ -234,6 +235,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		t.clearCache();
 	}
 	
 	private void exportLAB_RNA() {
@@ -286,6 +288,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		t.clearCache();
 	}
 	
 	private void exportLAB_RESandSAMPLES() {
@@ -375,6 +378,7 @@ public abstract class HicdepExporter {
 			} else {
 				++counter;
 			}
+			t.clearCache();
 		}
 	}
 	
@@ -422,6 +426,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		t.clearCache();
 	}
 	
 	private void exportGenericART() {
@@ -463,6 +468,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		tr.clearCache();
 	}
 	
 	private void printGenericART(String patientId, Therapy t, DrugGeneric dg) {
@@ -544,6 +550,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		tr.clearCache();
 	}
 	
 	private void exportLAB_RES_LVL_1() {
@@ -599,6 +606,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		tr.clearCache();
 	}
 	
 	private void printMutationRow(String sampleId, String protein, int position, String acids, int insertion) {
@@ -658,6 +666,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		tr.clearCache();
 	}
 	
 	private void exportLAB_RES_LVL_2_insertions() {
@@ -700,6 +709,7 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+		tr.clearCache();
 	}
 	
 	@SuppressWarnings("unchecked")
