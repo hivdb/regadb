@@ -607,8 +607,13 @@ public abstract class HicdepExporter {
 		String insertionString = insertion != -1 ? String.valueOf((char)((Character.getNumericValue('a') + insertion))) : null;
 		row.put("AA_POS_SUB", insertionString);
 		
-		for (int i = 0; i < acids.length(); ++i)
-			row.put("AA_FOUND_" + (i+1), String.valueOf(acids.charAt(i)));
+		final byte acidColumns = 22;
+		for (int i = 0; i < acidColumns; ++i) {
+			char aa = ' ';
+			if (i < acids.length())
+				aa = acids.charAt(i);
+			row.put("AA_FOUND_" + (i+1), String.valueOf(aa));
+		}
 		
 		printRow("tblLAB_RES_LVL_2", row);
 	}
