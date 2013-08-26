@@ -28,11 +28,6 @@ import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 
-//TODO 
-//tables to implement: 
-//	tblLAB_CD4
-//	tblLAB_RNA
-
 public abstract class HicdepExporter {
 
 	private Login login;
