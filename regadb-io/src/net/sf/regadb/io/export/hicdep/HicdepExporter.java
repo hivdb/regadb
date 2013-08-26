@@ -176,6 +176,65 @@ public abstract class HicdepExporter {
 		}		
 	}
 	
+	enum CD4_Type {
+		Value,
+		Percentage
+	}
+	
+	private void exportLAB_CD4(CD4_Type type) {
+		final String patient_id = "patient_id";
+		final String test_date = "test_date";
+		final String value = "value";
+		
+		Transaction t = login.createTransaction();
+		String qs = 
+				"select " +
+				"	new map (" +
+				"		r.patient.patientId as " + patient_id + "," +
+				" 		r.testDate as " + test_date + ", " +
+				"		r.value as " + value + 
+				"	)" +
+				"from" +
+				"	TestResult r " + 
+				"where " +
+				"	r.test.testType.description = :description " +
+				"order " +
+				"	by r.patient.id, r.id";
+		Query q = t.createQuery(qs);
+		
+		if (type == CD4_Type.Value)
+			q.setParameter("description", StandardObjects.getCd4TestType());
+		else if (type == CD4_Type.Percentage)
+			q.setParameter("description", StandardObjects.getCd4PercentageTestType());
+		
+		ScrollableResults sr = q.scroll();
+		
+		byte counter = 0;
+		while(sr.next()){
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+			
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
+			
+			m.put("PATIENT", (String)m.get(patient_id));
+			m.put("CD4_D", format((Date)m.get(test_date)));
+			m.put("CD4_V", m.get(value));
+			
+			if (type == CD4_Type.Value)
+				m.put("CD4_U", "1");
+			else if (type == CD4_Type.Percentage)
+				m.put("CD4_U", "2");
+				
+			printRow("tblLAB_CD4", row);
+			
+			if (counter == 100) {
+				counter = 0;
+				t.clearCache();
+			} else {
+				++counter;
+			}
+		}
+	}
+	
 	private void exportLAB_RESandSAMPLES() {
 		final String patient_id = "patient_id";
 		final String isolate_id = "isolate_id";
@@ -605,6 +664,9 @@ public abstract class HicdepExporter {
 		exportLAB_RES_LVL_1();
 		exportLAB_RES_LVL_2_mutations();
 		exportLAB_RES_LVL_2_insertions();
+		System.err.println("Exporting LAB_CD4");
+		exportLAB_CD4(CD4_Type.Value);
+		exportLAB_CD4(CD4_Type.Percentage);
 	}
 	
 	private String therapyMotivation(Therapy t) {
