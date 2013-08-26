@@ -212,14 +212,14 @@ public abstract class HicdepExporter {
 			
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
-			m.put("PATIENT", (String)m.get(patient_id));
-			m.put("CD4_D", format((Date)m.get(test_date)));
-			m.put("CD4_V", m.get(value));
+			row.put("PATIENT", (String)m.get(patient_id));
+			row.put("CD4_D", format((Date)m.get(test_date)));
+			row.put("CD4_V", (String)m.get(value));
 			
 			if (type == CD4_Type.Value)
-				m.put("CD4_U", "1");
+				row.put("CD4_U", "1");
 			else if (type == CD4_Type.Percentage)
-				m.put("CD4_U", "2");
+				row.put("CD4_U", "2");
 				
 			printRow("tblLAB_CD4", row);
 			
@@ -266,13 +266,13 @@ public abstract class HicdepExporter {
 			
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
-			m.put("PATIENT", (String)m.get(patient_id));
-			m.put("RNA_D", format((Date)m.get(test_date)));
-			m.put("RNA_T", "99"); //unknown
+			row.put("PATIENT", (String)m.get(patient_id));
+			row.put("RNA_D", format((Date)m.get(test_date)));
+			row.put("RNA_T", "99"); //unknown
 	
 			String v = (String)m.get(value);
 			v = v.replace('<', '-');
-			m.put("RNA_V", v);
+			row.put("RNA_V", v);
 				
 			printRow("tblLAB_RNA", row);
 			
