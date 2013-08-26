@@ -1,4 +1,4 @@
-package net.sf.regadb.tools.exportFasta;
+package net.sf.regadb.io.export.fasta;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;

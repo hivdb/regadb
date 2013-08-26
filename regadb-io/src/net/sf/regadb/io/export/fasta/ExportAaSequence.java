@@ -1,7 +1,6 @@
-package net.sf.regadb.tools.exportFasta;
+package net.sf.regadb.io.export.fasta;
 
-import net.sf.regadb.align.view.VisualizeAaSequence;
-import net.sf.regadb.analysis.functions.AaSequenceHelper;
+import net.sf.regadb.db.tools.AaSequenceHelper;
 
 public class ExportAaSequence extends VisualizeAaSequence {
 	private StringBuffer sequence = new StringBuffer();
@@ -46,11 +45,15 @@ public class ExportAaSequence extends VisualizeAaSequence {
 	}
 	
 	private String getAminoAcid() {
-		String aa = AaSequenceHelper.getAminoAcid(codon.toString()).trim();
+		char aa = AaSequenceHelper.getAminoAcid(codon.toString());
 		if (aligned)
-			return aa;
-		else 
-			return aa.replace("-", "");
+			return aa + "";
+		else {
+			if (aa == '-')
+				return "";
+			else 
+				return aa+"";
+		}		
 	}
 
 	public void clear() {

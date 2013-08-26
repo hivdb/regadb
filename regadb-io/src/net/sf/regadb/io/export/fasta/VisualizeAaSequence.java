@@ -1,10 +1,10 @@
-package net.sf.regadb.align.view;
+package net.sf.regadb.io.export.fasta;
 
-import net.sf.regadb.analysis.functions.AaSequenceHelper;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.AaMutation;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Protein;
+import net.sf.regadb.db.tools.AaSequenceHelper;
 
 public abstract class VisualizeAaSequence {
     public String getAlignmentView(AaSequence aaseq) {

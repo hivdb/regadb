@@ -24,8 +24,8 @@ import net.sf.regadb.db.Privileges;
 import net.sf.regadb.db.Protein;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.session.HibernateUtil;
-import net.sf.regadb.tools.exportFasta.ExportAaSequence;
-import net.sf.regadb.tools.exportFasta.FastaExporter.Symbol;
+import net.sf.regadb.io.export.fasta.ExportAaSequence;
+import net.sf.regadb.io.export.fasta.FastaExporter.Symbol;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.CacheMode;

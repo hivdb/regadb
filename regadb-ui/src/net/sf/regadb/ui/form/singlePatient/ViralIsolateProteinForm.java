@@ -1,12 +1,12 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import net.sf.regadb.align.view.UIVisualizeAaSequence;
-import net.sf.regadb.align.view.VisualizeAaSequence;
 import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.tools.MutationHelper;
+import net.sf.regadb.io.export.fasta.VisualizeAaSequence;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;

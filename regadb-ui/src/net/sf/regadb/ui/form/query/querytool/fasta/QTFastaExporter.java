@@ -1,6 +1,6 @@
 package net.sf.regadb.ui.form.query.querytool.fasta;
 
-import net.sf.regadb.tools.exportFasta.FastaExporter;
+import net.sf.regadb.io.export.fasta.FastaExporter;
 
 import com.pharmadm.custom.rega.queryeditor.OutputVariable;
 import com.pharmadm.custom.rega.queryeditor.Query.FastaExport;

@@ -1,6 +1,7 @@
 package net.sf.regadb.align.view;
 
-import net.sf.regadb.analysis.functions.AaSequenceHelper;
+import net.sf.regadb.db.tools.AaSequenceHelper;
+import net.sf.regadb.io.export.fasta.VisualizeAaSequence;
 
 public class UIVisualizeAaSequence extends VisualizeAaSequence {
 	public static final int LINE_SIZE = 81;
@@ -51,8 +52,8 @@ public class UIVisualizeAaSequence extends VisualizeAaSequence {
 	}
 
 	private void addAa() {
-		String ref = AaSequenceHelper.getAminoAcid(refCodon.toString());
-		String tar = AaSequenceHelper.getAminoAcid(tarCodon.toString());
+		String ref = " " + AaSequenceHelper.getAminoAcid(refCodon.toString()) + " ";
+		String tar = " " + AaSequenceHelper.getAminoAcid(tarCodon.toString()) + " ";
 		if (ref.equals(tar) || tar.toString().equals(" - ")) {
 			refAa.append(ref);
 			tarAa.append(tar);
