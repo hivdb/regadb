@@ -235,6 +235,58 @@ public abstract class HicdepExporter {
 		}
 	}
 	
+	private void exportLAB_RNA() {
+		final String patient_id = "patient_id";
+		final String test_date = "test_date";
+		final String value = "value";
+		
+		Transaction t = login.createTransaction();
+		String qs = 
+				"select " +
+				"	new map (" +
+				"		r.patient.patientId as " + patient_id + "," +
+				" 		r.testDate as " + test_date + ", " +
+				"		r.value as " + value + 
+				"	)" +
+				"from" +
+				"	TestResult r " + 
+				"where " +
+				"	r.test.testType.description = :description and " +
+				"	r.test.testType.genome.organismName = :organism" +
+				"order " +
+				"	by r.patient.id, r.id";
+		Query q = t.createQuery(qs);
+		
+		q.setParameter("description", StandardObjects.getViralLoadDescription());
+		q.setParameter("organism", StandardObjects.getHiv1Genome());
+		
+		ScrollableResults sr = q.scroll();
+		
+		byte counter = 0;
+		while(sr.next()){
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+			
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
+			
+			m.put("PATIENT", (String)m.get(patient_id));
+			m.put("RNA_D", format((Date)m.get(test_date)));
+			m.put("RNA_T", "99"); //unknown
+	
+			String v = (String)m.get(value);
+			v = v.replace('<', '-');
+			m.put("RNA_V", v);
+				
+			printRow("tblLAB_RNA", row);
+			
+			if (counter == 100) {
+				counter = 0;
+				t.clearCache();
+			} else {
+				++counter;
+			}
+		}
+	}
+	
 	private void exportLAB_RESandSAMPLES() {
 		final String patient_id = "patient_id";
 		final String isolate_id = "isolate_id";
@@ -667,6 +719,8 @@ public abstract class HicdepExporter {
 		System.err.println("Exporting LAB_CD4");
 		exportLAB_CD4(CD4_Type.Value);
 		exportLAB_CD4(CD4_Type.Percentage);
+		System.err.println("Exporting LAB_RNA");
+		exportLAB_RNA();
 	}
 	
 	private String therapyMotivation(Therapy t) {
