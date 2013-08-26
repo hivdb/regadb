@@ -25,6 +25,7 @@ import net.sf.regadb.io.export.fasta.FastaExporter.Symbol;
 import net.sf.regadb.io.util.StandardObjects;
 
 import org.hibernate.Query;
+import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 
 //TODO 
@@ -111,7 +112,7 @@ public abstract class HicdepExporter {
 		for (Map.Entry<String, Attribute> e : attributes.entrySet())
 			q.setParameter(e.getKey() + "_name", e.getValue().getName());
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -207,7 +208,7 @@ public abstract class HicdepExporter {
 		else if (type == CD4_Type.Percentage)
 			q.setParameter("description", StandardObjects.getCd4PercentageTestType());
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -260,7 +261,7 @@ public abstract class HicdepExporter {
 		q.setParameter("description", StandardObjects.getViralLoadDescription());
 		q.setParameter("organism", StandardObjects.getHiv1Genome());
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -322,7 +323,7 @@ public abstract class HicdepExporter {
 		Query q = t.createQuery(query);
 		q.setParameter("subtype_description", StandardObjects.getSubtypeTestDescription());
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -398,7 +399,7 @@ public abstract class HicdepExporter {
 		
 		q.setParameter("description", StandardObjects.getContactTestType().getDescription());
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -443,7 +444,7 @@ public abstract class HicdepExporter {
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -508,7 +509,7 @@ public abstract class HicdepExporter {
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -571,7 +572,7 @@ public abstract class HicdepExporter {
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
@@ -678,7 +679,7 @@ public abstract class HicdepExporter {
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
 		
-		ScrollableResults sr = q.scroll();
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
