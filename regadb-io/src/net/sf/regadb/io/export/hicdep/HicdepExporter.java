@@ -9,9 +9,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import net.sf.regadb.db.AaInsertion;
+import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Therapy;
@@ -20,6 +20,8 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.session.Login;
+import net.sf.regadb.io.export.fasta.ExportAaSequence;
+import net.sf.regadb.io.export.fasta.FastaExporter.Symbol;
 import net.sf.regadb.io.util.StandardObjects;
 
 import org.hibernate.Query;
@@ -438,6 +440,7 @@ public abstract class HicdepExporter {
 		final String start = "start";
 		final String stop = "stop";
 		final String nucleotides = "nucleotides";
+		final String aa_sequence = "aa_sequence";
 		
 		String qs = 
 				"select " +
@@ -446,7 +449,8 @@ public abstract class HicdepExporter {
 				"		p.abbreviation as " + protein + ", " +
 				"		a.firstAaPos as " + start + ", " +
 				"		a.lastAaPos as " + stop + ", " +
-				"		n.nucleotides as " + nucleotides +
+				"		n.nucleotides as " + nucleotides + ", " + 
+				"		a as " + aa_sequence + 
 				"	)" +
 				"from " +
 				"	NtSequence n join n.aaSequences a join a.protein p " +
@@ -470,7 +474,9 @@ public abstract class HicdepExporter {
 			row.put("SEQ_STOP", m.get(stop).toString());
 			row.put("SEQ_NUQ", (String)m.get(nucleotides));
 			
-			//TODO SEQ_AA
+			ExportAaSequence exporter = new ExportAaSequence(Symbol.AminoAcids, true, true);
+			String aa_export = exporter.getAlignmentView((AaSequence)m.get(aa_sequence));
+			row.put("SEQ_AA", aa_export);
 			
 			printRow("tblLAB_RES_LVL_1", row);
 			
