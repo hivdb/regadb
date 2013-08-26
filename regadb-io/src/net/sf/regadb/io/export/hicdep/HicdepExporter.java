@@ -554,7 +554,6 @@ public abstract class HicdepExporter {
 		final String start = "start";
 		final String stop = "stop";
 		final String nucleotides = "nucleotides";
-		final String aa_sequence = "aa_sequence";
 		
 		String qs = 
 				"select " +
@@ -563,8 +562,7 @@ public abstract class HicdepExporter {
 				"		p.abbreviation as " + protein + ", " +
 				"		a.firstAaPos as " + start + ", " +
 				"		a.lastAaPos as " + stop + ", " +
-				"		n.nucleotides as " + nucleotides + ", " + 
-				"		a as " + aa_sequence + 
+				"		n.nucleotides as " + nucleotides +
 				"	)" +
 				"from " +
 				"	NtSequence n join n.aaSequences a join a.protein p " +
@@ -587,10 +585,6 @@ public abstract class HicdepExporter {
 			row.put("SEQ_START", m.get(start).toString());
 			row.put("SEQ_STOP", m.get(stop).toString());
 			row.put("SEQ_NUQ", (String)m.get(nucleotides));
-			
-			ExportAaSequence exporter = new ExportAaSequence(Symbol.AminoAcids, true, true);
-			String aa_export = exporter.getAlignmentView((AaSequence)m.get(aa_sequence));
-			row.put("SEQ_AA", aa_export);
 			
 			printRow("tblLAB_RES_LVL_1", row);
 			
