@@ -652,12 +652,14 @@ public abstract class HicdepExporter {
 		while(sr.next()){
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
-			printMutationRow(
-					(String)m.get(sample_id),
-					(String)m.get(protein),
-					((Integer)m.get(aa_position)).intValue(),
-					(String)m.get(aa_mutation),
-					-1);
+			if (m.get(aa_mutation) != null) {
+				printMutationRow(
+						(String)m.get(sample_id),
+						(String)m.get(protein),
+						((Short)m.get(aa_position)).intValue(),
+						(String)m.get(aa_mutation),
+						-1);
+			}
 			
 			if (counter == 100) {
 				counter = 0;
@@ -698,8 +700,8 @@ public abstract class HicdepExporter {
 			printMutationRow(
 					(String)m.get(sample_id),
 					(String)m.get(protein),
-					((Integer)m.get(insertion.getId().getInsertionPosition())).intValue(),
-					(String)m.get(insertion.getAaInsertion()),
+					insertion.getId().getInsertionPosition(),
+					insertion.getAaInsertion(),
 					insertion.getId().getInsertionOrder());
 			
 			if (counter == 100) {
