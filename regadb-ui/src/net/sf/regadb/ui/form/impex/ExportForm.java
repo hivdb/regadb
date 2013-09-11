@@ -135,6 +135,17 @@ public class ExportForm extends FormWidget {
 			}
         });
 		
+		//TODO 
+		//temporary fix, 
+		//without this, the value returned by getCurrentText is not up to date
+		//I hope this workaround will not be necessary any more after a JWt upgrade
+		datasets.addComboChangeListener(new Signal.Listener()
+        {
+			public void trigger()
+			{
+			}
+        });
+		
 		addControlButtons();
     }
 	
