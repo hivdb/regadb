@@ -151,7 +151,7 @@ public class Table {
 			reader = new LineNumberReader(input);
 			readLines(reader, oneline, null, null,delimiter);
 		} finally {
-			if(reader == null){
+			if(reader != null){
 				try {
 					reader.close();
 				} catch (IOException e) {
@@ -809,7 +809,7 @@ public class Table {
 			reader = new LineNumberReader(new InputStreamReader(input));
 			readLines(reader, false, selected, output, delimiter);
 		} finally {
-			if(reader == null){
+			if(reader != null){
 				try {
 					reader.close();
 				} catch (IOException e) {
