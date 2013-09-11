@@ -165,6 +165,12 @@ public class FullCsvExport implements ExportPatient {
 		formatField(row, vi.getSampleId());
 		
 		List<NtSequence> ntseqs = new ArrayList<NtSequence>(vi.getNtSequences());
+		Collections.sort(ntseqs, new Comparator<NtSequence>(){
+			@Override
+			public int compare(NtSequence o1, NtSequence o2) {
+				return o1.getNtSequenceIi().compareTo(o2.getNtSequenceIi());
+			}
+		});
 		
 		for(int i = 0; i<maxNumberSeqs; i++) {
 			if(i<ntseqs.size())
