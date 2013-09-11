@@ -116,13 +116,11 @@ public class Table {
 
 
 	ArrayList<ArrayList<String> > rows;
-	private LineNumberReader reader;
 	private HashMap<String, Index> indexes;
 
 	public Table() {
 		rows = new ArrayList<ArrayList<String> >();
 		indexes = new HashMap<String, Index>();
-		reader = null;
 	}
 
 	public Table(InputStream input, boolean oneline) {
@@ -148,9 +146,10 @@ public class Table {
 	public Table(InputStreamReader input, boolean oneline, char delimiter){
 		this();
 
+		LineNumberReader reader = null;
 		try{
 			reader = new LineNumberReader(input);
-			readLines(oneline, null, null,delimiter);
+			readLines(reader, oneline, null, null,delimiter);
 		} finally {
 			if(reader == null){
 				try {
@@ -162,7 +161,7 @@ public class Table {
 		}
 	}
 
-	private void readLines(boolean oneline, ArrayList<Integer> selected, OutputStream output, char delimiter) {
+	private void readLines(LineNumberReader reader, boolean oneline, ArrayList<Integer> selected, OutputStream output, char delimiter) {
 
 		PrintStream sout = null;
 
@@ -805,7 +804,19 @@ public class Table {
 		newRows.add(selectColumns(rows.get(0), selected));
 		rows = newRows;
 
-		readLines(false, selected, output, delimiter);
+		LineNumberReader reader = null;
+		try{
+			reader = new LineNumberReader(new InputStreamReader(input));
+			readLines(reader, false, selected, output, delimiter);
+		} finally {
+			if(reader == null){
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public void readSelectedColumns(InputStream input, ArrayList<Integer> selected,
