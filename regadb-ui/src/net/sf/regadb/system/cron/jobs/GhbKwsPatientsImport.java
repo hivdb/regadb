@@ -39,7 +39,8 @@ public class GhbKwsPatientsImport extends ParameterizedJob {
 					ikp.run(f);
 					
 					File f2 = new File(oldKwsExportDir.getAbsolutePath() + File.separatorChar + f.getName());
-					f.renameTo(f2);
+					if (!f.renameTo(f2))
+						System.err.println(DateUtils.format(new Date())+" KWS patients import cron failed to rename the input file.");
 				}
 			}
 			
@@ -48,5 +49,6 @@ public class GhbKwsPatientsImport extends ParameterizedJob {
 			System.err.println("critical error during KWS patients import cron: "+ e.getLocalizedMessage());
 			e.printStackTrace();
 		}
+		System.err.println(DateUtils.format(new Date())+" ended KWS patients import cron.");
 	}
 }
