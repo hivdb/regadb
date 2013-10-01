@@ -62,7 +62,7 @@ public class ExportForm extends FormWidget {
 	}
 	
 	private boolean disableDatasets(String type) {
-		return type.equals(DATABASE) || type.equals(HICDEP);
+		return type.equals(DATABASE);
 	}
 	
 	public void init() {
@@ -169,8 +169,6 @@ public class ExportForm extends FormWidget {
 	private void generateFile(String format, File outputFile, List<String> errors) {
 		if (DATABASE.equals(format)) {
 			exportDatabaseZip(outputFile);
-		} else if (HICDEP.equals(format)) {
-			exportHicdep(outputFile, errors);
 		} else {
 			Dataset ds = datasets.currentValue();
 			if (XML.equals(format)) {
@@ -178,6 +176,8 @@ public class ExportForm extends FormWidget {
 			} else if (CSV.equals(format)) {
 				boolean mutations = exportMutations.isChecked();
 				exportCsv(ds, outputFile, errors, mutations);
+			} else if (HICDEP.equals(format)) {
+				exportHicdep(ds, outputFile, errors);
 			}
 		}
 	}
@@ -309,9 +309,9 @@ public class ExportForm extends FormWidget {
 		}
 	}
 	
-	private void exportHicdep(File exportFile, List<String> errors){        
+	private void exportHicdep(Dataset ds, File exportFile, List<String> errors){        
         HicdepCsvExporter export = new HicdepCsvExporter(RegaDBMain.getApp().getLogin(), exportFile);
-        export.export();
+        export.export(ds.getDescription());
         try {
 			export.close();
 		} catch (IOException e) {

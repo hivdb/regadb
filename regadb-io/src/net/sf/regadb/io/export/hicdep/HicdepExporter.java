@@ -62,7 +62,19 @@ public abstract class HicdepExporter {
 		return m;
 	}
 	
-	private void exportBASandLTFU() {
+	private String patientsInDatasetSubquery(String datasetParam) {
+		return 
+				"select " +
+				"	patient " +
+                "from " +
+                "	PatientImpl as patient " +
+                "	join patient.patientDatasets as patient_dataset " +
+                "	join patient_dataset.id.dataset as dataset " +
+                "where " +
+                "	dataset.description = :" + datasetParam;
+	}
+	
+	private void exportBASandLTFU(String dataset) {
 		SimpleCsvMapper genderMap = getMapper("gender.csv");
 		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");
 
@@ -100,12 +112,14 @@ public abstract class HicdepExporter {
 		}
 		queryString.append(")" +
 				"from PatientImpl p " +
+				"where p in (" + patientsInDatasetSubquery("dataset") + ")" + 
 				"order by p.patientId");
 		
 		Transaction t = login.createTransaction();
 		Query q = t.createQuery(queryString.toString());
 		for (Map.Entry<String, Attribute> e : attributes.entrySet())
 			q.setParameter(e.getKey() + "_name", e.getValue().getName());
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -178,7 +192,7 @@ public abstract class HicdepExporter {
 		Percentage
 	}
 	
-	private void exportLAB_CD4(CD4_Type type) {
+	private void exportLAB_CD4(CD4_Type type, String dataset) {
 		final String patient_id = "patient_id";
 		final String test_date = "test_date";
 		final String value = "value";
@@ -195,9 +209,12 @@ public abstract class HicdepExporter {
 				"	TestResult r " + 
 				"where " +
 				"	r.test.testType.description = :description " +
+				"	and r.patient in (" + patientsInDatasetSubquery("dataset") + ")" + 
 				"order " +
 				"	by r.patient.id, r.id";
+		
 		Query q = t.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		if (type == CD4_Type.Value)
 			q.setParameter("description", StandardObjects.getCd4TestType().getDescription());
@@ -233,7 +250,7 @@ public abstract class HicdepExporter {
 		t.clearCache();
 	}
 	
-	private void exportLAB_RNA() {
+	private void exportLAB_RNA(String dataset) {
 		final String patient_id = "patient_id";
 		final String test_date = "test_date";
 		final String value = "value";
@@ -251,9 +268,12 @@ public abstract class HicdepExporter {
 				"where " +
 				"	r.test.testType.description = :description and " +
 				"	r.test.testType.genome.organismName = :organism " +
+				"	and r.patient in (" + patientsInDatasetSubquery("dataset") + ")" + 
 				"order " +
 				"	by r.patient.id, r.id";
+		
 		Query q = t.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		q.setParameter("description", StandardObjects.getViralLoadDescription());
 		q.setParameter("organism", StandardObjects.getHiv1Genome().getOrganismName());
@@ -286,7 +306,7 @@ public abstract class HicdepExporter {
 		t.clearCache();
 	}
 	
-	private void exportLAB_RESandSAMPLES() {
+	private void exportLAB_RESandSAMPLES(String dataset) {
 		final String patient_id = "patient_id";
 		final String isolate_id = "isolate_id";
 		final String isolate_date = "isolate_date";
@@ -313,6 +333,8 @@ public abstract class HicdepExporter {
 				" )" +
 				"from " +
 				"	PatientImpl p join p.viralIsolates v " +
+				"where " +
+				"	p in (" + patientsInDatasetSubquery("dataset") + ")" + 
 				"order " +
 				"	by p.patientId, v.sampleDate, v.id";
 		
@@ -320,6 +342,7 @@ public abstract class HicdepExporter {
 		
 		Query q = t.createQuery(query);
 		q.setParameter("subtype_description", StandardObjects.getSubtypeTestDescription());
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -377,7 +400,7 @@ public abstract class HicdepExporter {
 		}
 	}
 	
-	private void exportVIS() {
+	private void exportVIS(String dataset) {
 		final String patient_id = "patient_id";
 		final String test_date = "test_date";
 		
@@ -392,11 +415,13 @@ public abstract class HicdepExporter {
 				"	TestResult r " + 
 				"where " +
 				"	r.test.testType.description = :description " +
+				"	and r.patient in (" + patientsInDatasetSubquery("dataset") + ")" + 
 				"order " +
 				"	by r.patient.id, r.id";
 		Query q = t.createQuery(qs);
 		
 		q.setParameter("description", StandardObjects.getContactTestType().getDescription());
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -424,7 +449,7 @@ public abstract class HicdepExporter {
 		t.clearCache();
 	}
 	
-	private void exportGenericART() {
+	private void exportGenericART(String dataset) {
 		final String patient_id = "patient_id";
 		final String therapy = "therapy";
 		final String therapy_generic = "therapy_generic";
@@ -438,11 +463,14 @@ public abstract class HicdepExporter {
 			"	)" +
 			"from " +
 			"	TherapyGeneric tg " +
+			"where " +
+			"	tg.id.therapy.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
 			"order " +
 			"	by tg.id";
 		
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -490,7 +518,7 @@ public abstract class HicdepExporter {
 		printRow("tblART", row);
 	}
 	
-	private void exportCommercialART() {
+	private void exportCommercialART(String dataset) {
 		final String patient_id = "patient_id";
 		final String therapy = "therapy";
 		final String therapy_commercial = "therapy_commercial";
@@ -504,11 +532,14 @@ public abstract class HicdepExporter {
 				"	) " + 
 				"from " +
 				"	TherapyCommercial tc " +
+				"where " +
+				"	tc.id.therapy.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
 				"order " +
 				"	by tc.id";
 		
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -548,7 +579,7 @@ public abstract class HicdepExporter {
 		tr.clearCache();
 	}
 	
-	private void exportLAB_RES_LVL_1() {
+	private void exportLAB_RES_LVL_1(String dataset) {
 		final String sample_id = "sample_id";
 		final String protein = "protein";
 		final String start = "start";
@@ -566,11 +597,14 @@ public abstract class HicdepExporter {
 				"	)" +
 				"from " +
 				"	NtSequence n join n.aaSequences a join a.protein p " +
+				"where " +
+				"	n.viralIsolate.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
 				"order " +
 				"	by a.id";
 		
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -618,7 +652,7 @@ public abstract class HicdepExporter {
 		printRow("tblLAB_RES_LVL_2", row);
 	}
 	
-	private void exportLAB_RES_LVL_2_mutations() {
+	private void exportLAB_RES_LVL_2_mutations(String dataset) {
 		final String sample_id = "sample_id";
 		final String protein = "protein";
 		final String aa_position = "aa_position";
@@ -634,11 +668,14 @@ public abstract class HicdepExporter {
 				"	)" + 
 				" from " +
 				"	AaSequence a join a.aaMutations m join a.protein p " +
+				" where " +
+				"	a.ntSequence.viralIsolate.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
 				" order " +
 				"	by m.id ";
 		
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll();
 		
@@ -665,7 +702,7 @@ public abstract class HicdepExporter {
 		tr.clearCache();
 	}
 	
-	private void exportLAB_RES_LVL_2_insertions() {
+	private void exportLAB_RES_LVL_2_insertions(String dataset) {
 		final String sample_id = "sample_id";
 		final String protein = "protein";
 		final String aa_insertion = "aa_insertion";
@@ -678,11 +715,14 @@ public abstract class HicdepExporter {
 				"		i as " + aa_insertion +
 				"	)" +
 				"from AaSequence a join a.aaInsertions i join a.protein p " +
+				"where " +
+				"	a.ntSequence.viralIsolate.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
 				"order " +
 				"	by i.id";
 		
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs);
+		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -709,25 +749,25 @@ public abstract class HicdepExporter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void export(){		
+	public void export(String dataset){		
 		System.err.println("Exporting BASandLTFU");
-		exportBASandLTFU();
+		exportBASandLTFU(dataset);
 		System.err.println("Exporting LAB_RESandSAMPLES");
-		exportLAB_RESandSAMPLES();
+		exportLAB_RESandSAMPLES(dataset);
 		System.err.println("Exporting VIS");
-		exportVIS();
+		exportVIS(dataset);
 		System.err.println("Exporting ART");
-		exportGenericART();
-		exportCommercialART();
+		exportGenericART(dataset);
+		exportCommercialART(dataset);
 		System.err.println("Exporting LAB_RES_LVL");
-		exportLAB_RES_LVL_1();
-		exportLAB_RES_LVL_2_mutations();
-		exportLAB_RES_LVL_2_insertions();
+		exportLAB_RES_LVL_1(dataset);
+		exportLAB_RES_LVL_2_mutations(dataset);
+		exportLAB_RES_LVL_2_insertions(dataset);
 		System.err.println("Exporting LAB_CD4");
-		exportLAB_CD4(CD4_Type.Value);
-		exportLAB_CD4(CD4_Type.Percentage);
+		exportLAB_CD4(CD4_Type.Value, dataset);
+		exportLAB_CD4(CD4_Type.Percentage, dataset);
 		System.err.println("Exporting LAB_RNA");
-		exportLAB_RNA();
+		exportLAB_RNA(dataset);
 	}
 	
 	private String therapyMotivation(Therapy t) {
