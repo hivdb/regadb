@@ -402,15 +402,15 @@ public abstract class HicdepExporter {
 		
 		byte counter = 0;
 		while(sr.next()){
-			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
-			
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
-			m.put("PATIENT", (String)m.get(patient_id));
-			m.put("VIS_D", format((Date)m.get(test_date)));
-			m.put("WEIGH", "999");
-			m.put("GAIN_Y", "9");
-			m.put("LOSS_Y", "9");
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+
+			row.put("PATIENT", (String)m.get(patient_id));
+			row.put("VIS_D", format((Date)m.get(test_date)));
+			row.put("WEIGH", "999");
+			row.put("GAIN_Y", "9");
+			row.put("LOSS_Y", "9");
 			
 			printRow("tblVIS", row);
 			
