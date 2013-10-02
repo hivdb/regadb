@@ -32,7 +32,8 @@ public class InstituteConfig extends ConfigParser {
 	private String defaultDataset = null;
 
 	private WivConfig wivConfig;
-	
+	private HicdepConfig hicdepConfig;
+
 	private EmailConfig emailConfig;
 
 	private HashMap<String, FormConfig> forms = new HashMap<String, FormConfig>();
@@ -66,6 +67,12 @@ public class InstituteConfig extends ConfigParser {
 		if(ee != null){
 			wivConfig = new WivConfig();
 			wivConfig.parseXml(settings, ee);
+		}
+		
+		ee = e.getChild("hicdep");
+		if(ee != null){
+			hicdepConfig = new HicdepConfig();
+			hicdepConfig.parseXml(settings, ee);
 		}
 		
 		ee = e.getChild("e-mail");
@@ -395,5 +402,13 @@ public class InstituteConfig extends ConfigParser {
 
 	public void setDatabaseBackupScript(String databaseBackupScript) {
 		this.databaseBackupScript = databaseBackupScript;
+	}
+	
+	public HicdepConfig getHicdepConfig() {
+		return hicdepConfig;
+	}
+
+	public void setHicdepConfig(HicdepConfig hicdepConfig) {
+		this.hicdepConfig = hicdepConfig;
 	}
 }

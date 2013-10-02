@@ -23,6 +23,8 @@ import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.export.fasta.ExportAaSequence;
 import net.sf.regadb.io.export.fasta.FastaExporter.Symbol;
 import net.sf.regadb.io.util.StandardObjects;
+import net.sf.regadb.util.settings.HicdepConfig;
+import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
@@ -74,6 +76,10 @@ public abstract class HicdepExporter {
                 "	dataset.description = :" + datasetParam;
 	}
 	
+	private HicdepConfig config() {
+		return RegaDBSettings.getInstance().getInstituteConfig().getHicdepConfig();
+	}
+	
 	private void exportBASandLTFU(String dataset) {
 		SimpleCsvMapper genderMap = getMapper("gender.csv");
 		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");
@@ -85,14 +91,27 @@ public abstract class HicdepExporter {
 		final String GEOGRAPHIC_ORIGIN = "geographic_origin";
 		final String ETHNICITY = "ethnicity";
 		final String DEATH_DATE = "death_date";
+		final String CENTER = "center";
+		final String ENROL_D = "enrol_d";
 		
 		Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+		
 		attributes.put(BIRTH_DATE, StandardObjects.getBirthDateAttribute());
 		attributes.put(GENDER, StandardObjects.getGenderAttribute());
 		attributes.put(TRANSMISSION_GROUP, StandardObjects.getTransmissionGroupAttribute());
 		attributes.put(GEOGRAPHIC_ORIGIN, StandardObjects.getGeoGraphicOriginAttribute());
 		attributes.put(ETHNICITY, StandardObjects.getEthnicityAttribute());
 		attributes.put(DEATH_DATE, StandardObjects.getDeathDateAttribute());
+		
+		{
+			Transaction t = login.createTransaction();
+			
+			HicdepConfig.Attribute center = config().getCenter();
+			if (center != null)
+				attributes.put(CENTER, t.getAttribute(center.name, center.group));
+		}
+		
+		HicdepConfig.Event enrolEvent = config().getEnrol_d();
 
 		StringBuilder queryString = new StringBuilder("select new map (p.patientId as " + ID);
 		for (Map.Entry<String, Attribute> e : attributes.entrySet()) {
@@ -110,6 +129,15 @@ public abstract class HicdepExporter {
 			}
 			queryString.append(", \n (" + select + ") as " + e.getKey() + " ");	
 		}
+		
+		if (enrolEvent != null) {
+			String select  = 
+					"select min(pev.startDate) " +
+					"from PatientEventValue pev join pev.event e " +
+					"where pev.patient = p and e.name = :" + ENROL_D;
+			queryString.append(", \n (" + select + ") as " + ENROL_D + " ");	
+		}
+		
 		queryString.append(")" +
 				"from PatientImpl p " +
 				"where p in (" + patientsInDatasetSubquery("dataset") + ")" + 
@@ -119,33 +147,38 @@ public abstract class HicdepExporter {
 		Query q = t.createQuery(queryString.toString());
 		for (Map.Entry<String, Attribute> e : attributes.entrySet())
 			q.setParameter(e.getKey() + "_name", e.getValue().getName());
+		if (enrolEvent != null)
+			q.setParameter(ENROL_D, enrolEvent.name);
 		q.setParameter("dataset", dataset);
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
 		byte counter = 0;
 		while(sr.next()){
-			Map<String, String> m = (Map<String,String>)sr.get(0);
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
 			{
 				LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
 				
-				row.put("PATIENT", m.get(ID));
-				row.put("CENTER", null);
+				row.put("PATIENT", (String)m.get(ID));
 				
-				String birthDate = m.get(BIRTH_DATE);
+				String birthDate = (String)m.get(BIRTH_DATE);
 				row.put("BIRTH_D", birthDate == null ? null : format(new Date(Long.parseLong(birthDate))));
 				
 				row.put("FRSVIS_D", null);
-				row.put("ENROL_D", null);
 			
-				String gender = genderMap.b2a(m.get(GENDER));
+				String gender = genderMap.b2a((String)m.get(GENDER));
 				row.put("GENDER", gender);
 	
 				row.put("HEIGH", "999");
 				
-				String transmission = transmissionMap.b2a(m.get(TRANSMISSION_GROUP));
+				String transmission = transmissionMap.b2a((String)m.get(TRANSMISSION_GROUP));
 				row.put("MODE", transmission);
+				
+				row.put("CENTER", (String)m.get(CENTER));
+				Date enrol_d = (Date)m.get(ENROL_D);
+				if (enrol_d != null)
+					row.put("ENROL_D", format(enrol_d));
 				
 				row.put("ORIGIN", null);
 				row.put("ETHNIC", null);
@@ -160,13 +193,13 @@ public abstract class HicdepExporter {
 			{
 				LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
 				
-				row.put("PATIENT", m.get(ID));
+				row.put("PATIENT", (String)m.get(ID));
 				
 				row.put("DROP_Y", null);
 				row.put("DROP_D", null);
 				row.put("DROP_RS", null);
 				
-				String deathDate = m.get(DEATH_DATE);
+				String deathDate = (String)m.get(DEATH_DATE);
 				row.put("DEATH_Y", deathDate == null ? "0" : "1");
 				row.put("DEATH_D", deathDate == null ? null : format(new Date(Long.parseLong(deathDate))));
 				

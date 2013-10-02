@@ -68,6 +68,29 @@
       </viral-load-testtype>
     </wiv>
     
+    <!--  configuration for HICDEP export
+	  		this element is optional
+    -->
+    <hicdep>
+    	<!-- BAS table section -->
+    	<!-- CENTER field configuration
+    			an attribute can be configured to be used as the CENTER field
+    			this element is optional -->
+    	<CENTER>
+    		<attribute name="my-center" group="my-group" />
+    	</CENTER>
+    	 <!-- ENROL_D field configuration
+    			an event can be configured to be used as the ENROL_D field:
+    			of all of these events belonging to a patient, 
+    			the one with the most recent start date will be selected, 
+    			this event's start date will be used as ENROL_D field in the 
+    			HICDEP export
+    			this element is optional -->
+    	<ENROL_D>
+    		<event name="my-enrol_d" />
+    	</ENROL_D>
+    </hicdep>
+    
     <!--
     	the maximum amount of days a test result`s date can deviate from the viral isolate`s
     	sample date, for it to be included in a patient`s viral isolate resistance report
