@@ -388,10 +388,13 @@ public abstract class HicdepExporter {
 				LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
 				
 				Date sequenceDate = (Date)m.get(last_sequence_date);
+				String patientId = (String)m.get(patient_id);
+				String isolateId = (String)m.get(isolate_id);
 				
 				row.clear();
-				row.put("PATIENT", (String)m.get(patient_id));
-				row.put("SAMP_ID", (String)m.get(isolate_id));
+				row.put("PATIENT", patientId);
+				row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
+				row.put("SAMP_ID", isolateId);
 				row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
 				row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
 				row.put("LAB", null);
