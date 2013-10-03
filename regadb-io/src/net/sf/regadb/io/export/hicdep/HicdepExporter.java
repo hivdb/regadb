@@ -394,7 +394,6 @@ public abstract class HicdepExporter {
 				row.clear();
 				row.put("PATIENT", patientId);
 				row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
-				row.put("SAMP_ID", isolateId);
 				row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
 				row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
 				row.put("LAB", null);
