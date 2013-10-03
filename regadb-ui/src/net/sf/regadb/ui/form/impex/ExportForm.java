@@ -326,7 +326,8 @@ public class ExportForm extends FormWidget {
 //		datasets.clearItems();
         for(Dataset ds : t.getDatasets())
         {
-        	datasets.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
+        	if (ds.getClosedDate() == null)
+        		datasets.addItem(new DataComboMessage<Dataset>(ds, ds.getDescription()));
         }
         datasets.sort();
         datasets.selectIndex(0);
