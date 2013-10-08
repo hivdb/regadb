@@ -339,11 +339,22 @@ public abstract class HicdepExporter {
 		t.clearCache();
 	}
 	
-	private void exportLAB_RESandSAMPLES(String dataset) {
+	private String virusType(String genomeName) {
+		if (genomeName.startsWith("HIV"))
+			return "1";
+		else if (genomeName.startsWith("HCV"))
+			return "2";
+		else
+			return null;
+	}
+	
+	private void exportLAB_RESandSAMPLES(String dataset, String asiAlgo) {
 		final String patient_id = "patient_id";
 		final String isolate_id = "isolate_id";
 		final String isolate_date = "isolate_date";
 		final String last_sequence_date = "last_sequence_date";
+		final String virus_type = "virus_type";
+		final String reference_sequence = "reference_sequence";
 		final String subtype_result = "subtype_result";
 		
 		String query = 
@@ -352,6 +363,8 @@ public abstract class HicdepExporter {
 				"	p.patientId as " + patient_id + "," +
 				" 	v.sampleId as " + isolate_id + "," +
 				" 	v.sampleDate as " + isolate_date + ", " +
+				"	v.genome.organismName as " + virus_type + ", " + 
+				"	v.genome.organismDescription as " + reference_sequence + ", " + 
 				" 	( " +
 				"		select max(n.sequenceDate) " +
 				"		from NtSequence n " +
@@ -396,14 +409,19 @@ public abstract class HicdepExporter {
 				row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
 				row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
 				row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
-				row.put("LAB", null);
-				row.put("LIBRARY", null);
-				row.put("REFSEQ", null); 
+				
+				row.put("LIBRARY", asiAlgo);
+				row.put("REFSEQ", (String)m.get(reference_sequence)); 
+				row.put("SOFTWARE", "RegaDB");
+
+				row.put("VIRUSTYPE", virusType((String)m.get(virus_type)));
+				row.put("SUBTYPE", (String)m.get("subtype_result"));
+				
 				row.put("KIT", null);
-				row.put("SOFTWARE", null);
+				row.put("LAB", null);
 				row.put("TESTTYPE", null);
 				
-				row.put("SUBTYPE", (String)m.get("subtype_result"));
+				row.put("SAMP_LAB", isolateId);
 				
 				printRow("tblLAB_RES", row);
 			}
@@ -784,11 +802,11 @@ public abstract class HicdepExporter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void export(String dataset){		
+	public void export(String dataset, String asiAlgo){		
 		System.err.println("Exporting BASandLTFU");
 		exportBASandLTFU(dataset);
 		System.err.println("Exporting LAB_RESandSAMPLES");
-		exportLAB_RESandSAMPLES(dataset);
+		exportLAB_RESandSAMPLES(dataset, asiAlgo);
 		System.err.println("Exporting VIS");
 		exportVIS(dataset);
 		System.err.println("Exporting ART");
