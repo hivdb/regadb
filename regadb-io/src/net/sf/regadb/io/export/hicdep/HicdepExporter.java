@@ -354,7 +354,6 @@ public abstract class HicdepExporter {
 		final String virus_type = "virus_type";
 		final String reference_sequence = "reference_sequence";
 		final String subtype_result = "subtype_result";
-		final String resistance_test = "resistance_test";
 		
 		String query = 
 				"select" +
@@ -363,7 +362,6 @@ public abstract class HicdepExporter {
 				" 	v.sampleId as " + isolate_id + "," +
 				" 	v.sampleDate as " + isolate_date + ", " +
 				"	v.genome.organismName as " + virus_type + ", " +
-				"	tr.test.description as " + resistance_test + "," + 
 				"	v.genome.organismDescription as " + reference_sequence + ", " + 
 				" 	( " +
 				"		select max(n.sequenceDate) " +
@@ -380,12 +378,8 @@ public abstract class HicdepExporter {
 				"from " +
 				"	PatientImpl p " +
 				"	join p.viralIsolates v " +
-				"	join v.testResults tr " +
 				"where " +
 				"	p in (" + patientsInDatasetSubquery("dataset") + ")" + 
-				" 	and tr.test.testType.testObject.description = :gssTestObject " + 
-				"group by " +
-				"	p, v, v.genome.organismName, v.genome.organismDescription, tr.test, tr.test.description " +
 				"order " +
 				"	by p.patientId, v.sampleDate, v.id";
 		
@@ -394,7 +388,6 @@ public abstract class HicdepExporter {
 		Query q = t.createQuery(query);
 		q.setParameter("subtype_description", StandardObjects.getSubtypeTestDescription());
 		q.setParameter("dataset", dataset);
-		q.setParameter("gssTestObject", StandardObjects.getResistanceTestObject().getDescription());
 		
 		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
 		
@@ -408,17 +401,16 @@ public abstract class HicdepExporter {
 			Date sequenceDate = (Date) m.get(last_sequence_date);
 			String patientId = (String) m.get(patient_id);
 			String isolateId = (String) m.get(isolate_id);
-			String asiAlgo =  (String)m.get(resistance_test);
 
 			row.clear();
 			row.put("PATIENT", patientId);
-			row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId + "_" + asiAlgo);
+			row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
 			row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
 			row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
 
-			row.put("LIBRARY", asiAlgo);
+			row.put("LIBRARY", null);
 			row.put("REFSEQ", (String) m.get(reference_sequence));
-			row.put("SOFTWARE", "RegaDB");
+			row.put("SOFTWARE", null);
 
 			row.put("VIRUSTYPE", virusType((String) m.get(virus_type)));
 			row.put("SUBTYPE", (String) m.get("subtype_result"));
