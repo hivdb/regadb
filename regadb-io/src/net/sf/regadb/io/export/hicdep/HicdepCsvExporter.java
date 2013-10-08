@@ -88,27 +88,4 @@ public class HicdepCsvExporter extends HicdepExporter {
 		for(File f : files.values())
 			f.delete();
 	}
-	
-	public static void main(String[] args) throws WrongUidException, WrongPasswordException, DisabledUserException{
-		Arguments as = new Arguments();
-		PositionalArgument user = as.addPositionalArgument("user", true);
-		PositionalArgument pass = as.addPositionalArgument("pass", true);
-		PositionalArgument dataset = as.addPositionalArgument("dataset", true);
-		ValueArgument confDir = as.addValueArgument("c", "conf-dir", false);
-		
-		if(!as.handle(args))
-			return;
-		
-		if(confDir.isSet())
-			RegaDBSettings.createInstance(confDir.getValue());
-		else
-			RegaDBSettings.createInstance();
-		
-		Login login = Login.authenticate(user.getValue(), pass.getValue());
-		
-		HicdepExporter he = new HicdepCsvExporter(login, new File("/home/simbre1/Desktop"));
-		he.export(dataset.getValue());
-		
-		login.closeSession();
-	}
 }
