@@ -11,17 +11,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.sf.regadb.db.AaInsertion;
-import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.io.export.fasta.ExportAaSequence;
-import net.sf.regadb.io.export.fasta.FastaExporter.Symbol;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.HicdepConfig;
 import net.sf.regadb.util.settings.RegaDBSettings;
@@ -348,7 +346,7 @@ public abstract class HicdepExporter {
 			return null;
 	}
 	
-	private void exportLAB_RESandSAMPLES(String dataset, String asiAlgo) {
+	private void exportLAB_RES(String dataset) {
 		final String patient_id = "patient_id";
 		final String isolate_id = "isolate_id";
 		final String isolate_date = "isolate_date";
@@ -397,51 +395,89 @@ public abstract class HicdepExporter {
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			Date isolateDate = (Date)m.get(isolate_date);
 			
-			{
-				LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
-				
-				Date sequenceDate = (Date)m.get(last_sequence_date);
-				String patientId = (String)m.get(patient_id);
-				String isolateId = (String)m.get(isolate_id);
-				
-				row.clear();
-				row.put("PATIENT", patientId);
-				row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
-				row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
-				row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
-				
-				row.put("LIBRARY", asiAlgo);
-				row.put("REFSEQ", (String)m.get(reference_sequence)); 
-				row.put("SOFTWARE", "RegaDB");
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
 
-				row.put("VIRUSTYPE", virusType((String)m.get(virus_type)));
-				row.put("SUBTYPE", (String)m.get("subtype_result"));
-				
-				row.put("KIT", null);
-				row.put("LAB", null);
-				row.put("TESTTYPE", null);
-				
-				row.put("SAMP_LAB", isolateId);
-				
-				printRow("tblLAB_RES", row);
+			Date sequenceDate = (Date) m.get(last_sequence_date);
+			String patientId = (String) m.get(patient_id);
+			String isolateId = (String) m.get(isolate_id);
+
+			row.clear();
+			row.put("PATIENT", patientId);
+			row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
+			row.put("SAMPLE_D", isolateDate == null ? null : format(isolateDate));
+			row.put("SEQ_DT", sequenceDate == null ? null : format(sequenceDate));
+
+			row.put("LIBRARY", null);
+			row.put("REFSEQ", (String) m.get(reference_sequence));
+			row.put("SOFTWARE", "RegaDB");
+
+			row.put("VIRUSTYPE", virusType((String) m.get(virus_type)));
+			row.put("SUBTYPE", (String) m.get("subtype_result"));
+
+			row.put("KIT", null);
+			row.put("LAB", null);
+			row.put("TESTTYPE", null);
+
+			row.put("SAMP_LAB", isolateId);
+
+			printRow("tblLAB_RES", row);
+			
+			if (counter == 100) {
+				counter = 0;
+				t.clearCache();
+			} else {
+				++counter;
 			}
-				
-			{
-				LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
-				
-				row.put("PATIENT", (String)m.get(patient_id));
-				row.put("SAMP_LAB_D", isolateDate == null ? null : format(isolateDate));
-				row.put("SAMP_TYPE", null);
-				row.put("SAMP_ID", (String)m.get(isolate_id));
-				row.put("SAMP_LAB", null);
-				row.put("SAMP_FREEZE_D", null);
-				row.put("SAMP_FREEZE_T", null);
-				row.put("SAMP_ALIQ_NO", null);
-				row.put("SAMP_ALIQ_SIZE", null);
-				row.put("SAMP_ALIQ_U", null);
-				
-				printRow("tblSAMPLES", row);
-			}
+			t.clearCache();
+		}
+	}
+	
+	private void exportSAMPLES(String dataset) {
+		final String patient_id = "patient_id";
+		final String isolate_id = "isolate_id";
+		final String isolate_date = "isolate_date";
+		
+		String query = 
+				"select" +
+				" new map (" +
+				"	p.patientId as " + patient_id + "," +
+				" 	v.sampleId as " + isolate_id + "," +
+				" 	v.sampleDate as " + isolate_date + 
+				" )" +
+				"from " +
+				"	PatientImpl p join p.viralIsolates v " +
+				"where " +
+				"	p in (" + patientsInDatasetSubquery("dataset") + ")" + 
+				"order " +
+				"	by p.patientId, v.sampleDate, v.id";
+		
+		Transaction t = login.createTransaction();
+		
+		Query q = t.createQuery(query);
+		q.setParameter("dataset", dataset);
+		
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
+		
+		byte counter = 0;
+		while(sr.next()){
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
+			Date isolateDate = (Date)m.get(isolate_date);
+			
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+
+			row.put("PATIENT", (String) m.get(patient_id));
+			row.put("SAMP_LAB_D", isolateDate == null ? null
+					: format(isolateDate));
+			row.put("SAMP_TYPE", null);
+			row.put("SAMP_ID", (String) m.get(isolate_id));
+			row.put("SAMP_LAB", null);
+			row.put("SAMP_FREEZE_D", null);
+			row.put("SAMP_FREEZE_T", null);
+			row.put("SAMP_ALIQ_NO", null);
+			row.put("SAMP_ALIQ_SIZE", null);
+			row.put("SAMP_ALIQ_U", null);
+
+			printRow("tblSAMPLES", row);
 			
 			if (counter == 100) {
 				counter = 0;
@@ -802,11 +838,13 @@ public abstract class HicdepExporter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void export(String dataset, String asiAlgo){		
+	public void export(String dataset){		
 		System.err.println("Exporting BASandLTFU");
 		exportBASandLTFU(dataset);
-		System.err.println("Exporting LAB_RESandSAMPLES");
-		exportLAB_RESandSAMPLES(dataset, asiAlgo);
+		System.err.println("Exporting LAB_RES");
+		exportLAB_RES(dataset);
+		System.err.println("Exporting SAMPLES");
+		exportSAMPLES(dataset);
 		System.err.println("Exporting VIS");
 		exportVIS(dataset);
 		System.err.println("Exporting ART");

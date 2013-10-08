@@ -311,7 +311,7 @@ public class ExportForm extends FormWidget {
 	
 	private void exportHicdep(Dataset ds, File exportFile, List<String> errors){        
         HicdepCsvExporter export = new HicdepCsvExporter(RegaDBMain.getApp().getLogin(), exportFile);
-        export.export(ds.getDescription(), null);
+        export.export(ds.getDescription());
         try {
 			export.close();
 		} catch (IOException e) {
