@@ -670,6 +670,7 @@ public abstract class HicdepExporter {
 	}
 	
 	private void exportLAB_RES_LVL_1(String dataset) {
+		final String patient_id = "patient_id";
 		final String sample_id = "sample_id";
 		final String protein = "protein";
 		final String start = "start";
@@ -704,7 +705,10 @@ public abstract class HicdepExporter {
 			
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
-			row.put("SAMP_ID", (String)m.get(sample_id));
+			String patientId = (String)m.get(patient_id);
+			String isolateId = (String)m.get(sample_id);
+			
+			row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
 			row.put("SEQTYPE", (String)m.get(protein));
 			row.put("SEQ_START", m.get(start).toString());
 			row.put("SEQ_STOP", m.get(stop).toString());
@@ -722,10 +726,11 @@ public abstract class HicdepExporter {
 		tr.clearCache();
 	}
 	
-	private void printMutationRow(String sampleId, String protein, int position, String acids, int insertion) {
+	private void printMutationRow(String dataset, String patientId, String sampleId, String protein, int position, String acids, int insertion) {
 		LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
 		
-		row.put("SAMP_ID", sampleId);
+		row.put("TEST_ID", dataset + "_" + patientId + "_" + sampleId);
+		
 		row.put("GENE", protein);
 		row.put("AA_POS", String.valueOf(position));
 		String insertionString = insertion != -1 ? String.valueOf((char)((Character.getNumericValue('a') + insertion))) : null;
@@ -743,6 +748,7 @@ public abstract class HicdepExporter {
 	}
 	
 	private void exportLAB_RES_LVL_2_mutations(String dataset) {
+		final String patient_id = "patient_id";
 		final String sample_id = "sample_id";
 		final String protein = "protein";
 		final String aa_position = "aa_position";
@@ -751,6 +757,7 @@ public abstract class HicdepExporter {
 		String qs = 
 				"select " +
 				"	new map(" +
+				"		a.ntSequence.viralIsolate.patient.patientId as " + patient_id + "," +
 				"		a.ntSequence.viralIsolate.sampleId as " + sample_id + ", " +
 				"		p.abbreviation as " + protein + ", " +
 				"		m.id.mutationPosition as " + aa_position + ", " +
@@ -775,6 +782,8 @@ public abstract class HicdepExporter {
 			
 			if (m.get(aa_mutation) != null) {
 				printMutationRow(
+						dataset,
+						(String)m.get(patient_id),
 						(String)m.get(sample_id),
 						(String)m.get(protein),
 						((Short)m.get(aa_position)).intValue(),
@@ -793,6 +802,7 @@ public abstract class HicdepExporter {
 	}
 	
 	private void exportLAB_RES_LVL_2_insertions(String dataset) {
+		final String patient_id = "patient_id";
 		final String sample_id = "sample_id";
 		final String protein = "protein";
 		final String aa_insertion = "aa_insertion";
@@ -800,6 +810,7 @@ public abstract class HicdepExporter {
 		String qs = 
 				"select " +
 				"	new map(" +
+				"		a.ntSequence.viralIsolate.patient.patientId as " + patient_id + "," +
 				"		a.ntSequence.viralIsolate.sampleId as " + sample_id + ", " +
 				"		p.abbreviation as " + protein + ", " +
 				"		i as " + aa_insertion +
@@ -822,6 +833,8 @@ public abstract class HicdepExporter {
 			AaInsertion insertion = (AaInsertion)m.get(aa_insertion);
 			
 			printMutationRow(
+					dataset,
+					(String)m.get(patient_id),
 					(String)m.get(sample_id),
 					(String)m.get(protein),
 					insertion.getId().getInsertionPosition(),
