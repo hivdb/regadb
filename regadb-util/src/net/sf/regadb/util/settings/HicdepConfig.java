@@ -18,53 +18,54 @@ public class HicdepConfig extends ConfigParser{
 		}
 	}
 	
-	private Attribute center;
-	private Event enrol_d;
+	private Attribute BAScenter;
+	private Event BASenrol_d;
 	
 	public HicdepConfig(){
 		super("hicdep");
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
-		Element ee;
+		Element BAS = e.getChild("BAS");
 		
-		ee = e.getChild("CENTER");
+		Element ee = BAS.getChild("CENTER");
 		if (ee != null){
 			Element attributeE = ee.getChild("attribute");
 			final String name = attributeE.getAttributeValue("name");
 			final String group = attributeE.getAttributeValue("group");
-			center = new Attribute(name, group);
+			BAScenter = new Attribute(name, group);
 		}
 		
-		ee = e.getChild("ENROL_D");
+		ee = BAS.getChild("ENROL_D");
 		if (ee != null) {
 			Element eventE = ee.getChild("event");
 			final String name = eventE.getAttributeValue("name");
-			enrol_d = new Event(name);
+			BASenrol_d = new Event(name);
 		}
 	}
 
 	public void setDefaults() {
-		center = null;
+		BAScenter = null;
+		BASenrol_d = null;
 	}
 
 	public Element toXml() {
 		return null;
 	}
 	
-	public Attribute getCenter() {
-		return center;
+	public Attribute getBASCenter() {
+		return BAScenter;
 	}
 
-	public void setCenter(Attribute center) {
-		this.center = center;
+	public void setBASCenter(Attribute center) {
+		this.BAScenter = center;
 	}
 	
-	public Event getEnrol_d() {
-		return enrol_d;
+	public Event getBASEnrol_d() {
+		return BASenrol_d;
 	}
 
-	public void setEnrol_d(Event enrol_d) {
-		this.enrol_d = enrol_d;
+	public void setBASEnrol_d(Event enrol_d) {
+		this.BASenrol_d = enrol_d;
 	}
 }

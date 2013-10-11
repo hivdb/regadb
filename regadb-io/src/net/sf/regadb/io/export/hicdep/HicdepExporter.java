@@ -104,12 +104,12 @@ public abstract class HicdepExporter {
 		{
 			Transaction t = login.createTransaction();
 			
-			HicdepConfig.Attribute center = config().getCenter();
+			HicdepConfig.Attribute center = config().getBASCenter();
 			if (center != null)
 				attributes.put(CENTER, t.getAttribute(center.name, center.group));
 		}
 		
-		HicdepConfig.Event enrolEvent = config().getEnrol_d();
+		HicdepConfig.Event enrolEvent = config().getBASEnrol_d();
 
 		StringBuilder queryString = new StringBuilder("select new map (p.patientId as " + ID);
 		for (Map.Entry<String, Attribute> e : attributes.entrySet()) {
