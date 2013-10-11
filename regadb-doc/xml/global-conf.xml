@@ -91,6 +91,22 @@
 	    		<event name="my-enrol_d" />
 	    	</ENROL_D>
     	</BAS>
+    	<!-- SAMPLES table section -->
+    	<SAMPLES>
+    		<!-- SAMP_TYPE field configuration
+    				a viral isolate test result can be used as the SAMP_TYPE field:
+    				the test type of this test result should be nominal, 
+    				and the nominal values may be mapped in this configuration test.
+    				If a value (after mapping) is not part of this set
+    				{BP, BS, C, D, S, OTH:*}, a fatal exception will be thrown.
+    		 -->
+    		<SAMP_TYPE>
+    			<test name="Sample Source" type="Sample Source Type">
+           			<map from="Plasma" to="BP"/>
+           			<map from="CSF" to="OTH:CSF"/>
+    			</test>
+    		</SAMP_TYPE>
+    	</SAMPLES>
     </hicdep>
     
     <!--

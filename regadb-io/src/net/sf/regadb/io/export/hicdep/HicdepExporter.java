@@ -5,20 +5,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.TestType;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.HicdepConfig;
@@ -437,13 +441,15 @@ public abstract class HicdepExporter {
 		final String patient_id = "patient_id";
 		final String isolate_id = "isolate_id";
 		final String isolate_date = "isolate_date";
+		final String viral_isolate = "viral_isolate";
 		
 		String query = 
 				"select" +
 				" new map (" +
 				"	p.patientId as " + patient_id + "," +
 				" 	v.sampleId as " + isolate_id + "," +
-				" 	v.sampleDate as " + isolate_date + 
+				" 	v.sampleDate as " + isolate_date + "," +
+				"	v as " + viral_isolate +
 				" )" +
 				"from " +
 				"	PatientImpl p join p.viralIsolates v " +
@@ -469,8 +475,32 @@ public abstract class HicdepExporter {
 			row.put("PATIENT", (String) m.get(patient_id));
 			row.put("SAMP_LAB_D", isolateDate == null ? null
 					: format(isolateDate));
-			row.put("SAMP_TYPE", null);
+			HicdepConfig.Test samp_type = config().getSAMPLESsamp_type();
+			if (samp_type != null) {
+				ViralIsolate vi = (ViralIsolate)m.get(viral_isolate);
+				for (TestResult tr : vi.getTestResults()) {
+					if (tr.getTest().getDescription().equals(samp_type.name)
+							&& tr.getTest().getTestType().getDescription().equals(samp_type.typeName)) {
+						String v = tr.getTestNominalValue().getValue();
+						String mapping = config().getSAMPLESsamp_type_mapping().get(v);
+						if (mapping != null)
+							v = mapping;
+						
+						if (v == null) 
+							row.put("SAMP_TYPE", null);
+						else if (v.startsWith("OTH") || set(new String[]{"BS", "BP", "C", "D", "S"}).contains(v))
+							row.put("SAMP_TYPE", v);
+						else
+							throw new RuntimeException("Illegal SAMP_TYPE value: " + v);
+					
+						break;
+					}
+				}
+			} else {
+				row.put("SAMP_TYPE", null);
+			}
 			row.put("SAMP_ID", (String) m.get(isolate_id));
+			
 			row.put("SAMP_LAB", null);
 			row.put("SAMP_FREEZE_D", null);
 			row.put("SAMP_FREEZE_T", null);
@@ -488,6 +518,10 @@ public abstract class HicdepExporter {
 			}
 			t.clearCache();
 		}
+	}
+	
+	private <T> Set<T> set(T[] array) {
+		return new HashSet<T>(Arrays.asList(array));
 	}
 	
 	private void exportVIS(String dataset) {
