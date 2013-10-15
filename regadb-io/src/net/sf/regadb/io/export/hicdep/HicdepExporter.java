@@ -16,7 +16,7 @@ import java.util.Set;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
-import net.sf.regadb.db.Test;
+import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
@@ -27,7 +27,6 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.HicdepConfig;
-import net.sf.regadb.util.settings.HicdepConfig.LabTest;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
@@ -962,6 +961,60 @@ public abstract class HicdepExporter {
 		}
 	}
 	
+	private void exportDIS(String dataset) {
+		final String patient_id = "patient_id";
+		final String patient_event = "patient_event";
+			
+		StringBuilder qs = new StringBuilder(
+				"select " +
+				"	new map(" +
+				"		pev.patient.patientId as " + patient_id + "," +
+				"		pev as " + patient_event +
+				"	)" +
+				"from " +
+				"	PatientEventValue pev " +
+				"where " +
+				"	pev.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
+				"	and pev.event.name = :event_name");
+		
+		Transaction tr = login.createTransaction();
+		Query q = tr.createQuery(qs.toString());
+		q.setParameter("dataset", dataset);
+		q.setParameter("event_name", StandardObjects.getAidsDefiningIllnessEvent().getName());
+		
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
+		
+		SimpleCsvMapper mapper = getMapper("aids-defining-ilnesses.csv");
+		
+		byte counter = 0;
+		while(sr.next()){
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
+			
+			//when there is no mapping, we export no row in the table
+			PatientEventValue pev = (PatientEventValue)m.get(patient_event);
+			String value = mapper.b2a(pev.getEventNominalValue().getValue());
+			if (value == null)
+				continue;
+			
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+			row.put("PATIENT", (String)m.get(patient_id));
+			row.put("DIS_ID", value);
+			row.put("DIS_D", format(pev.getStartDate()));
+			
+			if (pev.getStartDate() != null)
+				row.put("DIS_ED", format(pev.getEndDate()));
+			
+			printRow("tblDIS", row);
+			
+			if (counter == 100) {
+				counter = 0;
+				tr.clearCache();
+			} else {
+				++counter;
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void export(String dataset){		
 		System.err.println("Exporting BASandLTFU");
@@ -986,6 +1039,8 @@ public abstract class HicdepExporter {
 		exportLAB_RNA(dataset);
 		System.err.println("Exporting LAB");
 		exportLAB(dataset);
+		System.err.println("Exporting DIS");
+		exportDIS(dataset);
 	}
 	
 	private String therapyMotivation(Therapy t) {
