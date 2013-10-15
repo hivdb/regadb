@@ -87,6 +87,7 @@ public abstract class HicdepExporter {
 		SimpleCsvMapper genderMap = getMapper("gender.csv");
 		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");
 		SimpleCsvMapper originMap = getMapper("origin.csv");
+		SimpleCsvMapper ethnicityMap = getMapper("ethnicity.csv");
 
 		final String ID = "id";
 		final String BIRTH_DATE = "birth_date";
@@ -195,7 +196,7 @@ public abstract class HicdepExporter {
 					origin = originMap.b2a((String)m.get(GEOGRAPHIC_ORIGIN));
 				row.put("ORIGIN", origin);
 				
-				row.put("ETHNIC", null);
+				row.put("ETHNIC", ethnicityMap.b2a((String)m.get(ETHNICITY)));
 				
 				row.put("SEROCO_D", null);
 				row.put("RECART_Y", null);
