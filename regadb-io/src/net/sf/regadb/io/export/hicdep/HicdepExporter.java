@@ -86,11 +86,13 @@ public abstract class HicdepExporter {
 	private void exportBASandLTFU(String dataset) {
 		SimpleCsvMapper genderMap = getMapper("gender.csv");
 		SimpleCsvMapper transmissionMap = getMapper("transmission_group.csv");
+		SimpleCsvMapper originMap = getMapper("origin.csv");
 
 		final String ID = "id";
 		final String BIRTH_DATE = "birth_date";
 		final String GENDER = "gender";
 		final String TRANSMISSION_GROUP = "transmission_group";
+		final String COUNTRY = "country";
 		final String GEOGRAPHIC_ORIGIN = "geographic_origin";
 		final String ETHNICITY = "ethnicity";
 		final String DEATH_DATE = "death_date";
@@ -105,6 +107,11 @@ public abstract class HicdepExporter {
 		attributes.put(GEOGRAPHIC_ORIGIN, StandardObjects.getGeoGraphicOriginAttribute());
 		attributes.put(ETHNICITY, StandardObjects.getEthnicityAttribute());
 		attributes.put(DEATH_DATE, StandardObjects.getDeathDateAttribute());
+		
+		{
+			Transaction t = login.createTransaction();
+			attributes.put(COUNTRY, t.getAttribute("Country of origin", "Demographics"));
+		}
 		
 		{
 			Transaction t = login.createTransaction();
@@ -183,8 +190,13 @@ public abstract class HicdepExporter {
 				if (enrol_d != null)
 					row.put("ENROL_D", format(enrol_d));
 				
-				row.put("ORIGIN", null);
+				String origin = originMap.b2a((String)m.get(COUNTRY));
+				if (origin == null)
+					origin = originMap.b2a((String)m.get(GEOGRAPHIC_ORIGIN));
+				row.put("ORIGIN", origin);
+				
 				row.put("ETHNIC", null);
+				
 				row.put("SEROCO_D", null);
 				row.put("RECART_Y", null);
 				row.put("AIDS_Y", null);
