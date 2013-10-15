@@ -1028,6 +1028,66 @@ public abstract class HicdepExporter {
 		}
 	}
 	
+	private void exportPREG_OUT(String dataset) {
+		final String patient_ii = "patient_ii";
+		final String patient_id = "patient_id";
+		final String patient_event = "patient_event";
+			
+		StringBuilder qs = new StringBuilder(
+				"select " +
+				"	new map(" +
+				"		pev.patient.id as " + patient_ii + "," +
+				"		pev.patient.patientId as " + patient_id + "," +
+				"		pev as " + patient_event +
+				"	)" +
+				"from " +
+				"	PatientEventValue pev " +
+				"where " +
+				"	pev.patient in (" + patientsInDatasetSubquery("dataset") + ") " +
+				"	and pev.event.name = :pregnancy_event_name " +
+				"	and pev.eventNominalValue.value = :positive " + 
+				"order by" +
+				"	pev.patient, pev.startDate");
+		
+		Transaction tr = login.createTransaction();
+		Query q = tr.createQuery(qs.toString());
+		q.setParameter("dataset", dataset);
+		q.setParameter("pregnancy_event_name", StandardObjects.getPregnancyEvent().getName());
+		q.setParameter("positive", "Positive");
+		
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
+		
+		int currentPatient = -1;
+		int eventCounter = -1;
+		
+		byte counter = 0;
+		while(sr.next()){
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
+			
+			if (currentPatient != (Integer)m.get(patient_ii)) {
+				currentPatient = (Integer)m.get(patient_ii);
+				eventCounter = 1;
+			}
+			
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+			row.put("PATIENT", (String)m.get(patient_id));
+			row.put("PREG_SEQ", eventCounter + "");
+			PatientEventValue pev = ((PatientEventValue)m.get(patient_event));
+			row.put("OUTCOM_D", format(pev.getEndDate()));
+			
+			++eventCounter;
+			
+			printRow("tblPREG_OUT", row);
+			
+			if (counter == 100) {
+				counter = 0;
+				tr.clearCache();
+			} else {
+				++counter;
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void export(String dataset){		
 		System.err.println("Exporting BASandLTFU");
@@ -1054,6 +1114,8 @@ public abstract class HicdepExporter {
 		exportLAB(dataset);
 		System.err.println("Exporting DIS");
 		exportDIS(dataset);
+		System.err.println("Exporting PREG_OUT");
+		exportPREG_OUT(dataset);
 	}
 	
 	private String therapyMotivation(Therapy t) {
