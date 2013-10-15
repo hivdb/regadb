@@ -16,6 +16,7 @@ import java.util.Set;
 import net.sf.regadb.db.AaInsertion;
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.DrugGeneric;
+import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
@@ -26,6 +27,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.HicdepConfig;
+import net.sf.regadb.util.settings.HicdepConfig.LabTest;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
@@ -885,6 +887,81 @@ public abstract class HicdepExporter {
 		tr.clearCache();
 	}
 	
+	private void exportLAB(String dataset) {
+		final String patient_id = "patient_id";
+		final String test_result = "test_result";
+			
+		StringBuilder qs = new StringBuilder(
+				"select " +
+				"	new map(" +
+				"		tr.patient.patientId as " + patient_id + "," +
+				"		tr as " + test_result +
+				"	)" +
+				"from " +
+				"	TestResult tr " +
+				"where " +
+				"	tr.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
+				"	and " +
+				"	(");
+		
+		for (int i = 0; i < config().getLABtests().size(); ++i ) {
+			if (i != 0)
+				qs.append(" or ");
+			qs.append("	(");
+			qs.append("		tr.test.description = :test_description_" + i);
+			qs.append("		and ");
+			qs.append("		tr.test.testType.description = :test_type_description_" + i);
+			qs.append("	)");
+		}
+		qs.append("	)");
+		
+		Transaction tr = login.createTransaction();
+		Query q = tr.createQuery(qs.toString());
+		q.setParameter("dataset", dataset);
+		for (int i = 0; i < config().getLABtests().size(); ++i ) {
+			HicdepConfig.LabTest t = config().getLABtests().get(i);
+			q.setParameter("test_description_" + i, t.regadb_name);
+			q.setParameter("test_type_description_" + i, t.regadb_type_name);
+		}
+		
+		Map<Integer, HicdepConfig.LabTest> tests = new HashMap<Integer, HicdepConfig.LabTest>();
+		for (HicdepConfig.LabTest lt : config().getLABtests()) {
+			tests.put(tr.getTest(lt.regadb_name, lt.regadb_type_name).getTestIi(), lt);
+		}
+		
+		ScrollableResults sr = q.scroll(ScrollMode.FORWARD_ONLY);
+		
+		byte counter = 0;
+		while(sr.next()){
+			Map<String, Object> m = (Map<String,Object>)sr.get(0);
+			
+			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
+			row.put("PATIENT", (String)m.get(patient_id));
+			
+			TestResult testResult = (TestResult)m.get(test_result);
+			HicdepConfig.LabTest labTest = tests.get(testResult.getTest().getTestIi());
+			
+			row.put("LAB_ID", labTest.hicdep_lab_id);
+			row.put("LAB_D", format(testResult.getTestDate()));
+			
+			String value = testResult.getValue();
+			if (labTest.undetectable_value != null && labTest.undetectable_value.equals(value))
+				value = "-1";
+			row.put("LAB_V", value);
+			
+			row.put("LAB_U", labTest.hicdep_lab_unit + "");
+			
+			printRow("tblLAB", row);
+			
+			if (counter == 100) {
+				counter = 0;
+				tr.clearCache();
+			} else {
+				++counter;
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void export(String dataset){		
 		System.err.println("Exporting BASandLTFU");
@@ -907,6 +984,8 @@ public abstract class HicdepExporter {
 		exportLAB_CD4(CD4_Type.Percentage, dataset);
 		System.err.println("Exporting LAB_RNA");
 		exportLAB_RNA(dataset);
+		System.err.println("Exporting LAB");
+		exportLAB(dataset);
 	}
 	
 	private String therapyMotivation(Therapy t) {

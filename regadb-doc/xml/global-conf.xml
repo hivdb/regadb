@@ -107,6 +107,24 @@
     			</test>
     		</SAMP_TYPE>
     	</SAMPLES>
+    	
+    	<!-- LAB table section : allows for the configuration of multiple test mappings
+    			Optional element
+    	-->
+    	<LAB>
+    		<!-- test configuration:
+    				regadb-name: the name of the test in RegaDB  
+    				regadb-type-name: the name of the test's type in RegaDB  
+    				hicdep-lab-id: the name of the HICDEP LAB_ID (see HICDEP documentation)
+    				hicdep-lab-unit: the unit for the test, will be stored in the LAB_U HICDEP field (see HICDEP documentation)
+    				undetectable-value: the string that is used to assign an undetectable value (optional)
+    		 -->
+			<test 	regadb-name="CD8 Count" 
+					regadb-type-name="CD8 Count"
+					hicdep-lab-id="CD8"
+					hicdep-lab-unit="10"
+					undetectable-value="un"/>
+    	</LAB>
     </hicdep>
     
     <!--

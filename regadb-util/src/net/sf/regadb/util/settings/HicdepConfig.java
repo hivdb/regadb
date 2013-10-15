@@ -1,5 +1,6 @@
 package net.sf.regadb.util.settings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,29 @@ public class HicdepConfig extends ConfigParser{
 			this.typeName = typeName;
 		}
 	}
+	public static class LabTest {
+		public String regadb_name;
+		public String regadb_type_name;
+		public String hicdep_lab_id;
+		public Integer hicdep_lab_unit;
+		public String undetectable_value;
+		public LabTest(String regadb_name, String regadb_type_name,
+				String hicdep_lab_id, Integer hicdep_lab_unit,
+				String undetectable_value) {
+			this.regadb_name = regadb_name;
+			this.regadb_type_name = regadb_type_name;
+			this.hicdep_lab_id = hicdep_lab_id;
+			this.hicdep_lab_unit = hicdep_lab_unit;
+			this.undetectable_value = undetectable_value;
+		}
+	}
 	
 	private Attribute BAScenter;
 	private Event BASenrol_d;
 	private Test SAMPLESsamp_type;
 	private Map<String, String> SAMPLESsamp_type_mapping = new HashMap<String, String>();
-	
+	private List<LabTest> LABtests = new ArrayList<LabTest>();
+
 	public HicdepConfig(){
 		super("hicdep");
 	}
@@ -76,6 +94,28 @@ public class HicdepConfig extends ConfigParser{
 				}
 			}
 		}
+		
+		Element LAB = e.getChild("LAB");
+		if (LAB != null) {
+			List<Element> tests = LAB.getChildren("test");
+			
+			for (Element test : tests) {
+				String regadb_name = test.getAttributeValue("regadb-name");
+				String regadb_type_name = test.getAttributeValue("regadb-type-name");
+				String hicdep_lab_id = test.getAttributeValue("hicdep-lab-id");
+				Integer hicdep_lab_unit = intOrNull(test.getAttributeValue("hicdep-lab-unit"));
+				String undetectable_value = test.getAttributeValue("undetectable-value");
+				
+				LABtests.add(new LabTest(regadb_name, regadb_type_name, hicdep_lab_id, hicdep_lab_unit, undetectable_value));
+			}
+		}
+	}
+	
+	private Integer intOrNull(String s) {
+		if (s != null) 
+			return Integer.parseInt(s);
+		else 
+			return null;
 	}
 
 	public void setDefaults() {
@@ -83,6 +123,7 @@ public class HicdepConfig extends ConfigParser{
 		BASenrol_d = null;
 		SAMPLESsamp_type = null;
 		SAMPLESsamp_type_mapping = new HashMap<String, String>();
+		LABtests = new ArrayList<LabTest>();
 	}
 
 	public Element toXml() {
@@ -120,5 +161,13 @@ public class HicdepConfig extends ConfigParser{
 	public void setSAMPLESsamp_type_mapping(
 			Map<String, String> sAMPLESsamp_type_mapping) {
 		SAMPLESsamp_type_mapping = sAMPLESsamp_type_mapping;
+	}
+	
+	public List<LabTest> getLABtests() {
+		return LABtests;
+	}
+
+	public void setLABtests(List<LabTest> lABtests) {
+		LABtests = lABtests;
 	}
 }
