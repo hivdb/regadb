@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.util.settings.HicdepConfig;
+import net.sf.regadb.util.settings.HicdepConfig.LabTest;
 import net.sf.regadb.util.settings.RegaDBSettings;
 
 import org.hibernate.Query;
@@ -899,7 +901,15 @@ public abstract class HicdepExporter {
 		tr.clearCache();
 	}
 	
-	private void exportLAB(String dataset) {
+	private static class LabTestTableDescription {
+		String table;
+		String patientColumn;
+		String idColumn;
+		String dateColumn;
+		String valueColumn;
+		String unitColumn;
+	}
+	private void exportLabTests(String dataset, List<LabTest> labTests, LabTestTableDescription description) {
 		final String patient_id = "patient_id";
 		final String test_result = "test_result";
 			
@@ -916,7 +926,7 @@ public abstract class HicdepExporter {
 				"	and " +
 				"	(");
 		
-		for (int i = 0; i < config().getLABtests().size(); ++i ) {
+		for (int i = 0; i < labTests.size(); ++i ) {
 			if (i != 0)
 				qs.append(" or ");
 			qs.append("	(");
@@ -930,14 +940,14 @@ public abstract class HicdepExporter {
 		Transaction tr = login.createTransaction();
 		Query q = tr.createQuery(qs.toString());
 		q.setParameter("dataset", dataset);
-		for (int i = 0; i < config().getLABtests().size(); ++i ) {
-			HicdepConfig.LabTest t = config().getLABtests().get(i);
+		for (int i = 0; i < labTests.size(); ++i ) {
+			HicdepConfig.LabTest t = labTests.get(i);
 			q.setParameter("test_description_" + i, t.regadb_name);
 			q.setParameter("test_type_description_" + i, t.regadb_type_name);
 		}
 		
 		Map<Integer, HicdepConfig.LabTest> tests = new HashMap<Integer, HicdepConfig.LabTest>();
-		for (HicdepConfig.LabTest lt : config().getLABtests()) {
+		for (HicdepConfig.LabTest lt : labTests) {
 			tests.put(tr.getTest(lt.regadb_name, lt.regadb_type_name).getTestIi(), lt);
 		}
 		
@@ -948,13 +958,13 @@ public abstract class HicdepExporter {
 			Map<String, Object> m = (Map<String,Object>)sr.get(0);
 			
 			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
-			row.put("PATIENT", (String)m.get(patient_id));
+			row.put(description.patientColumn, (String)m.get(patient_id));
 			
 			TestResult testResult = (TestResult)m.get(test_result);
 			HicdepConfig.LabTest labTest = tests.get(testResult.getTest().getTestIi());
 			
-			row.put("LAB_ID", labTest.hicdep_lab_id);
-			row.put("LAB_D", format(testResult.getTestDate()));
+			row.put(description.idColumn, labTest.hicdep_lab_id);
+			row.put(description.dateColumn, format(testResult.getTestDate()));
 			
 			String value = testResult.getValue();
 			for (HicdepConfig.Mapping mapping : labTest.mappings) {
@@ -965,11 +975,11 @@ public abstract class HicdepExporter {
 					break;
 				}
 			}
-			row.put("LAB_V", value);
+			row.put(description.valueColumn, value);
 			
-			row.put("LAB_U", labTest.hicdep_lab_unit + "");
+			row.put(description.unitColumn, labTest.hicdep_lab_unit + "");
 			
-			printRow("tblLAB", row);
+			printRow(description.table, row);
 			
 			if (counter == 100) {
 				counter = 0;
@@ -978,6 +988,18 @@ public abstract class HicdepExporter {
 				++counter;
 			}
 		}
+	}
+	
+	private void exportLAB(String dataset) {
+		LabTestTableDescription description = new LabTestTableDescription();
+		description.table = "tblLAB";
+		description.patientColumn = "PATIENT";
+		description.idColumn = "LAB_ID";
+		description.dateColumn = "LAB_D";
+		description.valueColumn = "LAB_V";
+		description.unitColumn = "LAB_U";
+		
+		exportLabTests(dataset, config().getLABtests(), description);
 	}
 	
 	private void exportDIS(String dataset) {
