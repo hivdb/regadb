@@ -138,7 +138,7 @@
 					hicdep-lab-id="CD8"
 					hicdep-lab-unit="10">
 					<map type="string" from="0" to="-1"/>
-					<map type="interval" from=[-inf,0[" to="-1"/>
+					<map type="interval" from="[-inf,0[" to="-1"/>
 			</test>
     	</LAB>
     </hicdep>
