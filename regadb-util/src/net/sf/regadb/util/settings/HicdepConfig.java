@@ -61,6 +61,32 @@ public class HicdepConfig extends ConfigParser{
 		}
 	}
 	
+	private LabTest parseLabTest(Element test) {
+		String regadb_name = test.getAttributeValue("regadb-name");
+		String regadb_type_name = test.getAttributeValue("regadb-type-name");
+		String hicdep_lab_id = test.getAttributeValue("hicdep-lab-id");
+		Integer hicdep_lab_unit = intOrNull(test.getAttributeValue("hicdep-lab-unit"));
+		
+		LabTest lt = new LabTest(regadb_name, regadb_type_name, hicdep_lab_id, hicdep_lab_unit, new ArrayList<Mapping>());
+		
+		List<Element> mappings = test.getChildren("map");
+		for (Element mapping : mappings) {
+			String type = mapping.getAttributeValue("type");
+			String from = mapping.getAttributeValue("from");
+			String to = mapping.getAttributeValue("to");
+			
+			Mapping.Type t = null;
+			if (type.equals("string"))
+				t = Mapping.Type.String;
+			else if (type.equals("interval"))
+				t = Mapping.Type.Interval;
+			
+			lt.mappings.add(new Mapping(t, from, to));
+		}
+		
+		return lt;
+	}
+	
 	private Attribute BAScenter;
 	private Event BASenrol_d;
 	private Test SAMPLESsamp_type;
@@ -113,31 +139,9 @@ public class HicdepConfig extends ConfigParser{
 		if (LAB != null) {
 			List<Element> tests = LAB.getChildren("test");
 			
-			for (Element test : tests) {
-				String regadb_name = test.getAttributeValue("regadb-name");
-				String regadb_type_name = test.getAttributeValue("regadb-type-name");
-				String hicdep_lab_id = test.getAttributeValue("hicdep-lab-id");
-				Integer hicdep_lab_unit = intOrNull(test.getAttributeValue("hicdep-lab-unit"));
-				
-				LabTest lt = new LabTest(regadb_name, regadb_type_name, hicdep_lab_id, hicdep_lab_unit, new ArrayList<Mapping>());
-				
-				List<Element> mappings = test.getChildren("map");
-				for (Element mapping : mappings) {
-					String type = mapping.getAttributeValue("type");
-					String from = mapping.getAttributeValue("from");
-					String to = mapping.getAttributeValue("to");
-					
-					Mapping.Type t = null;
-					if (type.equals("string"))
-						t = Mapping.Type.String;
-					else if (type.equals("interval"))
-						t = Mapping.Type.Interval;
-					
-					lt.mappings.add(new Mapping(t, from, to));
-				}
-				
-				LABtests.add(lt);
-			}
+			for (Element test : tests)
+				LABtests.add(parseLabTest(test));
+		}
 		}
 	}
 	
