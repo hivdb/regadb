@@ -957,8 +957,14 @@ public abstract class HicdepExporter {
 			row.put("LAB_D", format(testResult.getTestDate()));
 			
 			String value = testResult.getValue();
-			if (labTest.undetectable_value != null && labTest.undetectable_value.equals(value))
-				value = "-1";
+			for (HicdepConfig.Mapping mapping : labTest.mappings) {
+				Mapper mapper = MapperInstance.getInstance(mapping);
+				String v = mapper.map(value);
+				if (!value.equals(v)) {
+					value = v;
+					break;
+				}
+			}
 			row.put("LAB_V", value);
 			
 			row.put("LAB_U", labTest.hicdep_lab_unit + "");

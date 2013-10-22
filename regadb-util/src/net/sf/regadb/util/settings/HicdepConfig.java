@@ -35,15 +35,29 @@ public class HicdepConfig extends ConfigParser{
 		public String regadb_type_name;
 		public String hicdep_lab_id;
 		public Integer hicdep_lab_unit;
-		public String undetectable_value;
+		public List<Mapping> mappings;
 		public LabTest(String regadb_name, String regadb_type_name,
 				String hicdep_lab_id, Integer hicdep_lab_unit,
-				String undetectable_value) {
+				List<Mapping> mappings) {
 			this.regadb_name = regadb_name;
 			this.regadb_type_name = regadb_type_name;
 			this.hicdep_lab_id = hicdep_lab_id;
 			this.hicdep_lab_unit = hicdep_lab_unit;
-			this.undetectable_value = undetectable_value;
+			this.mappings = mappings;
+		}
+	}
+	public static class Mapping {
+		public enum Type {
+			String,
+			Interval
+		}
+		public Type type;
+		public String from;
+		public String to;	
+		public Mapping(Type type, String from, String to) {
+			this.type = type;
+			this.from = from;
+			this.to = to;
 		}
 	}
 	
@@ -104,9 +118,25 @@ public class HicdepConfig extends ConfigParser{
 				String regadb_type_name = test.getAttributeValue("regadb-type-name");
 				String hicdep_lab_id = test.getAttributeValue("hicdep-lab-id");
 				Integer hicdep_lab_unit = intOrNull(test.getAttributeValue("hicdep-lab-unit"));
-				String undetectable_value = test.getAttributeValue("undetectable-value");
 				
-				LABtests.add(new LabTest(regadb_name, regadb_type_name, hicdep_lab_id, hicdep_lab_unit, undetectable_value));
+				LabTest lt = new LabTest(regadb_name, regadb_type_name, hicdep_lab_id, hicdep_lab_unit, new ArrayList<Mapping>());
+				
+				List<Element> mappings = test.getChildren("map");
+				for (Element mapping : mappings) {
+					String type = mapping.getAttributeValue("type");
+					String from = mapping.getAttributeValue("from");
+					String to = mapping.getAttributeValue("to");
+					
+					Mapping.Type t = null;
+					if (type.equals("string"))
+						t = Mapping.Type.String;
+					else if (type.equals("interval"))
+						t = Mapping.Type.Interval;
+					
+					lt.mappings.add(new Mapping(t, from, to));
+				}
+				
+				LABtests.add(lt);
 			}
 		}
 	}
