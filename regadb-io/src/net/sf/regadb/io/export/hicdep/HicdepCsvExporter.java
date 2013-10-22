@@ -7,17 +7,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
-import net.sf.regadb.db.login.DisabledUserException;
-import net.sf.regadb.db.login.WrongPasswordException;
-import net.sf.regadb.db.login.WrongUidException;
 import net.sf.regadb.db.session.Login;
-import net.sf.regadb.util.args.Arguments;
-import net.sf.regadb.util.args.PositionalArgument;
-import net.sf.regadb.util.args.ValueArgument;
 import net.sf.regadb.util.file.FileUtils;
-import net.sf.regadb.util.settings.RegaDBSettings;
 
 public class HicdepCsvExporter extends HicdepExporter {
 	
@@ -25,6 +19,7 @@ public class HicdepCsvExporter extends HicdepExporter {
 	
 	private Map<String,PrintStream> streams = new HashMap<String,PrintStream>();
 	private Map<String,File> files = new HashMap<String,File>();
+	private Map<String,LinkedHashSet<String>> headers = new HashMap<String,LinkedHashSet<String>>();
 
 	public HicdepCsvExporter(Login login, File zipFile) {
 		super(login);
@@ -34,6 +29,25 @@ public class HicdepCsvExporter extends HicdepExporter {
 	
 	@Override
 	public void printRow(String table, String[] columns, String[] values){
+		LinkedHashSet<String> lhs = headers.get(table);
+		if (lhs == null) {
+			lhs = new LinkedHashSet<String>();
+			headers.put(table, lhs);
+			for (String c : columns)
+				if(!lhs.add(c))
+					throw new RuntimeException("HICDEP CSV exporter: duplicate column name \"" + c + "\" in table \""  + table + "\"" );
+		} else {
+			if (columns.length != lhs.size())
+				throw new RuntimeException("HICDEP CSV exporter: incorrect number of columns for table \""  + table + "\"" );
+			
+			int i = 0;
+			for (String c : lhs) {
+				if (!c.equals(columns[i]))
+					throw new RuntimeException("HICDEP CSV exporter: unsubscribed column name \"" + c + "\" in table \""  + table + "\"" );
+				i++;
+			}
+		}
+		
 		PrintStream out = getPrintStream(table, columns);
 		printLine(out, values);
 	}
