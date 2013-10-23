@@ -970,9 +970,13 @@ public abstract class HicdepExporter {
 			row.put(description.idColumn, labTest.hicdep_lab_id);
 			row.put(description.dateColumn, format(testResult.getTestDate()));
 			
-			String value = testResult.getValue();
-			if (value == null)
+			String value = null;
+			ValueTypes vt = ValueTypes.getValueType(testResult.getTest().getTestType().getValueType());
+			if (vt == ValueTypes.NOMINAL_VALUE)
 				value = testResult.getTestNominalValue().getValue();
+			else
+				testResult.getValue();
+			
 			for (HicdepConfig.Mapping mapping : labTest.mappings) {
 				Mapper mapper = MapperInstance.getInstance(mapping);
 				String v = mapper.map(value);
