@@ -92,6 +92,7 @@ public class HicdepConfig extends ConfigParser{
 	private Test SAMPLESsamp_type;
 	private Map<String, String> SAMPLESsamp_type_mapping = new HashMap<String, String>();
 	private List<LabTest> LABtests = new ArrayList<LabTest>();
+	private List<LabTest> LAB_VIROtests = new ArrayList<LabTest>();
 
 	public HicdepConfig(){
 		super("hicdep");
@@ -142,6 +143,13 @@ public class HicdepConfig extends ConfigParser{
 			for (Element test : tests)
 				LABtests.add(parseLabTest(test));
 		}
+		
+		Element LAB_VIRO = e.getChild("LAB_VIRO");
+		if (LAB_VIRO != null) {
+			List<Element> tests = LAB_VIRO.getChildren("test");
+			
+			for (Element test : tests)
+				LAB_VIROtests.add(parseLabTest(test));
 		}
 	}
 	
@@ -203,5 +211,13 @@ public class HicdepConfig extends ConfigParser{
 
 	public void setLABtests(List<LabTest> lABtests) {
 		LABtests = lABtests;
+	}
+	
+	public List<LabTest> getLAB_VIROtests() {
+		return LAB_VIROtests;
+	}
+
+	public void setLAB_VIROtests(List<LabTest> lAB_VIROtests) {
+		LAB_VIROtests = lAB_VIROtests;
 	}
 }

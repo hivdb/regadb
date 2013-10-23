@@ -141,6 +141,48 @@
 					<map type="interval" from="[-inf,0[" to="-1"/>
 			</test>
     	</LAB>
+    	
+    	 <!-- LAB_VIRO table section : allows for the configuration of multiple test mappings
+    			Optional element
+    	-->
+    	<LAB_VIRO>
+    		<!-- test mapping configuration:
+    				regadb-name: the name of the test in RegaDB  
+    				regadb-type-name: the name of the test's type in RegaDB  
+    				hicdep-lab-id: the name of the HICDEP VS_ID (see HICDEP documentation)
+    				hicdep-lab-unit: the unit for the test, will be stored in the VS_U HICDEP field (see HICDEP documentation)
+    				a test mapping can contain several mapping definitions:
+    				there are currently 2 types of mappings: string and interval
+    					- A string mapping simply converts a string value to another
+    					  string value.
+    					- An interval mappings converts a floating point value to another
+    					  value (can be any kind: string, floating point, ...), if the 
+    					  floating point value lies within the specified interval.
+    					  An interval can be defined using the mathematical notation:
+    					  [a,b] where:
+    					  	'a' is a number or '-Infinity'
+    					  	'b' is a number or '+Infinity'
+    					  	'a' < 'b'
+    					  Note: as in the mathematical notation, the brackets can be open '[' or 
+    					  closed ']'.
+    				The mapping rules are expected to be mutually exclusive.
+    		 -->
+			<test 	regadb-name="CMV IgG (generic)" 
+					regadb-type-name="CMV IgG"
+					hicdep-lab-id="CMVA"
+					hicdep-lab-unit="?">
+					<map type="interval" from="]-Infinity,0.9[" to="0"/>
+					<map type="interval" from="[0.9, 1.09]" to="9"/>
+					<map type="interval" from="]1.09,+Infinity[" to="1"/>
+			</test>
+			<test 	regadb-name="CMV IgG (Architect) (qualitative)" 
+					regadb-type-name="CMV IgG (qualitative)"
+					hicdep-lab-id="CMVA"
+					hicdep-lab-unit="?">
+					<map type="string" from="Negative" to="0"/>
+					<map type="string" from="Positive" to="1"/>
+			</test>
+    	</LAB_VIRO>
     </hicdep>
     
     <!--

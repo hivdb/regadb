@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -1012,6 +1013,54 @@ public abstract class HicdepExporter {
 		exportLabTests(dataset, config().getLABtests(), description);
 	}
 	
+	private void exportLAB_VIRO(String dataset) {
+		List<LabTest> discreteTests = new ArrayList<LabTest>();
+		List<LabTest> valueTests = new ArrayList<LabTest>();
+		Set<String> valueTestSet = set(new String[]{"HBVD", "HCVR"});
+		
+		for (LabTest lt : config().getLAB_VIROtests()) {
+			if (valueTestSet.contains(lt.hicdep_lab_id))
+				valueTests.add(lt);
+			else
+				discreteTests.add(lt);
+		}
+		
+		LabTestTableDescription description = new LabTestTableDescription();
+		description.table = "tblLAB_VIRO";
+		description.patientColumn = "PATIENT";
+		description.idColumn = "VS_ID";
+		description.dateColumn = "VS_D";
+		description.unitColumn = "VS_U";
+		
+		{
+			description.valueSetter = new ValueSetter() {
+				public void setValue(LinkedHashMap<String, String> row, String value) {
+					//the order is important!
+					//the CSV export expect all columns in the same order
+					row.put("VS_R", value);
+					row.put("VS_V", null);
+				}
+			};
+			
+			if (discreteTests.size() > 0)
+				exportLabTests(dataset, discreteTests, description);
+		}
+		
+		{
+			description.valueSetter = new ValueSetter() {
+				public void setValue(LinkedHashMap<String, String> row, String value) {
+					//the order is important!
+					//the CSV export expect all columns in the same order
+					row.put("VS_R", null);
+					row.put("VS_V", value);
+				}
+			};
+			
+			if (valueTests.size() > 0)
+				exportLabTests(dataset, valueTests, description);
+		}
+	}
+	
 	private void exportDIS(String dataset) {
 		final String patient_id = "patient_id";
 		final String patient_event = "patient_event";
@@ -1150,6 +1199,8 @@ public abstract class HicdepExporter {
 		exportLAB_RNA(dataset);
 		System.err.println("Exporting LAB");
 		exportLAB(dataset);
+		System.err.println("Exporting LAB_VIRO");
+		exportLAB_VIRO(dataset);
 		System.err.println("Exporting DIS");
 		exportDIS(dataset);
 		System.err.println("Exporting PREG_OUT");
