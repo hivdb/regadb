@@ -12,7 +12,7 @@ package net.sf.regadb.io.export.hicdep;
 		else if (endIncluded && end == v)
 			return true;
 		else 
-			return v > start || v < end;
+			return v > start && v < end;
 	}
 	
 	public static Interval parse(String s) {
