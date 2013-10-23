@@ -14,7 +14,7 @@ import net.sf.regadb.service.wts.ServiceException;
 import net.sf.regadb.service.wts.SubtypeAnalysis;
 import eu.webtoolkit.jwt.WString;
 
-public class BatchTestRunningTest extends Thread {
+public class BatchTestRunningTest extends Thread implements BatchRun {
 	private Test test;
 	private BatchTestStatus status;
 	private Login login;
@@ -74,7 +74,7 @@ public class BatchTestRunningTest extends Thread {
 		status = BatchTestStatus.CANCELING;
 	}
 	
-	public CharSequence testName() {
+	public CharSequence getRunName() {
 		return test.getDescription();
 	}
 	

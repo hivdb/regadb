@@ -17,7 +17,7 @@ import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTimer;
 
 public class BatchTestRunningForm extends FormWidget {
-	private static ArrayList<BatchTestRunningTest> runningList = new ArrayList<BatchTestRunningTest>();
+	private static ArrayList<BatchRun> runningList = new ArrayList<BatchRun>();
 	private SimpleTable table;
 	private WTimer timer = new WTimer();
 	
@@ -52,12 +52,12 @@ public class BatchTestRunningForm extends FormWidget {
 		int row = 1;
 		int needRefreshCount = 0;
 		
-		for(final BatchTestRunningTest run : runningList) {
+		for(final BatchRun run : runningList) {
 			if ( run.isRunning()) {
 				needRefreshCount++;
 			}
 			
-			table.getElementAt(row, 0).addWidget(new WText( run.testName() ));
+			table.getElementAt(row, 0).addWidget(new WText( run.getRunName() ));
 			table.getElementAt(row, 1).addWidget(new WText( run.getStatusMessage()));
 			table.getElementAt(row, 2).addWidget(new WText( run.getPercent() ));
 			table.getElementAt(row, 3).setStyleClass("column-action");
@@ -105,13 +105,17 @@ public class BatchTestRunningForm extends FormWidget {
 	}
 	
 	public static void runTest(Login copiedLogin, Test t) {
-		BatchTestRunningTest testing = new BatchTestRunningTest(copiedLogin, t);
-		runningList.add(testing);
-		testing.start();
+		BatchRun testing = new BatchTestRunningTest(copiedLogin, t);
+		run(testing);
+	}
+	
+	public static void run(BatchRun batchRun) {
+		runningList.add(batchRun);
+		batchRun.start();
 	}
 	
 	public static boolean containsRunningTest(Test t) {
-		for(BatchTestRunningTest run : runningList) {
+		for(BatchRun run : runningList) {
 			if ( run.isTest(t) ) {
 				if ( run.isRunning() )
 					return true;
