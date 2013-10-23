@@ -41,16 +41,14 @@ import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.db.session.Login;
 import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.sequencedb.SequenceDb;
-import net.sf.regadb.service.wts.BlastAnalysis;
-import net.sf.regadb.service.wts.BlastAnalysis.UnsupportedGenomeException;
-import net.sf.regadb.service.wts.ServiceException;
-import net.sf.regadb.service.wts.ServiceException.ServiceUnavailableException;
+import net.sf.regadb.ui.form.batchtest.BatchRun;
+import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
+import net.sf.regadb.ui.form.batchtest.BatchTestStatus;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.SequenceDetails;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.util.xls.ExcelTable;
 
 import org.biojava.bio.seq.Sequence;
@@ -64,6 +62,7 @@ public class ImportData {
 	private DataProvider dataProvider;
 	private Map<String, Sequence> sequences = new HashMap<String, Sequence>();
 	private Dataset dataset;
+	private String name;
 	
 	public ImportData(ImportDefinition definition, File xlsFile, File fastaFile, Dataset dataset) {
 		ExcelTable table = new ExcelTable("dd/MM/yyyy");
@@ -75,6 +74,7 @@ public class ImportData {
 		this.dataProvider = new DataProvider(table, definition.getScript());
 		this.dataset = dataset;
 		this.definition = definition;
+		this.name = xlsFile.getName();
 		
 		if (fastaFile.exists()) {
 	        RichSequenceIterator xna = null;
@@ -121,55 +121,20 @@ public class ImportData {
 		if(errors.size() > 0)
 			return errors;
 		else {
-			if (!simulate) {
-				for (Patient p : patients) {
-					for (ViralIsolate vi : p.getViralIsolates()) {
-						Genome genome = blast(vi.getNtSequences().iterator().next(), login);
-						vi.setGenome(tr.getGenome(genome.getOrganismName()));
-					}
-					tr.save(p);
+			if (!simulate) {	
+				try {
+					for (Patient p: patients)
+						tr.save(p);
+					tr.commit();
+				}  catch (Exception e) {
+					e.printStackTrace();
 				}
-				tr.commit();
 				
-				for (Patient p : patients) {
-					for (ViralIsolate vi : p.getViralIsolates()) {
-						Login copiedLogin = login.copyLogin();
-						try {
-						NonThreadedFullAnalysis analysis = new NonThreadedFullAnalysis(vi, vi.getGenome(), sequenceDb);
-						analysis.launch(copiedLogin);
-						} catch (Exception e) {
-							e.printStackTrace();
-						} finally {
-							copiedLogin.closeSession();
-						}
-					}
-				}
+				BatchRun run = new FullAnalysisBatchRun(login, sequenceDb, patients, name);
+				BatchTestRunningForm.run(run);
 			}
 			return errors;
 		}
-	}
-	
-	private Genome blast(NtSequence ntseq, Login login){
-	    Genome genome = null;
-	    //TODO check ALL sequences?
-	    
-        if(ntseq != null){
-            BlastAnalysis blastAnalysis = new BlastAnalysis(ntseq, login.getUid());
-            try{
-                blastAnalysis.launch();
-                genome = blastAnalysis.getGenome();
-            }
-            catch(UnsupportedGenomeException e){
-                return null;
-            }
-            catch(ServiceUnavailableException e){
-                return null;
-            }
-            catch(ServiceException e){
-                e.printStackTrace();
-            }            
-        }
-        return genome;
 	}
 	
 	public WString doImport(int row, Map<String, String> headerValueMap, Transaction t, Map<String, Test> testsMap, List<Patient> patients) {
