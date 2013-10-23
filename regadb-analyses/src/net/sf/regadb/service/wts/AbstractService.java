@@ -60,6 +60,7 @@ public abstract class AbstractService {
                 catch (InterruptedException ie) 
                 {
                     ie.printStackTrace();
+                    throw new RuntimeException(ie);
                 }
                 if(client_.monitorStatus(ticket, getService()).startsWith("ENDED"))
                 {
