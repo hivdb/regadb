@@ -26,6 +26,7 @@ public class FullAnalysisBatchRun extends Thread implements BatchRun {
 	
 	private List<Patient> patients;
 	private int processedPatients = 0;
+	private int failedPatients = 0;
 	
 	public FullAnalysisBatchRun(Login login, SequenceDb sequenceDb, List<Patient> patients, String name) {
 		this.login = login;
@@ -60,7 +61,12 @@ public class FullAnalysisBatchRun extends Thread implements BatchRun {
 
 	@Override
 	public CharSequence getPercent() {
-		return this.processedPatients + "/" + this.patients.size();
+		String s = this.processedPatients + "/" + this.patients.size();
+		if (this.failedPatients > 0) {
+			WString failed = WString.tr("form.importTool.failed-analyses");
+			s += failed.arg(this.failedPatients).toString();
+		}
+		return s;
 	}
 
 	@Override
@@ -138,7 +144,7 @@ public class FullAnalysisBatchRun extends Thread implements BatchRun {
 				System.err.println("Batch Import error: error while processing isolates");
 				System.err.println("Batch Import error: error while processing patient \"" + pp.getPatientId() + "\"");
 				e.printStackTrace();
-				status = BatchTestStatus.FAILED;
+				this.failedPatients++;
 			} finally {
 				copiedLogin.closeSession();
 			}
