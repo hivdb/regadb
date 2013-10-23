@@ -901,13 +901,16 @@ public abstract class HicdepExporter {
 		tr.clearCache();
 	}
 	
+	private interface ValueSetter {
+		public void setValue(LinkedHashMap<String, String> row, String value);
+	}
 	private static class LabTestTableDescription {
 		String table;
 		String patientColumn;
 		String idColumn;
 		String dateColumn;
-		String valueColumn;
 		String unitColumn;
+		ValueSetter valueSetter;
 	}
 	private void exportLabTests(String dataset, List<LabTest> labTests, LabTestTableDescription description) {
 		final String patient_id = "patient_id";
@@ -967,6 +970,8 @@ public abstract class HicdepExporter {
 			row.put(description.dateColumn, format(testResult.getTestDate()));
 			
 			String value = testResult.getValue();
+			if (value == null)
+				value = testResult.getTestNominalValue().getValue();
 			for (HicdepConfig.Mapping mapping : labTest.mappings) {
 				Mapper mapper = MapperInstance.getInstance(mapping);
 				String v = mapper.map(value);
@@ -975,7 +980,8 @@ public abstract class HicdepExporter {
 					break;
 				}
 			}
-			row.put(description.valueColumn, value);
+			
+			description.valueSetter.setValue(row, value);
 			
 			row.put(description.unitColumn, labTest.hicdep_lab_unit + "");
 			
@@ -996,7 +1002,11 @@ public abstract class HicdepExporter {
 		description.patientColumn = "PATIENT";
 		description.idColumn = "LAB_ID";
 		description.dateColumn = "LAB_D";
-		description.valueColumn = "LAB_V";
+		description.valueSetter = new ValueSetter() {
+			public void setValue(LinkedHashMap<String, String> row, String value) {
+				row.put("LAB_V", value);
+			}
+		};
 		description.unitColumn = "LAB_U";
 		
 		exportLabTests(dataset, config().getLABtests(), description);
