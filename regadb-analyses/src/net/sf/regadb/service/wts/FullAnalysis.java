@@ -65,14 +65,11 @@ public class FullAnalysis implements IAnalysis {
 
             for(NtSequence ntseq : getViralIsolate().getNtSequences())
             {
-                if(ntseq.getAaSequences().size()==0)
-                {
                     launchAnalysis(new SubtypeAnalysis(ntseq,
                     		subTypeTest,
                             genome,
                             sessionSafeLogin.getUid()), 
                             sessionSafeLogin); 
-                }
             }
             
             //wait for alignment thread to finish
