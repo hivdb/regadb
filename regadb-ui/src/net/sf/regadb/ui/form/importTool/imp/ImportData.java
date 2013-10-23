@@ -64,7 +64,7 @@ public class ImportData {
 	private Dataset dataset;
 	private String name;
 	
-	public ImportData(ImportDefinition definition, File xlsFile, File fastaFile, Dataset dataset) {
+	public ImportData(ImportDefinition definition, String name, File xlsFile, File fastaFile, Dataset dataset) {
 		ExcelTable table = new ExcelTable("dd/MM/yyyy");
 		try {
 			table.loadFile(xlsFile);
@@ -74,7 +74,7 @@ public class ImportData {
 		this.dataProvider = new DataProvider(table, definition.getScript());
 		this.dataset = dataset;
 		this.definition = definition;
-		this.name = xlsFile.getName();
+		this.name = name;
 		
 		if (fastaFile.exists()) {
 	        RichSequenceIterator xna = null;
