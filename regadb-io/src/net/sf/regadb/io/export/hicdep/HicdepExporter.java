@@ -351,6 +351,7 @@ public abstract class HicdepExporter {
 	
 			String v = (String)m.get(value);
 			v = v.replace('<', '-');
+			v = v.replaceAll("=", "");
 			row.put("RNA_V", v);
 				
 			printRow("tblLAB_RNA", row);
