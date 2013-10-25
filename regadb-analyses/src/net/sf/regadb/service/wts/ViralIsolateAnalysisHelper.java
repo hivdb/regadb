@@ -20,7 +20,9 @@ import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.importXML.ResistanceInterpretationParser;
+import net.sf.regadb.service.wts.client.WtsClientFactory;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.wts.client.IWtsClient;
 import net.sf.wts.client.WtsClient;
 
 import org.xml.sax.InputSource;
@@ -40,7 +42,7 @@ public class ViralIsolateAnalysisHelper
     
     private static byte[] runInternal(File resultFile, ViralIsolate vi_, Test test_, int waitDelay_)
     {
-        WtsClient client = new WtsClient(
+        IWtsClient client = WtsClientFactory.getWtsClient(
         		RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(test_.getAnalysis().getUrl()));
         
         byte[] result = null;
@@ -121,7 +123,7 @@ public class ViralIsolateAnalysisHelper
     {
     	File resultFile = null; 
     	
-        WtsClient client = new WtsClient(
+        IWtsClient client = WtsClientFactory.getWtsClient(
         		RegaDBSettings.getInstance().getInstituteConfig().getWtsUrl(test_.getAnalysis().getUrl()));
         
         byte[] result = null;
