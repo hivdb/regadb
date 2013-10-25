@@ -70,6 +70,13 @@ public abstract class HicdepExporter {
 		return m;
 	}
 	
+	private String mapOrOriginal(SimpleCsvMapper mapper, String v) {
+		String r = mapper.b2a(v);
+		if (r == null)
+			r = v;
+		return r;
+	}
+	
 	private String patientsInDatasetSubquery(String datasetParam) {
 		return 
 				"select " +
@@ -721,6 +728,8 @@ public abstract class HicdepExporter {
 	}
 	
 	private void exportLAB_RES_LVL_1(String dataset) {
+		SimpleCsvMapper proteinMap = getMapper("protein.csv");
+		
 		final String patient_id = "patient_id";
 		final String sample_id = "sample_id";
 		final String protein = "protein";
@@ -761,7 +770,7 @@ public abstract class HicdepExporter {
 			String isolateId = (String)m.get(sample_id);
 			
 			row.put("TEST_ID", dataset + "_" + patientId + "_" + isolateId);
-			row.put("SEQTYPE", (String)m.get(protein));
+			row.put("SEQTYPE", mapOrOriginal(proteinMap, (String)m.get(protein)));
 			row.put("SEQ_START", m.get(start).toString());
 			row.put("SEQ_STOP", m.get(stop).toString());
 			row.put("SEQ_NUQ", (String)m.get(nucleotides));
@@ -800,6 +809,8 @@ public abstract class HicdepExporter {
 	}
 	
 	private void exportLAB_RES_LVL_2_mutations(String dataset) {
+		SimpleCsvMapper proteinMap = getMapper("protein.csv");
+		
 		final String patient_id = "patient_id";
 		final String sample_id = "sample_id";
 		final String protein = "protein";
@@ -837,7 +848,7 @@ public abstract class HicdepExporter {
 						dataset,
 						(String)m.get(patient_id),
 						(String)m.get(sample_id),
-						(String)m.get(protein),
+						mapOrOriginal(proteinMap, (String)m.get(protein)),
 						((Short)m.get(aa_position)).intValue(),
 						(String)m.get(aa_mutation),
 						-1);
@@ -854,6 +865,8 @@ public abstract class HicdepExporter {
 	}
 	
 	private void exportLAB_RES_LVL_2_insertions(String dataset) {
+		SimpleCsvMapper proteinMap = getMapper("protein.csv");
+		
 		final String patient_id = "patient_id";
 		final String sample_id = "sample_id";
 		final String protein = "protein";
@@ -888,7 +901,7 @@ public abstract class HicdepExporter {
 					dataset,
 					(String)m.get(patient_id),
 					(String)m.get(sample_id),
-					(String)m.get(protein),
+					mapOrOriginal(proteinMap, (String)m.get(protein)),
 					insertion.getId().getInsertionPosition(),
 					insertion.getAaInsertion(),
 					insertion.getId().getInsertionOrder());
