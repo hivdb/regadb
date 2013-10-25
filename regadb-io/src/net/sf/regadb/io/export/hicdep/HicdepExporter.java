@@ -731,6 +731,7 @@ public abstract class HicdepExporter {
 		String qs = 
 				"select " +
 				"	new map(" +
+				"		n.viralIsolate.patient.patientId as " + patient_id + "," +	
 				"		n.viralIsolate.sampleId as " + sample_id + ", " +
 				"		p.abbreviation as " + protein + ", " +
 				"		a.firstAaPos as " + start + ", " +
