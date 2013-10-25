@@ -43,6 +43,9 @@
     <!-- default selected dataset when adding a patient, optional -->
     <default-dataset>dataset name</default-dataset>
     
+    <!-- the number of times the wts client has to retry upon failure, optional (default is 0) -->
+    <wts-nr-of-retries>2</wts-nr-of-retries>
+    
     <!--  configuration for Belgian WIV queries
 	  this element is optional 
     -->

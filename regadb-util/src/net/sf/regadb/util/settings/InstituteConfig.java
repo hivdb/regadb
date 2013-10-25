@@ -22,7 +22,8 @@ public class InstituteConfig extends ConfigParser {
 	private boolean wtsUrlSubtyping = false;
 	private boolean wtsUrlUpdates = false;
 	private boolean wtsUrlAlignment = false;
-	
+	private int wtsNrOfRetries = 0;
+
 	private String databaseBackupScript;
 
 	private boolean sampleDateMandatory = true;
@@ -133,6 +134,10 @@ public class InstituteConfig extends ConfigParser {
 			setUseWtsUrlForAlignment(v != null && v.toLowerCase().equals("true"));
 		}
 		
+		ee = e.getChild("wts-nr-of-retries");
+		if (ee != null)
+			wtsNrOfRetries = Integer.parseInt(ee.getTextTrim());
+		
 		ee = e.getChild("database-backup-script");
 		if (ee != null)
 			setDatabaseBackupScript(ee.getTextTrim());
@@ -164,6 +169,8 @@ public class InstituteConfig extends ConfigParser {
 		setMaxDaysFuture(-1);
 		
 		setWtsUrl(getDefaultWtsUrl());
+		
+		wtsNrOfRetries = 0;
 	}
 	
 	public void addFormConfig(FormConfig form){
@@ -242,6 +249,9 @@ public class InstituteConfig extends ConfigParser {
 		e.setAttribute("useForUpdates", getUseWtsUrlForUpdates()+"");
 		e.setAttribute("useForAlignment", getUseWtsUrlForAlignment()+"");
 		r.addContent(e);
+		
+		e = new Element("wts-nr-of-retries");
+		e.setText(wtsNrOfRetries + "");
 		
 		return r;
 	}
@@ -410,5 +420,13 @@ public class InstituteConfig extends ConfigParser {
 
 	public void setHicdepConfig(HicdepConfig hicdepConfig) {
 		this.hicdepConfig = hicdepConfig;
+	}
+	
+	public int getWtsNrOfRetries() {
+		return wtsNrOfRetries;
+	}
+
+	public void setWtsNrOfRetries(int wtsNrOfRetries) {
+		this.wtsNrOfRetries = wtsNrOfRetries;
 	}
 }
