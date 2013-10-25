@@ -64,8 +64,8 @@ public class HicdepConfig extends ConfigParser{
 	private LabTest parseLabTest(Element test) {
 		String regadb_name = test.getAttributeValue("regadb-name");
 		String regadb_type_name = test.getAttributeValue("regadb-type-name");
-		String hicdep_lab_id = test.getAttributeValue("hicdep-lab-id");
-		Integer hicdep_lab_unit = intOrNull(test.getAttributeValue("hicdep-lab-unit"));
+		String hicdep_lab_id = test.getAttributeValue("hicdep-id");
+		Integer hicdep_lab_unit = intOrNull(test.getAttributeValue("hicdep-unit"));
 		
 		LabTest lt = new LabTest(regadb_name, regadb_type_name, hicdep_lab_id, hicdep_lab_unit, new ArrayList<Mapping>());
 		

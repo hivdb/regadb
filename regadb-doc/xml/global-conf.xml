@@ -118,8 +118,8 @@
     		<!-- test mapping configuration:
     				regadb-name: the name of the test in RegaDB  
     				regadb-type-name: the name of the test's type in RegaDB  
-    				hicdep-lab-id: the name of the HICDEP LAB_ID (see HICDEP documentation)
-    				hicdep-lab-unit: the unit for the test, will be stored in the LAB_U HICDEP field (see HICDEP documentation)
+    				hicdep-id: the name of the HICDEP LAB_ID (see HICDEP documentation)
+    				hicdep-unit: the unit for the test, will be stored in the LAB_U HICDEP field (see HICDEP documentation)
     				a test mapping can contain several mapping definitions:
     				there are currently 2 types of mappings: string and interval
     					- A string mapping simply converts a string value to another
@@ -152,8 +152,8 @@
     		<!-- test mapping configuration:
     				regadb-name: the name of the test in RegaDB  
     				regadb-type-name: the name of the test's type in RegaDB  
-    				hicdep-lab-id: the name of the HICDEP VS_ID (see HICDEP documentation)
-    				hicdep-lab-unit: the unit for the test, will be stored in the VS_U HICDEP field (see HICDEP documentation)
+    				hicdep-id: the name of the HICDEP VS_ID (see HICDEP documentation)
+    				hicdep-unit: the unit for the test, will be stored in the VS_U HICDEP field (see HICDEP documentation)
     				a test mapping can contain several mapping definitions:
     				there are currently 2 types of mappings: string and interval
     					- A string mapping simply converts a string value to another
