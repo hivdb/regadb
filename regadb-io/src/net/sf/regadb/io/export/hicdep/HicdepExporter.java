@@ -975,7 +975,7 @@ public abstract class HicdepExporter {
 			if (vt == ValueTypes.NOMINAL_VALUE)
 				value = testResult.getTestNominalValue().getValue();
 			else
-				testResult.getValue();
+				value = testResult.getValue();
 			
 			for (HicdepConfig.Mapping mapping : labTest.mappings) {
 				Mapper mapper = MapperInstance.getInstance(mapping);
