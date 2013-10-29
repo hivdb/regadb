@@ -1158,7 +1158,7 @@ public abstract class HicdepExporter {
 		}
 	}
 	
-	private void exportPREG_OUT(String dataset) {
+	private void exportPREGtable(String dataset, String tableName, boolean OUTCOM_D) {
 		final String patient_ii = "patient_ii";
 		final String patient_id = "patient_id";
 		final String patient_event = "patient_event";
@@ -1202,12 +1202,15 @@ public abstract class HicdepExporter {
 			LinkedHashMap<String, String> row = new LinkedHashMap<String, String>();
 			row.put("PATIENT", (String)m.get(patient_id));
 			row.put("PREG_SEQ", eventCounter + "");
-			PatientEventValue pev = ((PatientEventValue)m.get(patient_event));
-			row.put("OUTCOM_D", format(pev.getEndDate()));
+			
+			if (OUTCOM_D) {
+				PatientEventValue pev = ((PatientEventValue)m.get(patient_event));
+				row.put("OUTCOM_D", format(pev.getEndDate()));
+			}
 			
 			++eventCounter;
 			
-			printRow("tblPREG_OUT", row);
+			printRow("tbl"+tableName, row);
 			
 			if (counter == 100) {
 				counter = 0;
@@ -1246,8 +1249,10 @@ public abstract class HicdepExporter {
 		exportLAB_VIRO(dataset);
 		System.err.println("Exporting DIS");
 		exportDIS(dataset);
+		System.err.println("Exporting PREG");
+		exportPREGtable(dataset, "PREG", false);
 		System.err.println("Exporting PREG_OUT");
-		exportPREG_OUT(dataset);
+		exportPREGtable(dataset, "PREG_OUT", true);
 	}
 	
 	private String therapyMotivation(Therapy t) {
