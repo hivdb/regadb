@@ -83,6 +83,14 @@
 	    	<CENTER>
 	    		<attribute name="my-center" group="my-group" />
 	    	</CENTER>
+	    	
+	    	<!-- CENS_D field configuration
+	    			a date attribute can be configured to be used as the CENS_D field
+	    			this element is optional -->
+	    	<CENS_D>
+	    		<attribute name="my-cens_d" group="my-group" />
+	    	</CENS_D>
+	    	
 	    	 <!-- ENROL_D field configuration
 	    			an event can be configured to be used as the ENROL_D field:
 	    			of all of these events belonging to a patient, 

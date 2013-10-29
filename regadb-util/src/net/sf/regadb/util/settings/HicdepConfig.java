@@ -88,6 +88,8 @@ public class HicdepConfig extends ConfigParser{
 	}
 	
 	private Attribute BAScenter;
+	private Attribute BAScens_d;
+
 	private Event BASenrol_d;
 	private Test SAMPLESsamp_type;
 	private Map<String, String> SAMPLESsamp_type_mapping = new HashMap<String, String>();
@@ -108,6 +110,14 @@ public class HicdepConfig extends ConfigParser{
 				final String name = attributeE.getAttributeValue("name");
 				final String group = attributeE.getAttributeValue("group");
 				BAScenter = new Attribute(name, group);
+			}
+			
+			ee = BAS.getChild("CENS_D");
+			if (ee != null){
+				Element attributeE = ee.getChild("attribute");
+				final String name = attributeE.getAttributeValue("name");
+				final String group = attributeE.getAttributeValue("group");
+				BAScens_d = new Attribute(name, group);
 			}
 			
 			ee = BAS.getChild("ENROL_D");
@@ -162,6 +172,7 @@ public class HicdepConfig extends ConfigParser{
 
 	public void setDefaults() {
 		BAScenter = null;
+		BAScens_d = null;
 		BASenrol_d = null;
 		SAMPLESsamp_type = null;
 		SAMPLESsamp_type_mapping = new HashMap<String, String>();
@@ -178,6 +189,14 @@ public class HicdepConfig extends ConfigParser{
 
 	public void setBASCenter(Attribute center) {
 		this.BAScenter = center;
+	}
+	
+	public Attribute getBAScens_d() {
+		return BAScens_d;
+	}
+
+	public void setBAScens_d(Attribute bAScens_d) {
+		BAScens_d = bAScens_d;
 	}
 	
 	public Event getBASEnrol_d() {

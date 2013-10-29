@@ -118,6 +118,7 @@ public abstract class HicdepExporter {
 		final String ETHNICITY = "ethnicity";
 		final String DEATH_DATE = "death_date";
 		final String CENTER = "center";
+		final String CENS_D = "cens_d";
 		final String ENROL_D = "enrol_d";
 		
 		Map<String, Attribute> attributes = new HashMap<String, Attribute>();
@@ -140,6 +141,14 @@ public abstract class HicdepExporter {
 			HicdepConfig.Attribute center = config().getBASCenter();
 			if (center != null)
 				attributes.put(CENTER, t.getAttribute(center.name, center.group));
+		}
+		
+		{
+			Transaction t = login.createTransaction();
+			
+			HicdepConfig.Attribute cens_d = config().getBAScens_d();
+			if (cens_d != null)
+				attributes.put(CENS_D, t.getAttribute(cens_d.name, cens_d.group));
 		}
 		
 		HicdepConfig.Event enrolEvent = config().getBASEnrol_d();
@@ -207,6 +216,10 @@ public abstract class HicdepExporter {
 				row.put("MODE", transmission);
 				
 				row.put("CENTER", (String)m.get(CENTER));
+				
+				String cens_d = (String)m.get(CENS_D);
+				row.put("CENS_D", cens_d == null ? null : format(new Date(Long.parseLong(cens_d))));
+				
 				Date enrol_d = (Date)m.get(ENROL_D);
 				if (enrol_d != null)
 					row.put("ENROL_D", format(enrol_d));
