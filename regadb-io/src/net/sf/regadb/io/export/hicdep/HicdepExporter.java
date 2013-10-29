@@ -853,7 +853,8 @@ public abstract class HicdepExporter {
 				" from " +
 				"	AaSequence a join a.aaMutations m join a.protein p " +
 				" where " +
-				"	a.ntSequence.viralIsolate.patient in (" + patientsInDatasetSubquery("dataset") + ")" +
+				"	a.ntSequence.viralIsolate.patient in (" + patientsInDatasetSubquery("dataset") + ") " +
+				" 	and m.aaMutation.aaReference != m.aaMutation.aaMutation " + 
 				" order " +
 				"	by m.id ";
 		
