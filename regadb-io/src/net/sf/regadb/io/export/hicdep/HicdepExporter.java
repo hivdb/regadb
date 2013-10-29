@@ -77,6 +77,16 @@ public abstract class HicdepExporter {
 		return r;
 	}
 	
+	private String mapOrThrow(SimpleCsvMapper mapper, String name, String v) {
+		if (v == null)
+			return null;
+		
+		String r = mapper.b2a(v);
+		if (r == null)
+			throw new RuntimeException("No mapping for value \"" + v + "\" in mapping \"" + name + "\"");
+		return r;
+	}
+	
 	private String patientsInDatasetSubquery(String datasetParam) {
 		return 
 				"select " +
@@ -188,12 +198,12 @@ public abstract class HicdepExporter {
 				
 				row.put("FRSVIS_D", null);
 			
-				String gender = genderMap.b2a((String)m.get(GENDER));
+				String gender = mapOrThrow(genderMap, "gender", (String)m.get(GENDER));
 				row.put("GENDER", gender);
 	
 				row.put("HEIGH", "999");
 				
-				String transmission = transmissionMap.b2a((String)m.get(TRANSMISSION_GROUP));
+				String transmission = mapOrThrow(transmissionMap, "transmission", (String)m.get(TRANSMISSION_GROUP));
 				row.put("MODE", transmission);
 				
 				row.put("CENTER", (String)m.get(CENTER));
@@ -201,12 +211,12 @@ public abstract class HicdepExporter {
 				if (enrol_d != null)
 					row.put("ENROL_D", format(enrol_d));
 				
-				String origin = originMap.b2a((String)m.get(COUNTRY));
+				String origin = mapOrThrow(originMap, "country->origin", (String)m.get(COUNTRY));
 				if (origin == null)
-					origin = originMap.b2a((String)m.get(GEOGRAPHIC_ORIGIN));
+					origin = mapOrThrow(originMap, "geographic-origin->origin", (String)m.get(GEOGRAPHIC_ORIGIN));
 				row.put("ORIGIN", origin);
 				
-				row.put("ETHNIC", ethnicityMap.b2a((String)m.get(ETHNICITY)));
+				row.put("ETHNIC", mapOrThrow(ethnicityMap, "ethnicity", (String)m.get(ETHNICITY)));
 				
 				row.put("SEROCO_D", null);
 				row.put("RECART_Y", null);
