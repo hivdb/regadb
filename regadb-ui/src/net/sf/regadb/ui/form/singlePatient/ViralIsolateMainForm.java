@@ -13,22 +13,16 @@ import net.sf.regadb.db.AaSequence;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
-import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
-import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.ViralIsolate;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.service.AnalysisPool;
 import net.sf.regadb.service.qc.QC;
 import net.sf.regadb.service.wts.FullAnalysis;
 import net.sf.regadb.ui.framework.RegaDBMain;
-import net.sf.regadb.ui.framework.forms.InteractionState;
-import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
-import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
-import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
@@ -64,9 +58,9 @@ public class ViralIsolateMainForm extends WContainerWidget
     private Label genomeL;
     private TextField genomeTF;
     
-    private static final String defaultSequenceLabel_ = "Sequence ";
+    private TestListWidget testList;
     
-    private List<FormField> testFormFields_ = new ArrayList<FormField>();
+    private static final String defaultSequenceLabel_ = "Sequence ";
     
     List<NtSequenceForm> ntSequenceForms = new ArrayList<NtSequenceForm>();
 
@@ -74,6 +68,32 @@ public class ViralIsolateMainForm extends WContainerWidget
 	{
 		super();
 		viralIsolateForm_ = viralIsolateForm;
+		
+		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+		List<TestItem> testItems = null;
+		if (config != null) 
+			testItems = config.getTests();
+		else 
+			testItems = new ArrayList<TestItem>();
+		testList = new TestListWidget(testItems) {
+			@Override
+			public void removeTestResult(TestResult tr) {
+            	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);
+            	RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
+			}
+
+			@Override
+		    public TestResult createTestResult(Test t) {
+				TestResult tr = new TestResult();
+				tr.setTest(t);
+				tr.setViralIsolate(viralIsolateForm_.getViralIsolate());
+				
+				tr.setPatient(viralIsolateForm_.getViralIsolate().getPatient());
+				viralIsolateForm_.getViralIsolate().getTestResults().add(tr);
+				
+				return tr;
+		    }
+		};
 
 		init();
 	}
@@ -95,35 +115,8 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleIdTF.setMandatory(true);
 		table_.addLineToTable(sampleIdL, sampleIdTF);
 		
-		Transaction tr = RegaDBMain.getApp().createTransaction();
-		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
-        if (config != null)
-		for(TestItem ti : config.getTests()) {
-        	Test t = tr.getTest(ti.description);
-        	if(t != null){
-	            Label l = new Label(TestComboBox.getLabel(t));
-	            FormField testResultField;
-	            if(ValueTypes.getValueType(t.getTestType().getValueType()) == ValueTypes.NOMINAL_VALUE) {
-	                testResultField = new ComboBox(viralIsolateForm_.getInteractionState(), viralIsolateForm_);
-	                for(TestNominalValue tnv : t.getTestType().getTestNominalValues()) {
-	                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
-	                }
-	                ((ComboBox)testResultField).sort();
-	                if (ti.defaultValue != null && viralIsolateForm_.isEditable())
-	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
-	            } else {
-	                testResultField = viralIsolateForm_.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()));
-	            }
-	
-	            table_.addLineToTable(l, testResultField);
-	            testFormFields_.add(testResultField);
-        	}
-        	else{
-        		System.err.println("ViralIsolateForm: test does not exist: '"+ ti.description +'\'');
-        	}
-        }
-        tr.commit();
-
+        testList.init(viralIsolateForm_.getInteractionState(), viralIsolateForm_, table_);
+		
 		genomeL = new Label(tr("form.viralIsolate.editView.genome"));
 		genomeTF = new TextField(viralIsolateForm_.getInteractionState(),
 				viralIsolateForm_);
@@ -156,36 +149,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		sampleIdTF.setText(vi.getSampleId());
 		
 		Transaction trans = RegaDBMain.getApp().createTransaction();
-		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
-        if(config != null){
-			for(int i = 0; i < config.getTests().size(); i++) {
-				Test test = trans.getTest(config.getTests().get(i).description);
-				if(test == null)
-					continue;
-				
-				TestResult theTr = null;
-				for (TestResult tr : vi.getTestResults()) {
-					if (tr.getTest().getDescription().equals(test.getDescription())){
-						theTr = tr;
-						break;
-					}
-				}
-	
-				FormField f = testFormFields_.get(i);
-				if (theTr != null) {
-					if (f instanceof ComboBox) {
-						((ComboBox) f).selectItem(theTr.getTestNominalValue().getValue());
-					} else {
-						if (theTr.getValue() != null)
-							f.setText(theTr.getValue());
-						else 
-							f.setText(new String(theTr.getData()));
-					}
-				} else {
-					//hide?
-				}
-			}
-        }
+		testList.fillData(vi.getTestResults());
         
         for(NtSequence ntseq : vi.getNtSequences())
         {
@@ -387,50 +351,10 @@ public class ViralIsolateMainForm extends WContainerWidget
             t.delete(tr);
         }
         
-		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
-        if (config != null)
-		for(int i = 0; i < config.getTests().size(); i++) {
-            TestResult tr = null;
-            for (TestResult vi_tr : viralIsolateForm_.getViralIsolate().getTestResults()) {
-            	if (vi_tr.getTest().getDescription().equals(config.getTests().get(i).description)){
-            		tr = vi_tr;
-            		break;
-            	}
-            }
-            FormField f = testFormFields_.get(i);
-            if(f instanceof ComboBox) {
-                if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
-                	if (tr == null)
-                		tr = createTestResult(t.getTest(config.getTests().get(i).description));
-                    tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
-                }
-            } else {
-                if(f.text()!=null && !f.text().trim().equals("")) {
-                	if (tr == null)
-                		tr = createTestResult(t.getTest(config.getTests().get(i).description));
-                    tr.setValue(f.text());
-                }
-                else if(tr != null){
-                	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);
-                	RegaDBMain.getApp().getSelectedPatient().getTestResults().remove(tr);
-                	t.delete(tr);
-                }
-            }
-        }
+        testList.saveData(viralIsolateForm_.getViralIsolate().getTestResults());
         
         viralIsolateForm_.getViralIsolate().setSampleDate(sampleDateTF.getDate());
         viralIsolateForm_.getViralIsolate().setSampleId(sampleIdTF.getFormText());
-    }
-    
-    public TestResult createTestResult(Test t) {
-		TestResult tr = new TestResult();
-		tr.setTest(t);
-		tr.setViralIsolate(viralIsolateForm_.getViralIsolate());
-		
-		tr.setPatient(viralIsolateForm_.getViralIsolate().getPatient());
-		viralIsolateForm_.getViralIsolate().getTestResults().add(tr);
-		
-		return tr;
     }
     
     public void startAnalysis(Genome genome)
