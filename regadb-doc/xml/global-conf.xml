@@ -262,6 +262,20 @@
           <!-- a nominal value test may define a default value -->
           <test description="Sample Source" defaultValue="Plasma"/>
         </tests>
+        
+        <!-- list of sequence tests in the form 
+        	optional: 	If not provided, RegaDB automatically uses all tests in 
+        				the database that are of test-object "Sequence analysis"
+        				and have no analysis configuration.
+        				If this configuration is provided, 
+        				only the tests specified here will be used 
+        				(this also counts for the contamination tool test!).-->
+        <sequence-tests>
+          <test description="Sequence batch data" />
+          <!-- a nominal value test may define a default value -->
+          <test description="Problematic sequence" defaultValue="No"/>
+        </sequence-tests>
+        
         <!--  This element is optional -->
         <resistance>
         	<algorithms>
