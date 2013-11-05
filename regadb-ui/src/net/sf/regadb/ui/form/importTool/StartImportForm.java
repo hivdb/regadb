@@ -1,6 +1,9 @@
 package net.sf.regadb.ui.form.importTool;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.regadb.db.Dataset;
@@ -124,18 +127,25 @@ public class StartImportForm extends WDialog {
 	
 							SequenceDb sequenceDb = app.getSequenceDb(); 
 							
-							ImportData importData = 
-								new ImportData(StartImportForm.this.importToolForm.getObject(),
-										xlsFile.getFileUpload().getClientFileName(),
-										new File(xlsFile.getFileUpload().getSpoolFileName()),
-										new File(fastaFile.getFileUpload().getSpoolFileName()),
-										dataset.currentValue());
-							List<WString> errors = importData.doImport(tr, sequenceDb, true, workerLogin);
-							if (errors.size() == 0) {
-								importData.doImport(tr, sequenceDb, false, workerLogin);
+							try {
+								ImportData importData = 
+									new ImportData(StartImportForm.this.importToolForm.getObject(),
+											xlsFile.getFileUpload().getClientFileName(),
+											new File(xlsFile.getFileUpload().getSpoolFileName()),
+											new File(fastaFile.getFileUpload().getSpoolFileName()),
+											dataset.currentValue());
+								List<WString> errors = importData.doImport(tr, sequenceDb, true, workerLogin);
+								if (errors.size() == 0) {
+									importData.doImport(tr, sequenceDb, false, workerLogin);
+								}
+								StartImportForm.this.errors = errors;
+							} catch (Exception e) {
+								StringWriter sw = new StringWriter();
+								PrintWriter pw = new PrintWriter(sw);
+								e.printStackTrace(pw);
+								StartImportForm.this.errors = new ArrayList<WString>();
+								StartImportForm.this.errors.add(new WString(sw.toString()));
 							}
-							
-							StartImportForm.this.errors = errors;
 						} finally {
 							workerLogin.closeSession();
 						}
