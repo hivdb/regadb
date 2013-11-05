@@ -114,6 +114,7 @@ public class ViralIsolateFormConfig extends FormConfig {
     public static final String NAME = "form.viralIsolate";
     
     private List<TestItem> tests = new ArrayList<TestItem>();
+    private List<TestItem> sequenceTests = new ArrayList<TestItem>();
     private List<Algorithm> algorithms;
     private List<ScoreInfo> gss = new ArrayList<ScoreInfo>();
     
@@ -121,20 +122,40 @@ public class ViralIsolateFormConfig extends FormConfig {
 		super(NAME);
 		setDefaults();
 	}
+	
+	private TestItem parseTestItem(Element e) {
+       	String d = e.getAttributeValue("description");
+    	String g = e.getAttributeValue("organism");
+    	String defaultValue = e.getAttributeValue("defaultValue");
+    	if(d != null)
+    		return new TestItem(d,g,defaultValue);
+    	else
+    		return null;
+	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
 		tests.clear();
+		sequenceTests.clear();
 		
-		Element ee = (Element)e.getChild("tests");
+		Element ee = null; 
 		
-		if (ee != null) 
-        for(Object o : ee.getChildren()){
-        	String d = ((Element)o).getAttributeValue("description");
-        	String g = ((Element)o).getAttributeValue("organism");
-        	String defaultValue = ((Element)o).getAttributeValue("defaultValue");
-        	if(d != null)
-        		tests.add(new TestItem(d,g,defaultValue));
-        }
+		ee = (Element)e.getChild("tests");	
+		if (ee != null) {
+	        for(Object o : ee.getChildren()){
+	        	TestItem ti = parseTestItem((Element)o);
+	        	if (ti != null)	
+	        		tests.add(ti);
+	        }
+		}
+		
+		ee = (Element)e.getChild("sequence-tests");
+		if (ee != null) {
+	        for(Object o : ee.getChildren()){
+	        	TestItem ti = parseTestItem((Element)o);
+	        	if (ti != null)	
+	        		sequenceTests.add(ti);
+	        }
+		}
         
         ee = e.getChild("resistance");
         if (ee != null) {
@@ -196,6 +217,7 @@ public class ViralIsolateFormConfig extends FormConfig {
 
 	public void setDefaults() {
 		tests.clear();
+		sequenceTests.clear();
 		
 		gss.clear();
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", "Resistant", 0.0));
@@ -205,6 +227,14 @@ public class ViralIsolateFormConfig extends FormConfig {
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#00ff00"), "S", "Susceptible", Double.POSITIVE_INFINITY));
 	}
 
+	private Element toXml(TestItem ti) {
+		Element ee = new Element("test");
+		ee.setAttribute("description", ti.description);
+		if(ti.organism != null)
+			ee.setAttribute("organism",ti.organism);
+		return ee;
+	}
+	
 	public Element toXml(){
 		Element r = super.toXml();
 		Element e;
@@ -217,12 +247,17 @@ public class ViralIsolateFormConfig extends FormConfig {
 			e.addContent(new Comment("List of tests avaiable in the viral isolate form."));
 			
 			for(TestItem ti : tests){
-				Element ee = new Element("test");
-				ee.setAttribute("description", ti.description);
-				if(ti.organism != null)
-					ee.setAttribute("organism",ti.organism);
-				
-				e.addContent(ee);
+				e.addContent(toXml(ti));
+			}
+		}
+		
+		if(sequenceTests.size() > 0){
+			e = new Element("seqeunce-tests");
+			r.addContent(e);
+			e.addContent(new Comment("List of sequence tests avaiable in the sequence part of the viral isolate form."));
+			
+			for(TestItem ti : tests){
+				e.addContent(toXml(ti));
 			}
 		}
 
@@ -231,6 +266,10 @@ public class ViralIsolateFormConfig extends FormConfig {
 	
 	public List<TestItem> getTests(){
 		return tests;
+	}
+	
+	public List<TestItem> getSequenceTests(){
+		return sequenceTests;
 	}
 	
 	public List<Algorithm> getAlgorithms() {
