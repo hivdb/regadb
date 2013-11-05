@@ -81,10 +81,8 @@ public class ImportData {
 	        
 	        try {
 	            xna = org.biojavax.bio.seq.RichSequence.IOTools.readFastaDNA(new BufferedReader(new FileReader(fastaFile)), null);
-	        } catch (NoSuchElementException ex) {
-	        	ex.printStackTrace();
-	        } catch (FileNotFoundException ex) {
-	        	ex.printStackTrace();
+	        } catch (Exception ex) {
+	        	throw new RuntimeException(ex);
 	        }
 	        
 	        if(xna!=null) { 
@@ -93,7 +91,7 @@ public class ImportData {
 	                	Sequence s = xna.nextRichSequence();
 	                	sequences.put(s.getName(), s);
 	                } catch (Exception e) {
-	                	e.printStackTrace();
+	                	throw new RuntimeException(e);
 	                }
 	            }
 	        }
