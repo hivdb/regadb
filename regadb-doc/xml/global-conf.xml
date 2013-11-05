@@ -261,6 +261,9 @@
           <test description="Article" />
           <!-- a nominal value test may define a default value -->
           <test description="Sample Source" defaultValue="Plasma"/>
+          <!-- by default a "No value selected" entry is show in the nominal value combobox,
+          		this can be hidden by setting this attribute: noValueSelected="false" -->
+          <test description="Sample Source2" noValueSelected="false"/>		
         </tests>
         
         <!-- list of sequence tests in the form 
@@ -274,6 +277,9 @@
           <test description="Sequence batch data" />
           <!-- a nominal value test may define a default value -->
           <test description="Problematic sequence" defaultValue="No"/>
+          <!-- by default a "No value selected" entry is show in the nominal value combobox,
+          	   this can be hidden by setting this attribute: noValueSelected="false" -->
+          <test description="Problematic sequence2" noValueSelected="false"/>		
         </sequence-tests>
         
         <!--  This element is optional -->

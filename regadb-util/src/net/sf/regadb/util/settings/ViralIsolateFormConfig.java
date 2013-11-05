@@ -14,14 +14,16 @@ public class ViralIsolateFormConfig extends FormConfig {
         public TestItem(String d){
             description = d;
         }
-        public TestItem(String d, String o, String defaultValue){
+        public TestItem(String d, String o, String defaultValue, boolean noValueSelected){
             description = d;
             organism = o;
             this.defaultValue = defaultValue;
+            this.noValueSelected = noValueSelected;
         }
         public String description = null;
         public String organism = null;
         public String defaultValue = null;
+        public boolean noValueSelected = true;
     }
 	
 	public static class ScoreInfo {
@@ -127,8 +129,12 @@ public class ViralIsolateFormConfig extends FormConfig {
        	String d = e.getAttributeValue("description");
     	String g = e.getAttributeValue("organism");
     	String defaultValue = e.getAttributeValue("defaultValue");
+    	String noValueSelected = e.getAttributeValue("noValueSelected");
+    	if (noValueSelected == null)
+    		noValueSelected = "true";
+    	
     	if(d != null)
-    		return new TestItem(d,g,defaultValue);
+    		return new TestItem(d,g,defaultValue, Boolean.parseBoolean(noValueSelected));
     	else
     		return null;
 	}

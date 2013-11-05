@@ -43,6 +43,9 @@ public abstract class TestListWidget {
 	                ((ComboBox)testResultField).sort();
 	                if (ti.defaultValue != null && interactionState.isEditable())
 	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
+	                
+	                if (ti.noValueSelected)
+	                	((ComboBox)testResultField).addNoSelectionItem();
 	            } else {
 	                testResultField = FormField.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()), interactionState, form);
 	            }
