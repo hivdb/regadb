@@ -104,10 +104,14 @@ public abstract class TestListWidget {
             }
             FormField f = testFormFields.get(i);
             if(f instanceof ComboBox) {
-                if(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getValue()!=null) {
+            	DataComboMessage<TestNominalValue> dcm = (DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem();
+                if(dcm != null && dcm.getValue()!=null) {
                 	if (tr == null)
                 		tr = createTestResult(tra.getTest(testItems.get(i).description));
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
+                } else if (tr != null) {
+                	removeTestResult(tr);
+                	tra.delete(tr);
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
