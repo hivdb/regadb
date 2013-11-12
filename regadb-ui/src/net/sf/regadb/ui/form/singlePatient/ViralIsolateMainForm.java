@@ -71,7 +71,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
 		List<TestItem> testItems = null;
-		if (config != null) 
+		if (config != null && config.getTests() != null) 
 			testItems = config.getTests();
 		else 
 			testItems = new ArrayList<TestItem>();

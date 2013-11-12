@@ -115,8 +115,8 @@ public class ViralIsolateFormConfig extends FormConfig {
 
     public static final String NAME = "form.viralIsolate";
     
-    private List<TestItem> tests = new ArrayList<TestItem>();
     private List<TestItem> sequenceTests = new ArrayList<TestItem>();
+    private List<TestItem> tests;
     private List<Algorithm> algorithms;
     private List<ScoreInfo> gss = new ArrayList<ScoreInfo>();
     
@@ -140,13 +140,14 @@ public class ViralIsolateFormConfig extends FormConfig {
 	}
 
 	public void parseXml(RegaDBSettings settings, Element e) {
-		tests.clear();
 		sequenceTests.clear();
+		tests = null;
 		
 		Element ee = null; 
 		
 		ee = (Element)e.getChild("tests");	
 		if (ee != null) {
+			tests = new ArrayList<TestItem>();
 	        for(Object o : ee.getChildren()){
 	        	TestItem ti = parseTestItem((Element)o);
 	        	if (ti != null)	
@@ -222,8 +223,8 @@ public class ViralIsolateFormConfig extends FormConfig {
 	}
 
 	public void setDefaults() {
-		tests.clear();
 		sequenceTests.clear();
+		tests = null;
 		
 		gss.clear();
 		gss.add(new ScoreInfo(Color.decode("#000"), Color.decode("#FF0000"), "R", "Resistant", 0.0));
@@ -247,7 +248,7 @@ public class ViralIsolateFormConfig extends FormConfig {
 		
 		r.addContent(new Comment("Viral Isolate form configuration."));
 		
-		if(tests.size() > 0){
+		if(tests != null){
 			e = new Element("tests");
 			r.addContent(e);
 			e.addContent(new Comment("List of tests avaiable in the viral isolate form."));
