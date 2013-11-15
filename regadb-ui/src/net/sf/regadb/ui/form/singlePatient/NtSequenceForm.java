@@ -15,6 +15,7 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.tools.FastaFile;
+import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
@@ -26,6 +27,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.ViralIsolateFormConfig.TestItem;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
@@ -60,32 +62,54 @@ public class NtSequenceForm extends WContainerWidget{
 	private Label subtypeL;
 	private TextField subtypeF;
 	
-	private int testRow;
-	private List<Test> tests = new ArrayList<Test>();
-	private List<FormField> testInputs = new ArrayList<FormField>();
-	private List<TestResult> testResults = new ArrayList<TestResult>();
 	private List<TestResult> removedTestResult = new ArrayList<TestResult>();
 	
 	private Label basepairsL;
 	private TextField basepairsF;
 	
 	private WPushButton deleteB;
+	
+	private TestListWidget testList;
 
-	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, String label, List<Test> tests){
+	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, String label, List<TestItem> testItems){
 		this.viralIsolateMainForm = viralIsolateMainForm;
 		this.setNtSequence(new NtSequence());
-		this.tests = tests;
+		this.testList = createTestList(testItems);
+		
 		init();
 		
 		labelF.setText(label);
 	}
 	
-	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, NtSequence ntSequence, List<Test> tests){
+	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, NtSequence ntSequence, List<TestItem> testItems){
 		this.viralIsolateMainForm = viralIsolateMainForm;
 		this.setNtSequence(ntSequence);
-		this.tests = tests;
+		this.testList = createTestList(testItems);
+		
 		init();
+		
 		fillData();
+	}
+	
+	private TestListWidget createTestList(List<TestItem> testItems) {
+		return new TestListWidget(testItems) {
+			@Override
+			public void removeTestResult(TestResult tr) {
+            	removedTestResult.add(tr);
+			}
+
+			@Override
+		    public TestResult createTestResult(Test t) {
+				TestResult tr = new TestResult();
+				tr.setTest(t);
+				tr.setNtSequence(ntSequence);
+				
+				tr.setPatient(viralIsolateMainForm.viralIsolateForm_.getViralIsolate().getPatient());
+				ntSequence.getTestResults().add(tr);
+				
+				return tr;
+		    }
+		};
 	}
 	
 	private FormField getTextField(TestType tt){
@@ -140,19 +164,9 @@ public class NtSequenceForm extends WContainerWidget{
 
 		subtypeL = new Label(tr("form.viralIsolate.editView.subType"));
 		subtypeF = new TextField(getInteractionState(), getViralIsolateForm());
-		testRow = table.addLineToTable(subtypeL, subtypeF)+1;
+		table.addLineToTable(subtypeL, subtypeF);
 		
-		for(Test test : tests){
-			Label label = null;
-			FormField input = null;
-			if(isEditable() && isEditable(test)){
-				label = new Label(test.getDescription());
-				input = getTextField(test.getTestType());
-				table.addLineToTable(label,input);
-			}
-			testInputs.add(input);
-			testResults.add(null);
-		}
+		testList.init(getInteractionState(), getViralIsolateForm(), table);
 		
 		basepairsL = new Label(tr("form.viralIsolate.editView.basePairs"));
 		basepairsF = new TextField(getInteractionState(), getViralIsolateForm());
@@ -235,10 +249,6 @@ public class NtSequenceForm extends WContainerWidget{
         }
 	}
 	
-	private boolean isEditable(Test test){
-		return !test.getDescription().equals(StandardObjects.getContaminationClusterFactorTest().getDescription());
-	}
-	
 	void uninit(){
 		getViralIsolateForm().removeFormField(labelF);
 		getViralIsolateForm().removeFormField(seqDateF);
@@ -273,31 +283,7 @@ public class NtSequenceForm extends WContainerWidget{
 		ntF.setText(ntSequence.getNucleotides());
 		basepairsF.setText(ntSequence.getNucleotides() == null ? "0" : ntSequence.getNucleotides().length()+"");
 		
-		for(TestResult trr : ntSequence.getTestResults()){
-			if(trr.getTest().getAnalysis() == null){
-				for(int i=0; i<tests.size(); ++i){
-					if(Equals.isSameTest(trr.getTest(),tests.get(i))){
-						FormField input;
-						
-						if(!isEditable() || !isEditable(trr.getTest())){
-							Label label = new Label(tests.get(i).getDescription());
-							input = getTextField(tests.get(i).getTestType(),InteractionState.Viewing);
-							testInputs.set(i, input);
-							table.addLineToTable(testRow, label, input);
-						}
-						else{
-							input = testInputs.get(i);
-						}
-						
-						input.setText(
-								trr.getTestNominalValue() == null ? trr.getValue() : trr.getTestNominalValue().getValue());
-						testResults.set(i, trr);
-						
-						break;
-					}
-				}
-			}
-		}
+		testList.fillData(ntSequence.getTestResults());
 	}
 	
 	void save(){
@@ -306,66 +292,7 @@ public class NtSequenceForm extends WContainerWidget{
 		ntSequence.setNucleotides(ntF.getFormText());
 		ntSequence.setAligned(false);
 		
-		for(int i=0; i<tests.size(); ++i){
-			Test t = tests.get(i);
-			if(t == null)
-				continue;
-			
-			if(isEditable(t)){
-				FormField f = testInputs.get(i);
-				ValueTypes vt = ValueTypes.getValueType(t.getTestType().getValueType());
-				
-				if(vt == ValueTypes.NOMINAL_VALUE){
-					@SuppressWarnings("rawtypes")
-					TestNominalValue value = (TestNominalValue)((ComboBox)f).currentValue();
-					if(value == null){
-						if(testResults.get(i) != null)
-							removedTestResult.add(testResults.get(i));
-					}
-					else{
-						TestResult tr = testResults.get(i);
-						if(tr == null){
-							tr = new TestResult();
-							tr.setNtSequence(ntSequence);
-							ntSequence.getTestResults().add(tr);
-							tr.setTest(t);
-						}
-						tr.setTestNominalValue(value);
-					}
-				}
-				else{
-					String value = null;
-					if(vt == ValueTypes.DATE){
-						value = ((DateField)f).getDate() == null ? null : ((DateField)f).getDate().getTime() +"";
-					}
-					else{
-						value = f.getFormText();
-						if("".equals(value))
-							value = null;
-					}
-					
-					if(value == null){
-						if(testResults.get(i) != null)
-							removedTestResult.add(testResults.get(i));
-					}
-					else{
-						TestResult tr = testResults.get(i);
-						if(tr == null){
-							tr = new TestResult();
-							tr.setNtSequence(ntSequence);
-							ntSequence.getTestResults().add(tr);
-							tr.setTest(t);
-						}
-						tr.setValue(value);
-					}
-				}
-			}
-			else{ // not editable, calculated automatically
-				TestResult tr = testResults.get(i);
-				if(tr != null)
-					removedTestResult.add(tr);
-			}
-		}
+		testList.saveData(ntSequence.getTestResults());
 	}
 	
 	private TestResult getSubtype(NtSequence ntSequence){

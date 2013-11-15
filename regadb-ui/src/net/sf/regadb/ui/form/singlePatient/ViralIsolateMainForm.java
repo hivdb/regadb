@@ -230,16 +230,26 @@ public class ViralIsolateMainForm extends WContainerWidget
     }
     
     private NtSequenceForm addSequenceForm(NtSequence ntSequence, Transaction t){
-    	t = RegaDBMain.getApp().createTransaction();
-		List<Test> alltests = t.getTests(StandardObjects.getSequenceAnalysisTestObject());
-		List<Test> tests = new ArrayList<Test>();
-		for(Test test : alltests){
-			if(test.getAnalysis() == null){
-				tests.add(test);
+		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
+		List<TestItem> testItems = null;
+		if (config != null && config.getSequenceTests() != null) {
+			testItems = config.getSequenceTests();
+		} else {
+			testItems = new ArrayList<TestItem>();
+			
+			t = RegaDBMain.getApp().createTransaction();
+			List<Test> alltests = t.getTests(StandardObjects.getSequenceAnalysisTestObject());
+			for(Test test : alltests){
+				if(test.getAnalysis() == null){
+					String organism = null;
+					if (test.getTestType().getGenome() != null)
+						organism = test.getTestType().getGenome().getOrganismName();
+					testItems.add(new TestItem(test.getDescription(), organism, null, true));
+				}
 			}
 		}
     	
-    	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence, tests);
+    	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence, testItems);
     	ntSequenceForms.add(ntsf);
     	ntSequenceContainer.addWidget(ntsf);
     	
