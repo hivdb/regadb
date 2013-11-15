@@ -41,11 +41,14 @@ public abstract class TestListWidget {
 	                    ((ComboBox)testResultField).addItem(new DataComboMessage<TestNominalValue>(tnv, tnv.getValue()));
 	                }
 	                ((ComboBox)testResultField).sort();
-	                if (ti.defaultValue != null && interactionState.isEditable())
-	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
-	                
+
 	                if (ti.noValueSelected)
 	                	((ComboBox)testResultField).addNoSelectionItem();
+	                
+	                ((ComboBox)testResultField).selectIndex(0);
+	                
+	                if (ti.defaultValue != null && interactionState.isEditable())
+	                	((ComboBox)testResultField).selectItem(ti.defaultValue);
 	            } else {
 	                testResultField = FormField.getTextField(ValueTypes.getValueType(t.getTestType().getValueType()), interactionState, form);
 	            }
@@ -111,7 +114,6 @@ public abstract class TestListWidget {
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 } else if (tr != null) {
                 	removeTestResult(tr);
-                	tra.delete(tr);
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
@@ -121,7 +123,6 @@ public abstract class TestListWidget {
                 }
                 else if(tr != null){
                 	removeTestResult(tr);
-                	tra.delete(tr);
                 }
             }
         }
