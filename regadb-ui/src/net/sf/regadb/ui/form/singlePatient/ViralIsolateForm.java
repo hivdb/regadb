@@ -49,6 +49,8 @@ public class ViralIsolateForm extends ObjectForm<ViralIsolate>
 				getObject().getNtSequences().add(new NtSequence(getObject()));
 			}
 			else{
+				for (NtSequence s : getObject().getNtSequences())
+					RegaDBMain.getApp().createTransaction().refresh(s);
 				RegaDBMain.getApp().createTransaction().refresh(getObject());
 			}
 	
