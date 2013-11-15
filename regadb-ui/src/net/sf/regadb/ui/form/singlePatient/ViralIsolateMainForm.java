@@ -236,17 +236,6 @@ public class ViralIsolateMainForm extends WContainerWidget
 			testItems = config.getSequenceTests();
 		} else {
 			testItems = new ArrayList<TestItem>();
-			
-			t = RegaDBMain.getApp().createTransaction();
-			List<Test> alltests = t.getTests(StandardObjects.getSequenceAnalysisTestObject());
-			for(Test test : alltests){
-				if(test.getAnalysis() == null){
-					String organism = null;
-					if (test.getTestType().getGenome() != null)
-						organism = test.getTestType().getGenome().getOrganismName();
-					testItems.add(new TestItem(test.getDescription(), organism, null, true));
-				}
-			}
 		}
     	
     	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence, testItems);

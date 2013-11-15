@@ -266,13 +266,9 @@
           <test description="Sample Source2" noValueSelected="false"/>		
         </tests>
         
-        <!-- list of sequence tests in the form 
-        	optional: 	If not provided, RegaDB automatically uses all tests in 
-        				the database that are of test-object "Sequence analysis"
-        				and have no analysis configuration.
-        				If this configuration is provided, 
-        				only the tests specified here will be used 
-        				(this also counts for the contamination tool test!).-->
+        <!-- list of sequence tests in the form (these tests are shown for each sequence)
+        	optional
+       	  -->
         <sequence-tests>
           <test description="Sequence batch data" />
           <!-- a nominal value test may define a default value -->
