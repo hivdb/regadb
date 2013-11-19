@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Test;
@@ -12,10 +14,8 @@ import net.sf.regadb.db.TestNominalValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.ValueTypes;
-import net.sf.regadb.db.meta.Equals;
 import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.tools.FastaFile;
-import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
 import net.sf.regadb.ui.framework.forms.fields.DateField;
@@ -74,7 +74,7 @@ public class NtSequenceForm extends WContainerWidget{
 	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, String label, List<TestItem> testItems){
 		this.viralIsolateMainForm = viralIsolateMainForm;
 		this.setNtSequence(new NtSequence());
-		this.testList = createTestList(testItems);
+		this.testList = createTestList(getInteractionState(), testItems);
 		
 		init();
 		
@@ -84,15 +84,19 @@ public class NtSequenceForm extends WContainerWidget{
 	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, NtSequence ntSequence, List<TestItem> testItems){
 		this.viralIsolateMainForm = viralIsolateMainForm;
 		this.setNtSequence(ntSequence);
-		this.testList = createTestList(testItems);
+		this.testList = createTestList(getInteractionState(), testItems);
 		
 		init();
 		
 		fillData();
 	}
 	
-	private TestListWidget createTestList(List<TestItem> testItems) {
-		return new TestListWidget(testItems) {
+	private TestListWidget createTestList(InteractionState is, List<TestItem> testItems) {
+		Set<TestResult> results = null;
+		if (ntSequence != null)
+			results = ntSequence.getTestResults();
+		
+		return new TestListWidget(is, testItems, results) {
 			@Override
 			public void removeTestResult(TestResult tr) {
             	removedTestResult.add(tr);

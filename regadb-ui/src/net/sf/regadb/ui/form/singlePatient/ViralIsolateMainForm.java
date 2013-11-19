@@ -75,7 +75,11 @@ public class ViralIsolateMainForm extends WContainerWidget
 			testItems = config.getTests();
 		else 
 			testItems = new ArrayList<TestItem>();
-		testList = new TestListWidget(testItems) {
+		
+		Set<TestResult> results = null;
+		if (viralIsolateForm_.getObject() != null)
+			results = viralIsolateForm_.getObject().getTestResults();
+		testList = new TestListWidget(viralIsolateForm_.getInteractionState(), testItems, results) {
 			@Override
 			public void removeTestResult(TestResult tr) {
             	viralIsolateForm_.getViralIsolate().getTestResults().remove(tr);
@@ -233,7 +237,7 @@ public class ViralIsolateMainForm extends WContainerWidget
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
 		List<TestItem> testItems = null;
 		if (config != null && config.getSequenceTests() != null) {
-			testItems = config.getSequenceTests();
+			testItems = new ArrayList<TestItem>(config.getSequenceTests());
 		} else {
 			testItems = new ArrayList<TestItem>();
 		}

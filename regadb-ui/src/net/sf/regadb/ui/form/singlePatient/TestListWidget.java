@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,12 +25,22 @@ public abstract class TestListWidget {
 	
 	private List<FormField> testFormFields = new ArrayList<FormField>();
 	
-	public TestListWidget(List<TestItem> testItems) {
-		this.testItems = testItems;
+	public TestListWidget(InteractionState is, List<TestItem> testItems, Set<TestResult> results) {
+		this.testItems = new ArrayList<TestItem>(testItems);
+		
+		Transaction tr = RegaDBMain.getApp().createTransaction();
+		Iterator<TestItem> i = this.testItems.iterator();
+		while (i.hasNext()) {
+			TestItem ti = i.next();
+			Test t = tr.getTest(ti.description);
+			if (!showTest(is, t, results))
+				i.remove();
+		}
 	}
 	
 	public void init(InteractionState interactionState, IForm form, FormTable table) {
 		Transaction tr = RegaDBMain.getApp().createTransaction();
+		
 		for(TestItem ti : testItems) {
         	Test t = tr.getTest(ti.description);
         	if(t != null){
@@ -62,6 +73,20 @@ public abstract class TestListWidget {
         }
 	}
 	
+	private boolean showTest(InteractionState is, Test t, Set<TestResult> results) {
+		if (is.isEditable()) {
+			return true;
+		} else {
+			if (results != null) {
+				for (TestResult tr : results) {
+					if (tr.getTest().getTestIi() == t.getTestIi())
+						return true;
+				}
+			}
+			return false;			
+		}
+	}
+	
 	public void fillData(Set<TestResult> testResults) {
 		Transaction tra = RegaDBMain.getApp().createTransaction();
 		
@@ -88,8 +113,6 @@ public abstract class TestListWidget {
 					else 
 						f.setText(new String(theTr.getData()));
 				}
-			} else {
-				//hide?
 			}
 		}
 	}
