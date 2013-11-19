@@ -267,7 +267,10 @@
         </tests>
         
         <!-- list of sequence tests in the form (these tests are shown for each sequence)
-        	optional
+        	optional: 
+        		note that in order to show the "Contaminiation" nominal test, 
+        		it should be added here as well, the "Contamination Cluster Factor"
+        		is shown by default (in view mode only) if a result is available
        	  -->
         <sequence-tests>
           <test description="Sequence batch data" />
