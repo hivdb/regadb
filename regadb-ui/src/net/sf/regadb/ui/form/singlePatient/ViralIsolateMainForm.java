@@ -241,6 +241,8 @@ public class ViralIsolateMainForm extends WContainerWidget
 		} else {
 			testItems = new ArrayList<TestItem>();
 		}
+		if (!viralIsolateForm_.isEditable())
+			testItems.add(new TestItem(StandardObjects.getContaminationClusterFactorTest().getDescription(), null, null, true));
     	
     	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence, testItems);
     	ntSequenceForms.add(ntsf);
