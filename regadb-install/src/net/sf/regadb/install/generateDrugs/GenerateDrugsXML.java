@@ -43,6 +43,7 @@ public class GenerateDrugsXML
         String filesPath = path.getValue();
         
         handlePathogen("hiv", drugClassesEl, drugGenericsEl, drugCommercialsEl);
+        handlePathogen("hcv", drugClassesEl, drugGenericsEl, drugCommercialsEl);
 
         writeXMLFile(drugClassesEl, filesPath+File.separatorChar+"DrugClasses-genomes.xml");
         writeXMLFile(drugGenericsEl, filesPath+File.separatorChar+"DrugGenerics-genomes.xml");
@@ -211,33 +212,35 @@ public class GenerateDrugsXML
     private static Map<String, HashMap<String,Integer>> resistanceTableOrderMap(String path) {
         Map<String, HashMap<String,Integer>> resistanceTableOrder = new HashMap<String, HashMap<String,Integer>>();
         
-        try 
-        {
-            BufferedReader in = new BufferedReader(new FileReader(path));
-            String str;
-            while ((str = in.readLine()) != null) 
-            {
-                StringTokenizer classTokenizer = new StringTokenizer(str,":");
-                String className = classTokenizer.nextToken();
-                className = className.trim().toLowerCase();
-                String drugList = classTokenizer.nextToken();
-                HashMap<String, Integer> drugOrderList = new HashMap<String, Integer>();
-                StringTokenizer drugOrderTokenizer = new StringTokenizer(drugList, ",");
-                int start = 0;
-                System.err.println(drugOrderTokenizer.countTokens());
-                while(drugOrderTokenizer.hasMoreTokens())
-                {
-                    String token = drugOrderTokenizer.nextToken();
-                    drugOrderList.put(token.trim().toLowerCase(), start);
-                    start++;
-                }
-                resistanceTableOrder.put(className, drugOrderList);
-            }
-            in.close();
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
+        if (new File(path).exists()) {
+	        try 
+	        {
+	            BufferedReader in = new BufferedReader(new FileReader(path));
+	            String str;
+	            while ((str = in.readLine()) != null) 
+	            {
+	                StringTokenizer classTokenizer = new StringTokenizer(str,":");
+	                String className = classTokenizer.nextToken();
+	                className = className.trim().toLowerCase();
+	                String drugList = classTokenizer.nextToken();
+	                HashMap<String, Integer> drugOrderList = new HashMap<String, Integer>();
+	                StringTokenizer drugOrderTokenizer = new StringTokenizer(drugList, ",");
+	                int start = 0;
+	                System.err.println(drugOrderTokenizer.countTokens());
+	                while(drugOrderTokenizer.hasMoreTokens())
+	                {
+	                    String token = drugOrderTokenizer.nextToken();
+	                    drugOrderList.put(token.trim().toLowerCase(), start);
+	                    start++;
+	                }
+	                resistanceTableOrder.put(className, drugOrderList);
+	            }
+	            in.close();
+	        } 
+	        catch (IOException e) 
+	        {
+	            e.printStackTrace();
+	        }
         }
         
         return resistanceTableOrder;
