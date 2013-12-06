@@ -23,6 +23,8 @@ public class TestResult implements java.io.Serializable {
     private PatientImpl patient;
 
     private NtSequence ntSequence;
+    
+    private Therapy therapy;
 
     private String value;
 
@@ -117,6 +119,14 @@ public class TestResult implements java.io.Serializable {
 
     public void setNtSequence(NtSequence ntSequence) {
         this.ntSequence = ntSequence;
+    }
+    
+    public Therapy getTherapy() {
+        return this.therapy;
+    }
+
+    public void setTherapy(Therapy therapy) {
+        this.therapy = therapy;
     }
 
     public String getValue() {

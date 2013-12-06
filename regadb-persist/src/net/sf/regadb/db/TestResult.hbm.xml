@@ -30,6 +30,9 @@
     <many-to-one name="ntSequence" class="net.sf.regadb.db.NtSequence" fetch="select" cascade="save-update" index="test_result_nt_sequence_ii_idx">
       <column name="nt_sequence_ii" />
     </many-to-one>
+    <many-to-one name="therapy" class="net.sf.regadb.db.Therapy" fetch="select" cascade="save-update" index="test_result_therapy_ii_idx">
+      <column name="therapy_ii" />
+    </many-to-one>
     <property name="value" type="string">
       <column name="value" length="50" />
     </property>

@@ -37,7 +37,7 @@ create table regadbschema.splicing_position (splicing_position_ii int identity n
 create table regadbschema.test (test_ii int identity not null, version int not null, analysis_ii int null, test_type_ii int not null, description varchar(50) not null, primary key (test_ii));
 create table regadbschema.test_nominal_value (nominal_value_ii int identity not null, version int not null, test_type_ii int not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table regadbschema.test_object (test_object_ii int identity not null, version int not null, description varchar(50) not null, test_object_id int null, primary key (test_object_ii));
-create table regadbschema.test_result (test_result_ii int identity not null, version int not null, test_ii int not null, generic_ii int null, viral_isolate_ii int null, nominal_value_ii int null, patient_ii int null, nt_sequence_ii int null, value varchar(50) null, test_date datetime null, sample_id varchar(50) null, data varbinary(MAX) null, primary key (test_result_ii));
+create table regadbschema.test_result (test_result_ii int identity not null, version int not null, test_ii int not null, generic_ii int null, viral_isolate_ii int null, therapy_ii int null, nominal_value_ii int null, patient_ii int null, nt_sequence_ii int null, value varchar(50) null, test_date datetime null, sample_id varchar(50) null, data varbinary(MAX) null, primary key (test_result_ii));
 create table regadbschema.test_type (test_type_ii int identity not null, version int not null, value_type_ii int null, genome_ii int null, test_object_ii int not null, description varchar(50) not null, primary key (test_type_ii));
 create table regadbschema.therapy (therapy_ii int identity not null, version int not null, therapy_motivation_ii int null, patient_ii int not null, start_date datetime not null, stop_date datetime null, comment varchar(200) null, primary key (therapy_ii));
 create table regadbschema.therapy_commercial (therapy_ii int not null, commercial_ii int not null, version int not null, day_dosage_units double precision null, placebo tinyint not null, blind tinyint not null, frequency numeric(19,0) null, primary key (therapy_ii, commercial_ii));
@@ -97,6 +97,7 @@ alter table regadbschema.test_result add constraint FKEF1E986A4596F6EF foreign k
 alter table regadbschema.test_result add constraint FKEF1E986A608572E3 foreign key (nt_sequence_ii) references regadbschema.nt_sequence;
 alter table regadbschema.test_result add constraint FKEF1E986A9BD8A396 foreign key (test_ii) references regadbschema.test;
 alter table regadbschema.test_result add constraint FKEF1E986ACC6FF868 foreign key (patient_ii) references regadbschema.patient;
+alter table regadbschema.test_result add constraint FKEF1E986ACC6FF869 foreign key (therapy_ii) references regadbschema.therapy;
 alter table regadbschema.test_type add constraint FKB9A90EC7264DC6FB foreign key (test_object_ii) references regadbschema.test_object;
 alter table regadbschema.test_type add constraint FKB9A90EC75A4F23B6 foreign key (genome_ii) references regadbschema.genome;
 alter table regadbschema.test_type add constraint FKB9A90EC75FC38F0B foreign key (value_type_ii) references regadbschema.value_type;
@@ -150,6 +151,7 @@ create index test_result_nt_sequence_ii_idx on regadbschema.test_result (nt_sequ
 create index test_result_patient_ii_idx on regadbschema.test_result (patient_ii);
 create index test_result_test_ii_idx on regadbschema.test_result (test_ii);
 create index test_result_viral_isolate_ii_idx on regadbschema.test_result (viral_isolate_ii);
+create index test_result_therapy_ii_idx on regadbschema.test_result (therapy_ii);
 create index test_test_type_ii_idx on regadbschema.test (test_type_ii);
 create index test_type_genome_ii_idx on regadbschema.test_type (genome_ii);
 create index test_type_test_object_ii_idx on regadbschema.test_type (test_object_ii);
