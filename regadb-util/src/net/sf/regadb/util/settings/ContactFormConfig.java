@@ -7,19 +7,6 @@ import org.jdom.Comment;
 import org.jdom.Element;
 
 public class ContactFormConfig extends FormConfig {
-	public static class TestItem{
-        public TestItem(){
-        }
-        public TestItem(String d){
-            description = d;
-        }
-        public TestItem(String d, String o){
-            description = d;
-            organism = o;
-        }
-        public String description = null;
-        public String organism = null;
-    }
     public static class EventItem{
     	public EventItem(){
     		

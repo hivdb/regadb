@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.Test;
+import net.sf.regadb.db.TestObject;
+import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyCommercial;
 import net.sf.regadb.db.TherapyCommercialId;
@@ -17,6 +21,7 @@ import net.sf.regadb.db.TherapyGeneric;
 import net.sf.regadb.db.TherapyGenericId;
 import net.sf.regadb.db.TherapyMotivation;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.io.util.StandardObjects;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.ObjectForm;
@@ -31,6 +36,7 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.TestItem;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
@@ -54,6 +60,7 @@ public class TherapyForm extends ObjectForm<Therapy>
     private Label commentL;
     private TextField commentTF;
 
+    private TestListWidget testList;
     
     //generic drugs group
     private WGroupBox genericGroup_;
@@ -109,6 +116,36 @@ public class TherapyForm extends ObjectForm<Therapy>
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
         
+        List<TestItem> testItems = new ArrayList<TestItem>();
+        {
+        	Transaction t = RegaDBMain.getApp().createTransaction();
+        	TestObject tto = StandardObjects.getTherapyTestObject();
+        	List<Test> tests = t.getTests(tto);
+        	for (Test test : t.getTests(tto)) {
+        		Genome g = test.getTestType().getGenome();
+        		testItems.add(new TestItem(test.getDescription(), g == null ? null : g.getOrganismName()));
+        	}
+        }
+        Set<TestResult> testResults = null;
+        if (getObject() != null)
+        	testResults = getObject().getTestResults();
+        testList = new TestListWidget(getInteractionState(), testItems, testResults) {
+			public void removeTestResult(TestResult tr) {
+				getObject().getTestResults().remove(tr);
+			}
+
+			public TestResult createTestResult(Test t) {
+				TestResult tr = new TestResult();
+				tr.setTest(t);
+				tr.setTherapy(getObject());
+				
+				getObject().getTestResults().add(tr);
+				
+				return tr;
+			}
+        };
+        testList.init(getInteractionState(), this, generalGroupTable_);
+        
         if(getInteractionState() == InteractionState.Adding
         		|| getInteractionState() == InteractionState.Editing){
         	setStopDatePrevTherapyL = new Label(tr("form.therapy.setStopDatePrevTherapy"));
@@ -155,6 +192,8 @@ public class TherapyForm extends ObjectForm<Therapy>
         startDateDF.setDate(getObject().getStartDate());
         stopDateDF.setDate(getObject().getStopDate());
 		commentTF.setText(getObject().getComment());
+		
+		testList.fillData(getObject().getTestResults());
         
         fillComboBoxes();
         
@@ -334,6 +373,8 @@ public class TherapyForm extends ObjectForm<Therapy>
         {
             p.addTherapy(getObject());
         }
+        
+        testList.saveData(getObject().getTestResults());
             
         getObject().setStartDate(startDateDF.getDate());
             

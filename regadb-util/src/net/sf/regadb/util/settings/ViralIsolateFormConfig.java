@@ -8,24 +8,6 @@ import org.jdom.Comment;
 import org.jdom.Element;
 
 public class ViralIsolateFormConfig extends FormConfig {
-	public static class TestItem{
-        public TestItem(){
-        }
-        public TestItem(String d){
-            description = d;
-        }
-        public TestItem(String d, String o, String defaultValue, boolean noValueSelected){
-            description = d;
-            organism = o;
-            this.defaultValue = defaultValue;
-            this.noValueSelected = noValueSelected;
-        }
-        public String description = null;
-        public String organism = null;
-        public String defaultValue = null;
-        public boolean noValueSelected = true;
-    }
-	
 	public static class ScoreInfo {
 		private Color color;
 		private Color backgroundColor;

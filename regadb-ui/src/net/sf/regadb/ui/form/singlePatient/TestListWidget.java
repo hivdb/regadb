@@ -18,13 +18,15 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.settings.ViralIsolateFormConfig.TestItem;
+import net.sf.regadb.util.settings.TestItem;
 
 public abstract class TestListWidget {
 	private List<TestItem> testItems;
 	
 	private List<FormField> testFormFields = new ArrayList<FormField>();
 	
+	//TODO
+	//should accept a list of Tests iso a list of TestItems
 	public TestListWidget(InteractionState is, List<TestItem> testItems, Set<TestResult> results) {
 		this.testItems = new ArrayList<TestItem>(testItems);
 		
