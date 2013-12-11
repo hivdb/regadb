@@ -1,5 +1,48 @@
 commercial_ii,name,atc_code
-1,Victrelis (BOC),
-2,Victrelis 200mg (BOC),
-3,Incivo 375mg (TVR),
-4,Incivo (TVR),
+1,Victrelis (BOC),J05AE12
+2,Victrelis 200mg (BOC),J05AE12
+3,Incivo 375mg (TVR),J05AE11
+4,Incivo (TVR),J05AE11
+5,Viraferon inj. 1M IU (IFNa2b),L03AB05
+6,Viraferon inj. 3M IU (IFNa2b),L03AB05
+7,Viraferon inj. 5M IU (IFNa2b),L03AB05
+8,Viraferon inj. 10M IU (IFNa2b),L03AB05
+9,Viraferon 18M IU (IFNa2b),L03AB05
+10,Viraferon inj. 25M IU (IFNa2b),L03AB05
+11,Viraferon subcut.pen 30M IU (IFNa2b),L03AB05
+12,Viraferon subcut.pen 60M IU (IFNa2b),L03AB05
+13,Viraferon (IFNa2b),L03AB05
+14,Infergen inj. 9 mcg (IFNaCON1),L03AB09
+15,Infergen inj. 15 mcg (IFNaCON1),L03AB09
+16,Infergen (IFNaCON1),L03AB09
+17,Pegasys 135mcg (PEG-IFNa2a),L03AB11
+18,Pegasys 180mcg (PEG-IFNa2a),L03AB11
+19,Pegasys (PEG-IFNa2a),L03AB11
+20,PEG-Intron 50 mcg (PEG-IFNa2b),L03AB10
+21,PEG-Intron 80 mcg (PEG-IFNa2b),L03AB10
+22,PEG-Intron 100 mcg (PEG-IFNa2b),L03AB10
+23,PEG-Intron 120 mcg (PEG-IFNa2b),L03AB10
+24,PEG-Intron 150 mcg (PEG-IFNa2b),L03AB10
+25,PEG-Intron (PEG-IFNa2b),L03AB10
+26,Roferon-A 3M IU (11.1 mcg) (IFNa2a),L03AB04
+27,Roferon-A 6M IU (22.2 mcg) (IFNa2a),L03AB04
+28,Roferon-A 9M IU (33.3 mcg) (IFNa2a),L03AB04
+29,Roferon-A (IFNa2a),L03AB04
+30,IntronA inj. 3M IU (IFNa2b),L03AB05
+31,IntronA inj. 5M IU (IFNa2b),L03AB05
+32,IntronA inj. 10M IU (IFNa2b),L03AB05
+33,IntronA inj. 18M IU (IFNa2b),L03AB05
+34,IntronA inj. 25M IU (IFNa2b),L03AB05
+35,IntronA subcut.pen 18M IU (IFNa2b),L03AB05
+36,IntronA subcut.pen 30M IU (IFNa2b),L03AB05
+37,IntronA subcut.pen 60M IU (IFNa2b),L03AB05
+38,Intron A (IFNa2b),L03AB05
+39,Rebetol 200mg (RBV),J05AB04
+40,Rebetol Sol. 40mg/ml (RBV),J05AB04
+41,Rebetol (RBV),J05AB04
+42,Copegus 200mg (RBV),J05AB04
+43,Copegus (RBV),J05AB04
+44,Ribavirin Teva 200mg (RBV),J05AB04
+45,Ribavirin Teva 400mg (RBV),J05AB04
+46,Ribavirin Teva (RBV),J05AB04
+47,Zadaxin inj. 1.6mg (Talpha1),
