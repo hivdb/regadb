@@ -1,2 +1,9 @@
 class_ii,class_id,class_name,resistance_table_order
 1,PI,NS3/4A protease inhibitor,null
+2,,Cyclophilin inhibitor,null
+3,,Antiviral agent,null
+4,,NS5A inhibitor,null
+5,,Immunostimulant,null
+6,,Non-nucleoside NS5B polymerase inhibitor,null
+7,,Immune modulator,null
+8,,Nucleoside inhibitor,null
