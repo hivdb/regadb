@@ -60,10 +60,6 @@ public class ContactFormConfig extends FormConfig {
 	public void setDefaults() {
 		tests.clear();
 		events.clear();
-		
-		tests.add(new TestItem("CD4 Count (generic)"));//StandardObjects.getGenericCD4Test().getDescription()));
-        tests.add(new TestItem("CD8 Count (generic)"));//StandardObjects.getGenericCD8Test().getDescription()));
-        tests.add(new TestItem("Viral Load (copies/ml) (generic)","HIV-1"));//StandardObjects.getGenericHiv1ViralLoadTest().getDescription(), StandardObjects.getHiv1Genome().getOrganismName()));
 	}
 
 	public Element toXml(){
