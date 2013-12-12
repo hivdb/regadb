@@ -18,22 +18,20 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.settings.TestItem;
+import net.sf.regadb.util.settings.UITestItem;
 
 public abstract class TestListWidget {
-	private List<TestItem> testItems;
+	private List<UITestItem> testItems;
 	
 	private List<FormField> testFormFields = new ArrayList<FormField>();
 	
-	//TODO
-	//should accept a list of Tests iso a list of TestItems
-	public TestListWidget(InteractionState is, List<TestItem> testItems, Set<TestResult> results) {
-		this.testItems = new ArrayList<TestItem>(testItems);
+	public TestListWidget(InteractionState is, List<UITestItem> testItems, Set<TestResult> results) {
+		this.testItems = new ArrayList<UITestItem>(testItems);
 		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
-		Iterator<TestItem> i = this.testItems.iterator();
+		Iterator<UITestItem> i = this.testItems.iterator();
 		while (i.hasNext()) {
-			TestItem ti = i.next();
+			UITestItem ti = i.next();
 			Test t = tr.getTest(ti.description);
 			if (!showTest(is, t, results))
 				i.remove();
@@ -43,7 +41,7 @@ public abstract class TestListWidget {
 	public void init(InteractionState interactionState, IForm form, FormTable table) {
 		Transaction tr = RegaDBMain.getApp().createTransaction();
 		
-		for(TestItem ti : testItems) {
+		for(UITestItem ti : testItems) {
         	Test t = tr.getTest(ti.description);
         	if(t != null){
 	            Label l = new Label(TestComboBox.getLabel(t));

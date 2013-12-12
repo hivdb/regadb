@@ -36,7 +36,7 @@ import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.ui.tree.ObjectTreeNode;
 import net.sf.regadb.util.date.DateUtils;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.settings.TestItem;
+import net.sf.regadb.util.settings.UITestItem;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WGroupBox;
 import eu.webtoolkit.jwt.WString;
@@ -116,14 +116,18 @@ public class TherapyForm extends ObjectForm<Therapy>
         commentTF = new TextField(getInteractionState(), this);
         generalGroupTable_.addLineToTable(commentL, commentTF);
         
-        List<TestItem> testItems = new ArrayList<TestItem>();
+        List<UITestItem> testItems = new ArrayList<UITestItem>();
         {
         	Transaction t = RegaDBMain.getApp().createTransaction();
         	TestObject tto = StandardObjects.getTherapyTestObject();
         	List<Test> tests = t.getTests(tto);
         	for (Test test : t.getTests(tto)) {
         		Genome g = test.getTestType().getGenome();
-        		testItems.add(new TestItem(test.getDescription(), g == null ? null : g.getOrganismName()));
+        		UITestItem ti = new UITestItem();
+        		ti.type = test.getTestType().getDescription();
+        		ti.description = test.getDescription();
+        		ti.organism = g == null ? null : g.getOrganismName();
+        		testItems.add(ti);
         	}
         }
         Set<TestResult> testResults = null;

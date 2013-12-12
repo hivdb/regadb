@@ -24,7 +24,7 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.IFormField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.tree.TreeMenuNode;
-import net.sf.regadb.util.settings.ContactFormConfig.EventItem;
+import net.sf.regadb.util.settings.EventItem;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.TestItem;
 import eu.webtoolkit.jwt.Signal1;

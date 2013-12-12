@@ -26,7 +26,7 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
-import net.sf.regadb.util.settings.TestItem;
+import net.sf.regadb.util.settings.UITestItem;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.TextFormat;
@@ -70,7 +70,7 @@ public class NtSequenceForm extends WContainerWidget{
 	
 	private TestListWidget testList;
 
-	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, String label, List<TestItem> testItems){
+	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, String label, List<UITestItem> testItems){
 		this.viralIsolateMainForm = viralIsolateMainForm;
 		this.setNtSequence(new NtSequence());
 		this.testList = createTestList(getInteractionState(), testItems);
@@ -80,7 +80,7 @@ public class NtSequenceForm extends WContainerWidget{
 		labelF.setText(label);
 	}
 	
-	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, NtSequence ntSequence, List<TestItem> testItems){
+	public NtSequenceForm(ViralIsolateMainForm viralIsolateMainForm, NtSequence ntSequence, List<UITestItem> testItems){
 		this.viralIsolateMainForm = viralIsolateMainForm;
 		this.setNtSequence(ntSequence);
 		this.testList = createTestList(getInteractionState(), testItems);
@@ -90,7 +90,7 @@ public class NtSequenceForm extends WContainerWidget{
 		fillData();
 	}
 	
-	private TestListWidget createTestList(InteractionState is, List<TestItem> testItems) {
+	private TestListWidget createTestList(InteractionState is, List<UITestItem> testItems) {
 		Set<TestResult> results = null;
 		if (ntSequence != null)
 			results = ntSequence.getTestResults();

@@ -257,13 +257,19 @@
       <form name="form.viralIsolate">
 		<!-- list of tests in the form -->
         <tests>
-          <test description="Authors" />
-          <test description="Article" />
+          <test type="Authors" 
+          		description="Authors" />
+          <test type="Article" 
+          		description="Article" />
           <!-- a nominal value test may define a default value -->
-          <test description="Sample Source" defaultValue="Plasma"/>
+          <test type="Sample Source" 
+          		description="Sample Source" 
+          		defaultValue="Plasma"/>
           <!-- by default a "No value selected" entry is show in the nominal value combobox,
           		this can be hidden by setting this attribute: noValueSelected="false" -->
-          <test description="Sample Source2" noValueSelected="false"/>		
+          <test type="Sample Source2" 
+          		description="Sample Source2" 
+          		noValueSelected="false"/>		
         </tests>
         
         <!-- list of sequence tests in the form (these tests are shown for each sequence)
@@ -273,12 +279,17 @@
         		is shown by default (in view mode only) if a result is available
        	  -->
         <sequence-tests>
-          <test description="Sequence batch data" />
+          <test type="Sequence batch date" 
+          		description="Sequence batch date" />
           <!-- a nominal value test may define a default value -->
-          <test description="Problematic sequence" defaultValue="No"/>
+          <test type="Problematic sequence"
+          		description="Problematic sequence" 
+          		defaultValue="No"/>
           <!-- by default a "No value selected" entry is show in the nominal value combobox,
           	   this can be hidden by setting this attribute: noValueSelected="false" -->
-          <test description="Problematic sequence2" noValueSelected="false"/>		
+          <test type="Problematic sequence2"
+          		description="Problematic sequence2" 
+          		noValueSelected="false"/>		
         </sequence-tests>
         
         <!--  This element is optional -->
@@ -303,9 +314,13 @@
       <form name="form.multipleTestResults.contact">
       	<!-- list of tests in the form -->
         <tests>
-          <test description="CD4 Count (generic)" />
-          <test description="CD8 Count (generic)" />
-          <test description="Viral Load (copies/ml) (generic)" organism="HIV-1" />
+          <test type="CD4 Count (cells/ul)"
+          		description="CD4 Count (generic)" />
+          <test type="CD8 Count"
+          		description="CD8 Count (generic)" />
+          <test type="Viral Load (copies/ml)"
+          		description="Viral Load (copies/ml) (generic)" 
+          		organism="HIV-1" />
         </tests>
         <!--
         	list of events in the form

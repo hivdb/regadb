@@ -29,7 +29,7 @@ import net.sf.regadb.ui.framework.tree.TreeMenuNode;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.date.DateUtils;
-import net.sf.regadb.util.settings.ContactFormConfig.EventItem;
+import net.sf.regadb.util.settings.EventItem;
 import net.sf.regadb.util.settings.RegaDBSettings;
 import net.sf.regadb.util.settings.TestItem;
 import eu.webtoolkit.jwt.Signal;
