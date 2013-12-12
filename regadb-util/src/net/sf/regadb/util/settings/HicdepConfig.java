@@ -8,6 +8,7 @@ import java.util.Map;
 import org.jdom.Element;
 
 public class HicdepConfig extends ConfigParser{
+	//TODO use Item classes here!
 	public static class Attribute {
 		public String name;
 		public String group;
