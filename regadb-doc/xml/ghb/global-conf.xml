@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<regadb-settings>
+	<institute>
+		<forms>
+		    <!--  custom export form for the GHB HCV db 
+		
+		            this element is optional
+		    -->
+		    <form name="form.export.ghb-hcv-export">
+		    	<export-definition>
+		    		<column name="EMD-NR">
+		    			<attribute group="Clinical" name="EMD-NR"/>
+		    		</column>
+		    		<column name="Metavir value">
+		    			<test-value type="METAVIR fibrosis" description="METAVIR fibrosis" />
+		    		</column>
+		    		<column name="Metavir year">
+		    			<test-date type="METAVIR fibrosis" description="METAVIR fibrosis" format="yyyy" />
+		    		</column>
+		    		<column name="Therapy Response">
+		    			<therapy-test-value type="Response" description="Response" />
+		    		</column>
+		    		<column name="Last contact">
+		    			<test-date type="Last Contact" description="Last Contact" format="MM-yyyy" />
+		    		</column>
+		    		<column name="Study">
+		    			<event-value name="Study" />
+		    		</column>
+		    	</export-definition>
+		    </form>
+	    </forms>
+  </institute>
+</regadb-settings>
