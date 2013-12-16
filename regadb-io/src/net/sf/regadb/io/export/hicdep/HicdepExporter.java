@@ -36,6 +36,8 @@ import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 
+import static net.sf.regadb.db.Transaction.patientsInDatasetSubquery;
+
 public abstract class HicdepExporter {
 
 	private Login login;
@@ -85,18 +87,6 @@ public abstract class HicdepExporter {
 		if (r == null)
 			throw new RuntimeException("No mapping for value \"" + v + "\" in mapping \"" + name + "\"");
 		return r;
-	}
-	
-	private String patientsInDatasetSubquery(String datasetParam) {
-		return 
-				"select " +
-				"	patient " +
-                "from " +
-                "	PatientImpl as patient " +
-                "	join patient.patientDatasets as patient_dataset " +
-                "	join patient_dataset.id.dataset as dataset " +
-                "where " +
-                "	dataset.description = :" + datasetParam;
 	}
 	
 	private HicdepConfig config() {
