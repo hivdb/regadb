@@ -23,8 +23,9 @@ public class GhbHcvExportFormConfig extends FormConfig {
         	this.object = object;
         }
         
-    	Kind kind;
-    	T object;
+    	public Kind kind;
+    	public T object;
+    	Map<String, String> properties = new HashMap<String, String>();
     }
 
     private Map<String, Cell<TestItem>> tests = new HashMap<String, Cell<TestItem>>();
@@ -37,6 +38,7 @@ public class GhbHcvExportFormConfig extends FormConfig {
 		setDefaults();
 	}
 
+	private static String DATE_FORMAT = "date-format";
 	public void parseXml(RegaDBSettings settings, Element e) {
 		tests.clear();
 		therapyTests.clear();
@@ -61,7 +63,9 @@ public class GhbHcvExportFormConfig extends FormConfig {
 				if (name.equals("test-value")) {
 					tests.put(colName, new Cell<TestItem>(Cell.Kind.Value, ti));
 				} else if (name.equals("test-date")) {
-					tests.put(colName, new Cell<TestItem>(Cell.Kind.Date, ti));
+					Cell<TestItem> c = new Cell<TestItem>(Cell.Kind.Date, ti);
+					c.properties.put(DATE_FORMAT, colConfigurationE.getAttributeValue(DATE_FORMAT));
+					tests.put(colName, c);
 				} else {
 					throw new RuntimeException(colError(colName));
 				}
