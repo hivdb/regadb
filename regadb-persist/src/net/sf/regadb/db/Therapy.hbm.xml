@@ -41,7 +41,7 @@
     </set>
     <set name="testResults" inverse="true" cascade="all">
       <key>
-        <column name="test_result_ii" />
+        <column name="therapy_ii" />
       </key>
       <one-to-many class="net.sf.regadb.db.TestResult" />
     </set>
