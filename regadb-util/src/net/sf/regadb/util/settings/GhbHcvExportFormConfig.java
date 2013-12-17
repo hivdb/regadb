@@ -13,8 +13,8 @@ public class GhbHcvExportFormConfig extends FormConfig {
     private List<String> columnNames = new ArrayList<String>();
     
     //TODO, somehow add support for event intervals?
-    private static class Cell<T> {
-        private enum Kind {
+    public static class Cell<T> {
+        public enum Kind {
         	Value, Date
         }
        
@@ -25,7 +25,7 @@ public class GhbHcvExportFormConfig extends FormConfig {
         
     	public Kind kind;
     	public T object;
-    	Map<String, String> properties = new HashMap<String, String>();
+    	public Map<String, String> properties = new HashMap<String, String>();
     }
 
     private Map<String, Cell<TestItem>> tests = new HashMap<String, Cell<TestItem>>();
@@ -38,7 +38,7 @@ public class GhbHcvExportFormConfig extends FormConfig {
 		setDefaults();
 	}
 
-	private static String DATE_FORMAT = "date-format";
+	public static String DATE_FORMAT = "date-format";
 	public void parseXml(RegaDBSettings settings, Element e) {
 		tests.clear();
 		therapyTests.clear();
@@ -57,9 +57,11 @@ public class GhbHcvExportFormConfig extends FormConfig {
 			if (name.startsWith("test")) {
 				String testType = colConfigurationE.getAttributeValue("type");
 				String testDescription = colConfigurationE.getAttributeValue("description");
+				String testOrganism = colConfigurationE.getAttributeValue("organism");
 				TestItem ti = new TestItem();
 				ti.type = testType;
 				ti.description = testDescription;
+				ti.organism = testOrganism;
 				if (name.equals("test-value")) {
 					tests.put(colName, new Cell<TestItem>(Cell.Kind.Value, ti));
 				} else if (name.equals("test-date")) {
