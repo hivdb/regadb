@@ -27,8 +27,9 @@ import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.UIUtils;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
 import net.sf.regadb.util.settings.RegaDBSettings;
+import net.sf.regadb.util.settings.TestItem;
+import net.sf.regadb.util.settings.UITestItem;
 import net.sf.regadb.util.settings.ViralIsolateFormConfig;
-import net.sf.regadb.util.settings.ViralIsolateFormConfig.TestItem;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
@@ -70,11 +71,11 @@ public class ViralIsolateMainForm extends WContainerWidget
 		viralIsolateForm_ = viralIsolateForm;
 		
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
-		List<TestItem> testItems = null;
+		List<UITestItem> testItems = null;
 		if (config != null && config.getTests() != null) 
 			testItems = config.getTests();
 		else 
-			testItems = new ArrayList<TestItem>();
+			testItems = new ArrayList<UITestItem>();
 		
 		Set<TestResult> results = null;
 		if (viralIsolateForm_.getObject() != null)
@@ -235,15 +236,23 @@ public class ViralIsolateMainForm extends WContainerWidget
     
     private NtSequenceForm addSequenceForm(NtSequence ntSequence, Transaction t){
 		ViralIsolateFormConfig config = RegaDBSettings.getInstance().getInstituteConfig().getViralIsolateFormConfig();
-		List<TestItem> testItems = null;
+		List<UITestItem> testItems = null;
 		if (config != null && config.getSequenceTests() != null) {
-			testItems = new ArrayList<TestItem>(config.getSequenceTests());
+			testItems = new ArrayList<UITestItem>(config.getSequenceTests());
 		} else {
-			testItems = new ArrayList<TestItem>();
+			testItems = new ArrayList<UITestItem>();
 		}
-		if (!viralIsolateForm_.isEditable())
-			testItems.add(new TestItem(StandardObjects.getContaminationClusterFactorTest().getDescription(), null, null, true));
-    	
+		if (!viralIsolateForm_.isEditable()) {
+			Test ccf = StandardObjects.getContaminationClusterFactorTest();
+			{
+				UITestItem ti = new UITestItem();
+				ti.type = ccf.getTestType().getDescription();
+				ti.description = ccf.getDescription();
+				ti.noValueSelected = true;
+				testItems.add(ti);
+			}
+		}
+		
     	NtSequenceForm ntsf = new NtSequenceForm(this, ntSequence, testItems);
     	ntSequenceForms.add(ntsf);
     	ntSequenceContainer.addWidget(ntsf);

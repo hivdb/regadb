@@ -64,6 +64,7 @@ public class StandardObjects {
     private static TestObject sequenceAnalysisTestObject;
     private static TestObject genericDrugTestObject;
     private static TestObject viralIsolateAnalysisTestObject;
+    private static TestObject therapyTestObject;
 
     private static ValueType numberValueType;
     private static ValueType limitedNumberValueType;
@@ -163,6 +164,7 @@ public class StandardObjects {
         genericDrugTestObject       = createTestObject("Generic drug test", 2);
         resistanceTestObject        = createTestObject("Resistance test", 3);
         viralIsolateAnalysisTestObject = createTestObject("Viral Isolate analysis", 4);
+        therapyTestObject 			= createTestObject("Therapy test", 5);
         
         TestType tt;
         List<TestType> genomeTestTypes = new ArrayList<TestType>();
@@ -452,6 +454,9 @@ public class StandardObjects {
     }
     public static TestObject getResistanceTestObject() {
         return resistanceTestObject;
+    }
+    public static TestObject getTherapyTestObject() {
+        return therapyTestObject;
     }
 
 

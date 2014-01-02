@@ -8,24 +8,6 @@ import org.jdom.Comment;
 import org.jdom.Element;
 
 public class ViralIsolateFormConfig extends FormConfig {
-	public static class TestItem{
-        public TestItem(){
-        }
-        public TestItem(String d){
-            description = d;
-        }
-        public TestItem(String d, String o, String defaultValue, boolean noValueSelected){
-            description = d;
-            organism = o;
-            this.defaultValue = defaultValue;
-            this.noValueSelected = noValueSelected;
-        }
-        public String description = null;
-        public String organism = null;
-        public String defaultValue = null;
-        public boolean noValueSelected = true;
-    }
-	
 	public static class ScoreInfo {
 		private Color color;
 		private Color backgroundColor;
@@ -115,8 +97,8 @@ public class ViralIsolateFormConfig extends FormConfig {
 
     public static final String NAME = "form.viralIsolate";
     
-    private List<TestItem> tests;
-    private List<TestItem> sequenceTests;
+    private List<UITestItem> tests;
+    private List<UITestItem> sequenceTests;
     private List<Algorithm> algorithms;
     private List<ScoreInfo> gss = new ArrayList<ScoreInfo>();
     
@@ -125,17 +107,24 @@ public class ViralIsolateFormConfig extends FormConfig {
 		setDefaults();
 	}
 	
-	private TestItem parseTestItem(Element e) {
-       	String d = e.getAttributeValue("description");
-    	String g = e.getAttributeValue("organism");
+	private UITestItem parseTestItem(Element e) {
+		String type = e.getAttributeValue("type");
+       	String description = e.getAttributeValue("description");
+    	String organism = e.getAttributeValue("organism");
     	String defaultValue = e.getAttributeValue("defaultValue");
     	String noValueSelected = e.getAttributeValue("noValueSelected");
     	if (noValueSelected == null)
     		noValueSelected = "true";
     	
-    	if(d != null)
-    		return new TestItem(d,g,defaultValue, Boolean.parseBoolean(noValueSelected));
-    	else
+    	if(description != null) {
+    		UITestItem ti = new UITestItem();
+    		ti.type = type;
+    		ti.description = description;
+    		ti.organism = organism;
+    		ti.defaultValue = defaultValue;
+    		ti.noValueSelected = Boolean.parseBoolean(noValueSelected);
+    		return ti;
+    	} else
     		return null;
 	}
 
@@ -147,9 +136,9 @@ public class ViralIsolateFormConfig extends FormConfig {
 		
 		ee = (Element)e.getChild("tests");	
 		if (ee != null) {
-			tests = new ArrayList<TestItem>();
+			tests = new ArrayList<UITestItem>();
 	        for(Object o : ee.getChildren()){
-	        	TestItem ti = parseTestItem((Element)o);
+	        	UITestItem ti = parseTestItem((Element)o);
 	        	if (ti != null)	
 	        		tests.add(ti);
 	        }
@@ -157,9 +146,9 @@ public class ViralIsolateFormConfig extends FormConfig {
 		
 		ee = (Element)e.getChild("sequence-tests");
 		if (ee != null) {
-			sequenceTests = new ArrayList<TestItem>();
+			sequenceTests = new ArrayList<UITestItem>();
 	        for(Object o : ee.getChildren()){
-	        	TestItem ti = parseTestItem((Element)o);
+	        	UITestItem ti = parseTestItem((Element)o);
 	        	if (ti != null)	
 	        		sequenceTests.add(ti);
 	        }
@@ -272,11 +261,11 @@ public class ViralIsolateFormConfig extends FormConfig {
 		return r;
 	}
 	
-	public List<TestItem> getTests(){
+	public List<UITestItem> getTests(){
 		return tests;
 	}
 	
-	public List<TestItem> getSequenceTests(){
+	public List<UITestItem> getSequenceTests(){
 		return sequenceTests;
 	}
 	

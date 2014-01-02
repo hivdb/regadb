@@ -77,7 +77,7 @@ create table regadbschema.splicing_position (splicing_position_ii integer defaul
 create table regadbschema.test (test_ii integer default nextval('test_test_ii_seq'), version integer  not null, analysis_ii integer  unique, test_type_ii integer  not null, description varchar(50) not null, primary key (test_ii));
 create table regadbschema.test_nominal_value (nominal_value_ii integer default nextval('test_nominal_value_test_nominal_value_ii_seq'), version integer  not null, test_type_ii integer  not null, value varchar(100) not null, primary key (nominal_value_ii));
 create table regadbschema.test_object (test_object_ii integer default nextval('test_object_test_object_ii_seq'), version integer  not null, description varchar(50) not null, test_object_id integer , primary key (test_object_ii));
-create table regadbschema.test_result (test_result_ii integer default nextval('test_result_test_result_ii_seq'), version integer  not null, test_ii integer  not null, generic_ii integer , viral_isolate_ii integer , nominal_value_ii integer , patient_ii integer , nt_sequence_ii integer , value varchar(50), test_date date, sample_id varchar(50), data bytea, primary key (test_result_ii));
+create table regadbschema.test_result (test_result_ii integer default nextval('test_result_test_result_ii_seq'), version integer  not null, test_ii integer  not null, generic_ii integer , viral_isolate_ii integer , therapy_ii integer, nominal_value_ii integer , patient_ii integer , nt_sequence_ii integer , value varchar(50), test_date date, sample_id varchar(50), data bytea, primary key (test_result_ii));
 create table regadbschema.test_type (test_type_ii integer default nextval('test_type_test_type_ii_seq'), version integer  not null, value_type_ii integer , genome_ii integer , test_object_ii integer  not null, description varchar(50) not null, primary key (test_type_ii));
 create table regadbschema.therapy (therapy_ii integer default nextval('therapy_therapy_ii_seq'), version integer  not null, therapy_motivation_ii integer , patient_ii integer  not null, start_date date not null, stop_date date, comment varchar(200), primary key (therapy_ii));
 create table regadbschema.therapy_commercial (therapy_ii integer  not null, commercial_ii integer  not null, version integer  not null, day_dosage_units float8, placebo bool not null, blind bool not null, frequency int8, primary key (therapy_ii, commercial_ii));
@@ -137,6 +137,7 @@ alter table regadbschema.test_result add constraint "FK_test_result_patient" for
 alter table regadbschema.test_result add constraint "FK_test_result_test" foreign key (test_ii) references regadbschema.test(test_ii) ON UPDATE CASCADE;
 alter table regadbschema.test_result add constraint "FK_test_result_test_nominal_value" foreign key (nominal_value_ii) references regadbschema.test_nominal_value(nominal_value_ii) ON UPDATE CASCADE;
 alter table regadbschema.test_result add constraint "FK_test_result_viral_isolate" foreign key (viral_isolate_ii) references regadbschema.viral_isolate(viral_isolate_ii) ON UPDATE CASCADE;
+alter table regadbschema.test_result add constraint "FK_test_result_therapy" foreign key (therapy_ii) references regadbschema.therapy(therapy_ii) ON UPDATE CASCADE;
 alter table regadbschema.test_type add constraint "FK_test_type_genome" foreign key (genome_ii) references regadbschema.genome(genome_ii) ON UPDATE CASCADE;
 alter table regadbschema.test_type add constraint "FK_test_type_test_object" foreign key (test_object_ii) references regadbschema.test_object(test_object_ii) ON UPDATE CASCADE;
 alter table regadbschema.test_type add constraint "FK_test_type_value_type" foreign key (value_type_ii) references regadbschema.value_type(value_type_ii) ON UPDATE CASCADE;
@@ -190,6 +191,7 @@ create index test_result_nt_sequence_ii_idx on regadbschema.test_result (nt_sequ
 create index test_result_patient_ii_idx on regadbschema.test_result (patient_ii);
 create index test_result_test_ii_idx on regadbschema.test_result (test_ii);
 create index test_result_viral_isolate_ii_idx on regadbschema.test_result (viral_isolate_ii);
+create index test_result_therapy_ii_idx on regadbschema.test_result (therapy_ii);
 create index test_test_type_ii_idx on regadbschema.test (test_type_ii);
 create index test_type_genome_ii_idx on regadbschema.test_type (genome_ii);
 create index test_type_test_object_ii_idx on regadbschema.test_type (test_object_ii);

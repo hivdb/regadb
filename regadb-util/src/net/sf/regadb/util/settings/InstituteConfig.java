@@ -164,6 +164,7 @@ public class InstituteConfig extends ConfigParser {
 		addFormConfig(new SelectPatientFormConfig());
 		addFormConfig(new ContactFormConfig());
 		addFormConfig(new ViralIsolateFormConfig());
+		addFormConfig(new GhbHcvExportFormConfig());
 		
 		setMinYear(-1);
 		setMaxDaysFuture(-1);
@@ -272,6 +273,10 @@ public class InstituteConfig extends ConfigParser {
 	
 	public ViralIsolateFormConfig getViralIsolateFormConfig(){
 		return (ViralIsolateFormConfig) forms.get(ViralIsolateFormConfig.NAME);
+	}
+	
+	public GhbHcvExportFormConfig getGhbHcvExportFormConfig() {
+		return (GhbHcvExportFormConfig) forms.get(GhbHcvExportFormConfig.NAME);
 	}
 	
 	public void setLogDir(File logDir) {

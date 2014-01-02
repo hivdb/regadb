@@ -18,21 +18,22 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.TestComboBox;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
-import net.sf.regadb.util.settings.ViralIsolateFormConfig.TestItem;
+import net.sf.regadb.util.settings.TestItem;
+import net.sf.regadb.util.settings.UITestItem;
 
 public abstract class TestListWidget {
-	private List<TestItem> testItems;
+	private List<UITestItem> testItems;
 	
 	private List<FormField> testFormFields = new ArrayList<FormField>();
 	
-	public TestListWidget(InteractionState is, List<TestItem> testItems, Set<TestResult> results) {
-		this.testItems = new ArrayList<TestItem>(testItems);
+	public TestListWidget(InteractionState is, List<UITestItem> testItems, Set<TestResult> results) {
+		this.testItems = new ArrayList<UITestItem>(testItems);
 		
 		Transaction tr = RegaDBMain.getApp().createTransaction();
-		Iterator<TestItem> i = this.testItems.iterator();
+		Iterator<UITestItem> i = this.testItems.iterator();
 		while (i.hasNext()) {
-			TestItem ti = i.next();
-			Test t = tr.getTest(ti.description);
+			UITestItem ti = i.next();
+			Test t = getTest(tr, ti);
 			if (!showTest(is, t, results))
 				i.remove();
 		}
@@ -41,8 +42,8 @@ public abstract class TestListWidget {
 	public void init(InteractionState interactionState, IForm form, FormTable table) {
 		Transaction tr = RegaDBMain.getApp().createTransaction();
 		
-		for(TestItem ti : testItems) {
-        	Test t = tr.getTest(ti.description);
+		for(UITestItem ti : testItems) {
+        	Test t = getTest(tr, ti);
         	if(t != null){
 	            Label l = new Label(TestComboBox.getLabel(t));
 	            FormField testResultField;
@@ -91,7 +92,8 @@ public abstract class TestListWidget {
 		Transaction tra = RegaDBMain.getApp().createTransaction();
 		
 		for(int i = 0; i < testItems.size(); i++) {
-			Test test = tra.getTest(testItems.get(i).description);
+			TestItem ti = testItems.get(i);
+			Test test = getTest(tra, ti);
 			if(test == null)
 				continue;
 			
@@ -132,16 +134,18 @@ public abstract class TestListWidget {
             if(f instanceof ComboBox) {
             	DataComboMessage<TestNominalValue> dcm = (DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem();
                 if(dcm != null && dcm.getValue()!=null) {
+                	TestItem ti = testItems.get(i);
                 	if (tr == null)
-                		tr = createTestResult(tra.getTest(testItems.get(i).description));
+                		tr = createTestResult(getTest(tra, ti));
                     tr.setTestNominalValue(((DataComboMessage<TestNominalValue>)((ComboBox)f).currentItem()).getDataValue());
                 } else if (tr != null) {
                 	removeTestResult(tr);
                 }
             } else {
                 if(f.text()!=null && !f.text().trim().equals("")) {
+                	TestItem ti = testItems.get(i);
                 	if (tr == null)
-                		tr = createTestResult(tra.getTest(testItems.get(i).description));
+                		tr = createTestResult(getTest(tra, ti));
                     tr.setValue(f.text());
                 }
                 else if(tr != null){
@@ -149,6 +153,10 @@ public abstract class TestListWidget {
                 }
             }
         }
+	}
+	
+	public Test getTest(Transaction tr, TestItem ti) {
+		return tr.getTest(ti.description, ti.type, ti.organism);
 	}
 
 	public abstract void removeTestResult(TestResult tr);

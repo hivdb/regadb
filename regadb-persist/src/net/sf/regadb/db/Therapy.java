@@ -28,6 +28,8 @@ public class Therapy implements java.io.Serializable {
             0);
 
     private Set<TherapyGeneric> therapyGenerics = new HashSet<TherapyGeneric>(0);
+    
+    private Set<TestResult> testResults = new HashSet<TestResult>(0);
 
     public Therapy() {
     }
@@ -122,4 +124,11 @@ public class Therapy implements java.io.Serializable {
         this.therapyGenerics = therapyGenerics;
     }
 
+    public Set<TestResult> getTestResults() {
+        return this.testResults;
+    }
+
+    public void setTestResults(Set<TestResult> testResults) {
+        this.testResults = testResults;
+    }
 }

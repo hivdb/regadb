@@ -1832,4 +1832,16 @@ public class Transaction {
     	q.setParameter("pevii", pevIi);
     	return (PatientEventValue)q.uniqueResult();
     }
+    
+	public static String patientsInDatasetSubquery(String datasetParam) {
+		return 
+				"select " +
+				"	patient " +
+                "from " +
+                "	PatientImpl as patient " +
+                "	join patient.patientDatasets as patient_dataset " +
+                "	join patient_dataset.id.dataset as dataset " +
+                "where " +
+                "	dataset.description = :" + datasetParam;
+	}
 }
