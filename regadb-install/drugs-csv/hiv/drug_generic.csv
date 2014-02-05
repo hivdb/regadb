@@ -28,7 +28,7 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 28,ADV,2,Adefovir,J05AF08,HIV-1+HIV-2A+HIV-2B
 29,R82913,3,TIBO R82913,,HIV-1+HIV-2A+HIV-2B
 30,aAPA,3,alpha-APA R 95845,,HIV-1+HIV-2A+HIV-2B
-31,LPV/r,1,lopinavir/r,J05AE06,HIV-1+HIV-2A+HIV-2B
+31,LPV/r,1,lopinavir/r,J05AR10,HIV-1+HIV-2A+HIV-2B
 32,SQV/r,1,saquinavir/r,J05AE01+J05AE03,HIV-1+HIV-2A+HIV-2B
 33,IDV/r,1,indinavir/r,J05AE02+J05AE03,HIV-1+HIV-2A+HIV-2B
 34,APV/r,1,amprenavir/r,J05AE05+J05AE03,HIV-1+HIV-2A+HIV-2B
@@ -39,7 +39,7 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 39,RTG,6,raltegravir,J05AX08,HIV-1+HIV-2A+HIV-2B
 40,MVC,4,maraviroc,J05AX09,HIV-1+HIV-2A+HIV-2B
 41,CPV,3,capravirine,J05AG-CPV,HIV-1+HIV-2A+HIV-2B
-42,EVG,6,elvitegravir,none,HIV-1+HIV-2A+HIV-2B
-42,EVG/r,6,elvitegravir/r,none+J05AE03,HIV-1+HIV-2A+HIV-2B
+42,EVG,6,elvitegravir,J05AX11,HIV-1+HIV-2A+HIV-2B
+42,EVG/r,6,elvitegravir/r,J05AX11+J05AE03,HIV-1+HIV-2A+HIV-2B
 43,RPV,3,rilpivirine,J05AG05,HIV-1+HIV-2A+HIV-2B
 44,DTG,6,dolutegravir,,HIV-1+HIV-2A+HIV-2B
