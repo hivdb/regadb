@@ -42,7 +42,8 @@ public class Therapy implements java.io.Serializable {
     public Therapy(TherapyMotivation therapyMotivation, PatientImpl patient,
             Date startDate, Date stopDate, String comment,
             Set<TherapyCommercial> therapyCommercials,
-            Set<TherapyGeneric> therapyGenerics) {
+            Set<TherapyGeneric> therapyGenerics,
+            Set<TestResult> testResults) {
         this.therapyMotivation = therapyMotivation;
         this.patient = patient;
         this.startDate = startDate;
@@ -50,6 +51,7 @@ public class Therapy implements java.io.Serializable {
         this.comment = comment;
         this.therapyCommercials = therapyCommercials;
         this.therapyGenerics = therapyGenerics;
+        this.testResults = testResults;
     }
 
     public Integer getTherapyIi() {

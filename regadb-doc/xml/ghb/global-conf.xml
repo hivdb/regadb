@@ -2,27 +2,32 @@
 <regadb-settings>
 	<institute>
 		<forms>
-		    <!--  custom export form for the GHB HCV db 
-		
-		            this element is optional
+		    <!--  Custom export form for the GHB HCV DB. 
+					A set of columns can be defined. 
+		            This element is optional
 		    -->
 		    <form name="form.export.ghb-hcv-export">
 		    	<export-definition>
+		    	    <!-- Column configuration for an attribute's value -->
 		    		<column name="EMD-NR">
 		    			<attribute group="Clinical" name="EMD-NR"/>
 		    		</column>
+		    		<!-- Column configuration for a test's value -->
 		    		<column name="Metavir value">
 		    			<test-value type="METAVIR fibrosis" description="METAVIR fibrosis" />
 		    		</column>
+		    		<!-- Column configuration for a test's date (with date formatting: date-format) -->
 		    		<column name="Metavir year">
 		    			<test-date type="METAVIR fibrosis" description="METAVIR fibrosis" date-format="yyyy" />
 		    		</column>
+		    		<!-- Column configuration for a therapy's test value -->
 		    		<column name="Therapy Response">
 		    			<therapy-test-value type="Response" description="Response" />
 		    		</column>
 		    		<column name="Last contact">
 		    			<test-date type="Last Contact" description="Last Contact" date-format="MM-yyyy" />
 		    		</column>
+		    		<!-- Column configuration for an events value -->
 		    		<column name="Study">
 		    			<event-value name="Study" />
 		    		</column>

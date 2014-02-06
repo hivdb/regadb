@@ -1822,6 +1822,47 @@ public class Transaction {
     	return (PatientAttributeValue)q.uniqueResult();
     }
     
+    public PatientAttributeValue getPatientAttributeValue(PatientImpl p, Attribute a){
+    	String hql =
+    			"from PatientAttributeValue pav " +
+    			"where pav.attribute = :attribute " +
+    			"and pav.patient.id = :patient_ii";
+    	
+    	Query q = session.createQuery(hql);
+    	q.setParameter("attribute", a);
+    	q.setParameter("patient_ii", p.getPatientIi());
+    	
+    	return (PatientAttributeValue)q.uniqueResult();
+    }
+    
+    public TestResult getLatestTestResult(PatientImpl p, Test t) {
+    	String hql =
+    			"from TestResult tr " +
+    			"where tr.test = :test " +
+    			"and tr.patient.id = :patient_ii " +
+    			"and tr.testDate in (select max(_tr.testDate) from TestResult _tr where _tr.test = :test and _tr.patient.id = :patient_ii)";
+    	
+    	Query q = session.createQuery(hql);
+    	q.setParameter("test", t);
+    	q.setParameter("patient_ii", p.getPatientIi());
+    	
+    	return (TestResult)q.uniqueResult();
+    }
+    
+    public PatientEventValue getLatestEventValue(PatientImpl p, Event e) {
+    	String hql =
+    			"from PatientEventValue pev " +
+    			"where pev.event = :event " +
+    			"and pev.patient.id = :patient_ii " +
+    			"and pev.startDate in (select max(_pev.startDate) from PatientEventValue _pev where _pev.event = :event and _pev.patient.id = :patient_ii)";
+    	
+    	Query q = session.createQuery(hql);
+    	q.setParameter("event", e);
+    	q.setParameter("patient_ii", p.getPatientIi());
+    	
+    	return (PatientEventValue)q.uniqueResult();
+    }
+    
     /**
      * Get PatientEvenValue by database id, does not check user permissions!
      * @param ii database id
