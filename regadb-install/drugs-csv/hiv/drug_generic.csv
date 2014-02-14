@@ -40,6 +40,6 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 40,MVC,4,maraviroc,J05AX09,HIV-1+HIV-2A+HIV-2B
 41,CPV,3,capravirine,J05AG-CPV,HIV-1+HIV-2A+HIV-2B
 42,EVG,6,elvitegravir,J05AX11,HIV-1+HIV-2A+HIV-2B
-42,EVG/r,6,elvitegravir/r,J05AX11+J05AE03,HIV-1+HIV-2A+HIV-2B
+45,EVG/r,6,elvitegravir/r,J05AX11+J05AE03,HIV-1+HIV-2A+HIV-2B
 43,RPV,3,rilpivirine,J05AG05,HIV-1+HIV-2A+HIV-2B
 44,DTG,6,dolutegravir,,HIV-1+HIV-2A+HIV-2B
