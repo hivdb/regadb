@@ -80,6 +80,7 @@ public class QueryLoader implements Savable {
 		    	return query;
 			}
 			catch (Throwable t) {
+				t.printStackTrace();
 				queryLoaded = false;
 				return new Query();
 			}
