@@ -3,6 +3,7 @@ package net.sf.regadb.ui.form.query.querytool;
 import java.io.IOException;
 
 import net.sf.regadb.db.QueryDefinition;
+import net.sf.regadb.io.export.fasta.FastaExporter;
 import net.sf.regadb.ui.framework.forms.fields.FileUpload.FileBlob;
 
 import com.pharmadm.custom.rega.queryeditor.Query;
@@ -75,6 +76,7 @@ public class QueryLoader implements Savable {
 				}
 					
 		    	XStream xs = new XStream();
+		    	xs.alias("net.sf.regadb.tools.exportFasta.FastaExporter$FastaId", FastaExporter.FastaId.class);
 		    	Query query = (Query) xs.fromXML(def.getQuery());
 		    	queryLoaded = checkQueryValidity(query);
 		    	return query;
