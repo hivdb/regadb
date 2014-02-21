@@ -67,6 +67,7 @@ public class ProcessXMLImport extends Thread {
 			
 			ps.close();
 		} catch (Exception e) {
+			e.printStackTrace();
 			e.printStackTrace(ps);
 			status = UploadStatus.FAILED;
 		} finally {
