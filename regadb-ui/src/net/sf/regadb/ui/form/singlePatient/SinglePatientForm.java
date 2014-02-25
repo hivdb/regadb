@@ -2,9 +2,12 @@ package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import net.sf.regadb.db.Attribute;
 import net.sf.regadb.db.AttributeGroup;
@@ -203,7 +206,7 @@ public class SinglePatientForm extends ObjectForm<Patient>
             attributeValueMap.add(attributeValue);
         }
                 
-        HashMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groups = groupAttributes(attributes, attributeValueMap, t);
+        TreeMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groups = groupAttributes(attributes, attributeValueMap, t);
         
         if(groups.entrySet().size()>0)
         {
@@ -304,14 +307,19 @@ public class SinglePatientForm extends ObjectForm<Patient>
         }
     }
     
-    public HashMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groupAttributes(List<Attribute> attributes, List<PatientAttributeValue> attributeValueList, Transaction t)
+    public TreeMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groupAttributes(List<Attribute> attributes, List<PatientAttributeValue> attributeValueList, Transaction t)
     {
-        HashMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groups = new HashMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>>();
+    	TreeMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>> groups = new TreeMap<String, ArrayList<Pair<Attribute, PatientAttributeValue>>>();
         
         AttributeGroup groupName;
         String groupStr;
         ArrayList<Pair<Attribute, PatientAttributeValue>> listOfAttributesInOneGroup;
         PatientAttributeValue value;
+        Collections.sort(attributes, new Comparator<Attribute>(){
+			public int compare(Attribute a1, Attribute a2) {
+				return a1.getName().compareTo(a2.getName());
+			}
+        });
         for(Attribute attribute : attributes)
         {
             groupName = attribute.getAttributeGroup();
