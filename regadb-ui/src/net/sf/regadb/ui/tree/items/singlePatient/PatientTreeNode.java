@@ -2,11 +2,14 @@ package net.sf.regadb.ui.tree.items.singlePatient;
 
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.Privileges;
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.ui.datatable.patient.SelectPatientForm;
 import net.sf.regadb.ui.form.singlePatient.SinglePatientForm;
 import net.sf.regadb.ui.form.singlePatient.chart.PatientChartForm;
 import net.sf.regadb.ui.form.singlePatient.custom.Nadir;
+import net.sf.regadb.ui.framework.RegaDBApplication;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.IForm;
 import net.sf.regadb.ui.framework.forms.InteractionState;
@@ -39,7 +42,19 @@ public class PatientTreeNode extends ObjectTreeNode<Patient>{
 		chart = new FormNavigationNode(getMenuResource("chart"), getSelectedItemNavigationNode(), true){
 			@Override
 			public IForm createForm() {
-				return new PatientChartForm(getSelectedItem());
+				int width = 700;
+				int height = 500;
+				
+				SettingsUser su = RegaDBMain.getApp().getSettingsUser();
+				if (su != null) {
+			        for(UserAttribute ua : su.getUserAttributes()) {
+			            if("chart.width".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
+			            	width = Integer.parseInt(ua.getValue());
+			            else if("chart.height".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
+			                height = Integer.parseInt(ua.getValue());
+			        }
+				}
+				return new PatientChartForm(getSelectedItem(), width, height);
 			}
 		};
 		

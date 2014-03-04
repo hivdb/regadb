@@ -1,6 +1,7 @@
 package net.sf.regadb.ui.form.singlePatient;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Set;
@@ -9,11 +10,14 @@ import java.util.TreeSet;
 import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.ResistanceInterpretationTemplate;
+import net.sf.regadb.db.SettingsUser;
 import net.sf.regadb.db.Test;
 import net.sf.regadb.db.TestType;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.UserAttribute;
 import net.sf.regadb.io.util.StandardObjects;
-import net.sf.regadb.ui.form.singlePatient.chart.PatientChart;
+import net.sf.regadb.ui.form.singlePatient.chart.Chart;
+import net.sf.regadb.ui.form.singlePatient.chart.DefaultChart;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.InteractionState;
 import net.sf.regadb.ui.framework.forms.fields.ComboBox;
@@ -25,7 +29,9 @@ import eu.webtoolkit.jwt.WAnchor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMemoryResource;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPainter;
 import eu.webtoolkit.jwt.WPushButton;
+import eu.webtoolkit.jwt.WRasterPaintDevice;
 import eu.webtoolkit.jwt.WSelectionBox;
 import eu.webtoolkit.jwt.WString;
 
@@ -152,15 +158,39 @@ public class ViralIsolateReportForm extends WContainerWidget
     
     private File getChart(Transaction t, Patient patient)
     {
-        PatientChart chartDrawer = new PatientChart(patient, t.getSettingsUser());
-        chartDrawer.setSettings(700, 300, t.getTest(
-        		algorithmCB_.getCurrentText().getValue(),
-        		StandardObjects.getGssDescription(),
-        		viralIsolateForm_.getViralIsolate().getGenome().getOrganismName()));
-        t.attach(patient);
-        File tmpFile = RegaDBMain.getApp().createTempFile("regadb-chart", ".png");
-        chartDrawer.writePngChartToFile(800, tmpFile);
-        
-        return tmpFile;
+		int width = 700;
+		int height = 500;
+		
+		SettingsUser su = RegaDBMain.getApp().getSettingsUser();
+		if (su != null) {
+	        for(UserAttribute ua : su.getUserAttributes()) {
+	            if("chart.width".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
+	            	width = Integer.parseInt(ua.getValue());
+	            else if("chart.height".equals(ua.getName()) && ua.getValue()!=null && !ua.getValue().equals(""))
+	                height = Integer.parseInt(ua.getValue());
+	        }
+		}
+		
+    	Chart chart = DefaultChart.createDefaultChart(null, patient, null, null, width, height);
+    	
+    	try {
+    		File f = RegaDBMain.getApp().createTempFile("regadb-chart", ".png");
+	    	FileOutputStream fos = new FileOutputStream(f);
+	    	
+			WRasterPaintDevice image = new WRasterPaintDevice("png", chart.getWidth(), chart.getHeight());
+			
+			WPainter painter = new WPainter(image);
+			chart.paint(painter);
+			painter.end();
+			
+			image.write(fos);
+			fos.flush();
+			fos.close();
+			
+			return f;
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
     }
 }

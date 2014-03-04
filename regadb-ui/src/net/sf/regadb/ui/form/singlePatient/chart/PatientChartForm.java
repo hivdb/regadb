@@ -36,19 +36,24 @@ import eu.webtoolkit.jwt.chart.Axis;
 public class PatientChartForm extends WGroupBox implements IForm 
 {
 	private Chart chart = null;
-	private TestResultsModel model = null;
 	private WTable viTable = null;
 	
 	private DateField minDate;
 	private DateField maxDate;
 	private WPushButton show;
+
+	private int chartWidth;
+	private int chartHeight;	
 	
-	public PatientChartForm(Patient p)
+	public PatientChartForm(Patient p, int chartWidth, int chartHeight)
 	{
 		super(tr("form.patient.chart"));
 		
 		Transaction t = RegaDBMain.getApp().createTransaction();
 		t.attach(p);
+		
+		this.chartWidth = chartWidth;
+		this.chartHeight = chartHeight;
 
 		WTable table = new WTable(this);
 		table.getElementAt(0, 0).addWidget(new WLabel(tr("form.patient.chart.minDate")));
@@ -92,53 +97,12 @@ public class PatientChartForm extends WGroupBox implements IForm
 			viTable.remove();
 		}
 		
-		chart = new Chart(this, min, max);
-		
-		chart.setDeathDate(p.getDeathDate());
-		
-		model = new TestResultsModel();
-		
-		List<ViralLoadSeries> vlSeries = new LinkedList<ViralLoadSeries>();
-		for(Genome genome : StandardObjects.getGenomes())
-			vlSeries.add(new ViralLoadSeries(genome, Axis.Y2Axis));
-		TestResultSeries cd4Series = new TestResultSeries(StandardObjects.getCd4TestType(), Axis.YAxis){
-			public String getName(){
-				return "CD4";
-			}
-		};
-		
-		for(ViralLoadSeries vl : vlSeries)
-			model.getSeries().add(vl);
-		model.getSeries().add(cd4Series);
-		model.loadResults(p, min, max);
-
-		chart.setModel(model);
-		for(ViralLoadSeries vl : vlSeries)
-			chart.addSeries(vl);
-		chart.addSeries(cd4Series);
-		chart.setXSeriesColumn(model.getXSeriesColumn());
-
+		chart = DefaultChart.createDefaultChart(this, p, min, max, chartWidth, chartHeight);
 		chart.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
             public void trigger(WMouseEvent a) {
             	chartClicked(a);
             }
 		});
-		
-		chart.loadTherapies(p);
-		chart.loadViralIsolates(p);
-		
-		int chartHeight = 500;
-		int chartWidth = 700;
-		int chartPaddingLeft = 40;
-		int chartPaddingRight = 200;
-		int chartPaddingBottom = chart.calculateAddedHeight();
-
-		
-		chart.resize(chartWidth + chartPaddingLeft + chartPaddingRight,
-				chartHeight + chartPaddingBottom);
-		chart.setPlotAreaPadding(chartPaddingLeft,Side.Left);
-		chart.setPlotAreaPadding(chartPaddingRight,Side.Right);
-		chart.setPlotAreaPadding(chartPaddingBottom,Side.Bottom);
 		
 		viTable = new WTable(this);
 	}
