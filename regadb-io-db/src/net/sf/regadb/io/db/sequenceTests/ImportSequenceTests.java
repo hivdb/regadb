@@ -80,12 +80,14 @@ public class ImportSequenceTests {
 	            	if (dataset == null) {
 	            		List<Patient> patients = new ArrayList<Patient>();
 	            		for (Dataset d : tr.getDatasets()) {
-	            			tr.getPatient(d, patientId);
+	            			Patient _p = tr.getPatient(d, patientId);
+	            			if (_p != null)
+	            				patients.add(_p);
 	            		}
 	            		if (patients.size() > 1) {
 	            			System.err.println("Error: More than one patient with id \"" + patientId + "\" was retrieved.");
 	            			System.exit(1);
-	            		} else if (patients.size() > 1) {
+	            		} else if (patients.size() == 1) {
 	            			p = patients.get(0);
 	            		}
 	            	} else {
@@ -104,12 +106,23 @@ public class ImportSequenceTests {
 	            			break;
 	            		}
 	            	}
+	            	
+	            	if (vi == null) {
+            			System.err.println("Error: Could not find isolate with id \"" + sampleId + "\" in patient with id \"" + patientId + "\"");
+            			System.exit(1);
+	            	}
+	            	
 	            	NtSequence seq = null;
 	            	for (NtSequence _seq : vi.getNtSequences()) {
 	            		if (sequenceLabel.equals(_seq.getLabel())) {
 	            			seq = _seq;
 	            			break;
 	            		}
+	            	}
+	            	
+	            	if (seq == null) {
+            			System.err.println("Error: Could not find sequence with label \"" + sequenceLabel + "\" in isolate with id \"" + sampleId + "\" in patient with id \"" + patientId + "\"");
+            			System.exit(1);
 	            	}
 	            	
 	            	Test t = tr.getTest(test.getValue(), testType.getValue());
