@@ -44,7 +44,14 @@ public class PatientChartConfig extends ConfigParser {
 		super("patient-chart");
 	}
 
+	private void clear() {
+		y1.items.clear();
+		y2.items.clear();
+	}
+	
 	public void parseXml(RegaDBSettings settings, Element e) {
+		clear();
+		
 		Element ee;
 		
 		ee = e.getChild("y1");
