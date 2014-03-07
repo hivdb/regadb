@@ -36,7 +36,7 @@ public class ImportSequenceTests {
     	PositionalArgument inputCsv = as.addPositionalArgument("input.csv", true);
     	PositionalArgument testType = as.addPositionalArgument("test-type", true);
     	PositionalArgument test = as.addPositionalArgument("test", true);
-    	PositionalArgument ds = as.addPositionalArgument("dataset", true);
+    	PositionalArgument ds = as.addPositionalArgument("dataset", false);
     	ValueArgument conf = as.addValueArgument("conf-dir", "configuration directory", false);
     	
     	if(!as.handle(args))
@@ -71,8 +71,30 @@ public class ImportSequenceTests {
             	
             	{
 	            	Transaction tr = login.createTransaction();
-	            	Dataset dataset = tr.getDataset(ds.getValue());
-	            	Patient p = tr.getPatient(dataset, patientId);
+	            	
+	            	Dataset dataset = null;
+	            	if (ds.isSet())
+	            		dataset = tr.getDataset(ds.getValue());
+	            	
+	            	Patient p = null;
+	            	if (dataset == null) {
+	            		List<Patient> patients = new ArrayList<Patient>();
+	            		for (Dataset d : tr.getDatasets()) {
+	            			tr.getPatient(d, patientId);
+	            		}
+	            		if (patients.size() > 1) {
+	            			System.err.println("Error: More than one patient with id \"" + patientId + "\" was retrieved.");
+	            			System.exit(1);
+	            		}
+	            	} else {
+	            		tr.getPatient(dataset, patientId);
+	            	}
+	            	
+	            	if (p == null) {
+            			System.err.println("Error: Could not find patient with id \"" + patientId + "\".");
+            			System.exit(1);
+	            	}
+	            	
 	            	ViralIsolate vi = null;
 	            	for (ViralIsolate _vi : p.getViralIsolates()) {
 	            		if (sampleId.equals(_vi.getSampleId())) {
