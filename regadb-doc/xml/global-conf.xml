@@ -71,6 +71,30 @@
       </viral-load-testtype>
     </wiv>
     
+    <!--  Patient chart configuration 
+    		(this element is optional).
+    	  By default HIV-1 Viral load (copies and log) and CD4 tests are used.
+     -->
+    <patient-chart>
+    	<!-- A configuration of the cell counts and viral loads to be used in the patient chart
+    		 (2 Y-axes are available).
+    	-->
+    	<!-- Configuration of the first Y axis -->
+    	<y1>
+    		<item kind="cell-count" name="CD4">
+    			<test-type type="CD4 Count (cells/ul)" />
+    		</item>
+    	</y1>
+    	<!-- Configuration of the second Y axis -->
+    	<y2>
+    		<!-- Multiple test types can be grouped in 1 item. -->
+    		<item kind="viral-load"  name="Viral load (${organism})">
+    			<test-type type="Viral Load (copies/ml)" />
+    			<test-type type="Viral Load (log10)" log="true"/>
+    		</item>
+    	</y2>
+    </patient-chart>
+    
     <!--  configuration for HICDEP export
 	  		this element is optional
     -->

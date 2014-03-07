@@ -34,6 +34,8 @@ public class InstituteConfig extends ConfigParser {
 
 	private WivConfig wivConfig;
 	private HicdepConfig hicdepConfig;
+	
+	private PatientChartConfig patientChartConfig;
 
 	private EmailConfig emailConfig;
 
@@ -68,6 +70,12 @@ public class InstituteConfig extends ConfigParser {
 		if(ee != null){
 			wivConfig = new WivConfig();
 			wivConfig.parseXml(settings, ee);
+		}
+		
+		ee = e.getChild("patient-chart");
+		if (ee != null) {
+			patientChartConfig = new PatientChartConfig();
+			patientChartConfig.parseXml(settings, ee);
 		}
 		
 		ee = e.getChild("hicdep");
@@ -159,6 +167,9 @@ public class InstituteConfig extends ConfigParser {
 		organismFilter = null;
 		
 		wivConfig = null;
+		
+		patientChartConfig = new PatientChartConfig();
+		patientChartConfig.setDefaults();
 		
 		forms.clear();
 		addFormConfig(new SelectPatientFormConfig());
@@ -320,6 +331,10 @@ public class InstituteConfig extends ConfigParser {
 	}
 	public void setWivConfig(WivConfig wivConfig){
 		this.wivConfig = wivConfig;
+	}
+	
+	public PatientChartConfig getPatientChartConfig() {
+		return patientChartConfig;
 	}
 	
 	public EmailConfig getEmailConfig() {
