@@ -159,11 +159,11 @@ public class Chart extends WCartesianChart{
 		series.setPen(p);
 		series.setBrush(new WBrush(c));
 		super.addSeries(series);
-	}
-	public void addSeries(LimitedValueSeries series){
-		addSeries((TestResultSeries)series);
-		super.addSeries(series.getCutOffSeries());
-		series.getCutOffSeries().setPen(series.getPen());
+		
+		if (series instanceof LimitedValueSeries) {
+			super.addSeries(((LimitedValueSeries)series).getCutOffSeries());
+			((LimitedValueSeries)series).getCutOffSeries().setPen(series.getPen());
+		}
 	}
 	
 	@Override
