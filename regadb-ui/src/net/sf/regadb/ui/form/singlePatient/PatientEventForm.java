@@ -189,7 +189,7 @@ public class PatientEventForm extends ObjectForm<PatientEventValue>
 		}
 		else
 		{
-			getObject().setValue( ((TextField)ffValue).getFormText() );
+			getObject().setValue( ffValue.getFormText() );
 		}
 			
 		update(getObject(), t);

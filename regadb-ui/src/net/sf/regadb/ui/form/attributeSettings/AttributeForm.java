@@ -111,7 +111,8 @@ public class AttributeForm extends ObjectForm<Attribute>
     }
     
     private void setValidationString(){
-        boolean hide = (ValueTypes.getValueType(valueTypeCB.currentValue()) != ValueTypes.STRING);
+    	ValueTypes vt = ValueTypes.getValueType(valueTypeCB.currentValue());
+        boolean hide = (vt != ValueTypes.STRING || vt != ValueTypes.TEXT);
         validationStringL.setHidden(hide);
         validationStringTF.setHidden(hide);
     }

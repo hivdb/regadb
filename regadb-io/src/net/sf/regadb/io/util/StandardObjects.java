@@ -70,6 +70,7 @@ public class StandardObjects {
     private static ValueType limitedNumberValueType;
     private static ValueType nominalValueType;
     private static ValueType stringValueType;
+    private static ValueType textValueType;
     private static ValueType dateValueType;
     
     private static AttributeGroup personalAttributeGroup;
@@ -141,6 +142,7 @@ public class StandardObjects {
         limitedNumberValueType  = createValueType("limited number (<,=,>)");
         nominalValueType        = createValueType("nominal value");
         stringValueType         = createValueType("string");
+        textValueType			= createValueType("text");
         dateValueType           = createValueType("date");
         
         personalAttributeGroup = createAttributeGroup("Personal");
@@ -437,6 +439,9 @@ public class StandardObjects {
     }
     public static ValueType getStringValueType() {
         return stringValueType;
+    }
+    public static ValueType getTextValueType() {
+        return textValueType;
     }
 
     

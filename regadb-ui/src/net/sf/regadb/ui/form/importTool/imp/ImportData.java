@@ -448,6 +448,11 @@ public class ImportData {
 				return value;
 			else
 				return null;
+		} else if (ValueTypes.getValueType(valueType) == ValueTypes.TEXT) {
+			if(ValueTypes.isValidString(value, validationString))
+				return value;
+			else
+				return null;
 		}
 		return null;
 	}

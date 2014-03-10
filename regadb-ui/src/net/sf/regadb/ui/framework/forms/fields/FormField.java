@@ -176,6 +176,8 @@ public abstract class FormField extends WContainerWidget implements IFormField
         {
         case STRING:
         	return new TextField(state,form);
+        case TEXT:
+        	return new TextAreaField(state,form);
         case NUMBER:
         	return new TextField(state, form, FieldType.DOUBLE);
         case LIMITED_NUMBER:

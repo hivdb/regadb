@@ -30,6 +30,7 @@ import net.sf.regadb.ui.framework.forms.fields.FormField;
 import net.sf.regadb.ui.framework.forms.fields.Label;
 import net.sf.regadb.ui.framework.forms.fields.LimitedNumberField;
 import net.sf.regadb.ui.framework.forms.fields.SelectionBox;
+import net.sf.regadb.ui.framework.forms.fields.TextAreaField;
 import net.sf.regadb.ui.framework.forms.fields.TextField;
 import net.sf.regadb.ui.framework.widgets.expandtable.TableExpander;
 import net.sf.regadb.ui.framework.widgets.formtable.FormTable;
@@ -414,6 +415,11 @@ public class SinglePatientForm extends ObjectForm<Patient>
                     if(tf instanceof TextField)
                     {
                         text = ((TextField)tf).text();
+                        storeAttributeTF(text, attributeValue, attribute, getObject(), t);
+                    }
+                    else if(tf instanceof TextAreaField)
+                    {
+                        text = ((TextAreaField)tf).text();
                         storeAttributeTF(text, attributeValue, attribute, getObject(), t);
                     }
                     else if(tf instanceof LimitedNumberField)

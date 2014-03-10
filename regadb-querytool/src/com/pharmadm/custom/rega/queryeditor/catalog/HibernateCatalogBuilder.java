@@ -119,7 +119,7 @@ public class HibernateCatalogBuilder implements CatalogBuilder{
     			+ " obj\nWHERE\n\tnv." + nominalValuesTableToCustomPropertiesTable + " = obj AND\n\tobj." + customPropertiesTableIndexProperty + "='" + index + "'"
     			+ " order by nv.value";
     	}
-    	else if (valueType.equals("string") || valueType.equals("number") || valueType.equals("limited number (<,=,>)") || valueType.equals("date")) {
+    	else if (valueType.equals("text") || valueType.equals("string") || valueType.equals("number") || valueType.equals("limited number (<,=,>)") || valueType.equals("date")) {
     		foreingTable = possibleIdTable;					// select from the single attribute table
     		foreignTableToIdTable = idTableToInputTable;	
     		invert = false;

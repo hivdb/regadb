@@ -254,6 +254,10 @@ table.datatable td.form-value-area input {
 	width:94%;	
 }
 
+.text-area {
+	width:94%;
+}
+
 .edit-invalid {
 	background-color:#f5baaa;
 }
