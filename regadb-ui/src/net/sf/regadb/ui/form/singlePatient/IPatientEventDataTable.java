@@ -5,6 +5,8 @@ import java.util.List;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientEventValue;
 import net.sf.regadb.db.Transaction;
+import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.datatable.utils.TextUtils;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
@@ -55,7 +57,11 @@ public class IPatientEventDataTable extends DefaultDataTable<PatientEventValue> 
 		if ( pev.getEvent().getValueType().getDescription().equals("nominal value") )
 		{
 			row[3] = pev.getEventNominalValue().getValue();
-		}
+		} 
+		else if (ValueTypes.getValueType(pev.getEvent().getValueType()) == ValueTypes.TEXT) 
+		{
+			row[3] = TextUtils.summarize(pev.getValue());
+		} 
 		else
 		{
 			row[3] = pev.getValue();

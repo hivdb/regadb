@@ -6,6 +6,7 @@ import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Transaction;
 import net.sf.regadb.db.ValueTypes;
+import net.sf.regadb.ui.datatable.utils.TextUtils;
 import net.sf.regadb.ui.framework.RegaDBMain;
 import net.sf.regadb.ui.framework.forms.SelectForm;
 import net.sf.regadb.ui.framework.widgets.datatable.DateFilter;
@@ -79,8 +80,9 @@ public class IMeasurementDataTable extends DefaultDataTable<TestResult>
 		else {
 			if (ValueTypes.getValueType(type.getTest().getTestType().getValueType()) == ValueTypes.DATE) {
 				row[4] = DateUtils.format(type.getValue());
-			}
-			else {
+			} else if (ValueTypes.getValueType(type.getTest().getTestType().getValueType()) == ValueTypes.TEXT) {
+				row[4] = TextUtils.summarize(type.getValue());
+			} else {
 				row[4] = type.getValue();
 			}
 		}
