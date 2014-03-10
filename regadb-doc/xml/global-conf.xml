@@ -279,7 +279,7 @@
             this element is optional
       -->
       <form name="form.viralIsolate">
-		<!-- list of tests in the form -->
+		<!-- list of isolate tests in the form -->
         <tests>
           <test type="Authors" 
           		description="Authors" />
