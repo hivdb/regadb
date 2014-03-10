@@ -46,8 +46,6 @@ import eu.webtoolkit.jwt.chart.WCartesianChart;
 import eu.webtoolkit.jwt.chart.WDataSeries;
 
 public class Chart extends WCartesianChart{
-	private static WColor colors[] = null;
-	
 	private Date cutoffDate;
 	private Date minDate = null;
 	private Date maxDate = null;
@@ -84,8 +82,6 @@ public class Chart extends WCartesianChart{
 
 		setLegendEnabled(true);
 		
-		colors = generateColors(11);
-		
 		//don't show values before a certain date, most likely wrong/dummy value and mess up x-axis
 		Calendar cal = Calendar.getInstance();
 		cal.set(1900, 1, 1);
@@ -103,26 +99,6 @@ public class Chart extends WCartesianChart{
 			maxDate = max;
 			setDateRange(min, max);
 		}
-	}
-	
-	public static WColor[] generateColors(int n){
-		WColor colors[] = new WColor[n];
-		
-		float j = 0f;
-		for(int i=0; i<colors.length; ++i){
-			Color c = Color.getHSBColor(j, 1f, 0.9f);
-			j += 1f / (n+2);
-			colors[i] = new WColor(c.getRed(),c.getGreen(),c.getBlue()); 
-		}
-		
-		return colors;
-	}
-	
-	public static WColor getColor(int i){
-		if(colors == null)
-			colors = generateColors(10);
-		
-		return colors[i % colors.length];
 	}
 	
 	public void setDateRange(Date minDate, Date maxDate){
@@ -153,11 +129,6 @@ public class Chart extends WCartesianChart{
 			setDateRange(minDate, maxDate);
 		}
 		
-		WColor c = getColor(getSeries().size());
-		WPen p = new WPen(c);
-		p.setWidth(new WLength(2));
-		series.setPen(p);
-		series.setBrush(new WBrush(c));
 		super.addSeries(series);
 		
 		if (series instanceof LimitedValueSeries) {
