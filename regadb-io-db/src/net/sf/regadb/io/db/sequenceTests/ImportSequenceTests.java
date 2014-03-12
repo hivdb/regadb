@@ -139,8 +139,8 @@ public class ImportSequenceTests {
 	            		tr.delete(ter);
 	            	}
 	            		        
-	            	if (testResult != null && testResult.trim().equals("")) {
 		            	TestResult result = new TestResult();
+	            	if (testResult != null && !testResult.trim().equals("")) {
 		            	result.setTest(t);
 		            	setValue(t, result, testResult);
 		            	result.setPatient(vi.getPatient());
