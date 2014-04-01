@@ -29,3 +29,10 @@ generic_ii,generic_id,class_ii,generic_name,atc_code,genomes
 28,IFNa2b,7,Recombinant Interferon alfa-2b,L03AB05,HCV
 29,RBV,3,Ribavirin,J05AB04,HCV
 30,Talpha1,7,Thymalfasin,,HCV
+31,SOF,6,Sofosbuvir,,HCV
+32,ABT267,4,ABT-267,,HCV
+33,LDV,4,Ledipasvir,,HCV
+34,SPV,1,Simeprevir,,HCV
+35,DPV,1,Danoprevir,,HCV
+36,CPV,1,Ciluprevir,,HCV
+37,VAN,1,Vaniprevir,,HCV
