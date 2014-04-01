@@ -117,37 +117,28 @@ public class StartImportForm extends WDialog {
 				
 				final RegaDBApplication app = RegaDBMain.getApp();
 				
-				Thread t = new Thread(new Runnable(){
+				Thread t = new Thread(new Runnable() {
 					public void run() {
 						app.attachThread();
-						
-						final Login workerLogin = app.getLogin().copyLogin();
+
 						try {
-							final Transaction tr = workerLogin.getTransaction(true);
-	
-							SequenceDb sequenceDb = app.getSequenceDb(); 
-							
-							try {
-								ImportData importData = 
-									new ImportData(StartImportForm.this.importToolForm.getObject(),
-											xlsFile.getFileUpload().getClientFileName(),
-											new File(xlsFile.getFileUpload().getSpoolFileName()),
-											new File(fastaFile.getFileUpload().getSpoolFileName()),
-											dataset.currentValue());
-								List<WString> errors = importData.doImport(tr, sequenceDb, true, workerLogin);
-								if (errors.size() == 0) {
-									importData.doImport(tr, sequenceDb, false, workerLogin);
-								}
-								StartImportForm.this.errors = errors;
-							} catch (Exception e) {
-								StringWriter sw = new StringWriter();
-								PrintWriter pw = new PrintWriter(sw);
-								e.printStackTrace(pw);
-								StartImportForm.this.errors = new ArrayList<WString>();
-								StartImportForm.this.errors.add(new WString(sw.toString()));
+							ImportData importData = new ImportData(
+									StartImportForm.this.importToolForm.getObject(), 
+									xlsFile.getFileUpload().getClientFileName(),
+									new File(xlsFile.getFileUpload().getSpoolFileName()),
+									new File(fastaFile.getFileUpload().getSpoolFileName()),
+									dataset.currentValue());
+							List<WString> errors = importData.doImport(app, true);
+							if (errors.size() == 0) {
+								importData.doImport(app, false);
 							}
-						} finally {
-							workerLogin.closeSession();
+							StartImportForm.this.errors = errors;
+						} catch (Exception e) {
+							StringWriter sw = new StringWriter();
+							PrintWriter pw = new PrintWriter(sw);
+							e.printStackTrace(pw);
+							StartImportForm.this.errors = new ArrayList<WString>();
+							StartImportForm.this.errors.add(new WString(sw.toString()));
 						}
 					}
 				});
