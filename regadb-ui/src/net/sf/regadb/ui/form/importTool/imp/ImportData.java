@@ -2,7 +2,6 @@ package net.sf.regadb.ui.form.importTool.imp;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -22,7 +20,6 @@ import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugCommercial;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Event;
-import net.sf.regadb.db.Genome;
 import net.sf.regadb.db.NtSequence;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
@@ -43,12 +40,12 @@ import net.sf.regadb.io.db.util.Utils;
 import net.sf.regadb.sequencedb.SequenceDb;
 import net.sf.regadb.ui.form.batchtest.BatchRun;
 import net.sf.regadb.ui.form.batchtest.BatchTestRunningForm;
-import net.sf.regadb.ui.form.batchtest.BatchTestStatus;
 import net.sf.regadb.ui.form.importTool.data.DataProvider;
 import net.sf.regadb.ui.form.importTool.data.ImportDefinition;
 import net.sf.regadb.ui.form.importTool.data.Rule;
 import net.sf.regadb.ui.form.importTool.data.SequenceDetails;
 import net.sf.regadb.ui.form.singlePatient.ViralIsolateFormUtils;
+import net.sf.regadb.ui.framework.RegaDBApplication;
 import net.sf.regadb.util.xls.ExcelTable;
 
 import org.biojava.bio.seq.Sequence;
@@ -102,36 +99,49 @@ public class ImportData {
 	 * @param simulate
 	 * @return an empty list in case there were no errors
 	 */
-	public List<WString> doImport(Transaction tr, SequenceDb sequenceDb, boolean simulate, Login login) {
-		Map<String, Test> testsMap = new HashMap<String, Test>();
-		for (Test t : tr.getTests()) {
-			testsMap.put(Rule.getTestName(t), t);
-		}
+	public List<WString> doImport(RegaDBApplication app, boolean simulate) {
+		Login login = null;
 		
-		List<WString> errors = new ArrayList<WString>();
-		List<Patient> patients = new ArrayList<Patient>();
-		for (int i = 1; i < this.dataProvider.getNumberRows(); i++) {
-			WString error = doImport(i, dataProvider.getRowValues(i), tr, testsMap, patients);
-			if (error != null)
-				errors.add(error);
-		}
-		
-		if(errors.size() > 0)
-			return errors;
-		else {
-			if (!simulate) {	
-				try {
-					for (Patient p: patients)
-						tr.save(p);
-					tr.commit();
-				}  catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				BatchRun run = new FullAnalysisBatchRun(login, sequenceDb, patients, name);
-				BatchTestRunningForm.run(run);
+		try { 
+			login = app.getLogin().copyLogin();
+			Transaction tr = login.getTransaction(true);
+			SequenceDb sequenceDb = app.getSequenceDb();
+			
+			Map<String, Test> testsMap = new HashMap<String, Test>();
+			for (Test t : tr.getTests()) {
+				testsMap.put(Rule.getTestName(t), t);
 			}
-			return errors;
+			
+			List<WString> errors = new ArrayList<WString>();
+			List<Patient> patients = new ArrayList<Patient>();
+			for (int i = 1; i < this.dataProvider.getNumberRows(); i++) {
+				WString error = doImport(i, dataProvider.getRowValues(i), tr, testsMap, patients);
+				if (error != null)
+					errors.add(error);
+			}
+			
+			if(errors.size() > 0) {
+				tr.rollback();
+				return errors;			
+			}
+			else {
+				if (!simulate) {	
+					try {
+						for (Patient p: patients)
+							tr.save(p);
+						tr.commit();
+					}  catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+					BatchRun run = new FullAnalysisBatchRun(login, sequenceDb, patients, name);
+					BatchTestRunningForm.run(run);
+				}
+				return errors;
+			}
+		} finally {
+			if (login != null)
+				login.closeSession();
 		}
 	}
 	

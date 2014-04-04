@@ -107,7 +107,8 @@ public class ImportXML {
         }
 
         public void importObject(Patient patient) {
-
+        	System.err.println("Read: " + patient.getPatientId());
+        	
             try {
                 if(dataset != null)
                     patient.setSourceDataset(dataset, t);
@@ -123,7 +124,6 @@ public class ImportXML {
 
             ++patientsRead;
 
-            if (patientsRead % 10 == 0) {
                 t.commit();
                 t.clearCache();
                 t.flush();
@@ -131,7 +131,6 @@ public class ImportXML {
                 instance.loadDatabaseObjects(t);
                 if(dataset != null)
                     dataset = loadOrCreateDataset(t, dataset.getDescription());
-            }
         }        
     }
     

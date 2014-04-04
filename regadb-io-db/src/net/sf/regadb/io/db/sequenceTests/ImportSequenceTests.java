@@ -36,7 +36,7 @@ public class ImportSequenceTests {
     	PositionalArgument inputCsv = as.addPositionalArgument("input.csv", true);
     	PositionalArgument testType = as.addPositionalArgument("test-type", true);
     	PositionalArgument test = as.addPositionalArgument("test", true);
-    	PositionalArgument ds = as.addPositionalArgument("dataset", true);
+    	PositionalArgument ds = as.addPositionalArgument("dataset", false);
     	ValueArgument conf = as.addValueArgument("conf-dir", "configuration directory", false);
     	
     	if(!as.handle(args))
@@ -71,8 +71,34 @@ public class ImportSequenceTests {
             	
             	{
 	            	Transaction tr = login.createTransaction();
-	            	Dataset dataset = tr.getDataset(ds.getValue());
-	            	Patient p = tr.getPatient(dataset, patientId);
+	            	
+	            	Dataset dataset = null;
+	            	if (ds.isSet())
+	            		dataset = tr.getDataset(ds.getValue());
+	            	
+	            	Patient p = null;
+	            	if (dataset == null) {
+	            		List<Patient> patients = new ArrayList<Patient>();
+	            		for (Dataset d : tr.getDatasets()) {
+	            			Patient _p = tr.getPatient(d, patientId);
+	            			if (_p != null)
+	            				patients.add(_p);
+	            		}
+	            		if (patients.size() > 1) {
+	            			System.err.println("Error: More than one patient with id \"" + patientId + "\" was retrieved.");
+	            			System.exit(1);
+	            		} else if (patients.size() == 1) {
+	            			p = patients.get(0);
+	            		}
+	            	} else {
+	            		tr.getPatient(dataset, patientId);
+	            	}
+	            	
+	            	if (p == null) {
+            			System.err.println("Error: Could not find patient with id \"" + patientId + "\".");
+            			System.exit(1);
+	            	}
+	            	
 	            	ViralIsolate vi = null;
 	            	for (ViralIsolate _vi : p.getViralIsolates()) {
 	            		if (sampleId.equals(_vi.getSampleId())) {
@@ -80,12 +106,23 @@ public class ImportSequenceTests {
 	            			break;
 	            		}
 	            	}
+	            	
+	            	if (vi == null) {
+            			System.err.println("Error: Could not find isolate with id \"" + sampleId + "\" in patient with id \"" + patientId + "\"");
+            			System.exit(1);
+	            	}
+	            	
 	            	NtSequence seq = null;
 	            	for (NtSequence _seq : vi.getNtSequences()) {
 	            		if (sequenceLabel.equals(_seq.getLabel())) {
 	            			seq = _seq;
 	            			break;
 	            		}
+	            	}
+	            	
+	            	if (seq == null) {
+            			System.err.println("Error: Could not find sequence with label \"" + sequenceLabel + "\" in isolate with id \"" + sampleId + "\" in patient with id \"" + patientId + "\"");
+            			System.exit(1);
 	            	}
 	            	
 	            	Test t = tr.getTest(test.getValue(), testType.getValue());
@@ -102,8 +139,8 @@ public class ImportSequenceTests {
 	            		tr.delete(ter);
 	            	}
 	            		        
-	            	if (testResult != null && testResult.trim().equals("")) {
 		            	TestResult result = new TestResult();
+	            	if (testResult != null && !testResult.trim().equals("")) {
 		            	result.setTest(t);
 		            	setValue(t, result, testResult);
 		            	result.setPatient(vi.getPatient());
