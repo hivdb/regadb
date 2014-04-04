@@ -100,41 +100,48 @@ public class ImportData {
 	 * @return an empty list in case there were no errors
 	 */
 	public List<WString> doImport(RegaDBApplication app, boolean simulate) {
-		final Login login = app.getLogin().copyLogin();
-		Transaction tr = login.getTransaction(true);
-		SequenceDb sequenceDb = app.getSequenceDb();
+		Login login = null;
 		
-		Map<String, Test> testsMap = new HashMap<String, Test>();
-		for (Test t : tr.getTests()) {
-			testsMap.put(Rule.getTestName(t), t);
-		}
-		
-		List<WString> errors = new ArrayList<WString>();
-		List<Patient> patients = new ArrayList<Patient>();
-		for (int i = 1; i < this.dataProvider.getNumberRows(); i++) {
-			WString error = doImport(i, dataProvider.getRowValues(i), tr, testsMap, patients);
-			if (error != null)
-				errors.add(error);
-		}
-		
-		if(errors.size() > 0) {
-			tr.rollback();
-			return errors;			
-		}
-		else {
-			if (!simulate) {	
-				try {
-					for (Patient p: patients)
-						tr.save(p);
-					tr.commit();
-				}  catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				BatchRun run = new FullAnalysisBatchRun(login, sequenceDb, patients, name);
-				BatchTestRunningForm.run(run);
+		try { 
+			login = app.getLogin().copyLogin();
+			Transaction tr = login.getTransaction(true);
+			SequenceDb sequenceDb = app.getSequenceDb();
+			
+			Map<String, Test> testsMap = new HashMap<String, Test>();
+			for (Test t : tr.getTests()) {
+				testsMap.put(Rule.getTestName(t), t);
 			}
-			return errors;
+			
+			List<WString> errors = new ArrayList<WString>();
+			List<Patient> patients = new ArrayList<Patient>();
+			for (int i = 1; i < this.dataProvider.getNumberRows(); i++) {
+				WString error = doImport(i, dataProvider.getRowValues(i), tr, testsMap, patients);
+				if (error != null)
+					errors.add(error);
+			}
+			
+			if(errors.size() > 0) {
+				tr.rollback();
+				return errors;			
+			}
+			else {
+				if (!simulate) {	
+					try {
+						for (Patient p: patients)
+							tr.save(p);
+						tr.commit();
+					}  catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+					BatchRun run = new FullAnalysisBatchRun(login, sequenceDb, patients, name);
+					BatchTestRunningForm.run(run);
+				}
+				return errors;
+			}
+		} finally {
+			if (login != null)
+				login.closeSession();
 		}
 	}
 	
