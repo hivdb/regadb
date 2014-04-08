@@ -87,7 +87,10 @@
     		</item>
     	</y1>
     	<!-- Configuration of the second Y axis 
-    		 This axis should only contain viral loads. -->
+    		 This axis should only contain viral loads. 
+    		 Note: a viral load test should have :
+    		  * a "limited number" value type
+    		  * an organism -->
     	<y2>
     		<!-- Multiple test types can be grouped in 1 item. -->
     		<item kind="viral-load"  name="Viral load (${organism})">
