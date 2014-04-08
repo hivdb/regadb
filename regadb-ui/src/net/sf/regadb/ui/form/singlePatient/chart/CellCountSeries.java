@@ -6,7 +6,7 @@ import net.sf.regadb.db.ValueTypes;
 import net.sf.regadb.util.settings.PatientChartConfig;
 import eu.webtoolkit.jwt.chart.Axis;
 
-public class CellCountSeries extends LimitedValueSeries {
+public class CellCountSeries extends TestResultSeries {
 	private PatientChartConfig.Item item;
 	
 	public CellCountSeries(PatientChartConfig.Item item, Axis axis) {
