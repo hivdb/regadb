@@ -79,13 +79,15 @@
     	<!-- A configuration of the cell counts and viral loads to be used in the patient chart
     		 (2 Y-axes are available).
     	-->
-    	<!-- Configuration of the first Y axis -->
+    	<!-- Configuration of the first Y axis 
+    		 This axis should only contain cell counts. -->
     	<y1>
     		<item kind="cell-count" name="CD4">
     			<test-type type="CD4 Count (cells/ul)" />
     		</item>
     	</y1>
-    	<!-- Configuration of the second Y axis -->
+    	<!-- Configuration of the second Y axis 
+    		 This axis should only contain viral loads. -->
     	<y2>
     		<!-- Multiple test types can be grouped in 1 item. -->
     		<item kind="viral-load"  name="Viral load (${organism})">
